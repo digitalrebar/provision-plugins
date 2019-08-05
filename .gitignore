@@ -1,5 +1,6 @@
 vendor
 bin
+tools/build/*
 drp-rack-plugins-darwin-386.sha256
 drp-rack-plugins-darwin-386.zip
 drp-rack-plugins-darwin-amd64.sha256

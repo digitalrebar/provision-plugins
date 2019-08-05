@@ -29,7 +29,7 @@ import (
 )
 
 var (
-	version = v4.RS_VERSION
+	version = v4.RSVersion
 	def     = models.PluginProvider{
 		Name:          "kvm-test",
 		Version:       version,
