@@ -9,7 +9,7 @@ import (
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/packethost/packngo"
-	"github.com/rackn/provision-plugins/v4/utils"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 func (p *Plugin) updateDrpMachineFromPacketDevice(l logger.Logger, m *models.Machine, d *packngo.Device) (bool, bool) {

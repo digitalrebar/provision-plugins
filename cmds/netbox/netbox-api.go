@@ -9,7 +9,7 @@ import (
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/go-openapi/runtime"
-	"github.com/rackn/provision-plugins/v4/utils"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 func handleNetBoxError(err error) string {

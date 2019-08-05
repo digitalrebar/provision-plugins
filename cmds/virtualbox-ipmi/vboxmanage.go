@@ -12,7 +12,7 @@ import (
 
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision/v4/models"
-	"github.com/rackn/provision-plugins/v4/utils"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 func (p *Plugin) vboxmanageCmd(l logger.Logger, ma *models.Action, command []string) ([]byte, []byte, error) {
