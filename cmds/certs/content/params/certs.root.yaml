@@ -1,0 +1,12 @@
+Description: The name of the root certificate
+Documentation: |
+  This is used to set or define the root certificate to manipulate or create.
+  Stores values for certificates in *certs-data* profile
+Meta:
+  color: "blue"
+  icon: "lock"
+  title: "RackN Content"
+Name: "certs/root"
+Schema:
+  default: "default"
+  type: "string"

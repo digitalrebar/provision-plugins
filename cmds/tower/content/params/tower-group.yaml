@@ -1,0 +1,14 @@
+Description: AWX / Tower Group for a machine
+Documentation: |
+  The AWX / Tower group for the machine.  This can be left empty (as the default).
+
+  When the machine is register, this group, if specified, is applied to the host.
+Meta:
+  color: blue
+  icon: money
+  title: RackN
+Name: tower/group
+Schema:
+  type: string
+Secure: false
+

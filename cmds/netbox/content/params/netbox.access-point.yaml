@@ -1,0 +1,9 @@
+---
+Name: netbox/access-point
+Description: The access point for Netbox.  Should be in the form of ip:port.
+Schema:
+  type: string
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"

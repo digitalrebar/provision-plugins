@@ -1,0 +1,9 @@
+---
+Name: "curtin/network/template"
+Description: "Template to include for networking"
+Schema:
+  type: "string"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

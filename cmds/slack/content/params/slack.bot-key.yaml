@@ -1,0 +1,12 @@
+---
+Name: "slack/bot-key"
+Description: "The Slack Key that the bot will use to access Slack"
+Documentation: |
+  The Key implies the user and the channel that the bot will act as.
+Schema:
+  type: "string"
+Meta:
+  icon: "slack"
+  color: "blue"
+  title: "RackN Content"
+  password: "hideme"

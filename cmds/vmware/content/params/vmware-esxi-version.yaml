@@ -1,0 +1,127 @@
+---
+Name: "vmware/esxi-version"
+Description: "Set the VMware vSphere ESXi version to install"
+Documentation: |
+  This Param can be used to specify which supported version of
+  VMware vSphere to install on a given Machine.  Note that the
+  version must be a supported BootEnv (the version matches the
+  BootEnv, minus the ``-install`` trailer) type on the DRP Endpoint.
+  See the documentation for "select-vendor" special BootEnv
+  behavior selection below.
+
+    Supported versions are:
+      - select-vendor
+      - esxi_550u3b-3248547_vmware
+      - esxi_600u2-3620759_vmware
+      - esxi_600u3a-5572656_vmware
+      - esxi_650a-4887370_vmware
+      - esxi_650u1-7388607_hpe
+      - esxi_650u2-10719125-A07_dell
+      - esxi_650u2-8294253-A00_dell
+      - esxi_650u2-8294253_vmware
+      - esxi_670-8169922_vmware
+      - esxi_670u1-10302608_cisco
+      - esxi_670u1-10302608_fujitsu
+      - esxi_670u1-10302608_hitachi_blade_ha8000
+      - esxi_670u1-10302608_hitachi_ha8000v-gen10
+      - esxi_670u1-10302608_lenovo
+      - esxi_670u1-10302608_nec
+      - esxi_670u1-10302608_vmware
+      - esxi_670u1-10764712-A04_dell
+      - esxi_670u1-11675023_hpe_gen9plus
+      - esxi_670u2-13006603_vmware
+      - esxi_670u2-13006603_cisco
+      - esxi_670u2-13006603_hitachi
+      - esxi_670u2-13006603_hpe
+      - esxi_670u2-13473784_fujitsu
+      - esxi_670u2-13644319_nec_r120h-t120h-r110j
+      - esxi_670u2-13644319_nec_standard
+      - esxi_670u2-13981272-A02_dell
+      - esxi_670u2-13981272_lenovo
+      - (*) esxi-550u3b
+      - (*) esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000
+      - (*) esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10
+      - (*) esxi-6.7.1-10302608-nec-6.702
+      - (*) esxi-6.7.1-10302608-nec-gen-6.7
+      - (*) esxi-600u2
+      - (*) esxi-600u3a
+      - (*) esxi-650a
+      - (*) esxi-650u2
+      - (*) esxi-670
+      - (*) esxi-670u1
+      - (*) esxi-670u2
+      - (*) esxi-dellemc-esxi-6.5u2-10719125a07
+      - (*) esxi-dellemc-esxi-6.7u1-10764712-a04
+      - (*) esxi-fujitsu-vmvisor-installer-6.7-10
+      - (*) esxi-hpe-esxi-6.7.0-update1-iso-gen9p
+      - (*) esxi-lenovo_esxi6.7u1-10302608_201810
+      - (*) esxi-vmware-esxi-6.7.0-10302608-custom-cisco
+
+  .. note:: (*) Backwards compatible version for v2.8.0 and older - do not use.  Please use the updated
+            non-deprecated version names.  In a VERY NEAR future release of the VMware plugin, these
+            versions WILL BE REMOVED.
+
+  If nothing is specified, the default value will be selected in the
+  `default` field of the Param.
+
+  If the operator specifies ``select-vendor`` then the latest Vendor
+  specific BootEnv / ISO combo will be used according to the Param
+  map ``vmware/esxi-version-vendor-map``.  The vendor version
+  requires ``gohai-inventory`` to match ``DMI->System->Manufacturer``
+  appropriately.
+
+Schema:
+  type: "string"
+  default: "esxi_670u2-13006603_vmware"
+  enum:
+    - select-vendor
+    - esxi_550u3b-3248547_vmware
+    - esxi_600u2-3620759_vmware
+    - esxi_600u3a-5572656_vmware
+    - esxi_650a-4887370_vmware
+    - esxi_650u1-7388607_hpe
+    - esxi_650u2-10719125-A07_dell
+    - esxi_650u2-8294253-A00_dell
+    - esxi_650u2-8294253_vmware
+    - esxi_670-8169922_vmware
+    - esxi_670u1-10302608_cisco
+    - esxi_670u1-10302608_fujitsu
+    - esxi_670u1-10302608_hitachi_blade-ha8000
+    - esxi_670u1-10302608_hitachi_ha8000v-gen10
+    - esxi_670u1-10302608_lenovo
+    - esxi_670u1-10302608_nec
+    - esxi_670u1-10302608_vmware
+    - esxi_670u1-10764712-A04_dell
+    - esxi_670u1-11675023_hpe
+    - esxi_670u2-13006603_vmware
+    - esxi_670u2-13006603_cisco
+    - esxi_670u2-13006603_hitachi
+    - esxi_670u2-13006603_hpe
+    - esxi_670u2-13473784_fujitsu
+    - esxi_670u2-13644319_nec_r120h-t120h-r110j
+    - esxi_670u2-13644319_nec_standard
+    - esxi_670u2-13981272-A02_dell
+    - esxi_670u2-13981272_lenovo
+    - esxi-550u3b
+    - esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000
+    - esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10
+    - esxi-6.7.1-10302608-nec-6.702
+    - esxi-6.7.1-10302608-nec-gen-6.7
+    - esxi-600u2
+    - esxi-600u3a
+    - esxi-650a
+    - esxi-650u2
+    - esxi-670
+    - esxi-670u1
+    - esxi-670u2
+    - esxi-dellemc-esxi-6.5u2-10719125a07
+    - esxi-dellemc-esxi-6.7u1-10764712-a04
+    - esxi-fujitsu-vmvisor-installer-6.7-10
+    - esxi-hpe-esxi-6.7.0-update1-iso-gen9p
+    - esxi-lenovo_esxi6.7u1-10302608_201810
+    - esxi-vmware-esxi-6.7.0-10302608-custom-cisco
+
+Meta:
+  color: "blue"
+  icon: "ship"
+  title: "Community Content"

@@ -1,0 +1,58 @@
+
+
+The tower plugin adds the ability to *register* a machine with AWX / Tower, *delete* a machine from AWX / Tower, and
+*invoke* job templates against a machine.
+
+The plugin provides stages and tasks to help facilitate these actions.
+
+The plugin is a RackN license plugin and your DRP license will need to have the tower plugin enabled.
+
+Setup
+-----
+
+To use this plugin, load the plugin_provider into the DRP endpoint.  Once loaded, create a plugin with the
+*tower/url*, *tower/login*, and *tower/password* parameters.  These will be used to connect to the AWX / Tower
+system.
+
+Operations
+----------
+
+There are three operations that can be done through the stages/tasks.  These can be sequenced by workflows to
+have the desired staging.
+
+tower-register
+==============
+
+The *tower-register* stage registers the host with AWX / Tower.  The machine will need the required
+*tower/inventory* parameter.  This parameter defines the inventory the host should be created in.
+
+Additionally, the *tower/group* parameter can be added to place the host into the inventory sub-group.
+
+As part of the registeration, additional ssh-keys can be put in place to allow AWX / Tower to
+access the system.  The following parameters enable these keys:
+
+* *tower/ssh-keys* - A map of keys to add to the system.
+* *tower/ssh-keys-path* - The file to put the keys in.
+* *tower/ssh-keys-path-userid* - The userid to use for the ssh key file.
+* *tower/ssh-keys-path-groupid* - The groupid to use for the ssh key file.
+
+tower-delete
+============
+
+The *tower-delete* stage deletes the host from AWX / Tower.
+
+
+tower-invoke
+============
+
+The *tower-invoke* stage runs a job template on the host from AWX / Tower.
+
+The following parameters can be specifed to alter the behavior.
+
+* *tower/job-template* - Required string parameter that specifies the job template to execute.
+* *tower/job-timeout* - Numeric parameter that specifies the number of seconds to wait for the job to complete.
+* *tower/extra-var* - A Map of values to add to the machine during the job execution.
+
+The task will block until the job is complete, errors, or times out.  All the results are reflected into
+the job log for that task.
+

@@ -1,0 +1,11 @@
+---
+Name: "image-deploy/image-url"
+Description: "The image url for image-deploy to use."
+Documentation: |
+  The url for the image for image-deploy to install.
+Schema:
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

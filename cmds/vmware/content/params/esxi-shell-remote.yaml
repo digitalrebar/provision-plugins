@@ -1,0 +1,17 @@
+---
+Name: esxi/shell-remote
+Description: Enable ESXi remote Shell (SSH) during install (disabled by default)
+Documentation: |
+  If set to ``True``, enable the remote ESXi shell (SSH access) during the
+  installation of the VMware vSphere ESXi hypervisor.
+
+  By default, the remote shell will not be enabled.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

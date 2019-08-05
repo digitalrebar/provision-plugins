@@ -1,0 +1,57 @@
+[
+    {
+      "RaidLevel": "raid0",
+      "Size": "500.00 GB",
+      "StripeSize": "64 KB",
+      "Name": "",
+      "VolumeID": "",
+      "Bootable": false,
+      "Type": "ssd",
+      "Protocol": "sas",
+      "Controller": 0,
+      "Disks": [
+        {
+          "Size": 107374182400,
+          "Slot": 0,
+          "Enclosure": "",
+          "Type": "ssd",
+          "Protocol": "sas",
+          "Volume": ""
+        },
+        {
+          "Size": 107374182400,
+          "Slot": 1,
+          "Enclosure": "",
+          "Type": "ssd",
+          "Protocol": "sas",
+          "Volume": ""
+        },
+        {
+          "Size": 107374182400,
+          "Slot": 2,
+          "Enclosure": "",
+          "Type": "ssd",
+          "Protocol": "sas",
+          "Volume": ""
+        },
+        {
+          "Size": 107374182400,
+          "Slot": 3,
+          "Enclosure": "",
+          "Type": "ssd",
+          "Protocol": "sas",
+          "Volume": ""
+        },
+        {
+          "Size": 107374182400,
+          "Slot": 4,
+          "Enclosure": "",
+          "Type": "ssd",
+          "Protocol": "sas",
+          "Volume": ""
+        }
+      ],
+      "DiskCount": "",
+      "Fake": false
+    }
+  ]

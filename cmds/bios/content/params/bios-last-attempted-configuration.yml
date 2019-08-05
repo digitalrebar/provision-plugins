@@ -1,0 +1,11 @@
+---
+Name: bios-last-attempted-configuration
+Description: The last BIOS configuration the BIOS tools tried to set.
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  default: {}
+  type: object
+  additionalProperties: true

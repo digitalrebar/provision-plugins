@@ -1,0 +1,13 @@
+Considering spec jbod:max at 0
+Picking disks heuristically
+Max JBOD, taking the rest of the disks
+Picked 4 disks
+Started with 1 specs, compiled to 4
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:0 forced
+Created jbod on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:1 forced
+Created jbod on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:2 forced
+Created jbod on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:3 forced
+Created jbod on ssacli:0

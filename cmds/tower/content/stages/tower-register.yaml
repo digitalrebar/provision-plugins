@@ -1,0 +1,15 @@
+Description: Register a machine in AWX / Tower
+Documentation: |-
+  This stage will register the machine with an AWX / Tower deployment.
+
+  The inventory for the machine is specified by the tower/inventory parameter.
+  Optionally, a group may be added as well with the tower/group parameter.
+Meta:
+  color: yellow
+  icon: money
+  title: RackN
+Name: tower-register
+Reboot: false
+RunnerWait: true
+Tasks:
+  - tower-register

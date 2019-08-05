@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# This will contain a token appropriate for the path being
+# used below.  Either a create or update/show token
+export RS_UUID="{{.Machine.UUID}}"
+export RS_TOKEN="{{.GenerateToken}}"
+
+# Ubuntu Path is different than Centos Path - fix it.
+export PATH=$PATH:/usr/bin:/usr/sbin:/bin:/sbin
+
+VB_ID="null"
+PD=$(dmidecode -t system | grep "Product Name" | awk '{ print $3 }')
+if [[ $PD == "VirtualBox" ]] ; then
+    VB_ID=$(dmidecode -t system | grep "UUID" | awk '{ print $2 }')
+fi
+
+if [[ $VB_ID != "" && $VB_ID != "null" ]] ; then
+    echo "Setting virtualbox/id paramater to $VB_ID"
+    if ! drpcli machines set $RS_UUID param virtualbox/id to "$VB_ID" ; then
+        echo "Failed to set the virtualbox/id"
+        exit 1
+    fi
+else
+    echo "Could not find a VirtualBox UUID - Skipping"
+fi
+
+exit 0

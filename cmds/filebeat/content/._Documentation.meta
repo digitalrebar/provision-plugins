@@ -1,0 +1,44 @@
+
+Filebeat Forwarder
+~~~~~~~~~~~~~~~~~~
+
+This plugin is used to send events to Filebeat so that it can forward
+the event to logstash or elasticsearch.
+
+Installation / Configuration Filebeat
+=====================================
+
+Install filebeat:
+
+  ::
+
+     curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.3.2-x86_64.rpm
+     rpm -vi filebeat-6.3.2-x86_64.rpm
+
+Configure filebeat:
+
+Inside the /etc/filebeat/filebeat.yml file.  You will need to
+add a filebeat.inputs stanza.
+
+  ::
+
+    - type: tcp
+      enabled: true
+      max_message_size: 10MiB
+      host: "localhost:9008"
+      fields_under_root: true
+
+You will also need to configure your output section.  See the
+*logstash* or *elasticsearch* as needed.
+
+Configuration DRP Filebeat Plugin
+=================================
+
+A plugin will need to be created for the filebeat.
+
+The *filebeat/url* parameter can be used to specify the IP:Port pair that
+filebeat is listening on.  This defaults to 127.0.0.1:9008.
+
+
+
+

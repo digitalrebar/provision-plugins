@@ -1,0 +1,17 @@
+Considering spec raidS:max at 0
+Picking disks heuristically
+Max Raid0, taking the rest of the disks
+Picked 6 disks
+Started with 1 specs, compiled to 6
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:0 forced
+Created raid0 on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:1 forced
+Created raid0 on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:2 forced
+Created raid0 on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:3 forced
+Created raid0 on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:4 forced
+Created raid0 on ssacli:0
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=0 drives=:5 forced
+Created raid0 on ssacli:0

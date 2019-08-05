@@ -1,0 +1,19 @@
+---
+Name: "vmware-esxi-hcl-install"
+Description: "A task to install the VMware HCL Compatibility Checker and prereqs"
+Documentation: |
+  This task will install all prerequisites for the VMware HCL compatibility
+  checker, and the tool itself.
+
+    - see: https://labs.vmware.com/flings/esxi-compatibility-checker
+
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Templates:
+- Contents: ""
+  ID: "vmware-esxi-hcl-install.sh.tmpl"
+  Name: "VMware ESXi HCL Compatiblity Checker Install"
+  Path: ""

@@ -1,0 +1,138 @@
+#!/bin/sh
+# generate the RackN/DRP branded /etc/vmware/welcome DCUI screen
+
+{{ if eq (.Param "esxi/welcome-customize") false }}
+echo "Welcome customization disabled since 'esxi/welcome-customize' set false."
+exit 0
+{{ end -}}
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+BLANK_TOP="{bgcolor:dark-grey}{color:yellow}{align:left}{/align}{align:right}{/align}{/color}{/bgcolor}"
+BLANK_BOT="{bgcolor:yellow}{color:black}{align:left}{/align}{align:right}{/align}{/color}{/bgcolor}"
+
+# we have to get the version in the kickstart/install stage because if
+# switch networks on firstboot - we may not have access to the DRP endpoint
+_v="{{ .Param "esxi/install-datastore" }}/rackn/rackn-drp-version.txt"
+DRP_VERSION=$([[ -r "$_v" ]] && ( cat "$_v" | head -1 ) || echo "N/A")
+DRP_BOOTENV="{{.Machine.BootEnv}}"
+DRP_DATE="$(date)"
+DRP_APIURL="{{.ApiURL}}"
+TYPE_IPV4=$(esxcfg-vmknic --list | grep IPv4 | head -1 | awk ' { print " ("$12")" } ')
+IPV6=$(esxcfg-vmknic --list | grep IPv6 | head -1 | awk ' { print $5 } ')
+if [[ -n "$IPV6" ]]
+then
+ADDR_IPV6="https://${IPV6}"
+  TYPE_IPV6=$(esxcfg-vmknic --list | grep IPv6 | head -1 | awk ' { print " ("$11 " " $12")" } ')
+else
+  ADDR_IPV6="(none)"
+  TYPE_IPV6=""
+fi
+V=$(localcli hardware platform get | grep "Vendor Name" | sed 's/^.*: //')
+P=$(localcli hardware platform get | grep "Product Name" | sed 's/^.*: //')
+PLATFORM="$V $P"
+VMWARE="$(vmware -l) ($(vmware -v | awk ' { print $NF } '))"
+HHW=/tmp/hosthardware
+vim-cmd hostsvc/hosthardware > $HHW
+CPU_CORES=$(grep numCpuCores $HHW | awk ' { print $NF } ' | sed 's/,//')
+CPU_THREADS=$(grep numCpuThreads $HHW | awk ' { print $NF } ' | sed 's/,//')
+CPU_INFO=$(grep -A 20 "cpuPkg = " $HHW | grep description | cut -d '"' -f 2)
+CPU_MHZ=$(vim-cmd hostsvc/hostsummary | grep "cpuMhz = " | awk ' { print $NF }' | sed 's/,//')
+CPU="$CPU_INFO ($CPU_MHZ Mhz, $CPU_CORES cores, $CPU_THREADS threads)"
+BOOT_DEVICE=$(vmkfstools -P $(ls -la /bootbank | awk ' { print $NF } ') | grep -i "^[[:blank:]]" | awk ' { print $NF } ' | cut -d ":" -f 1)
+[[ -z "$BOOT_DEVICE" ]] && BOOT_DEVICE="N/A"
+
+# set deprecated lines to blanks by default
+B1="$BLANK_TOP"
+B2="$BLANK_TOP"
+B3="$BLANK_TOP"
+
+# list of deprecated bootenvs - print DCUI warning
+DEP_BOOTENVS="esxi-550u3b
+esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000
+esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10
+esxi-6.7.1-10302608-nec-6.702
+esxi-6.7.1-10302608-nec-gen-6.7
+esxi-600u2
+esxi-600u3a
+esxi-650a
+esxi-650u2
+esxi-670
+esxi-670u1
+esxi-670u2
+esxi-dellemc-esxi-6.5u2-10719125a07
+esxi-dellemc-esxi-6.7u1-10764712-a04
+esxi-fujitsu-vmvisor-installer-6.7-10
+esxi-hpe-esxi-6.7.0-update1-iso-gen9p
+esxi-lenovo_esxi6.7u1-10302608_201810
+esxi-vmware-esxi-6.7.0-10302608-custom-cisco
+esxi-vsan"
+
+NO_INSTALL=$(echo $DRP_BOOTENV | sed 's/-install$//g')
+( echo "$DEP_BOOTENVS" | grep -q "$NO_INSTALL" ) && DEPRECATED="true"
+
+dep_msg() {
+  local MSG="$*"
+  echo "{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:24}{/align}{align:padding:21}{bgcolor:black}** DEPRECATED:  !! {bgcolor:dark-grey}{/align}$MSG{/align}{align:right}{/align}{/color}{/bgcolor}"
+}
+
+if [[ -n "$DEPRECATED" ]]
+then
+  B1=$(dep_msg "This bootenv is deprecated and should no longer be used. Please")
+  B2=$(dep_msg "use the new 'vmware-esxi-selector' workflow to select a BootEnv.")
+  B3=$(dep_msg "See RackN docs:  http://bit.ly/BOOTENV_DEPRECATED")
+fi
+
+# yes, it really is this ugly ...
+cat > /etc/vmware/welcome << WELCOME
+$BLANK_TOP
+$BLANK_TOP
+{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:6}{/align}{align:padding:39}Installed by Digital Rebar Provision:  {/align}https://rebar.digital/{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:26}{/align}{align:padding:19}From RackN, Inc.:  {/align}https://rackn.com/{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:31}{/align}{align:padding:14}DRP Version:  {/align}$DRP_VERSION{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:26}{/align}{align:padding:19}DRP Install Date:  {/align}$DRP_DATE{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:31}{/align}{align:padding:14}DRP API URL:  {/align}$DRP_APIURL{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:23}{/align}{align:padding:22}DRP Install BootEnv:  {/align}$DRP_BOOTENV{/align}{align:right}{/align}{/color}{/bgcolor}
+$BLANK_TOP
+$BLANK_TOP
+$BLANK_TOP
+${B1}
+${B2}
+${B3}
+$BLANK_TOP
+$BLANK_TOP
+$BLANK_BOT
+{bgcolor:yellow}{color:black}{align:left}{align:padding:31}{/align}{align:padding:14}VMware Info:  {/align}$VMWARE{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:34}{/align}{align:padding:11}Hostname:  {/align}{hostname}{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:31}{/align}{align:padding:14}Service Tag:  {/align}{servicetag}{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:33}{/align}{align:padding:12}Asset Tag:  {/align}{assettag}{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:27}{/align}{align:padding:18}SSL Thumb Print:  {/align}{ssl-thumbprint}{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:23}{/align}{align:padding:22}SSH DSA Fingerprint:  {/align}{ssh-dsa-fingerprint}{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:23}{/align}{align:padding:22}SSH RSA Fingerprint:  {/align}{ssh-rsa-fingerprint}{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:35}{/align}{align:padding:10}License:  {/align}{license}{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:32}{/align}{align:padding:13}Processors:  {/align}$CPU{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:36}{/align}{align:padding:9}Memory:  {/align}{memory} RAM{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:29}{/align}{align:padding:16}Platform Info:  {/align}$PLATFORM{/align}{align:right}{/align}{/color}{/bgcolor}
+{bgcolor:yellow}{color:black}{align:left}{align:padding:31}{/align}{align:padding:14}Boot Device:  {/align}$BOOT_DEVICE{/align}{align:right}{/align}{/color}{/bgcolor}
+$BLANK_BOT
+$BLANK_BOT
+$BLANK_BOT
+$BLANK_BOT
+$BLANK_BOT
+$BLANK_BOT
+$BLANK_BOT
+
+
+To manage this host go to:
+ hostname: https://{hostname}/
+ipv4 addr: https://{ip}/ ${TYPE_IPV4}
+ipv6 addr: ${ADDR_IPV6} ${TYPE_IPV6}
+
+{bgcolor:black}{align:left}{color:yellow}<F2>{/color}{/color} Customize System/View Logs{/align}{align:right}{color:yellow}<F12>{/color} Shutdown/Restart{/align}{/bgcolor}
+WELCOME
+
+echo "Restarting DCUI service to pickup 'welcome' file changes..."
+kill $(ps | grep dcui | awk '{print $1}')
+
+# preserve changes
+/sbin/auto-backup.sh

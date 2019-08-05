@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Include the helpers
+{{template "setup.tmpl" .}}
+
+set -e
+
+{{if .ParamExists "netbox/version" }}
+NETBOX_VERSION={{.Param "netbox/version"}}
+{{else}}
+NETBOX_VERSION=2.3.1
+{{end}}
+
+echo "Make sure /opt exists"
+mkdir -p /opt
+
+echo "Get netbox tarball"
+wget https://github.com/digitalocean/netbox/archive/v${NETBOX_VERSION}.tar.gz
+
+echo "Untar tarball"
+tar -xzf v${NETBOX_VERSION}.tar.gz -C /opt
+
+echo "Setup Link for operational netbox"
+cd /opt/
+ln -s netbox-${NETBOX_VERSION}/ netbox
+
+echo "Change to the netbox directory."
+cd /opt/netbox/
+
+echo "Install the requirements"
+pip3 install -r requirements.txt
+
+echo "Install napalm"
+pip3 install napalm
+
+exit 0

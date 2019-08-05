@@ -1,0 +1,10 @@
+---
+Name: raid-skip-encryption
+Description: Whether to skip RAID encryption configuration
+Schema:
+  type: boolean
+  default: false
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"

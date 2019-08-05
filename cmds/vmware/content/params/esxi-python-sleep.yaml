@@ -1,0 +1,23 @@
+---
+Name: esxi/python-sleep
+Description: Set a number of seconds to sleep in Python code prior to Firewall transitions
+Documentation: |
+  Sets a number of seconds to sleep in python code, after making a Firewall transition
+  change.  On some hardware (eg. HPE Moonshot cartridges), there may be a timing issue
+  that requires a temporary sleep to allow the firewall changes to "settle".
+
+  The default value is 0 seconds (no sleep) if not otherwise specified, and can range
+  from 0 to a maximum of 300 seconds. Partial second values are allowed (eg ``.300``
+  for 300 microseconds).
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: number
+  default: 0
+  minimum: 0
+  maximum: 300
+Secure: false

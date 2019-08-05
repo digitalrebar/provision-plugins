@@ -1,0 +1,12 @@
+---
+Name: "packet/plan"
+Description: "Plan for this Packet node"
+Documentation: |
+  This parameter is the Packet plan for this machine.
+Schema:
+  type: "string"
+  default: "baremetal_0"
+Meta:
+  icon: "options"
+  color: "blue"
+  title: "RackN Content"

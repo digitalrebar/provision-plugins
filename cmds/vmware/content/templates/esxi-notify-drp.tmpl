@@ -1,0 +1,28 @@
+# python2 version
+# required to run in %pre --interpreter=python
+
+# Updating the machine in dr-provision has to be done as part of the %pre
+# so that the esxi firewall does not eat our requests.
+# Also note that this is python2.
+
+import urllib,urllib2,socket,ssl
+url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}'
+
+opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ssl.SSLContext(ssl.PROTOCOL_SSLv23)))
+
+# There is no DRP Runner for ESXi, so we don't have post-OS install control.
+# Force the machine to empty workflow, none stage, and the local bootenv.
+patch = '''
+[
+{"op":"replace","path":"/Workflow","value":""},
+{"op":"replace","path":"/Stage","value":"none"},
+{"op":"replace","path":"/BootEnv","value":"local"}
+]
+'''
+
+req = urllib2.Request(url, data=patch)
+req.add_header('Content-Type', 'application/json')
+req.add_header('Authorization','Bearer {{.GenerateToken}}')
+req.get_method = lambda: 'PATCH'
+r = opener.open(req)
+

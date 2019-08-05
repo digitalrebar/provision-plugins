@@ -1,0 +1,11 @@
+---
+Name: "image-deploy/windows-license-key"
+Description: "The license key for a Windows Operation System"
+Documentation: |
+  The license key for the windows operating system as a string.
+Schema:
+  type: "string"
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

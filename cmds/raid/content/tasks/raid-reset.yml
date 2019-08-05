@@ -1,0 +1,20 @@
+---
+Name: raid-reset
+Description: Reset Raid Skip Flags
+OptionalParams:
+  - raid-skip-encryption
+  - raid-skip-config
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: clear-raid-flags
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{template "setup.tmpl" .}}
+
+      drpcli machines remove "$RS_UUID" param raid-skip-encryption || :
+      drpcli machines remove "$RS_UUID" param raid-skip-config || :
+      exit 0

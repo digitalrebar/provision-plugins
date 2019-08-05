@@ -1,0 +1,12 @@
+Description: The password needed to sign certs.
+Documentation: |
+  This is used to restrict access to the signing ability of the root cert.
+  Stores values for certificates in *certs-data* profile
+Meta:
+  color: "blue"
+  icon: "lock"
+  title: "RackN Content"
+  password: "hideme"
+Name: "certs/root-pw"
+Schema:
+  type: "string"

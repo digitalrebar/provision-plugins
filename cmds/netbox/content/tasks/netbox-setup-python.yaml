@@ -1,0 +1,12 @@
+---
+Name: "netbox-setup-python"
+Description: "Install and configure python for NetBox"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+Templates:
+  - Name: "netbox-setup-python"
+    Contents: ""
+    ID: netbox-setup-python.sh.tmpl

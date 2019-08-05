@@ -1,0 +1,17 @@
+---
+Name: esxi/license
+Description: VMware vSphere ESXi license to apply to the hypervisor.
+Documentation: |
+  If specified, sets the license ID to assign to the installed ESXi
+  VMware vSphere hypervisor.
+
+  If not specified, then the hypervisor will be installed in evaluation
+  mode.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+Secure: false

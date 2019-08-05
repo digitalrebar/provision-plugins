@@ -1,0 +1,21 @@
+---
+Name: "image-deploy/image-os"
+Description: "The OS type of the install image."
+Documentation: |
+  The file image contains the install contents for an
+  operating system.  This variable defines the image
+  OS at a high level.
+
+  Valid values are:
+    - linux
+    - windows
+Schema:
+  type: "string"
+  enum:
+    - "linux"
+    - "windows"
+    - "basic"
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

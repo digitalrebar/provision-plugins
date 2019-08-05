@@ -1,0 +1,14 @@
+Description: AWX / Tower Job Timeout
+Documentation: |
+  AWX / Tower Job Timeout defines the number of seconds to wait for the job specified in an invoke call
+  to complete.
+Meta:
+  color: blue
+  icon: clock
+  title: RackN
+Name: tower/job-timeout
+Schema:
+  type: integer
+  default: 7200
+Secure: false
+

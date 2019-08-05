@@ -1,0 +1,12 @@
+---
+Name: "packet/ipxe-script-url"
+Description: "The URL to boot from"
+Documentation: |
+  This parameter is the URL of the default ipxe file.  If unspecified, the option
+  will default to the current DRP endpoint default.ipxe file.
+Schema:
+  type: "string"
+Meta:
+  icon: "options"
+  color: "blue"
+  title: "RackN Content"

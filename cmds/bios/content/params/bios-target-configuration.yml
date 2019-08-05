@@ -1,0 +1,11 @@
+---
+Name: bios-target-configuration
+Description: The desired BIOS configuration for a system as a set of key:value pairs
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  default: {}
+  type: object
+  additionalProperties: true

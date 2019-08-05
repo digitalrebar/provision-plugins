@@ -1,0 +1,9 @@
+---
+Name: netbox/superuser-username
+Description: The superuser username to use.
+Schema:
+  type: string
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"

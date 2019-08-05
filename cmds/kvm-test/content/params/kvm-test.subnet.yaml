@@ -1,0 +1,22 @@
+---
+Name: "kvm-test/subnet"
+Description: "Subnet that KVM virtual machines should attach to"
+Schema:
+  type: object
+  properties:
+    name:
+      type: string
+    address:
+      type: string
+    nameserver:
+      type: string
+      format: ipv4
+    gateway:
+      type: string
+      format: ipv4
+    domain:
+      type: string
+Meta:
+  icon: tag
+  color: blue
+  title: "RackN Content"

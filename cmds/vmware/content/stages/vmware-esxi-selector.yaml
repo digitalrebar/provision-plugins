@@ -1,0 +1,7 @@
+Meta:
+  color: yellow
+  icon: cloud
+Name: vmware-esxi-selector
+Description: Select the VMware ESXi bootenv to be installed
+Tasks:
+- vmware-esxi-selector

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+###
+#  This tool will ... eventually ... perform an ESXi Compatibilty Checker
+#  check.  However, there are significant environmental requirements for
+#  the tool to currently run - namely you must already have ESXi running,
+#  installed, vCenter running / installed, and accessible.
+#
+#  There is work to make this operable directly with the VMware API gateway:
+#
+#     https://apigw.vmware.com/m4/compatibility/v1
+###
+
+{{template "setup.tmpl" .}}
+
+CMPCHK={{ .Param "vmware/esxi-hcl-location" }}
+
+if [[ ! -r "$CMPCHK" ]]
+then
+  echo "FATAL:  Unable to read Compatibility Checker python3 script ('$CMPCHK')"
+  exit 1
+else
+  echo "Compatibility Checker Python3 file found:  $CMPCHK"
+fi
+
+CCDIR=$(dirname "$CMPCHK")
+cd $CCDIR
+
+echo "FAKE NEWS:"
+echo "FAKE NEWS:  Validating Machine for VSAN HCL compatibility"
+echo "FAKE NEWS:"
+
+### on successful check - set some Params for use
+# TODO (shane): note we're setting "validated" to false here - once this
+#               process is working - update this according to results
+
+echo "Setting Machine ESXi HCL completed status to 'true'."
+drpcli machines set {{.Machine.UUID}} param vmware/esxi-hcl-completed to true
+
+echo "Setting Machine VSAN HCL validated status to 'true'."
+drpcli machines set {{.Machine.UUID}} param vmware/esxi-hcl-validated to true
+
+echo "----------------------------------------------------------------------"
+exit 0

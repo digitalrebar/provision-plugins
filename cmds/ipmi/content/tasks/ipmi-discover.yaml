@@ -1,0 +1,110 @@
+---
+Name: "ipmi-discover"
+Description: "A task to discover the BMC of a machine."
+Documentation: |
+  This task attempts to discover an BMC controller and resets it if we are known hardware.
+Prerequisites:
+  - ipmi-install
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"
+Templates:
+  - Name: "Configure BMC"
+    Path: ""
+    Contents: |
+      #!/usr/bin/env bash
+      # Discover the IPMI subsystem
+
+      {{ template "setup.tmpl" . }}
+
+      reset_ipmi() {
+          echo "Failed to contact BMC.  Attempt to reset it if we know how."
+          drpcli machines tasks add {{.Machine.UUID}} at 0 reset-bmc
+          exit 0
+      }
+
+      load_ipmi() {
+          [[ -e /dev/ipmi0 || -e /dev/ipmi/0 || -e /dev/ipmidev/0 ]] && return || :
+          echo "Loading IPMI modules"
+          [[ -d /sys/module/ipmi_devintf ]] || modprobe ipmi_devintf &>/dev/null || :
+          [[ -d /sys/module/ipmi_si ]] || modprobe ipmi_si &>/dev/null || :
+          [[ -d /sys/module/ipmi_ssif ]] || modprobe ipmi_ssif &>/dev/null || :
+          if ! [[ -d /sys/module/ipmi_si ||
+                  -d /sys/module/ipmi_devintf ||
+                  -d /sys/module/ipmi_ssif ]]; then
+              echo "Failed to load ipmi kernel modules"
+              reset_ipmi
+              return
+          fi
+          [[ -e /dev/ipmi0 || -e /dev/ipmi/0 || -e /dev/ipmidev/0 ]] && return || :
+          echo "No IPMI devices present"
+          reset_ipmi
+      }
+
+      trim() {
+          local var="$*"
+          # remove leading whitespace characters
+          var="${var#"${var%%[![:space:]]*}"}"
+          # remove trailing whitespace characters
+          var="${var%"${var##*[![:space:]]}"}"
+          echo -n "$var"
+      }
+
+      tool() {
+          if [[ $ipmi_nodelay == "" ]] ; then
+              sleep 5
+          fi
+          if ! [[  "$@" =~ password ]] ; then
+              echo "ipmitool $@"
+          else
+              echo "ipmitool password setting command"
+          fi >&2
+          ipmitool "$@"
+      }
+
+      mc_info() {
+          echo "Gathering MC info"
+          count=0
+          while (($count < 5)) ; do
+              while read line
+              do
+                  tkey=$(trim ${line%%:*})
+                  key=${mc_info_keys["$tkey"]}
+                  value=$(trim ${line#*:})
+
+                  if [[ $key == "" ]] ; then
+                      continue
+                  fi
+                  if [[ $value == "" ]] ; then
+                      continue
+                  fi
+
+                  mc_info["$key"]="$value"
+              done < <(tool mc info)
+
+              if [[ ${mc_info["version"]} != "" ]] ; then
+                  break
+              fi
+
+              echo "attempt $count failed -  trying again..."
+              count=$(($count + 1))
+              sleep 1
+          done
+
+          if (($count == 5)) ; then
+              echo "Failed to get base board controller info"
+              reset_ipmi
+          fi
+      }
+
+      # Load the ipmi layer
+      load_ipmi
+
+      # Get MC info
+      mc_info
+
+      echo "Loaded and accessible."
+      exit 0
+

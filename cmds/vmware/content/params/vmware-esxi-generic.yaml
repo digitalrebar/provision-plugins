@@ -1,0 +1,13 @@
+---
+Name: "vmware/esxi-generic"
+Description: "Ignore the hardware and install a generic ESXi"
+Meta:
+  color: "blue"
+  icon: "search"
+  title: "RackN"
+Documentation: |
+  Set to ``true`` if the generic ESXi image should be used for
+  the given host.
+Schema:
+  type: "boolean"
+  default: false

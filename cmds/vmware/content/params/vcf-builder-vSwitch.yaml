@@ -1,0 +1,18 @@
+---
+Name: "vcf-builder/vSwitch"
+Description: "vCF Builder vSwitch for management"
+Documentation: |
+  Sets the management vSwitch information to use for managing the
+  ESXi instance via vCF Builder bringup.
+
+  Defaults to:
+    ``vSwitch0``
+
+Schema:
+  type: "string"
+  default: "vSwitch0"
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+  render: "profile"

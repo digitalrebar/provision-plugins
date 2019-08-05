@@ -1,0 +1,11 @@
+---
+Name: bios-configure
+Description: "Discover and update BIOS configurations on a system"
+BootEnv: sledgehammer
+Tasks:
+  - bios-current-config
+  - bios-configure
+Meta:
+  icon: "setting"
+  color: "yellow"
+  title: "RackN Content"

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+yum update -y
+
+yum install http://resources.ovirt.org/pub/yum-repo/ovirt-release42.rpm -y
+
+yum install ovirt-engine -y
+

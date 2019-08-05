@@ -1,0 +1,25 @@
+---
+Name: "tower/ssh-keys"
+Description: "A map of ssh public keys to install for the tower-key-path"
+Documentation: |
+  This map is used to put ssh public keys in place the toker-key-path
+
+  The key of the map is a arbritary name and the value is the ssh
+  public key for that name.
+
+  This is used with the tower/ssh-keys-path-userid, tower/ssh-keys-path, and tower/ssh-keys-path-groupid parameters.
+
+  The set of parameters is used to create additional ssh keys that AWX / Tower can use
+  to access the system beyond the normal root ssh keys.
+
+  The userid and groupid parameters define the user and group for the files.  The ssh-keys-path
+  parameter defines the path to the key file (including filename).  The ssh-keys parameter defines
+  the set of keys to put in place.
+Schema:
+  type: "object"
+  additionalProperties:
+    type: "string"
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "Digital Rebar Community Content"

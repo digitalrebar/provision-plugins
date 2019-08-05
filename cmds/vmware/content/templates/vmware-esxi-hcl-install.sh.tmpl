@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+###
+#  Setup prerequisites and install the VMware ESXi Compatibility Checker
+#  tool.
+#
+#  see:  https://labs.vmware.com/flings/esxi-compatibility-checker
+###
+
+{{ template "setup.tmpl" .}}
+set -e
+
+echo "PATH:  $PATH"
+
+### install Python 3.6 from the EPEL repo
+yum -y install epel-release
+yum -y install python36 python36-setuptools python36-pip python36-pyvmomi
+
+[[ -f /usr/bin/python3 ]] && mv /usr/bin/python3 /usr/bin/python3.backup
+[[ -f /usr/bin/pip3 ]] && mv /usr/bin/pip3 /usr/bin/pip3.backup
+
+[[ -f /usr/bin/python36 ]] && ln -s /usr/bin/python36 /usr/bin/python3
+[[ -f /usr/bin/pip3.6 ]] && ln -s /usr/bin/pip3.6 /usr/bin/pip3
+
+which python3
+
+# upgrade PIP to newer version
+pip3 install --upgrade pip
+
+PIP=$(which pip3)
+
+### install the python3 module reqs
+$PIP install pyopenssl
+# TODO (shane):  verify that this works right - it might blow up with
+#                requirement for Devel environment (gcc) to compile.
+$PIP install crypto
+
+### install the compatibility checker
+cd /tmp
+wget http://get.rebar.digital/artifacts/vmware-esxi-compchecker_v1_10066133.zip
+unzip vmware-esxi-compchecker_v1_10066133.zip
+# this should match the "vmware/compchecker-location" Param
+mv compchecker_v1_10066133 /tmp/compchecker
+
+# test that the tool returns help text successfully
+cd /tmp/compchecker
+python3 compchecker.py --help
+
+exit 0

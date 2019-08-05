@@ -1,0 +1,9 @@
+---
+Name: "curtin/network/bootmac"
+Description: "The MAC Address the system booted from.  Used as the interface mac in the network config."
+Schema:
+  type: "string"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

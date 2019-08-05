@@ -1,0 +1,20 @@
+---
+Name: esxi/vmnic-device
+Description: ESXi network device name for the initial network configuration
+Documentation: |
+  Use this param to specify the device to plumb the network configuration up
+  with post install.  By default we assume "vmnic0", however, this may not
+  be correct.  This param allows the operator to override the defined NIC
+  for the installed OS.
+
+  It is possible the Classify content can be used to identify the machine
+  devices to set the Param on the machine for the correct NIC name.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: vmnic0
+Secure: false

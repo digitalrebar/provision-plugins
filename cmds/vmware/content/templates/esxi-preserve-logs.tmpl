@@ -1,0 +1,21 @@
+# saves a copy of the install logs to permanent storage from /scratch
+
+echo "$(date)" >  /tmp/esxi-preserve-logs-template-run-stamp
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+DS={{ .Param "esxi/install-datastore" }}
+LOG_DIR="${DS}/install-logs/"
+
+mkdir -p $LOG_DIR \
+  && cp -Lfr /var/log/* $LOG_DIR \
+  || echo "failed to 'mkdir -p $LOG_DIR'"
+
+# save some other weasel/installer files
+ONE="/tmp/onetime.tar"
+KS="/tmp/kickstart-customizations.cfg"
+JUMP="/tmp/jumpstrt.gz"
+for FILE in "$ONE" "$KS" "$JUMP"
+do
+  [[ -f "$FILE" ]] && cp "$FILE" "$LOG_DIR"
+done

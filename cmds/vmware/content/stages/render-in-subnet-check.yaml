@@ -1,0 +1,26 @@
+---
+Name: render-in-subnet-check
+BootEnv: ""
+Description: Render the in-subnet-check.py.tmpl template to Machine
+Documentation: |
+  This stage will render the template named ``in-subnet-check.py.tmpl`` to
+  the local ESXi filesystem as ``/tmp/in-subnet-check.py`` for use by the
+  system.  The task will also set the rendered python file executable.
+
+  To call and use the python file, insure ``python3`` is found by ``env``,
+  and simply call it as ``/tmp/in-subnet-check.py <OPTIONS>``.
+
+Meta:
+  color: blue
+  icon: search
+  title: RackN
+  feature-flags: sane-exit-codes
+OptionalParams: []
+Params: {}
+Profiles: []
+Reboot: false
+RequiredParams: []
+RunnerWait: true
+Templates: []
+Tasks:
+  - render-in-subnet-check

@@ -1,0 +1,11 @@
+---
+Name: "packet/name"
+Description: "Name to use for the packet machine"
+Documentation: |
+  This parameter is the name to use for the packet machine.
+Schema:
+  type: "string"
+Meta:
+  icon: "options"
+  color: "blue"
+  title: "RackN Content"

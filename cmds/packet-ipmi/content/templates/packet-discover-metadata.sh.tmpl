@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# This will contain a token appropriate for the path being
+# used below.  Either a create or update/show token
+export RS_UUID="{{.Machine.UUID}}"
+export RS_TOKEN="{{.GenerateToken}}"
+
+# Ubuntu Path is different than Centos Path - fix it.
+export PATH=$PATH:/usr/bin:/usr/sbin:/bin:/sbin
+
+PKT_JSON=$(mktemp /tmp/pkt_meta.XXXXXXXXXX.json)
+
+curl -sq https://metadata.packet.net/metadata > $PKT_JSON
+PACKET_ID=$(cat $PKT_JSON | jq -r .id)
+
+# space separated list of Metadata we want to carry over from
+# packet to digital rebar metadata
+METAS="id facility plan sos"
+
+if [[ $PACKET_ID != "" && $PACKET_ID != "null" ]] ; then
+
+    FACILITY=$(cat $PKT_JSON | jq -r .facility)
+
+    for META in $METAS; do
+
+        # get metadata for our META field, unless we ask for 'sos'
+        [[ "$META" != "sos" ]] && META_DATA=$(cat $PKT_JSON | jq -r .$META)
+
+        # remap since we call it 'uuid' at rackn, and it is 'id' at packet
+        [[ "$META" == "id" ]] && META="uuid"
+
+        # create SOS
+        [[ "$META" == "sos" ]] && META_DATA="${PACKET_ID}@sos.${FACILITY}.packet.net"
+
+        echo "Setting packet/$META paramater to $PACKET_ID with data '$META_DATA'"
+        if ! drpcli machines set $RS_UUID param packet/$META to "$META_DATA" ; then
+            echo "Failed to set the packet metadata '$META' with '$META_DATA'"
+            exit 1
+        fi
+    done
+
+
+else
+    echo "Could not find a Packet UUID - Skipping"
+fi
+
+rm -f $PKT_JSON
+
+exit 0

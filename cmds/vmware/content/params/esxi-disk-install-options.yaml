@@ -1,0 +1,27 @@
+---
+Name: esxi/disk-install-options
+Description: "Sets the kickstart directive for the 'install' command."
+Documentation: |
+  This Param lets the operator define any customizations to the
+  ``install ...` directive in the kickstart.  If not specified,
+  the default behavior is to set the directive as follows:
+
+    ::
+
+      install --firstdisk --overwritevmfs
+
+  Setting this value will override the "``--firstdisk --overwritevmfs``"
+  values with whatever the operator specifies.  For options and  details,
+  see the VMware documentation:
+
+    - https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.esxi.upgrade.doc/GUID-61A14EBB-5CF3-43EE-87EF-DB8EC6D83698.html
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: "--firstdisk --overwritevmfs"
+Secure: false

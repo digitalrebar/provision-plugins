@@ -1,0 +1,13 @@
+Description: A Certificate Signing Request that is to be signed.
+Documentation: |
+  This certificate signing request with the authkey of the root can be used
+  to generate signed certificate.
+
+  NOTE: Stores values for certificates in *certs-data* profile
+Meta:
+  color: "blue"
+  icon: "lock"
+  title: "RackN Content"
+Name: "certs/csr"
+Schema:
+  type: "string"

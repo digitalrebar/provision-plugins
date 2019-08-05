@@ -1,0 +1,30 @@
+# python3 version
+# required to run in %pre --interpreter=python
+
+# Updating the machine in dr-provision has to be done as part of the %pre
+# so that the esxi firewall does not eat our requests.
+# also note that this is python3.
+
+import os, urllib, urllib.request, socket, ssl, time
+url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}'
+
+# There is no DRP Runner for ESXi, so we don't have post-OS install control.
+# Force the machine to empty workflow, none stage, and the local bootenv.
+patch = b'''
+[
+{"op":"replace","path":"/Workflow","value":""},
+{"op":"replace","path":"/Stage","value":"none"},
+{"op":"replace","path":"/BootEnv","value":"local"}
+]
+'''
+# toggle off the FW temporarily to send out our flare to DRP
+# to mark local boot - seems not possible to modify custom
+# FW rules in 'post' stage of kickstart install
+os.system("localcli network firewall set --enabled false")
+time.sleep( {{ .Param "esxi/python-sleep" }} )
+req = urllib.request.Request(url, method='PATCH',data=patch)
+req.add_header('Content-Type', 'application/json')
+req.add_header('Authorization','Bearer {{.GenerateInfiniteToken}}')
+urllib.request.urlopen(req,context=ssl.SSLContext(ssl.PROTOCOL_SSLv23))
+os.system("localcli network firewall set --enabled true")
+

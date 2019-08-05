@@ -1,0 +1,9 @@
+---
+Name: raid-reset
+Description: "Reset the raid flags to reconfigure the Raid subsystem"
+Tasks:
+  - raid-reset
+Meta:
+  icon: "disk outline"
+  color: "yellow"
+  title: "RackN Content"

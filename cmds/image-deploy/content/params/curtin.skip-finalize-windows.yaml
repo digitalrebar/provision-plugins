@@ -1,0 +1,10 @@
+---
+Name: "curtin/skip-finalize-windows"
+Description: "Should the windows finalizer bail"
+Schema:
+  default: false
+  type: "boolean"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

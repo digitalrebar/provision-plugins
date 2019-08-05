@@ -1,0 +1,12 @@
+---
+Name:  "packet-discover"
+Description: "A task to discover packet metadata of a node automatically."
+Templates:
+  - ID: "packet-discover-metadata.sh.tmpl"
+    Name: "Discover packet metadata"
+    Path: ""
+Meta:
+  icon: "rocket"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

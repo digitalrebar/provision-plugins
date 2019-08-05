@@ -1,0 +1,38 @@
+---
+Name: esxi-profile
+Description: (clone me) Sample profile settings for ESXi kickstart install.
+Documentation: |
+  Sets some basic Param values that are useful for dev/test deployments
+  of VMware vSphere ESXi hypervisors.  Generally speaking these aren't
+  good to set for production systems.
+
+  This profile is intended to be cloned and applied to a Machine(s) for
+  subsequent use.  You can then remove/modify the values appropriate to
+  your use case, after you nave cloned it.
+
+Meta:
+  color: blue
+  icon: world
+  title: RackN Content
+Params:
+  esxi/serial-console: gdbPort=none logPort=none tty2Port=com1
+  esxi/skip-notify: false
+  esxi/skip-reboot: false
+  esxi/disk-install-options: "--firstdisk --overwritevmfs"
+  esxi/shell-local: true
+  esxi/shell-remote: true
+  esxi/skip-tools: true
+  esxi/network-type: manual
+  esxi/network-ipaddr: 192.168.9.100
+  esxi/network-netmask: 255.255.255.0
+  esxi/network-gateway: 192.168.9.2
+  esxi/network-dns: 1.1.1.1,1.0.0.1
+  esxi/network-hostname: esxi-01.example.com
+  esxi/ks-custom-kickstart:
+      - "esxi-kickstart-additions.tmpl"
+  esxi/ks-custom-sections:
+    firstboot-busybox:
+      - "esxi-enable-shells.tmpl"
+
+ReadOnly: false
+

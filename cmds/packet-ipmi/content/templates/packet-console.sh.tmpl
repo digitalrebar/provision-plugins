@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# This will contain a token appropriate for the path being
+# used below.  Either a create or update/show token
+export RS_UUID="{{.Machine.UUID}}"
+export RS_TOKEN="{{.GenerateToken}}"
+
+# Ubuntu Path is different than Centos Path - fix it.
+export PATH=$PATH:/usr/bin:/usr/sbin:/bin:/sbin
+
+PACKET_ID=$(curl -sq https://metadata.packet.net/metadata | jq -r .id)
+
+if [[ $PACKET_ID != "" && $PACKET_ID != "null" ]] ; then
+    drpcli machines removeprofile $RS_UUID packet-console
+    if ! drpcli machines addprofile $RS_UUID packet-console ; then
+        echo "Failed to add packet-console profile to machine"
+        exit 1
+    fi
+else
+    echo "Could not find a Packet UUID - Skipping"
+fi
+
+exit 0

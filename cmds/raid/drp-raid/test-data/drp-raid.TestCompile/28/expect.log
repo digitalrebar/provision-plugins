@@ -1,0 +1,9 @@
+Considering spec raid5:max at 0
+Picking disks heuristically
+Considering disks of type ssd speaking protocol sas
+3 candidates of type ssd speaking protocol sas chosen
+Picked 3 disks
+Started with 1 specs, compiled to 1
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r5 [:0,:1,:2] WB RA -strpsz64 -Force -a0
+
+Created raid5 on megacli:0

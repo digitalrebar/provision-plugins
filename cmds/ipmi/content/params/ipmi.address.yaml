@@ -1,0 +1,15 @@
+---
+Name: "ipmi/address"
+Description: "IP Address of the BMC"
+Documentation: |
+  This parameter is used by the IPMI Plugin to access the BMC.
+
+  This parameter can be set manually or discovered/configured by the
+  *ipmi-configure* stage.
+Schema:
+  type: "string"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

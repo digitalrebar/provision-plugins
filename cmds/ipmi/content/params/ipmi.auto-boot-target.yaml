@@ -1,0 +1,10 @@
+---
+Name: ipmi/auto-boot-target
+Description: Whether dr-provision should attempt to automatically manage boot targets via ipmi
+Schema:
+  type: boolean
+  default: false
+Meta:
+  icon: hdd
+  color: blue
+  title: "RackN Content"

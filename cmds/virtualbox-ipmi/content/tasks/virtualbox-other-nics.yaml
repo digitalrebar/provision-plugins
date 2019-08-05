@@ -1,0 +1,12 @@
+---
+Name:  "virtualbox-other-nics"
+Description: "A task to run dhclient on the other nics. This is NOT persistent."
+Templates:
+  - ID: "virtualbox-other-nics.sh.tmpl"
+    Name: "Start DHCP on the other nics."
+    Path: ""
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

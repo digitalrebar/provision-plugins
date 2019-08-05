@@ -1,0 +1,8 @@
+Considering spec raid6:max at 0
+Picking disks heuristically
+Considering disks of type ssd speaking protocol sas
+8 candidates of type ssd speaking protocol sas chosen
+Picked 8 disks
+Started with 1 specs, compiled to 1
+Running /opt/smartstorageadmin/ssacli/bin/ssacli controller slot=0 create type=ld size=max stripsize=64 raid=6 drives=:0,:1,:2,:3,:4,:5,:6,:7 forced
+Created raid6 on ssacli:0

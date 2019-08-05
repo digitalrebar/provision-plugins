@@ -1,0 +1,10 @@
+Description: The specific callback action to use.
+Documentation: |
+  The specific callback action to call.
+Meta:
+  color: blue
+  icon: "volume up"
+  title: RackN
+Name: callback/action
+Schema:
+  type: string

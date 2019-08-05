@@ -1,0 +1,14 @@
+---
+Name: "netbox-setup-postgres"
+Description: "Install and configure postgres for NetBox"
+OptionalParams:
+  - "netbox/database-password"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+Templates:
+  - Name: "netbox-setup-postgres"
+    Contents: ""
+    ID: netbox-setup-postgres.sh.tmpl

@@ -1,0 +1,36 @@
+---
+Name: "eikon/plan"
+Description: "The goal of the eikon system"
+Documentation: |
+  The eikon plan object defines the end state of the system.  eikon will
+  apply this pattern on the system.
+
+  !! GREG Add more docs here
+
+  If unspecified, the default action to setup a simple partition table suitable for linux rootfs installs.
+
+Schema:
+  type: "object"
+  additionalProperties:
+    type: "string"
+  default:
+    disks:
+      - name: firstdisk
+        path: /dev/sda
+        grub_device: true
+        wipe: true
+        ptable: msdos
+        partitions:
+          - name: rootpart
+            size: REST
+            flags: boot
+            fs:
+              name: rootfs
+              fstype: xfs
+              resize: true
+              mount: /
+
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

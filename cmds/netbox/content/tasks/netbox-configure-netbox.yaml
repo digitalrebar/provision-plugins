@@ -1,0 +1,18 @@
+---
+Name: "netbox-configure-netbox"
+Description: "Configure NetBox"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+OptionalParams:
+  - "netbox/database-password"
+  - "netbox/secret-key"
+  - "netbox/superuser-username"
+  - "netbox/superuser-password"
+  - "netbox/superuser-email"
+Templates:
+  - Name: "netbox-configure-netbox"
+    Contents: ""
+    ID: netbox-configure-netbox.sh.tmpl

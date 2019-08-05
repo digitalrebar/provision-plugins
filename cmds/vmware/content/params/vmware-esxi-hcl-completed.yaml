@@ -1,0 +1,14 @@
+---
+Name: "vmware/esxi-hcl-completed"
+Description: "If the Compatibility Checker has been run yet"
+Meta:
+  color: "blue"
+  icon: "search"
+  title: "RackN"
+Documentation: |
+  Set to ``true`` if the Compatibility Checker has already been run for
+  the given host.
+Schema:
+  type: "boolean"
+  default: false
+Secure: false

@@ -1,0 +1,12 @@
+---
+Name: "ipmi/configure/user"
+Description: "Should a user be configured for this machine"
+Documentation: |
+  Set this value to true to have the system setup a user on the BMC
+Schema:
+  type: "boolean"
+  default: false
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

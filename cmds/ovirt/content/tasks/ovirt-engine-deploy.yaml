@@ -1,0 +1,17 @@
+---
+Description: "A task to deploy an ovirt engine locally"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+Name: ovirt-engine-deploy
+Templates:
+- Contents: ""
+  ID: ovirt-engine-answer.txt.tmpl
+  Name: Answer file for ovirt engine deploy
+  Path: "answer.txt"
+- Contents: ""
+  ID: ovirt-engine-deploy.sh.tmpl
+  Name: join the ovirt node to the server
+  Path: ""

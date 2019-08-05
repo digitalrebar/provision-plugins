@@ -1,0 +1,10 @@
+---
+Name: "curtin/debug"
+Description: "Enable debug for curtin installs"
+Schema:
+  default: false
+  type: "boolean"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

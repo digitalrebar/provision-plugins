@@ -1,0 +1,564 @@
+VMware vSphere Tools
+~~~~~~~~~~~~~~~~~~~~
+
+A collection of tools for managing VMware vSphere ESXi nodes via Digital
+Rebar Provision (DRP) workflows and content.  This plugin provides content
+and pieces for managing ESXi infrastrcuture.  In addition to standard
+VMware release BootEnvs for various ESXi versions, custom vendor BootEnvs
+are also included.
+
+VMware vSphere ESXi installs can be highly customized via the use of DRPs
+templating constructs to create a complex Kickstart that is capable of
+doing deep configuration of the ESXi node.
+
+
+Overview of Usage
+-----------------
+
+Starting in the VMware plugin version 2.9.0 and newer, there is a much
+simplified Workflow use pattern.  Previously, there were several
+Workflows and Stages that were each used for a specific version of the
+VMware ISO to be installed.  This created a sprawling mess.
+
+Starting with v2.9.0 plugin - you now have only one example Workflow and
+stage that uses a set of Params to define what to deploy to your machines.
+In addition, you can let the system select a default version based on the
+the Classification Vendor/Model information of your machines, by use of
+a Map.
+
+.. note:: WARNING:  Moving to the v2.9.0 version plugin will require some
+          manual upgrade steps.  Please see the UPGRADE notes below.
+
+
+Basic Usage
+===========
+
+For basic usage, and to obtain the latest VMware generic ISO BootEnv
+installation, simply add the ``vmware-esxi-selector`` stage to your
+workflows, or use the sample ``vmware-esxi-selector`` workflow.
+
+This workflow uses the following Params:
+
+  - **vmware/esxi-version**: set to ``select-vendor``, or to a precise
+    BootEnv that exists on the system (eg ``esxi_670u2-13006603_vmware``),
+    this is an ``enum`` type of curated an supported BootEnvs by RackN
+  - **vmware/esxi-version-override**: if the curated list of BootEnvs does not
+    support your needs (you've installed custom BootEnvs), then setting this
+    value will override the ``enum`` list in ``vmware/esxi-version`` - the
+    specified BootEnv must exist, be valid, and the ISO contents exploded
+    and available somewhere
+  - **vmware/esxi-version-vendor-map**: this is a mapping of which BootEnv to
+    use by default when a machine Vendor and Model has been automatically
+    Classified - it allows for single workflows to address heterogeneous
+    pools of hardware - see the Param documentation below for more details
+
+
+Advanced Usage
+==============
+
+Setting the ``vmware/esxi-version`` Param to ``select-vendor`` will enable
+automatic selection of the ISO based on the Vendor and Model (if appropriate)
+of the hardware, dynamically.  This pattern allows operators to have a pool
+of heterogenous hardware, and map VMware ESXi ISO versions to the vendors,
+allowing for appropriate custom vendor ISOs to be used for each hardware
+type.
+
+This map is maintained in the ``vmware/esxi-version-vendor-map``, which carries
+a default set defined by RackN.  Should you want to specify precise versions
+to use, you can set this Param to a map structure of your choosing.  Set this
+directly on the Machine as a Param, or via Profiles that are added to the
+machine (including ``global``, if appropriate).
+
+
+Adding Custom BootEnvs (VMware ESXi versions)
+=============================================
+
+At RackN, we try to keep up with the latest set of VMware ESXi versions, but
+the reality is ... we won't succeed.  As such, you may need to inject new
+BootEnvs in to the system, which support your specific Vendor and/or VMware
+ESXi version needs.  This content pack supports adding in new BootEnvs (VMware
+ESXi versions), and using the above set of Params and Workflow control to
+deploy them to your machines.
+
+There are two paths for installing new ESXi versions:
+
+  1.  Creating a new content pack with all of the trimmings - there is a shell
+      script named ``esxi-make-content-pack.sh`` that should exist in your
+      ``tftpboot`` directory.  It builds full content packs of VMware ISOs.
+      See the script of usage, or contact your RackN support team for more
+      details.  NOTE NOTE NOTE: usage of this tool does NOT ALLOW for the
+      advanced Param based workflows described above - however, the content
+      pack will be completely separated from the RackN distributed plugin.
+
+  2.  Injecting just the minimal ``bootenv`` and ESXi specific ``boot.cfg``
+      content pieces.  In your ``tftpboot`` directory there should be a
+      shell script named ``make-esxi-bootenvs.sh``.  This script builds a
+      RackN BootEnv and subsequent ``boot.cfg`` template needed, following
+      our naming structure.  This method is fully supported for extending
+      the VMware plugin to add additional BootEnv (VMware ESXi Versions)
+      to the system.
+
+.. note:: Both of the above referenced scripts are only available in Digital
+          Rebar Provision v3.13.7 or v3.14.0 and newer.  If you need these
+          scripts outside of those environments, contact your RackN support
+          team, as they can be made available.
+
+.. note:: IF YOU NEED VERSIONS WE HAVE NOT ADDED ... please contact RackN,
+          we would like to keep this content plugin as up to date as possible
+          with our customer requirements.  We will continue to add new
+          versions as we can.  You will receive the benefit of this content
+          being "off-the-shelf" and not requiring additional custom content
+          to support ESXi environments.
+
+
+Managing Your ESXi Passwords
+----------------------------
+
+There are a few options you have for setting/defining the password(s) that
+are set on your installed ESXi instance.
+
+During the ESXi installer process (kickstart/weasel), the shell (Alt-F1) is
+the stock/standard ESXi set (user "root", no password).
+
+If you take no actions, the default password will follow all standard bootenv
+passwords see :ref:`rs_default_password` for details.
+
+To set custom passwords, you have the following options, the items listed first,
+will take precedence over subsequent items:
+
+  1. Set the ``provisioner-default-password-hash`` to a SHA512 sum value.
+  2. Use the ``esxi/insecure-password`` Param set on a machine (directly or via
+     a Profile), with a clear text password.  This will be converted to a
+     SHA512 hash and fed to weasel for the installed ESXi password.
+  3. You can have the system dynamically generate a random VMware formatted
+     valid password for every single ESXi instance installed.  To use this, set
+     the param ``esxi/generate-random-password`` to ``true``.  This can only
+     be run as a preparatory stage in Sledgehammer.
+
+The generate random use case is designed to allow your infrastructure to have secure
+per-machine passwords.  The expectation is that you will move these in to a centrally
+managed secrets system (eg vault or password keeper) for consumption by other
+automated systems.
+
+Please see the per-Param documentation below for more details on the above methods.
+
+
+NOTES ON UPGRADING To v2.9.0 Plugin
+-----------------------------------
+
+The new version selector features are being released in the plugin version
+v2.9.0.  If you have used the previous v2.8.0 or older versions, you will
+need to perform some basic maintenance to install this version, as there
+are incompatible changes.  Below are some notes related to the upgrade.  If
+you run in to issues, please contact RackN as quickly as possible, don't
+waste your time trying to sort it out.
+
+  1.  Remove all ``vmware/esxi-version`` Params from your Machines or
+      profiles.  The naming structure of the BootEnvs has changed to be
+      more structured and predictable.  This causes the Param ``enum``
+      structure from the OLD versions to NOT BE COMPATIBLE with the new.
+  2.  Your "exploded" BootEnvs on disk or in your ``esxi/http-mirror``
+      location needs to change.  If you are not using the http mirror
+      method, you can simply delete the ``tftpboot/esxi-*` directories
+      relating to your existing ISOs, then restart the DRP service.
+  3.  Insure your original ISOs still exist in the ``tftpboot/isos/``
+      directory, for them to be re-exploded to the new BootEnv names.
+  4.  Remove the existing VMware plugin, then add the new one - do not
+      perform an upgrade/install of it.
+
+Generally speaking we try to avoid, impacting upgrades like this with content,
+but sometimes there are compelling reasons to make breaking changes.  In this
+case we move to a much cleaner and easier to support method for deploying
+ESXi, gain incredibly powerful auto-magic deployments based on hardware vendor,
+and simplify and standardize the naming structure of the BootEnvs.
+
+DEPRECATED BOOTENVS
+===================
+
+To support a successful upgrade from the v2.8.0 to v2.9.0 vmware plugin, the
+old BootEnv names must be mainatined.  If they are referenced via Workflow
+or as configuration on Machine Objects, or other places in the system, you
+will not be able to successfully update to the v2.9.0 plugin version.
+
+The following list of BootEnvs are considered deprecated, and will be removed
+in a future release.  Probably very very soon (v2.10.0 plugin versions).  You
+must change any references to the following BootEnvs in your DRP endpoint,
+prior to your next upgrade:
+
+  * esxi-550u3b
+  * esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000
+  * esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10
+  * esxi-6.7.1-10302608-nec-6.702
+  * esxi-6.7.1-10302608-nec-gen-6.7
+  * esxi-600u2
+  * esxi-600u3a
+  * esxi-650a
+  * esxi-650u2
+  * esxi-670
+  * esxi-670u1
+  * esxi-670u2
+  * esxi-dellemc-esxi-6.5u2-10719125a07
+  * esxi-dellemc-esxi-6.7u1-10764712-a04
+  * esxi-fujitsu-vmvisor-installer-6.7-10
+  * esxi-hpe-esxi-6.7.0-update1-iso-gen9p
+  * esxi-lenovo_esxi6.7u1-10302608_201810
+  * esxi-vmware-esxi-6.7.0-10302608-custom-cisco
+
+The new bootenv naming scheme is designed to be more machine parsable, and no
+longer uses the vendor ISO meta information as it is wildly inconsistent and
+sucks.
+
+The replacement BootEnv names are below, and you should be able to determine the
+mappings between the names.
+
+  * esxi_550u3b-3248547_vmware
+  * esxi_600u2-3620759_vmware
+  * esxi_600u3a-5572656_vmware
+  * esxi_650a-4887370_vmware
+  * esxi_650u1-7388607_hpe
+  * esxi_650u2-10719125-A07_dell
+  * esxi_650u2-8294253-A00_dell
+  * esxi_650u2-8294253_vmware
+  * esxi_670-8169922_vmware
+  * esxi_670u1-10302608_cisco
+  * esxi_670u1-10302608_fujitsu
+  * esxi_670u1-10302608_hitachi_blade-ha8000
+  * esxi_670u1-10302608_hitachi_ha8000v-gen10
+  * esxi_670u1-10302608_lenovo
+  * esxi_670u1-10302608_nec
+  * esxi_670u1-10302608_vmware
+  * esxi_670u1-10764712-A04_dell
+  * esxi_670u1-11675023_hpe_gen9plus
+  * esxi_670u2-13006603_vmware
+
+.. note:: There may be many more bootenv names than listed above, if support
+          for newer vendor ISOs and/or VMware versions are released (eg
+          '6.7.0update2').
+
+.. note:: It is advisable to use the new 'vmware-esxi-selector' Workflow
+          and the 'esxi/select-version-map' Param to control your ESXi bootenv
+          installation.
+
+Additional Kickstart Ideas
+--------------------------
+
+The content section of this plugin also carries a few complex example
+Kickstart files that you can refer to for more advanced deployment
+ideas.  They include:
+
+  ::
+
+    esxi-example-firstboot-complex.ks.tmpl
+      Includes examples for multiple NICs, vswitches, security settings
+      syslog handling, firewall changes, storage changes, etc.
+
+    esxi-example-vsan.ks.tmpl
+      Builds VSAN disk group and creates VSAN cluster on the ESXi node.
+
+Additional advanced kickstart configuration examples can be found in various
+corners of the web, but a couple of excellent sites are as follows:
+
+  virtuallyGhetto - William Lam
+    https://www.virtuallyghetto.com/
+
+  VMware Hub by Altaro
+    https://www.altaro.com/vmware/scripted-deployment-esxi-part-1/
+
+  xenappblog
+    https://xenappblog.com/2018/automatically-install-vmware-esxi-6-7/
+
+.. note:: Kickstart installations are inherently finicky.  There are very
+  few ways to obtain interactive feedback on the installation process in
+  an automated way.  We highly suggest that you make small iterative changes
+  to your Kickstart templates and test each small change before introducing
+  a new one.  Debugging a complex Kickstart installation that has failed
+  is extremely hard.
+
+
+Kickstart Templating Usage
+--------------------------
+
+VMware ESXi environments are for the most part "closed appliances", and
+compiling third party tools for these environments is not an easy process.
+Consequently, there is currently no RackN/Digital Rebar Provision Agent
+available to run during the ESXi install process, or as a Post OS install
+agent.
+
+This means that no Workflow Stages can be run as part of the ESXi install
+process.  You must rely completely on the Kickstart to do all of the
+customization necessary.  Digital Rebar Provision can help piece together
+relatively capable kickstart via the use of our templating engine, and
+inherently composable content architecture.
+
+Since there is no DRP "runner" (agent) that can run in an ESXi environment,
+we can not execute workflow steps post-reboot of the installer.  This causes
+a problem since we need to notify DRP that the install has completed and
+that we can mark the machine done, and boot to "local" disk.
+There are two primary Kickstart templates used for ESXi installs with this
+content pack:
+
+  ::
+
+     esxi-install.ks.tmpl      --> Python 2.x based
+     esxi-install.py3.ks.tmpl  --> Python 3.x based
+
+
+A small Python snippet is used to make the API call back to DRP to notify that
+the install has finished.  But, we have to use the right version of Python,
+since ... Python.  Currently this is done in the "%pre" (Python interpreter)
+phase.
+
+Adding Custom Kickstart Sections
+================================
+
+Digital Rebar Provision provides on-the-fly customization of the built Kickstart
+through the use of injecting Templates in to the core Kickstart file, and also
+providing dynamic information available on the DRP endpoint, in to the Templates.
+
+ESXi kickstarts support three additional sections (or phases) that extra
+actions can be taken during the installation process:
+
+  Pre Stage (``%pre``)
+    Specifies a script to run before the kickstart configuration is evaluated. For example, you can use it to generate files for the kickstart file to include.
+
+  ESXi Installation Stage
+    Uses Kickstart for automating the installation; see `Vmware Kickstart Documentation <https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.esxi.upgrade.doc/GUID-61A14EBB-5CF3-43EE-87EF-DB8EC6D83698.html>`_ for more details.
+
+  Post Stage (``%post``)
+    Runs the specified script after package installation is complete. If you specify multiple %post sections, they run in the order that they appear in the installation script.
+
+  Firstboot Stage (``%firstboot``)
+    Creates an init script that runs only during the first boot. The script has no effect on subsequent boots. If multiple %firstboot sections are specified, they run in the order that they appear in the kickstart file.
+
+DRP's "vmware" content allows you to inject custom ``%pre``, ``%post``, and
+``%firstboot`` scripts in to your installation kickstart.  It is up to the
+operator to understand the ordering and proper usage of these scripts.
+
+To do so, simply create Templates with your Kickstart snippets defined as you
+desire.  Then use the ``esxi/ks-custom-sections`` Param structure to include
+the appropriate scripts in your kickstart.  NOTE:  the ``%pre`` ``%post`` and
+``%firstboot`` separators will be injected into the Kickstart file for you (*do
+NOT include them in the template*).
+
+Example Param definition:
+
+  ::
+
+      ##############
+      # YAML example
+      # see WARNING note about kickstart below
+
+      - "pre-busybox"
+        - "my-pre-busybox-chunk1.ks.tmpl"
+        - "my-pre-busybox-chunk2.ks.tmpl"
+      - "post-python"
+        - "my-post-python3-chunk2.ks.tmpl"
+      - "firstboot-busybox"
+        - "my-fistboot-busybox-chunk1.ks.tmpl"
+
+
+      ##############
+      # JSON example
+      # see WARNING note about kickstart below
+
+      {
+        "firstboot-busybox": [
+          "my-fistboot-busybox-chunk1.ks.tmpl"
+        ],
+        "post-python": [
+          "my-post-python3-chunk2.ks.tmpl"
+        ],
+        "pre-busybox": [
+          "my-pre-busybox-chunk1.ks.tmpl",
+          "my-pre-busybox-chunk2.ks.tmpl"
+        ]
+      }
+
+.. note:: None of the above reference templates exist in this plugin.  You must create them as appropriate for your use cases.
+
+You may also create templates that carry kickstart command directives,
+to customize the main body of the kickstart.  Use the ``esxi/ks-custom-kickstart`
+param to specify the additional templates with kickstart directives to
+inject.  These will be placed after the ``esxi-network-ks.tmpl``, but before
+any of the ``%pre``, ``%post``, and/or ``%firstboot`` ections are injected.
+
+Example:
+
+  ::
+
+    esxi/ks-custom-kickstart:
+      - my-kickstart-chunk1.ks.tmpl
+
+The above examples will generate a kickstart that looks similar to below:
+
+  ::
+
+    # DRP provided kickstart opening statements
+    <template default statements go here>
+
+    # DRP provided network configuration template
+    <esxi-network-ks.tmpl>
+
+    # example "kickstart" customization template
+    <my-kickstart-chunk1.ks.tmpl>
+
+    # DRP provided kickstart template pre/post/firstboot "stock" sections
+    <esxi-notify-drp-py3.tmpl>
+    <esxi-preserve-logs.tmpl>
+    <esxi-enable-shells.tmpl>
+
+    # example custom sections to add
+    # firstboot-busybox
+    %pre --interpreter=busybox
+    <my-firstboot-busybox-chunk1.ks.tmpl>
+
+    # post-python
+    %pre --interpreter=python
+    <my-post-python3-chunk2.ks.tmpl>
+
+    # pre-busybox
+    %pre --interpreter=busybox
+    <my-pre-busybox-chunk1.ks.tmpl>
+    <my-pre-busybox-chunk2.ks.tmpl>
+
+Network Configuration Options
+-----------------------------
+
+The VMware plugin from RackN supports managing relatively complex network
+scenarious around your VMware ESXi infrastructure.  There are three places
+within the provisioning stages that network configuration changes can be
+made to support different operational models.
+
+The three primary configuration points for network settings are explained
+below.  In all cases, we assume that the PXE start process is assigned
+an IP address from your DHCP infrastructure - either from Digital Rebar
+Provision itself, or other external DHCP services.
+
+1. Initial kernel network configuration.  Initial DHCP/PXE services may be
+   on an isolated network from the provisioning networks.  These settings
+   are controlled by passing values to the kernel at initial load time,
+   via use of the ``kernel-options`` parameter.
+
+   An example:
+
+      ``ip=10.10.10.10 netmask=255.255.255.0 gateway=10.10.10.1 vlan=10``
+
+2. Once the initial kernel has booted, the kickstart environment can be
+   plumbed with a set of network configuration options.  See the
+   ``esxi/network-kickstart-type`` Param documentation for details on
+   configuring the network at this stage.
+
+3. Once a machine has finished installing, and subsequently boots in to
+   it's installed operating system; it is possible to again specify
+   different network configurations.
+
+   This may be necessary in the case of a Provisioning network transition
+   to a Production network configuration post-install.
+
+   To customize the network configuration post-install, please see the
+   ``esxi/network-firstboot-type`` parameter for options.
+
+Some sample scenarios and how you need to configure for those use cases
+are listed below.
+
+Simple DHCP Only Setup
+======================
+
+If you are trying to simply obtain a DHCP configuration at boot time,
+and preserve that IP through the install and frist boot of the installed
+OS, you do not need to do anything.  The default behavior will be to
+obtain DHCP and preserve it through the install.
+
+DHCP on PXE; Configure Manual IP (kickstart and installed OS)
+=============================================================
+
+If you intend to acquire an IP address during initial PXE boot of the
+Machine, but then transition to a Static (manually) configured network
+configurutation during the Kickstart installation and as the final
+installed network config, use the following steps:
+
+1. Do not set any values for ``kernel-options``
+2. Set the ``esxi/network-kickstart-type`` appropriately
+3. Follow the documentation for that Param.
+
+DHCP ON PXE; Retain for Kickstart; Installed OS Different
+=========================================================
+
+If your provisioning network is defined by the PXE DHCP network configuration,
+but you wish to transfer the installed OS (on first boot), to a new
+network configuration, use the following setps:
+
+1. Do not set any values for ``kernel-options``
+2. Set the ``esxi/network-firstboot-type`` appropriately
+3. Follow the documentation for that Param.
+
+VLAN Tagged Interfaces
+======================
+
+VLAN tagged frames can be set at any of the three primary stages of the
+provisioning process outlined above.  Set the appropriate options for
+either of the following stages:
+
+Kernel boot/kickstart VLAN tagged
+  Set the ``kernel-options`` param to include the ``vlan=N`` setting, where
+  **N** is the VLAN ID from ``1`` to ``4096``.
+
+Kickstart Network and/or Firstboot Network VLAN tagged
+  Set the Param ``esxi/network-*-vlan`` Param for the appropriate
+  stage.
+
+Packet MTU Size
+===============
+
+Custom MTU (maximum transmission unit) frame sizes for packets can be set.  This
+is for the Management Network (eg "vmnic0"/"vmk0") MTU setting.  To set the MTU
+size, set the following Param to your specified value:
+
+  - ``esxi/network-firstboot-mtu``
+
+  .. note:: The MTU size setting change currently is only supported for the
+            "firstboot" (final installed) stage of the configuraiont; it is
+            not supported during the kickstart/weasel install process.
+
+
+DNS, Search Domains, NTP Settings
+=================================
+
+To customize network configurations for DNS and NTP settings, please see
+the `drp-community-content`` Params:
+
+  - ``dns-servers``
+  - ``ntp-servers``
+  - ``dns-search-domains``
+
+Additionally, a custom NTP configuration template can be provided to
+completely override the (relatively simplistic) default NTP settings
+supported by this content.  To override the template follow the below
+steps:
+
+1. Create a new Template with your NTP configuration.
+
+2. (optional) You can use the existing ``ntp-servers` Param similarly to
+   the RackN supplied content, by reviewing the following example.
+
+  ::
+
+    restrict default kod nomodify notrap noquerynopeer
+    restrict 127.0.0.1
+    {{range $key, $ntp := .Param "ntp-servers" -}}
+    server {{ $ntp }} iburst
+    {{end -}}
+
+3. Set the ``esxi-ntp-conf` Param with the name of your NTP template you
+   created above.
+
+Licensing ESXI During Install
+-----------------------------
+
+Use the ``esxi/license`` Parameter to set a License to be used during installation
+to enable licensed use of ESXi.
+
+
+**The following documentation defines the various components of the vmware
+content and how to use them.**
+

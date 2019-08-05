@@ -1,0 +1,11 @@
+---
+Name: "ipmi/configure/userid"
+Description: "The user id (numeric) to use for the configured user"
+Documentation: |
+  The user id (numeric) to use for the configured user
+Schema:
+  type: "integer"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

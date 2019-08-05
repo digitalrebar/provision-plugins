@@ -1,0 +1,12 @@
+---
+Name: "virtualbox/cpus"
+Description: "Number of cpus to create for this virtualbox machine"
+Documentation: |
+  Number of cpus to create for this virtualbox machine
+Schema:
+  type: "integer"
+  default: 2
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

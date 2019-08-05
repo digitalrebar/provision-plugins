@@ -1,0 +1,36 @@
+---
+Name: "vcf-builder-deploy"
+Description: "A stage to deploy the vCloud Foundation Builder appliance."
+Documentation: |
+  This Stage will set the JSON structures needed for an ESXi node.
+
+  Requires ``ovftool`` - which can be acquired from the docker container
+  ``sygibson/vmtools`` - which also contains a DRP Runner for running
+  arbitrary workflow.
+
+    ========================================  ========================
+    Param                                     Default
+    ========================================  ========================
+    ``vcf-builder/association``               ``digitalrebar-sddc-01``
+    ``vcf-builder/esxiCredentials-username``  ``root``
+    ``vcf-builder/esxiCredentials-password``  ``RocketSkates``
+    ``vcf-builder/vSwitch``                   ``vswitch0``
+    ``vcf-builder/serverId``                  ``Machine.UUID``
+    ========================================  ========================
+
+Meta:
+  color: "yellow"
+  feature-flags: "sane-exit-codes"
+  icon: "cloud"
+  title: "RackN Content"
+OptionalParams:
+  - "vcf-builder/association"
+  - "vcf-builder/esxiCredentials-username"
+  - "vcf-builder/esxiCredentials-password"
+  - "vcf-builder/vSwitch"
+  - "vcf-builder/serverId"
+Profiles: []
+RequiredParams: []
+Tasks:
+  - vcf-builder-deploy
+Templates: []

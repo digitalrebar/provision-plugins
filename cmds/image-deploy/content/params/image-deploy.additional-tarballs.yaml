@@ -1,0 +1,28 @@
+---
+Name: "image-deploy/additional-tarballs"
+Description: "A list of additional tarballs to untar in the image"
+Documentation: |
+  A list of additional tarballs to install into the image.
+Schema:
+  default: []
+  type: array
+  items:
+    type: object
+    properties:
+      index:
+        type: integer
+      format:
+        type: string
+      uri:
+        type: string
+      drpserved:
+        type: boolean
+    required:
+    - index
+    - drpserved
+    - uri
+    - format
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

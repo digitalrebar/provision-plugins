@@ -1,0 +1,42 @@
+Description: A task to register a machine in AWX / Tower
+Documentation: |
+  This will register a machine in AWX / Tower.  The machine will be in the
+  inventory specified by tower/inventory.  Optionally, the tower/group can be
+  added to the machine and the machine will be added to that group as well.
+
+  The task works for linux, darwin, and windows OSes.
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: money
+  title: RackN
+Name: tower-register
+Templates:
+- Name: tower-register.sh
+  Path: ""
+  Meta:
+    OS: "linux,darwin"
+  Contents: |-
+    #!/usr/bin/env bash
+    # Add the machine to tower
+    #
+
+    set -e
+
+    # Get access and who we are.
+    {{template "setup.tmpl" .}}
+    [[ $RS_UUID ]] && export RS_UUID="{{.Machine.UUID}}"
+
+    echo "Register host with ansible tower"
+    echo drpcli machines runaction $RS_UUID tower-register
+    drpcli machines runaction $RS_UUID tower-register
+
+    exit 0
+- Name: tower-register.ps1
+  Path: ""
+  Meta:
+    OS: "windows"
+  Contents: |-
+    & \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower-register
+
+    exit $lastExitCode

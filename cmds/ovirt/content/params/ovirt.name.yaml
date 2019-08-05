@@ -1,0 +1,11 @@
+---
+Name: "ovirt/name"
+Description: "Name to use for the ovirt VM"
+Documentation: |
+  This parameter is the name to use for the ovirt vm.
+Schema:
+  type: "string"
+Meta:
+  icon: "options"
+  color: "blue"
+  title: "RackN Content"

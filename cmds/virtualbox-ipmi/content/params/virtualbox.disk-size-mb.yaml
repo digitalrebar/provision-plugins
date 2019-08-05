@@ -1,0 +1,12 @@
+---
+Name: "virtualbox/disk-size-mb"
+Description: "The size of the virtual disk in MB"
+Documentation: |
+  The size of the virtual disk in MB.
+Schema:
+  type: "integer"
+  default: 20480
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

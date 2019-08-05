@@ -1,0 +1,39 @@
+Description: Callback service endpoints to expose as actions
+Documentation: |
+  The service endpoints to expose as actions on this plugin.
+Meta:
+  color: blue
+  icon: "volume up"
+  title: RackN
+Name: callback/callbacks
+Schema:
+  type: object
+  additionalProperties:
+    type: object
+    properties:
+      Auth:
+        type: string
+      Url:
+        type: string
+      Method:
+        type: string
+      Headers:
+        type: object
+        additionalProperties:
+          type: string
+      Aggregate:
+        type: boolean
+      Decode:
+        type: boolean
+      ExcludeParams:
+        type: array
+        items:
+          type: string
+      Delay:
+        type: integer
+      Retry:
+        type: integer
+      Timeout:
+        type: integer
+  default: {}
+

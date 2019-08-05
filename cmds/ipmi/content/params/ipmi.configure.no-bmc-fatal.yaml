@@ -1,0 +1,12 @@
+---
+Name: "ipmi/configure/no-bmc-fatal"
+Description: "Should the task fail if there is not BMC to configure"
+Documentation: |
+  Set to true to cause a failure if the BMC doesn't exist.
+Schema:
+  type: "boolean"
+  default: false
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

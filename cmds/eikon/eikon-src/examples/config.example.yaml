@@ -1,0 +1,86 @@
+#
+# This is a format example - NOT VALID on a system
+#
+disks:
+  - name: firstdisk
+    path: /dev/sda
+    ptable: gpt # gpt|msdos
+    grub_device: true # true|false
+    wipe: true # true|false
+    image:
+      url: url/file
+      type: dd-tgz # (raw only)
+    partitions:
+      - name: partfoo
+        size: 2G # 1MB|2GB|REST
+        action: create # create/validate/resize/remove
+        flag: boot|bios_grub # | delimited boot and bios_grub are it for now
+        ptype: linux # (ntfs, linux, fat32, ... could be derived downstream, but not if image)
+        image:
+          url: url/file
+          type: dd-tgz # (raw only)
+        fs:
+          name: root_fs
+          fstype: xfs # xfs|ntfs|swap
+          device: root_lv # (disk, part, raid, lv)
+          mount: /path # or swap
+          resize: true # true|false
+          image:
+            url: url/file
+            type: tgz # zip/tar of some kinda (not raw)
+
+mdadms:
+  - name: bootraid1
+    mode: raid0 # raid0,raid1,raid10,...
+    devices:
+      - firstdisk # (disk, partition)
+      - seconddisk # (disk, partition)
+    spares:
+      - disk3
+    image:
+      url: url/file
+      type: dd-tgz
+    partitions: # (optional)
+      - name: partfoo
+        size: 2GB # 1MB|2GB|REST
+        action: create # create/validate/resize/remove
+        flag: boot|bios_grub # | delimited boot and bios_grub are it for now
+        ptype: ntfs #  (ntfs, linux, fat32, ... could be derived downstream, but not if image)
+        image:
+          url: url/file
+          type: dd-tgz # (raw only)
+        fs:
+          name: root_fs
+          fstype: xfs # xfs|ntfs|swap
+          device: root_lv # (disk, part, raid, lv)
+          mount: /path # or swap
+          resize: true # true|false
+          image:
+            url: url/file
+            type: tgz # zip/tar of some kinda (not raw)
+
+vgs:
+  - name: volgroup1
+    devices:
+      - volpart # (disk, part, or raid)
+    lvs:
+      - name: root_lv
+        size: 1G # 10G|100M|REST
+        image:
+          url: url/file
+          type: dd-tgz #(raw only)
+        fs:
+          name: root_fs
+          fstype: xfs # xfs|ntfs|swap
+          device: root_lv # (disk, part, raid, lv)
+          mount: /path # or swap
+          resize: true # true|false
+          image:
+            url: url/file
+            type: tgz # zip/tar of some kinda (not raw)
+
+images:
+  - url: url/file
+    type: tgz # zip/tar of some kinda (not raw)
+    path: / # path start at inside chroot of mounted fses (default /)
+

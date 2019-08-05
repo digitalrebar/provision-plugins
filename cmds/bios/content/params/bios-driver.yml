@@ -1,0 +1,10 @@
+---
+Name: bios-driver
+Description: "Driver that drp-bioscfg should use for working with BIOS settings"
+Schema:
+  type: string
+  enum:
+    - dell
+    - hp
+    - lenovo
+    - none

@@ -1,0 +1,12 @@
+---
+Name: "image-deploy/windows-unattend-path"
+Description: "The path to the unattend.xml file"
+Documentation: |
+  The path to the unattend.xml file.
+Schema:
+  default: Windows/Panther/unattend.xml
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

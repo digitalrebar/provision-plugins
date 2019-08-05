@@ -1,0 +1,26 @@
+---
+Name: "eikon-deploy"
+Description: "A task to deploy an image-based system."
+Templates:
+- Name: "eikon-deploy.sh"
+  Path: ""
+  Contents: |
+    #!/bin/bash
+
+    set -e
+
+    {{ template "setup.tmpl" . }}
+
+    get_param "eikon/plan" > ~/eikon.json
+
+    eikon -file ~/eikon.json -dump -debug -1
+
+    eikon -inventory
+
+    exit 0
+
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

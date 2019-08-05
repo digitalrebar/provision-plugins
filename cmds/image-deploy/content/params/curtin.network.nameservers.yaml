@@ -1,0 +1,11 @@
+---
+Name: "curtin/network/nameservers"
+Description: "A list of nameservers to use."
+Schema:
+  type: "array"
+  items:
+    type: "string"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

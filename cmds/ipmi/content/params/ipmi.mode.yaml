@@ -1,0 +1,28 @@
+---
+Name: "ipmi/mode"
+Description: "What toolset should be used for operations"
+Documentation: |
+  This parameter tells the ipmi plugin which toolset to use for
+  driving the machine.  The default is: ipmitool
+
+  The options are:
+
+  * ipmitool
+  * racadm
+  * redfish
+
+  * racadmn is a typo that is propagated currently
+
+Schema:
+  type: "string"
+  enum:
+    - "ipmitool"
+    - "redfish"
+    - "racadm"
+    - "racadmn"
+  default: "ipmitool"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

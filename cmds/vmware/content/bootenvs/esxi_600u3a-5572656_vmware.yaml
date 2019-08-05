@@ -1,0 +1,60 @@
+---
+Name: esxi_600u3a-5572656_vmware-install
+Description: Install BootEnv for ESXi 600u3a-5572656 for vmware
+Documentation: |
+  Provides VMware BootEnv for ESXi 600u3a-5572656 for vmware
+
+  For more details, and to download ISO see:
+
+    - https://my.vmware.com/web/vmware/details?productId=491&downloadGroup=ESXI60U3A
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: VMware-VMvisor-Installer-201706001-5572656.x86_64.iso
+  IsoSha256: c3aec5dd00d47548089918075c84edb8e8c5017cbec901c6abf8a815d5149aac
+  IsoUrl: ""
+  Name: esxi_600u3a-5572656_vmware
+  SupportedArchitectures: {}
+  Version: 600u3a
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+Initrds: []
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain-mac
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_600u3a-5572656_vmware.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_600u3a-5572656_vmware.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'

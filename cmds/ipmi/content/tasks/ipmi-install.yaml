@@ -1,0 +1,14 @@
+---
+Name: "ipmi-install"
+Description: "A task to make sure that IPMI tool is installed"
+Documentation: |
+  A task to make sure that IPMI tool is installed.
+Templates:
+  - Name: "Install ipmitool"
+    Path: ""
+    ID: "ipmi-install.sh.tmpl"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

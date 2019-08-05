@@ -1,0 +1,113 @@
+Considering spec jbod:max at 0
+Picking disks heuristically
+Max JBOD, taking the rest of the disks
+Picked 36 disks
+Started with 1 specs, compiled to 36
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:0] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:1] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:2] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:3] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:4] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:5] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:6] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:7] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:8] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:9] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:10] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:11] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:12] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:13] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:14] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [32:15] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:0] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:1] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:2] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:3] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:4] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:5] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:6] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:7] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:8] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:9] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:10] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:11] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:12] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:13] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:14] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [31:15] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [:4] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [:5] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [:6] -a0
+
+Created jbod on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [:7] -a0
+
+Created jbod on megacli:0

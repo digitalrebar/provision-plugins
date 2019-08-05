@@ -1,0 +1,184 @@
+
+The ipmi plugin adds the ability to do IPMI actions on machines.  Additionally, the plugin
+provides a stage, tasks, and parameters to facilitate the configuration of the BMC as part
+of a workflow.
+
+Training Video: https://youtu.be/Zs6KvwBvZYQ
+
+NOTE: To use this plugin, *ipmitool* needs to be installed on the DRP endpoint.  The plugin
+will fail to load/configure if missing.
+
+The following actions have become a loose API across all IPMI plugins.
+
+* poweron
+* poweroff
+* powercycle
+* nextbootpxe
+* nextbootdisk
+* identify - not implemented by all
+* powerstatus - not implemented by all
+
+Each of these will be described more below.  The actions trigger through the normal API conventions
+for machine actions.  API access is through the */api/v3/machines/UUID/actions/ACTION* POST endpoint.
+The drpcli actions call *drpcli machines runaction UUID ACTION*. Or UX as them on a dropdown in the
+Bulk Action section.  See the other sections of documenation for action information.
+
+The configuration / discovery stage, *ipmi-configure*, can be added to a workflow to at a minimum
+discover the machine's BMC address, but additionally configure the BMC's networking and a single
+access user.  There are parameters to describe this behavior.
+
+Each of the methods will be described below.
+
+Configuration / Discovery
+-------------------------
+
+The *ipmi-configure* stage when applied through a workflow can configure the BMC's network and configure
+a user for out-of-band management operations.  These configuration operations can be toggled on
+or off depending upon your environment's needs.  The user will be configured first and then the network
+configured.
+
+The *ipmi-configure* stage will take no actions by default.  The stage has three task elements.  The
+first is a task that will make sure that the ipmitool is available and install it if missing.  This
+is included in sledgehammer by default and no action is required.  The second task element is a
+quirks JSON file.  This defines unique variations required to address the variances in BMCs by
+hardware type.  In general, this file does not need to be altered by the user.  If a BMC miss
+behaves, notify RackN with the problems.  The thid task element is the action configuration script
+itself.  This does the actual work and processes the quirks file as needed.
+
+The *ipmi-configure* stage can be told to fail if no BMC is detected.  This is help if a BMC is broken
+or non-operative.  The *ipmi/configure/no-bmc-fatal* boolean set to *true* will cause failure in
+this case.
+
+Regardless of what configuration parts the stage is allowed to do, the stage will always record the
+current IPMI network address associated with the BMC and store that in the *ipmi/address* parameter
+for the operational actions.
+
+User Configuration
+==================
+
+The *ipmi-configure* stage will by default take no configuration actions.  To enable user
+configuration, the *ipmi/configure/user* boolean will need to be set to *true*.  This can
+be done globally, in a profile attached to a machine, or directly on the machine's parameters.
+
+First, the *ipmi-configure* task will check to see if the requested username, *ipmi/configure/username*,
+is already defined.  If this is present, the userid is recorded.  If the userid is not found,
+the *ipmi-configure* task will check the *ipmi/configure/userid* parameter to see if a specific
+BMC numeric userid should be used for this control user.  If the userid is still not specified, a
+free userid will be found to user.  If no userids are found, the first user id will be overwritten.
+
+Additional checks are performed to see if the first id (2) is editable.  This is not the case on some
+BMCs.
+
+Once a userid is selected or discovered, the user name, password, privileges, and remote access are
+enabled for that user.  Once all those are success at the end of the task, the username and password
+are recorded in the *ipmi/username* and *ipmi/password* fields respectively.
+
+Network Configuration
+=====================
+
+The *ipmi-configure* stage will by default take no configuration actions.  To enable network
+configuration, the *ipmi/configure/network* boolean will need to be set to *true*.  This can
+be done globally, in a profile attached to a machine, or directly on the machine's parameters.
+
+Once set to enabled, the first thing will be for Dell-based BMCs to have whether or not they
+are *shared* or *dedicated* set.
+
+The task will then check to see if specific address is requested by seeing if the
+*ipmi/configure/address* field is set.  If so and the *ipmi/configure/reserve-ip* is set to *true*,
+the task will create a Reservation for that IP address with the BMC's MAC address in the DRP
+DHCP server.  The task will fail if requested to reserve an address whith no address specified and
+set to static mode.  This means that DRP is an IPAM and that is not currently supported.
+
+With the reservation in place if requested, the stage will run use the *ipmi/configure/ip-mode* to
+set which mode the BMC should operate in.  The options are *dhcp* or *static*.  *dhcp* mode will
+enable the BMC to get an address through DHCP.  This address will recorded into the *ipmi/address*
+parameter.
+
+If the mode is *static*, the *ipmi/configure/address*, *ipmi/configure/netmask*, and
+*ipmi/configure/gateway* parameters are used to set the BMC's network information.
+
+Upon completion of everything, the current IP address will be recorded in the *ipmi/address*
+parameters and a DRP DHCP reservation will be created if the address was not specified in the
+*ipmi/configure/address* parameter and DHCP mode was set.
+
+The overall flow of network configuration is to allow for static configuration (static mode), DHCP
+with an existing reservation in the DHCP server (reserve-ip set to *false* and dhcp mode), DHCP with
+a known address that becomes a static DHCP address (reserve-ip set to *true*, address specified in
+*ipmi/configure/address*, and dhcp mode), and DHCP without a known address that becomes statically
+bound in the DHCP server (reserve-ip set to true, address NOT specified in *ipmi/configure/address*,
+and dhcp mode).
+
+Finalization
+============
+
+Once configuration is finished, some BMCs need to be reset to take effect.  This can take up to
+a minute in some cases.
+
+Actions
+-------
+
+Actions are enabled on the machines by have three parameters set.  Actions will not be visible upon
+the machines if not present.  The following parameters need to be set some how.  If the *ipmi-configure*
+stage is NOT used, the IPMI actions can still function if the following three parameters are applied to
+the machine in some manner.
+
+Parameters:
+
+* *ipmi/address* - The IP address to access the BMC
+* *ipmi/username* - The username to initiate BMC actions
+* *ipmi/password* - The password to initiate BMC actions
+
+The configuration parts of the *ipmi-configure* stage will set all three if enabled.  Without
+configuration enabled, the *ipmi/address* field will be populated regardless if the
+*ipmi-configure* stage is applied.  This enables discovery of BMC addresses for existing or
+already configured systems.
+
+The *ipmi/address* parameter should be unique to the machine and specified directly in the machine's
+parameters.  The *ipmi/username* and *ipmi/password* fields may be specified directly in the machine's
+parameters, in a profile attached to the machine, or global profile depending upon the scope of the
+username and password in the environment.
+
+Using those three paramters, the actions will use ipmitool do the following actions.  The administrator
+will need to make sure that the DRP Endpoint can access the BMC addresses.
+
+All actions will return a 200 HTTP return code and a string of the ipmitool output.  Upon failure,
+a 409 HTTP return code is returned and the error output of the ipmitool command.
+
+powerstatus
+===========
+
+This will issue *chassis power status* and return the results as a string.
+
+poweron
+=======
+
+This will issue *chassis power on* and return the results as a string.
+
+poweroff
+========
+
+This will issue *chassis power off* and return the results as a string.
+
+powercycle
+==========
+
+This will issue *chassis power cycle* and return the results as a string.
+
+nextbootpxe
+===========
+
+This will issue *chassis bootdev pxe* and return the results as a string.  This will
+be a single next boot action to boot from the network.  On most systems, this is not persistent.
+
+nextbootdisk
+============
+
+This will issue *chassis bootdev disk* and return the results as a string.  This will
+be a single next boot action to boot from the disk.  On most systems, this is not persistent.
+
+identify
+========
+
+This will issue *chassis identify number* and return the results as a string.  The number
+is specified by the *ipmi/identify-duration* parameter and defaults to 60 (seconds).
+

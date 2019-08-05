@@ -1,0 +1,13 @@
+---
+Name: "ipmi/service-user"
+Description: "Should we create a service user for dr-provision for this machine"
+Documentation: |
+  Set this value to false to skip creating a service user on the IPMI controller on this machine
+  Set it to true to create a service user named dr-provision with a randomly generated password
+Schema:
+  type: boolean
+  default: false
+Meta:
+  icon: server
+  color: blue
+  title: "RackN Content"

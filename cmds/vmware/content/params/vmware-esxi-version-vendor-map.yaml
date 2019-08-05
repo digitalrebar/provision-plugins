@@ -1,0 +1,103 @@
+---
+Name: "vmware/esxi-version-vendor-map"
+Description: "Map of Manufacturer to VMware ESXI BootEnv to install."
+Documentation: |
+  This Param is used by setting the control Param ``vmware/esxi-version`` to
+  ``select-vendor``.  The template ``vmware-esxi-selector.tmpl`` will then use
+  this map to determine the best Vendor specific BootEnv/ISO to install on the
+  system.
+
+  The operator can also choose to override this map Param with a set of
+  values specific to use requirements.  However, the structure must
+  remain the same, and vendor Manufacturer information must be supported
+  in the ``vmware-esxi-selector.tmpl`` template.
+
+  To create a unique Param mapping to override these values, set this Param
+  on a Machine object (either via profile or directly), using the following
+  examples:
+
+    ::
+
+      {
+        "generic": {
+          "bootenv": "esxi_670u2-13006603_vmware",
+          "mfg": "generic"
+        },
+        "cisco": {
+          "bootenv": "esxi_670u1-10302608_cisco",
+          "mfg": "cisco"
+        }
+      }
+
+  The equivalent YAML format would look like:
+
+    ::
+
+      generic:
+        bootenv: esxi_670u2-13006603_vmware
+        mfg: generic
+      cisco:
+        bootenv: esxi_670u1-10302608_cisco
+        mfg: cisco
+
+  An example of applying this map to a specific Machine as a Param, would be:
+
+    ::
+
+      # assumes target machine is named just "esxi"
+      # assumes your map data is in the file named "map.yaml"
+      drpcli machines set Name:esxi param vmware/esxi-version-vendor-map to map.yaml
+
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+
+Schema:
+  type: object
+  additionalProperties:
+    mfg:
+      required: true
+      type: string
+    bootenv:
+      required: true
+      type: string
+    model:
+      required: false
+      type: string
+
+  default:
+    generic:
+      mfg: generic
+      bootenv: esxi_670u2-13006603_vmware
+    cisco:
+      mfg: cisco
+      bootenv: esxi_670u2-13006603_cisco
+    dell:
+      mfg: dell
+      bootenv: esxi_670u2-13981272-A02_dell
+    fujitsu:
+      mfg: fujitsu
+      bootenv: esxi_670u2-13473784_fujitsu
+    hitachi:
+      mfg: hitachi
+      bootenv: esxi_670u1-10302608_hitachi_blade-ha8000
+      model: blade-ha8000
+    hitachi:
+      mfg: hitachi
+      bootenv: esxi_670u2-13006603_hitachi
+      model: ha8000v-gen10
+    hpe:
+      mfg: hpe
+      bootenv: esxi_670u2-13006603_hpe
+    lenovo:
+      mfg: lenovo
+      bootenv: esxi_670u2-13981272_lenovo
+    nec:
+      mfg: nec
+      bootenv: esxi_670u2-13644319_nec_standard
+      model: standard
+    nec:
+      mfg: nec
+      bootenv: esxi_670u2-13644319_nec_r120h-t120h-r110j
+      model: r120h-t120h-r110j

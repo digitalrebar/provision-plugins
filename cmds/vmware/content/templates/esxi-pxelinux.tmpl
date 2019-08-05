@@ -1,0 +1,8 @@
+DEFAULT {{.Env.Name}}
+PROMPT 0
+TIMEOUT 0
+SAY RackN Digital Rebar Provision template:  esxi-pxelinux.tmpl
+LABEL {{.Env.Name}}
+  KERNEL {{if .ParamExists "esxi/http-mirror"}}{{template "esxi-get-http-mirror.tmpl" .}}/mboot.c32{{else}}mboot.c32{{end}}
+  APPEND {{.BootParams}}
+  IPAPPEND 2

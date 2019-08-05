@@ -1,0 +1,72 @@
+---
+Name: esxi/disk-install-override
+
+Description: "Allow overriding the 'install' disk with a specific strategy."
+Documentation: |
+  Some hardware (namely HPE with "Smart" Array controllers do not iterate
+  the disks smartly.  This causes the ESXi install strategy to fail when
+  the RAID controller is specified as a RAID 1 device with passthrough mode
+  for the remainder of the devices.  ESXi does not build an appropriate
+  device type for us to handle with the `--disk=mpx.vmhb0:...` strategy.
+
+  This Param will override the ESXi Kickstart `install ...` directive and
+  select a given supported strategy for finding the disk to install to.
+
+  The currently supported install directives are defined below:
+
+    ======================  ======================================================
+    directive               notes
+    ======================  ======================================================
+    first_disk              Sets the install disk target to the default value of
+                            '--firstdisk'.  Primarily useful only for testing the
+                            code path of this content, since this is the default
+                            behavior if nothing else is specified.
+    find_first_naa          Selects the first device that is iterated in the
+                            /vmfs/devices/disks directory, with the name beginning
+                            with 'naa.*'
+    find_first_dellboss_vd  Sets disk to first JBOSS Virtual Disk on Dell systems.
+    ======================  ======================================================
+
+  Using the above listed strategies will set the Kickstart `install` command
+  as follows:
+
+    ::
+
+      install --disk=<FOUND_DEVICE>
+
+  If other `install` options need to be specified (eg `--overwritevmfs`),
+  you must also set those as the Param `esxi/disk-install-override-options`
+  and they will be appended to the above example `install` command.  Here
+  is an example:
+
+    ::
+
+      # with 'esxi/disk-install-override-options' set to '--overwritevmfs'
+      # the 'install' command will be built up as follows:
+
+      install --disk=/vmfs/devices/disks/naa.60... --overwritevmfs
+
+  .. note: Other override strategies may be added as additional in-the-field requirements dictate.
+
+
+  Note that custom functions can be injected in to the template to support
+  strategies that are not directly released with this content.  This allows
+  for custom in-the-field templates to be built, and injected in to the
+  DRP endpoint to support new "strategies" as needed.
+
+  If new strategies are developed/used, please contact RackN to help insure
+  these are added in to standard product so field customizations are not
+  necessary.
+
+  The Param type definition does not include an `enum: ...` list as custom
+  strategies may be injected via the `esxi/disk-install-override-custom`
+  Param.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+Secure: false

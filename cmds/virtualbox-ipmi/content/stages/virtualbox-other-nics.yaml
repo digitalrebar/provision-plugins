@@ -1,0 +1,10 @@
+---
+Name: "virtualbox-other-nics"
+Description: "Configure DHCP on the other nics"
+RunnerWait: true
+Tasks:
+  - "virtualbox-other-nics"
+Meta:
+  icon: "tag"
+  color: "yellow"
+  title: "RackN Content"

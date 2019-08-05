@@ -1,0 +1,8 @@
+Considering spec raid60:max at 0
+Picking disks heuristically
+Considering disks of type ssd speaking protocol sas
+Not enough disks to make raid60: have 4, want at least 8
+Not enough of type ssd speaking protocol sas (want max, have 4)
+spec at 0: No disks available
+Spec raid60:max at 0 missing disks
+Started with 1 specs, compiled to 0

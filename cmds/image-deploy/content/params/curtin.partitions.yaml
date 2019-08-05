@@ -1,0 +1,39 @@
+---
+Name: "curtin/partitions"
+Description: "The partition layout for a disk that is using a rootfs image"
+Documentation: |
+  The curtin partition as an object.  It would look like this:
+
+  storage:
+    version: 1
+    config:
+      - id: disk0
+        type: disk
+        ptable: msdos
+        path: /dev/sda
+        name: main_disk
+        wipe: superblock
+      - id: disk0-part1
+        type: partition
+        number: 1
+        device: disk0
+        size: 139G
+        flag: boot
+      - id: disk0-part1-format-root
+        type: format
+        fstype: ntfs
+        quiet: True
+        volume: disk0-part1
+      - id: disk0-part1-mount-root
+        type: mount
+        path: /
+        device: disk0-part1-format-root
+
+  This example is for a wim-like root fs for windows, but other custom partitions could be used.
+
+  If unspecified, the default action to setup a simple partition table suitable for linux rootfs installs.
+
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

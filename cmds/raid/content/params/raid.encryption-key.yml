@@ -1,0 +1,14 @@
+---
+Name: raid-encryption-key
+Description: The key to use for raid controller encryption
+Documentation: |
+  The master key or key id to use for Raid Controller encryption
+  feature.  If unset, a random value will be created and forgotten.
+Secure: true
+Schema:
+  type: string
+  default: unset
+Meta:
+  icon: "user circle"
+  color: "blue"
+  title: "RackN Content"

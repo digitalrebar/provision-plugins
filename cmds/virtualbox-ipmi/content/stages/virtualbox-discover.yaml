@@ -1,0 +1,10 @@
+---
+Name: "virtualbox-discover"
+Description: "Stage to assign the virtualbox UUID to the machine"
+RunnerWait: true
+Tasks:
+  - "virtualbox-discover-uuid"
+Meta:
+  icon: "tag"
+  color: "yellow"
+  title: "RackN Content"

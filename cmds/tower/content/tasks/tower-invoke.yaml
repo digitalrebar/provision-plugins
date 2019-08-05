@@ -1,0 +1,159 @@
+Description: A task to invoke a job template on machine from AWX / Tower
+Documentation: |
+  This task will invoke a job template on a machine from AWX / Tower.
+  The task works for linux, darwin, and windows OSes.
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: money
+  title: RackN
+Name: tower-invoke
+Templates:
+- Name: tower-invoke.sh
+  Meta:
+    OS: "linux,darwin"
+  Contents: |-
+    #!/usr/bin/env bash
+    # Invoke an ansible tower run
+    #
+
+    set -e
+
+    # Get access and who we are.
+    {{template "setup.tmpl" .}}
+    [[ $RS_UUID ]] && export RS_UUID="{{.Machine.UUID}}"
+
+    {{if .ParamExists "tower/ssh-keys-path"}}
+    KEYS={{.Param "tower/ssh-keys-path"}}
+
+    # Wait for an authorized_keys file to show up before blasting it.
+    COUNT=0
+    while [ ! -f $KEYS ] ; do
+      COUNT=$((COUNT+1))
+      if [ $COUNT -eq 120 ] ; then
+        echo "Timed out waiting for $KEYS to show up"
+        exit 1
+      fi
+      sleep 1
+    done
+
+    echo "Putting ssh access keys for $KEYS"
+    cat >$KEYS <<EOFSSHACCESS
+    {{range $key := .Param "tower/ssh-keys" -}}
+    {{$key}}
+    {{end -}}
+    EOFSSHACCESS
+    chown {{.Param "tower/ssh-keys-path-userid"}}:{{.Param "tower/ssh-keys-path-groupid"}} $KEYS
+    chmod 600 $KEYS
+    {{else}}
+    echo "Missing tower/ssh-keys-path"
+    exit 1
+    {{end}}
+
+    STATUS=$(drpcli machines runaction $RS_UUID tower/job-status | jq -r .)
+    if [[ "$STATUS" == "NoJob" ]] ; then
+        echo "Calling to invoke an ansible tower job template"
+        echo drpcli machines runaction $RS_UUID tower-invoke
+        drpcli machines runaction $RS_UUID tower-invoke
+    else
+        echo "Already have a job and its current status is $STATUS"
+    fi
+
+    COUNT=0
+    TIMEOUT={{.Param "tower/job-timeout"}}
+    while (( $COUNT < $TIMEOUT )) ; do
+
+        if [[ "$STATUS" == "Failed" || "$STATUS" == "failed" ]] ; then
+            echo "The Tower JOB return status:  failed"
+            exit 1
+        fi
+
+        if [[ "$STATUS" == "Error" || "$STATUS" == "error" ]] ; then
+            echo "The Tower JOB returned status: error"
+            exit 1
+        fi
+
+        if [[ "$STATUS" == "Canceled" || "$STATUS" == "canceled" ]] ; then
+            echo "The Tower JOB returned status: canceled"
+            exit 1
+        fi
+
+        if [[ "$STATUS" == "Cancelled" || "$STATUS" == "cancelled" ]] ; then
+            echo "The Tower JOB returned status: cancelled"
+            exit 1
+        fi
+
+        if [[ "$STATUS" == "Successful" || "$STATUS" == "successful" ]] ; then
+            echo "The Tower JOB succeeded."
+            exit 0
+        fi
+
+        sleep 1
+        COUNT=$((COUNT+1))
+        STATUS=$(drpcli machines runaction $RS_UUID tower/job-status | jq -r .)
+    done
+
+    #  Timed out - clean up job-id
+    drpcli machines remove $RS_UUID param tower/job-id || true
+    echo "Task timed out"
+    exit 1
+- Name: tower-invoke.ps1
+  Meta:
+    OS: "windows"
+  Contents: |-
+    $status = cmd /c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower/job-status '2>&1' | Out-String
+    $status = $status.Trim()
+    $status = $status.Trim('"')
+    if ($status -eq "NoJob") {
+        Write-Host 'Creating new invoke call'
+        cmd /c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower-invoke
+        if ($lastExitCode -eq 1) {
+            exit $lastExitCode
+        }
+    } else {
+        Write-Host "Already have a job and its current status is $status"
+    }
+
+    $count=0
+    $timeout={{.Param "tower/job-timeout"}}
+    while ( $count -lt $timeout ) {
+
+        if ( "$status" -eq "Failed" -or "$status" -eq "failed" ) {
+            Write-Host "The Tower JOB return status:  failed"
+            exit 1
+        }
+
+        if ( "$status" -eq "Error" -or "$status" -eq "error" ) {
+            Write-Host "The Tower JOB returned status: error"
+            exit 1
+        }
+
+        if ( "$status" -eq "Canceled" -or "$status" -eq "canceled" ) {
+            Write-Host "The Tower JOB returned status: canceled"
+            exit 1
+        }
+
+        if ( "$status" -eq "Cancelled" -or "$status" -eq "cancelled" ) {
+            Write-Host "The Tower JOB returned status: cancelled"
+            exit 1
+        }
+
+        if ( "$status" -eq "Successful" -or "$status" -eq "successful" ) {
+            Write-Host "The Tower JOB succeeded."
+            exit 0
+        }
+
+        Write-Host "Sleeping $count out of $timeout ..."
+        sleep 1
+        $count++
+        $status = cmd /c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower/job-status '2>&1' | Out-String
+        $status = $status.Trim()
+        $status = $status.Trim('"')
+        Write Host "Job Status returned $status $lastExitCode"
+    }
+
+
+    cmd \c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines remove {{.Machine.UUID}} param tower/job-id
+    Write-Host "Task Timed Out"
+    exit 1
+

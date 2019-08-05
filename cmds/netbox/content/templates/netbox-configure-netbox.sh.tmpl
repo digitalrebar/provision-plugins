@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Include the helpers
+{{template "setup.tmpl" .}}
+
+set -e
+
+echo "Go to the configuration directory."
+cd /opt/netbox/netbox/netbox
+
+echo "Setup configuration for netbox."
+cp configuration.example.py configuration.py
+
+echo "Add allowed hosts"
+sed -i "/^ALLOWED_HOSTS/c\ALLOWED_HOSTS = [ '*', '{{.Machine.Name}}', '{{.Machine.Address}}' ]" configuration.py
+
+echo "Setup Database configuration"
+{{if .ParamExists "netbox/database-password" }}
+DB_PASSWORD={{.Param "netbox/database-password"}}
+{{else}}
+DB_PASSWORD=cowcowcow
+{{end}}
+
+sed -i "/'USER'.*PostgreS/c\    'USER': 'netbox', # PostgreSQL username" configuration.py
+sed -i "/'PASSWORD'.*PostgreS/c\    'PASSWORD': '${DB_PASSWORD}', # PostgreSQL password" configuration.py
+
+echo "Set secret key"
+{{if .ParamExists "netbox/secret-key" }}
+SECRET_KEY={{.Param "netbox/secret-key"}}
+{{else}}
+SECRET_KEY=$(../generate_secret_key.py)
+{{end}}
+sed -i "/^SECRET_KEY/c\SECRET_KEY = '${SECRET_KEY}'" configuration.py
+
+echo "Run database migrations"
+cd /opt/netbox/netbox/
+python3 manage.py migrate
+
+
+{{if .ParamExists "netbox/superuser-username" }}
+SUPERUSER_USERNAME={{.Param "netbox/superuser-username"}}
+{{else}}
+SUPERUSER_USERNAME=admin
+{{end}}
+{{if .ParamExists "netbox/superuser-password" }}
+SUPERUSER_PASSWORD={{.Param "netbox/superuser-password"}}
+{{else}}
+SUPERUSER_PASSWORD=admin
+{{end}}
+{{if .ParamExists "netbox/superuser-email" }}
+SUPERUSER_EMAIL={{.Param "netbox/superuser-email"}}
+{{else}}
+SUPERUSER_EMAIL=${SUPERUSER_USERNAME}@admin.com
+{{end}}
+
+echo "Setup Super user"
+python3 manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('${SUPERUSER_USERNAME}', '${SUPERUSER_EMAIL}', '${SUPERUSER_PASSWORD}')"
+
+echo "Create super user token"
+TOKEN=$(python3 manage.py shell -c "from django.contrib.auth.models import User; from users.models import Token; t = Token(user=User.objects.get(username='${SUPERUSER_USERNAME}')); t.save(); print(\"{}\".format(t.key))")
+
+drpcli machines set "{{.Machine.Uuid}}" param "netbox/access-point" to - <<< "{{.Machine.Address}}:80" >/dev/null 2>/dev/null
+drpcli machines set "{{.Machine.Uuid}}" param "netbox/superuser-token" to "$TOKEN" >/dev/null 2>/dev/null
+
+echo "Collect static files" 
+python3 manage.py collectstatic --no-input <<EOF
+yes
+EOF
+
+echo "Load Initial Data"
+python3 manage.py loaddata initial_data
+
+exit 0

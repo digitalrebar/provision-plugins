@@ -1,0 +1,12 @@
+---
+Name: "packet-discover"
+Description: "Stage to dynamically determine if machine is in Packet.net, record Packet metadata, set the serial console, and set SSH keys"
+RunnerWait: true
+Tasks:
+  - "packet-discover"
+  - "packet-console"
+  - "packet-ssh-keys"
+Meta:
+  icon: "tag"
+  color: "yellow"
+  title: "RackN Content"

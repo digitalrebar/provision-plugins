@@ -1,0 +1,44 @@
+---
+BootParams: ksdevice=bootif inst.ks={{.Machine.Url}}/compute.ks inst.stage2={{.Env.InstallUrl}}
+  inst.geoloc=0 -- {{if .ParamExists "kernel-console"}}{{.Param "kernel-console"}}{{end}}
+Description: Ovirt Node Installer
+Initrds:
+- images/pxeboot/initrd.img
+Kernel: images/pxeboot/vmlinuz
+Meta:
+  color: blue
+  feature-flags: change-stage-v2
+  icon: sitemap
+  title: Digital Rebar Community Content
+Name: ovirt-node-install
+OS:
+  IsoFile: ovirt-node-ng-installer-ovirt-4.2-2018031706.iso
+  IsoSha256: a009aacce4eb2429738bfdb67c48766889a5cebd191718494b26fa09c3bf806f
+  IsoUrl: http://jenkins.ovirt.org/job/ovirt-node-ng_ovirt-4.2_build-artifacts-el7-x86_64/lastSuccessfulBuild/artifact/exported-artifacts/ovirt-node-ng-installer-ovirt-4.2-2018031706.iso
+  Name: ovirt-node-install
+OnlyUnknown: false
+OptionalParams:
+- kernel-console
+RequiredParams: []
+Templates:
+- Contents: ""
+  ID: default-pxelinux.tmpl
+  Name: pxelinux
+  Path: pxelinux.cfg/{{.Machine.HexAddress}}
+- Contents: ""
+  ID: default-ipxe.tmpl
+  Name: ipxe
+  Path: '{{.Machine.Address}}.ipxe'
+- Contents: ""
+  ID: default-pxelinux.tmpl
+  Name: pxelinux-mac
+  Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+- Contents: ""
+  ID: default-ipxe.tmpl
+  Name: ipxe-mac
+  Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+- Contents: ""
+  ID: ovirt-node-install.ks.tmpl
+  Name: "compute.ks"
+  Path: '{{.Machine.Path}}/compute.ks'
+

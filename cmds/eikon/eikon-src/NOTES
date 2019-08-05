@@ -1,0 +1,15 @@
+Sledgehammer needs:
+  fatresize
+  reiserfs tools
+
+ToDo:
+  - partition flags
+  - disk flags
+  - disk wipe
+  - disk zero
+  - disk selector
+    - size (Smallest, X +/- 1%, Same as name)
+    - UUID
+    - PCI
+    - path
+  - if image fails, unmount and clean.

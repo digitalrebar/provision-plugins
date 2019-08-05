@@ -1,0 +1,13 @@
+---
+Name: "ipmi/configure/netmask"
+Description: "Netmask to use for this machine's BMC"
+Documentation: |
+  This parameter specifics the netmask to use with the *ipmi/configure/address* when setting the networking information in *static* ip-mode.
+
+  This is required for static ip-mode.
+Schema:
+  type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

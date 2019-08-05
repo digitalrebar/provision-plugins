@@ -1,0 +1,25 @@
+---
+Name: esxi/drpy-agent-log
+Description: "Defines where the DRPY Agent output will log to."
+Documentation: |
+  The ESXi RackN Agent (runner) is called "DRPY".  When it runs, it
+  will produce **stdout** and **stderr** log information.  This Param
+  defines where this log lives on the system.
+
+  Setting this value will completely override the in-built default
+  location which is:
+
+    * ``_esxi/install-datastore_/rackn/drpy.log``
+
+  This is not defined with a default value as we use the above Param
+  (_esxi/install-datastore_) as a base for the path.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+  password: showable
+ReadOnly: true
+Schema:
+  type: string
+Secure: false

@@ -1,0 +1,11 @@
+---
+Name: "ovirt/url"
+Description: "The URL to access the Ovirt Engine"
+Documentation: |
+  The URL to access the Ovirt Engine.
+Schema:
+  type: "string"
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"

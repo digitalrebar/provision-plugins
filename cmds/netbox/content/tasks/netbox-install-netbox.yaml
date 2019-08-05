@@ -1,0 +1,14 @@
+---
+Name: "netbox-install-netbox"
+Description: "Install NetBox"
+OptionalParams:
+- "netbox/version"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+Templates:
+  - Name: "netbox-install-netbox"
+    Contents: ""
+    ID: netbox-install-netbox.sh.tmpl

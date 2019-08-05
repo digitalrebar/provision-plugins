@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+# install VMware vCloud Foundation Builder (VCFB)
+
+###
+#  This install script was borrowed and heavily adapted from the
+#  excellent work of William Lam at VMware.  The original can be
+#  found here:
+#      Site: www.virtuallyghetto.com
+#      Reference: http://www.virtuallyghetto.com/2015/01/ultimate-automation-guide-to-deploying-vcsa-6-0-part-1-embedded-node.html
+###
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+OVFTOOL=$(which ovftool || xiterr 1 "Unable to locate 'ovftool'")
+
+# locations supported: filepath, http, https, ftp, vsphere or vcd locater path
+# doc: https://www.vmware.com/support/developer/ovf/ovftool-430-userguide.pdf
+VCFB_OVA="http://147.75.195.39:8091/files/VMware-Cloud-Builder-2.0.0.0-12696155_OVF10.ova"
+
+ESXI_HOST=${1:-"192.168.124.112"}
+ESXI_USERNAME="root"
+ESXI_PASSWORD="RocketSkates"
+VM_NETWORK="VM Network"
+VM_DATASTORE="datastore1"
+
+# Configurations for vCF Builder
+VCFB_HOSTNAME="192.168.124.201"
+VCFB_IP="192.168.124.201"
+VCFB_VMNAME="builder"
+VCFB_NETMASK="255.255.255.0"
+VCFB_ROOT_PASSWORD="RocketSkates"
+VCFB_NETWORK_MODE="static"
+VCFB_NETWORK_FAMILY="ipv4"
+## IP Network Prefix (CIDR notation)
+VCFB_NETWORK_PREFIX="24"
+## Same value as VCFB_IP if no DNS
+VCFB_GATEWAY="192.168.124.1"
+VCFB_DNS="8.8.8.8"
+VCFB_ENABLE_SSH="True"
+VCFB_DEPLOYMENT_SIZE="tiny"
+
+# Configuration for SSO
+SSO_DOMAIN_NAME="digitalrebar.local"
+SSO_SITE_NAME="vcenter"
+SSO_ADMIN_PASSWORD="RocketSkates"
+
+# NTP Servers
+NTP_SERVERS="0.pool.ntp.org"
+
+### DO NOT EDIT BEYOND HERE ###
+
+MAJ=$("${OVFTOOL}" --version | awk ' { print $3 } ' | cut -d "." -f1)
+if [ $MAJ -lt 4 ]; then
+        echo "This script requires ovftool 4.x.x ..."
+        exit 1
+fi
+
+echo -e "\nDeploying vCloud Foundation Builder Appliance ${VCFB_VMNAME} ..."
+"${OVFTOOL}" --acceptAllEulas --skipManifestCheck --X:injectOvfEnv --X:enableHiddenProperties \
+--X:waitForIp --sourceType=OVA --powerOn --allowExtraConfig --noSSLVerify \
+"--net:Network 1=${VM_NETWORK}" --datastore=${VM_DATASTORE} --diskMode=thin --name=${VCFB_VMNAME} \
+"--prop:vami.DNS.VMware_vCloud_Director=${VCFB_DNS}" \
+"--prop:vami.gateway.VMware_vCloud_Director=${VCFB_GATEWAY}" \
+"--prop:vami.ip0.VMware_vCloud_Director=${VCFB_IP}" \
+"--prop:vami.netmask0.VMware_vCloud_Director=${VCFB_NETMASK}" \
+${VCFB_OVA} "vi://${ESXI_USERNAME}:${ESXI_PASSWORD}@${ESXI_HOST}/"
+
+
+echo "Checking to see if the VCFB endpoint https://${VCFB_IP}/ is ready ..."
+until [[ $(curl --connect-timeout 30 -s -o /dev/null -w "%{http_code}" -i -k https://${VCFB_IP}/) -eq 200 ]];
+do
+	echo "Not ready, sleeping for 60sec"
+	sleep 60
+done
+echo "VCFB Builder Node (${VCFB_IP}) is now ready!"
+
+
+exit 0
+
+Properties:
+  Key:         guestinfo.ADMIN_USERNAME
+  Category:    Application
+  Label:       Admin Username
+  Type:        string(1..65535)
+  Description: Enter a username for the default Admin account. Example: admin
+  Value:       admin
+
+  Key:         guestinfo.ADMIN_PASSWORD
+  Category:    Application
+  Label:       Admin Password
+  Type:        password(8..65535)
+  Description: Enter a password for the default Admin account, password should
+               be at least 8 characters in length, and can contain uppercase,
+               lowercase and special characters but not contain common
+               dictionary words. The appliance services will fail if a
+               non-compliant password is provided. Example: P@ssword123!
+
+  Key:         guestinfo.ROOT_PASSWORD
+  Category:    Application
+  Label:       Root Password
+  Type:        password(8..65535)
+  Description: Enter a password for the default root account, password should
+               be at least 8 characters in length, and can contain uppercase,
+               lowercase and special characters but not contain common
+               dictionary words. The appliance services will fail if a
+               non-compliant password is provided. Example: P@ssword123!
+
+  Key:         guestinfo.hostname
+  Category:    Application
+  Label:       Hostname
+  Type:        string(0..65535)
+  Description: Enter a hostname for this virtual appliance.
+
+  Key:         guestinfo.ip0
+  Category:    Application
+  Label:       Network 1 IP Address
+  Type:        string
+  Description: Enter an IP Address for the interface of this virtual appliance.
+
+  Key:         guestinfo.netmask0
+  Category:    Application
+  Label:       Network 1 Subnet Mask
+  Type:        string
+  Description: Enter a subnet mask for the interface of this virtual appliance.
+               Example: 255.255.255.0
+
+  Key:         guestinfo.gateway
+  Category:    Application
+  Label:       Default Gateway
+  Type:        string
+  Description: Enter a default gateway for the interface of this virtual
+               appliance.
+
+  Key:         guestinfo.DNS
+  Category:    Application
+  Label:       DNS Servers
+  Type:        string
+  Description: Enter the DNS servers for this virtual appliance (comma
+               separated). WARNING: Do not specify more than two entries
+               otherwise no configuration will be set.
+
+  Key:         guestinfo.domain
+  Category:    Application
+  Label:       DNS Domain Name
+  Type:        string
+  Description: Enter the domain name for this virtual appliance. Example:
+               rainpole.local
+
+  Key:         guestinfo.searchpath
+  Category:    Application
+  Label:       DNS Domain Search Paths
+  Type:        string
+  Description: Enter the domain name search paths for this virtual appliance
+               (comma separated). Example: rainpole.local, sfo01.rainpole.local
+
+  Key:         guestinfo.ntp
+  Category:    Application
+  Label:       NTP Servers
+  Type:        string
+  Description: Enter NTP time sources for this virtual appliance (comma
+               separated). Example: ntp0.rainpole.local,ntp1.rainpole.local
+
+  Key:         guestinfo.sku
+  Category:    Application
+  Label:       SKU
+  Type:        string
+  Description: Enter a SKU (vcf, vcf-vxrail, vvd)
+  Value:       vcf
+
+
+
+

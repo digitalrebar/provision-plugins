@@ -1,0 +1,26 @@
+---
+Name: "image-deploy/image-type"
+Description: "The type of the install image."
+Documentation: |
+  The file image may be in many formats.  This tells image-deploy what
+  method to use to install.
+
+  Validated methods are:
+    - tgz = root file system in compressed tar file.
+    - dd-tgz = Compressed tar file with a single raw disk image.
+Schema:
+  type: "string"
+  enum:
+    - "tgz"
+    - "dd-tgz"
+    - "dd-txz"
+    - "dd-tbz"
+    - "dd-tar"
+    - "dd-bz2"
+    - "dd-gz"
+    - "dd-xz"
+    - "dd-raw"
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

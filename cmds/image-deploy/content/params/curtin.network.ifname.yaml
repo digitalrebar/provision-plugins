@@ -1,0 +1,9 @@
+---
+Name: "curtin/network/ifname"
+Description: "The ifname to use inside the curtin network section."
+Schema:
+  type: "string"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

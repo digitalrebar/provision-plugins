@@ -1,0 +1,9 @@
+---
+Name: "packet-console"
+Description: "Profile contains the required kernel console settings for active serial consoles in Packet"
+Params:
+  kernel-console: "console=ttyS1,115200"
+Meta:
+  icon: "rocket"
+  color: "blue"
+  title: "RackN Content"

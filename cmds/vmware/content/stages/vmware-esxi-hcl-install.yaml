@@ -1,0 +1,24 @@
+---
+Name: "vmware-esxi-hcl-install"
+BootEnv: "sledgehammer"
+Description: "A stage to install the VMware HCL Compatibility Checker and prereqs"
+Documentation: |
+  This stage will install all prerequisites for the VMware HCL compatibility
+  checker, and the python3 tool itself (compchecker.py).
+
+    - see:  https://labs.vmware.com/flings/esxi-compatibility-checker
+
+ReadOnly: true
+Reboot: false
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Tasks:
+  - "vmware-esxi-hcl-install"
+OptionalParams: []
+Profiles: []
+RequiredParams: []
+Tasks: []
+Templates: []

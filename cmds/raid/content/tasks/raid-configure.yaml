@@ -1,0 +1,31 @@
+---
+Name: raid-configure
+Description: Configure wanted RAID volumes on the system
+Prerequisites:
+  - raid-tools-install
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+RequiredParams:
+  - raid-target-config
+  - raid-skip-config
+  - raid-clear-config
+Templates:
+  - Name: raid-configure
+    Contents: |
+      #!/usr/bin/env bash
+      {{template "setup.tmpl" .}}
+      if [[ {{.Param "raid-skip-config"}} == true ]]; then
+          echo "Skipping RAID config"
+          exit 0
+      fi
+      if [[ {{.Param "raid-clear-config"}} == true ]]; then
+          (drp-raid -clear) || exit 1
+      fi
+      echo "Building this configuration:"
+      (echo '{{.ParamAsJSON "raid-target-config"}}' | drp-raid -compile)
+      (echo '{{.ParamAsJSON "raid-target-config"}}' | drp-raid -configure) || exit 1
+      drp-raid | drpcli machines set {{.Machine.UUID}} param raid-current-config to -
+      drpcli machines set "$RS_UUID" param raid-skip-config to true
+

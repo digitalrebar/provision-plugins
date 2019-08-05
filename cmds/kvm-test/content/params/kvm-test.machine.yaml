@@ -1,0 +1,20 @@
+---
+Name: "kvm-test/machine"
+Description: "Free parameters for a machine"
+Schema:
+  type: object
+  properties:
+    mem:
+      type: number
+    cores:
+      type: number
+    uuid:
+      type: string
+    name:
+      type: string
+    arch:
+      type: string
+    disk-size:
+      type: number
+    running:
+      type: boolean

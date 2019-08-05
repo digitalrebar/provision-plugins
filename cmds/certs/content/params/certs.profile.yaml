@@ -1,0 +1,14 @@
+Description: The profile to use for signing the cert.
+Documentation: |
+  This allows for defining the internal profile to use for signing the cert.
+  Values are currently: default, client, server, peer.
+  
+  Stores values for certificates in *certs-data* profile
+Meta:
+  color: "blue"
+  icon: "lock"
+  title: "RackN Content"
+Name: "certs/profile"
+Schema:
+  default: "default"
+  type: "string"

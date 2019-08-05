@@ -1,0 +1,32 @@
+Description: A task to generate a callback
+Documentation: |
+  A task to generate a callback from a custom stage.  The stage should
+  have the callback/action parameter set to indicate the action to do.
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: building
+  title: RackN
+Name: callback-task
+Templates:
+- Name: callback-task.sh
+  Path: ""
+  Contents: |-
+    #!/usr/bin/env bash
+    #
+
+    set -e
+
+    # Get access and who we are.
+    {{template "setup.tmpl" .}}
+
+    {{if .ParamExists "callback/action" }}
+    action="{{.Param "callback/action" }}"
+    echo "Generate callback - $action"
+    drpcli machines runaction $RS_UUID callbackDo --plugin "{{.Param "callback/plugin" }}" callback/action "$action"
+    exit 0
+    {{ else }}
+    echo "Action not specified - failing"
+    exit 1
+    {{ end }}
+

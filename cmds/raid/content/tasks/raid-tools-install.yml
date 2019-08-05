@@ -1,0 +1,109 @@
+---
+Name: "raid-tools-install"
+Description: "Install vendor tools needed to manage RAID controllers"
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"
+Templates:
+  - Name: "tools-install"
+    Contents: |
+      #!/usr/bin/env bash
+      . helper
+      __sane_exit
+
+      # Needed for some RAID configuration utilities
+      [[ -d /sys/module/sg ]] || modprobe sg
+
+      # We need to get drp-raid
+      if ! curl -fgL \
+          -o /usr/local/bin/drp-raid \
+          "{{.ProvisionerURL}}/files/plugin_providers/raid/drp-raid.amd64.linux"; then
+          echo "Failed to download drp-raid"
+          exit 1
+      fi
+      chmod 755 /usr/local/bin/drp-raid
+      # URLS, ARCHIVES, SOURCES, and TARGETS are associative arrays
+      # that contain where the archive should be downloaded from,
+      # what install archive a RAID controller utility should
+      # be installed from, the URL that they can be downloaded from,
+      # and the location that the actual control executable should be installed
+      # to for the rest of the raid subsystem to use.
+      #
+      # The key is each associative array is used to tie things together
+      declare -A ARCHIVES SOURCES TARGETS URLS
+      declare -a PRESENT
+      # ARCHIVES and SOURCES are subject to be updated as new versions of
+      # utilities come along.
+      ARCHIVES['storcli7']='007.0205.0000.0000_Unified_StorCLI.zip'
+      ARCHIVES['storcli6']='1.23.02_StorCLI.zip'
+      ARCHIVES['megacli']='8.07.14_MegaCLI.zip'
+      ARCHIVES['perccli']='perccli_7.3-007.0318_linux.tar.gz'
+      ARCHIVES['ssacli']='ssacli-3.30-14.0.x86_64.rpm'
+      URLS['storcli7']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['storcli7']}"
+      URLS['storcli6']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['storcli6']}"
+      URLS['megacli']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['megacli']}"
+      URLS['ssacli']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['ssacli']}"
+      URLS['perccli']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['perccli']}"
+      {{if .ParamExists "raid-archive-urls" }}
+      {{range $key, $url := .Param "raid-archive-urls"}}
+      URLS['{{$key}}']="{{$url}}"
+      {{end}}
+      {{end}}
+      SOURCES['storcli7']='https://docs.broadcom.com/docs/007.0205.0000.0000_Unified_StorCLI.zip'
+      SOURCES['storcli6']='https://docs.broadcom.com/docs/1.23.02_StorCLI.zip'
+      SOURCES['megacli']='https://docs.broadcom.com/docs/12351587'
+      SOURCES['perccli']='https://downloads.dell.com/FOLDER04830419M/1/perccli_7.3-007.0318_linux.tar.gz'
+      SOURCES['ssacli']='https://downloads.linux.hpe.com/sdr/repo/mcp/centos/7/x86_64/11.21/ssacli-3.30-14.0.x86_64.rpm'
+      # TARGETS should remain relatively unchanged.
+      TARGETS['storcli7']='/opt/MegaRAID/storcli7/storcli64'
+      TARGETS['storcli6']='/opt/MegaRAID/storcli6/storcli64'
+      TARGETS['megacli']='/opt/MegaRAID/MegaCli/MegaCli64'
+      TARGETS['perccli']='/opt/MegaRAID/perccli/perccli64'
+      TARGETS['ssacli']='/opt/smartstorageadmin/ssacli/bin/ssacli'
+      for k in "${!TARGETS[@]}"; do
+          # The utility is already installed, nothing to do here.
+          [[ -x ${TARGETS[$k]} ]] && {
+              PRESENT+=("${TARGETS[$k]}")
+              continue
+          }
+          archive="${ARCHIVES[$k]}"
+          if ! curl -fgL "${URLS[$k]}" -o "$archive"; then
+              echo "$archive not available at ${URLS[$k]}"
+              echo "Please download it from ${SOURCES[$k]}"
+              echo "and them upload it to DRP with"
+              echo "drpcli files upload '$archive' as 'raid/$archive'"
+              echo "or make it available at ${URLS[$k]}"
+              continue
+          fi
+          case $k in
+              storcli7)
+                  unzip -j -o $archive Unified_storcli_all_os.zip
+                  unzip -j -o Unified_storcli_all_os.zip unified_storcli_all_os/Linux/storcli-007.0205.0000.0000-1.noarch.rpm
+                  rpm2cpio storcli-007.0205.0000.0000-1.noarch.rpm | (cd /; cpio -idmv)
+                  mv /opt/MegaRAID/storcli /opt/MegaRAID/storcli7;;
+              storcli6)
+                  unzip -j -o $archive storcli_All_OS.zip
+                  unzip -j -o storcli_All_OS.zip storcli_All_OS/Linux/storcli-1.23.02-1.noarch.rpm
+                  rpm2cpio storcli-1.23.02-1.noarch.rpm | (cd /; cpio -idmv)
+                  mv /opt/MegaRAID/storcli /opt/MegaRAID/storcli6;;
+              megacli)
+                  unzip -j -o $archive 'Linux/MegaCli-8.07.14-1.noarch.rpm'
+                  rpm2cpio MegaCli-8.07.14-1.noarch.rpm |(cd /; cpio -idmv);;
+              perccli)
+                  tar -zxvf $archive 'perccli_7.3-007.0318_linux/Linux/perccli_7.3-007.0318.0000.0000-1.noarch.rpm'
+                  rpm2cpio perccli_7.3-007.0318_linux/Linux/perccli-007.0318.0000.0000-1.noarch.rpm |(cd /; cpio -idmv);;
+              ssacli)
+                  rpm2cpio $archive |(cd /; cpio -idmv);;
+              *)
+                  echo "Unknown archive type $k"
+                  false;;
+          esac || continue
+          [[ -x ${TARGETS[$k]} ]] && {
+              PRESENT+=("${TARGETS[$k]}")
+          }
+      done
+      p="$(printf '"%s",' "${PRESENT[@]}")"
+      drpcli machines set {{.Machine.UUID}} param raid-available-utilities to "[${p%,}]"
+      drp-raid | drpcli machines set {{.Machine.UUID}} param raid-current-config to -

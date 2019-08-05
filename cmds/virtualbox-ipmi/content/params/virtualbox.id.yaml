@@ -1,0 +1,12 @@
+---
+Name: "virtualbox/id"
+Description: "ID of the virtualbox machine"
+Documentation: |
+  This parameter is used by the IPMI Plugin to access the BMC
+Schema:
+  type: "string"
+Meta:
+  readonly: "yes"
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

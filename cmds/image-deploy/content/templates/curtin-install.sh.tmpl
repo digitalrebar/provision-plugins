@@ -1,0 +1,106 @@
+#!/bin/bash
+#
+# This template uses curtin to install and setup
+# the device.
+#
+# Required Parameters:
+# Optional Parameters:
+#
+# Parameter YAML format:
+#
+#
+
+set -e
+
+# This will contain a token appropriate for the path being
+# used below.  Either a create or update/show token
+export RS_UUID="{{.Machine.UUID}}"
+export RS_TOKEN="{{.GenerateToken}}"
+
+# Ubuntu Path is different than Centos Path - fix it.
+export PATH=$PATH:/usr/bin:/usr/sbin:/bin:/sbin
+
+OSTYPE={{.Param "image-deploy/image-os"}}
+OSSUBTYPE={{.Param "image-deploy/image-os-subtype"}}
+IMAGETYPE={{.Param "image-deploy/image-type"}}
+
+# Make drpcli phone home tgz and curtin dir
+rm -rf /tmp/drpcli
+mkdir -p /tmp/drpcli/usr/local/bin
+mkdir -p /tmp/drpcli/curtin
+
+# Set up the curtin files
+if [[ $OSTYPE == linux ]] ; then
+    cp /usr/local/bin/drpcli /tmp/drpcli/usr/local/bin
+    mkdir -p /tmp/drpcli/var/lib/cloud/scripts/per-once/
+    mv linux/drpcli.sh  /tmp/drpcli/var/lib/cloud/scripts/per-once/
+    chmod +x /tmp/drpcli/var/lib/cloud/scripts/per-once/drpcli.sh
+    cp linux/* /tmp/drpcli/curtin
+    cd /tmp/drpcli/curtin
+    chmod +x python_wrapper
+    ln -s python_wrapper finalize
+    if [[ $OSSUBTYPE == "" ]] || [[ $OSSUBTYPE == centos ]] || [[ $OSSUBTYPE == redhat ]] || [[ $OSSUBTYPE == rhel ]] ; then
+        ln -s python_wrapper curtin-hooks
+    fi
+    cd -
+elif [[ $OSTYPE == windows ]] ; then
+    curl -g -s -f -L -o /tmp/drpcli/usr/local/bin/drpcli.exe "{{.ProvisionerURL}}/files/drpcli.amd64.windows"
+    chmod 755 /tmp/drpcli/usr/local/bin/drpcli.exe
+    mkdir -p "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services"
+    mv windows/maasservice.py "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services"
+    chmod +x "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services/maasservice.py"
+    mkdir -p "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/LocalScripts"
+    mv windows/drpcli.ps1 "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/LocalScripts/drpcli.ps1"
+    cp windows/* /tmp/drpcli/curtin
+    cd /tmp/drpcli/curtin
+    chmod +x curtin-hooks finalize
+    cd -
+elif [[ $OSTYPE == basic ]] ; then
+    #
+    # General do nothing for windows and linux that puts files in place.
+    #
+    # That could be run.
+    #
+    cp /usr/local/bin/drpcli /tmp/drpcli/curtin
+    curl -g -s -f -L -o /tmp/drpcli/curtin/drpcli.exe "{{.ProvisionerURL}}/files/drpcli.amd64.windows"
+    chmod 755 /tmp/drpcli/curtin/drpcli.exe
+
+{{if .ParamExists "image-deploy/windows-unattend-template"}}
+    # Allow for an unattend xml to be added.
+    mkdir -p "/tmp/drpcli/$(dirname "{{.Param "image-deploy/windows-unattend-path"}}")"
+    cat > "/tmp/drpcli/{{.Param "image-deploy/windows-unattend-path"}}" <<EOF
+{{.CallTemplate (.Param "image-deploy/windows-unattend-template") . }}
+EOF
+{{end}}
+
+    cp basic/* /tmp/drpcli/curtin
+    cd /tmp/drpcli/curtin
+    chmod +x curtin-hooks finalize
+    cd -
+else
+    echo "Unknown OS type: $OSTYPE"
+    exit 1
+fi
+
+cd /tmp/drpcli
+tar -zcvf ../drpcli.tar.gz .
+cd -
+rm -rf /tmp/drpcli
+
+if [[ ! -e /etc/resolv.conf ]] ; then
+    touch /etc/resolv.conf
+fi
+
+{{ if .Param "curtin/debug" }}
+CURTIN_DEBUG="-vvv"
+{{else}}
+CURTIN_DEBUG=""
+{{end}}
+
+if ! curtin $CURTIN_DEBUG install -c curtin_config.yaml ; then
+    # Failure
+    # Don't reboot so we can look at the logs in /tmp.
+    exit 1
+fi
+
+exit 0

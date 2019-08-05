@@ -1,0 +1,23 @@
+---
+Name: "image-deploy/image-file"
+Description: "The image file for image-deploy to use."
+Documentation: |
+  The file image for image-deploy to install.  This will have the Provisioner's
+  URL prepended to the filename.
+
+  You may use the drpcli isos upload command to place an image into the system.
+  If this method is used, please prepend 'isos/' to your filename.  You should
+  not have any other directories in the filename.
+
+  You may use the drpcli files upload command to place an image into the system.
+  If this method is used, prepend 'files/' to your filename. You may use
+  additional directories in the filename.
+
+  You may also just place the image file under the DRP tftpboot directory.
+  If this method is used, use the path relative to the tftpboot directory.
+Schema:
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

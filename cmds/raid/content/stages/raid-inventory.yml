@@ -1,0 +1,10 @@
+---
+Name: raid-inventory
+Description: "Discover RAID configurations on a system"
+BootEnv: sledgehammer
+Tasks:
+  - raid-inventory
+Meta:
+  icon: "disk outline"
+  color: "yellow"
+  title: "RackN Content"

@@ -1,0 +1,11 @@
+---
+Name: "cloud-init/user-data"
+Description: "The cloud init data to send machine after first boot."
+Documentation: |
+  This is the data to return to the node on cloud init calls.
+Schema:
+  type: "string"
+Meta:
+  icon: "map"
+  color: "blue"
+  title: "RackN Content"

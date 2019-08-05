@@ -1,0 +1,61 @@
+#
+# VMware vSphere ESXi Kickstart - Python 2 based
+#
+
+# Accept the VMware End User License Agreement
+vmaccepteula
+
+# Set the root password for the DCUI and Tech Support Mode
+rootpw --iscrypted {{if .ParamExists "provisioner-default-password-hash"}}{{ .Param "provisioner-default-password-hash" }}{{else}}$6$rebar$HBaBj/uDmsQMEw4Si6eja9Yba3rhB73Na36hbrp9KxDHm6s5veeWyXlsUkoxRACtP47978iiidziRdsYUC7gC/{{end}}
+
+# ESXi license to apply to the system
+{{if .ParamExists "esxi/license"}}serialnum --esx={{ .Param "esxi/license" }}{{else}}# no license specified, installing in evaluation mode{{end}}
+
+# Install on the first local disk available on machine (defaults to
+# "--firstdisk --overwritevmfs")
+install {{ .Param "esxi/disk-install-options" }}
+
+# created in the %pre section, which runs before the kickstart is processed
+%include /tmp/networkconfig
+
+# include any custom kickstart directive templates
+{{ template "esxi-ks-custom-kickstart.tmpl" .}}
+
+{{ if eq (.Param "esxi/skip-reboot") true -}}
+# Param "esxi/skip-reboot" requested no reboot
+{{ else -}}
+reboot --noeject
+{{ end -}}
+
+###
+### end of kickstart directives
+### begin pre/post/firstboot sections
+###
+
+# Set the network according to the "esxi/network-type" (default is "dhcp")
+%pre --interpreter=busybox
+{{ template "esxi-network-kickstart.tmpl" .}}
+
+{{ if eq (.Param "esxi/skip-notify") true -}}
+# ***************************************************************** #
+# Param "esxi/skip-notify" set to true. as requested, NOT NOTIFYING #
+# the DRP endpoint to set boot to local disk !!!!!!!!!!!!!!!!!!!!!! #
+# ***************************************************************** #
+{{ else -}}
+%pre --interpreter=python
+{{ template "esxi-notify-drp.tmpl" .}}
+{{ end -}}
+
+%post --interpreter=busybox
+{{ template "esxi-preserve-logs.tmpl" .}}
+{{ template "esxi-welcome.tmpl" .}}
+
+%firstboot --interpreter=busybox
+{{ template "esxi-enable-shells.tmpl" .}}
+{{ template "esxi-network-firstboot.tmpl" .}}
+{{ if eq (.Param "esxi/is-nested") true -}}
+grep -i "^vhv.enable" /etc/vmware/config || echo "vhv.enable = \"TRUE\"" >> /etc/vmware/config
+{{ end -}}
+
+# include any custom %pre, %post, %firstboot sections
+{{ template "esxi-ks-custom-sections.tmpl" .}}

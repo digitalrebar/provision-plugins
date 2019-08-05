@@ -1,0 +1,47 @@
+Description: Callback service auth methods for callbacks to use
+Documentation: |
+  This structure provides auth methods for the callbacks to use.
+
+  There are two types.
+
+  basic - specifies a Username and Password for Basic Auth.
+
+  json-token - specifies a HTTP request to get a json blob
+  that contains a token and a potential timeout.  The Method, Url,
+  and Data to send for the request.  The TokenField and DurationField define
+  where to find the values in the json blob.
+Meta:
+  color: blue
+  icon: "volume up"
+  title: RackN
+Name: callback/auths
+Schema:
+  type: object
+  additionalProperties:
+    type: object
+    properties:
+      AuthType:
+        type: string
+        enum:
+          - basic
+          - json-token
+      Url:
+        type: string
+      Method:
+        type: string
+      Data:
+        type: string
+      Query:
+        type: string
+      TokenField:
+        type: string
+      DurationField:
+        type: string
+      Delay:
+        type: integer
+      Retry:
+        type: integer
+      Timeout:
+        type: integer
+  default: {}
+

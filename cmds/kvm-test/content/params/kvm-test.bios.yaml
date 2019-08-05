@@ -1,0 +1,27 @@
+---
+Name: 'kvm-test/bios'
+Description: "Contains a list of BIOS settings for each arch supported"
+Schema:
+  type: object
+  additionalProperties:
+    code:
+      type: string
+      required: true
+    settings:
+      type: string
+      required: true
+    format:
+      type: string
+      required: true
+      enum:
+        - "rom"
+        - "pflash"
+  default:
+    amd64:
+      code: /usr/share/ovmf/x64/OVMF_CODE.fd
+      settings: /usr/share/ovmf/x64/OVMF_VARS.fd
+      format: rom
+    arm64:
+      code: /usr/share/ovmf/aarch64/QEMU_EFI.fd
+      settings: /usr/share/ovmf/aarch64/QEMU_VARS.fd
+      format: rom

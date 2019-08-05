@@ -1,0 +1,41 @@
+---
+Name: "eikon-install"
+Description: "A task to install eikon."
+Templates:
+- Name: "eikon-install.sh"
+  Path: ""
+  Contents: |
+    #!/bin/bash
+
+    set -e
+
+    # Contain the code
+    mkdir tmp ; cd tmp
+
+    echo "Get required files"
+    files=(eikon.amd64.linux parted-3.2-35.el7.centos.x86_64.rpm)
+    for i in "${files[@]}"
+    do
+        if ! curl -fgL \
+              -o $i \
+              "{{.ProvisionerURL}}/files/plugin_providers/eikon/$i"; then
+              echo "Failed to download $i"
+              exit 1
+          fi
+    done
+
+    if parted --version | grep -q 3.1 ; then
+        echo "Need new parted"
+        rpm -Uvh parted-3.2-35.el7.centos.x86_64.rpm
+    fi
+
+    mv eikon.amd64.linux /usr/local/bin/eikon
+    chmod +x /usr/local/bin/eikon
+
+    exit 0
+
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

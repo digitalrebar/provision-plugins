@@ -1,0 +1,55 @@
+---
+Name: esxi-dellemc-esxi-6.7u1-10764712-a04-install
+Description: (DEPRECATED) Install BootEnv for ESXi 6.7.0update1
+Documentation: |
+  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documenation.
+               https://provision.readthedocs.io/en/tip/doc/content-packages/vmware.html#vmware-vsphere-tools
+
+  Provides custom VMware BootEnv for Dell specific hardware and drivers.
+  For more details, and Download ISO see:
+
+    - https://www.dell.com/support/home/us/en/19/drivers/driversdetails?driverid=6g5t3
+
+Meta:
+  color: yellow
+  icon: zip
+  title: RackN Content
+OS:
+  Name: esxi-dellemc-esxi-6.7u1-10764712-a04
+  Family: vmware
+  Codename: esxi
+  Version: custom
+  IsoFile: VMware-VMvisor-Installer-6.7.0.update01-10764712.x86_64-DellEMC_Customized-A04.iso
+  IsoSha256: 0220d4939b518485275861d49133be6339af8e16cfa9eb34a86a84f3ae7bb1d5
+OptionalParams:
+  - provisioner-default-password-hash
+BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+Kernel: ../../chain.c32
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain-mac
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi-dellemc-esxi-6.7u1-10764712-a04.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+  - ID: esxi-dellemc-esxi-6.7u1-10764712-a04.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'

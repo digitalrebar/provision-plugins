@@ -1,0 +1,12 @@
+---
+Name:  "virtualbox-discover-uuid"
+Description: "A task to discover the virtualbox uuid of a machine automatically."
+Templates:
+  - ID: "virtualbox-discover-uuid.sh.tmpl"
+    Name: "Discover the virtualbox uuid"
+    Path: ""
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

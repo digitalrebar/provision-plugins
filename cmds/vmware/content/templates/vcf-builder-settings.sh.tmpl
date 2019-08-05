@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Set the VMware vCloud Foundation Builder settings on a Machine
+
+###
+#  This tool sets the vCF Builder data structure for the
+#  bringup JSON for initial vCloud bootstrap.  It must be
+#  run in preparation to installing ESXi for the nodes that
+#  will be included in the vCF Builder build. This tool runs
+#  in Sledgehammer PRIOR to the ESXi install.
+#
+#  Requirements:  * 'gohai-inventory' has been run
+#                ??? 'inventory' has been run
+#                 * 'vcf-builder/association' is set to group
+#                 * 'vcf-builder/esxiCredentials-username' is set
+#                 * 'vcf-builder/esxiCredentials-password' is set
+#                 * 'vcf-builder/vSwitch' is set
+#
+#                 * 'vcf-builder/serverId' is set to Machine UUID
+#                    if there is not value defined
+#                    - future may want to allow a "prefix" that is
+#                      auto incremented (incrementer?)
+###
+
+{{ template "setup.tmpl" .}}
+
+{{if .ParamExists "vcf-builder/cluster-profile" -}}
+CLUSTER_PROFILE={{.Param "vcf-builder/cluster-profile"}}
+PROFILE_TOKEN={{.GenerateProfileToken (.Param "vcf-builder/cluster-profile") 7200}}
+{{else -}}
+xiterr 1 "Missing vcf-builder/cluster-profile on the machine!"
+{{end -}}
+
+# check for sipcalc - if not in sledgehammer, install it
+if ! which sipcalc > /dev/null 2>&1
+then
+  ARCH=$(uname -p)
+  curl -s -o /tmp/sipcalc.rpm https://kojipkgs.fedoraproject.org//packages/sipcalc/1.1.6/15.fc30/$ARCH/sipcalc-1.1.6-15.fc30.$ARCH.rpm
+  rpm -ivh /tmp/sipcalc.rpm
+  rm -f /tmp/sipcalc.rpm
+fi
+
+# check if we have an interface that is in the same DRP network
+# (i.e. we're layer2 connected to DRP endpoint)
+function is_in_interface(){
+  local _ip=$1
+  local _int=$2
+  ( sipcalc -i $_int -s 32 | grep ^Network | egrep -q "\- $_ip$" ) && return 0 || return 1
+}
+# get list of ints
+INTS=$(ip -o a | grep -v ": lo" | awk ' { print $2 } ' | sort -u)
+DRP={{ .ProvisionerAddress }}
+for INT in $INTS
+do
+  if is_in_interface $DRP $INT
+  then
+    FOUND_INT=$INT
+    break
+  fi
+done
+
+# sort out our CIDR if locally connected (FOUND_INT),
+# otherwise fall back to our default GW network info
+if [[ -n "$FOUND_INT" ]]
+the
+  N=$(sipcalc -a -i $FOUND_INT | grep "^Network address" | head -1 | awk ' { print $NF })
+  C=$(sipcalc -a -i $FOUND_INT | grep "^Network mask (bits)" | head -1 | awk ' { print $NF })
+
+  cidr="$N/$C"
+else
+  # default GW fallback
+  # get the interface associated with our defualt route
+  INTF=$(ip r | grep default | sed 's/^.*dev \(.*\) proto.*$/\1/')
+  NETCIDR=$(ip a sh $INTF | grep "inet " | awk ' { print $2 } ')
+  BITS=$(echo $NETCIDR | sed 's:^.*/\(.*\)$:\1:')
+  eval $(ipcalc -n $NETCIDR)
+
+  cidr="$NETWORK/$BITS"
+fi
+
+eval $(ipcalc -m $cidr)
+subnet="$NETMASK"
+gateway=$(ip r | grep default | sed 's/^.*via \(.*\) dev.*$/\1/')
+
+association="{{ .Param "vcf-builder/association" }}
+#ipAddressPrivate
+ipAddress="{{ .Machine.Address }}"
+esxiHostname="{{ .Machine.Name }}
+#esxiCredentials
+username="{{ .Param "vcf-builder/esxiCredentials-username" }}
+password="{{ .Param "vcf-builder/esxiCredentials-username" }}
+#
+vSwitch="{{ .Param "vcf-builder/vSwitch" }}
+{{ if .ParamExists "vcf-builder/serverId" -}}
+serverId="{{ .Param "vcf-builder/serverId" }}"
+{{ else -}}
+serverId="{{ .Machine.UUID }}
+{{ end -}}
+
+##### WARNING
+#  this needs to change to an array, where the Key is either the
+#  machine UUID or hostname - and the value is the JSON
+#
+#  or maybe we need the locking pattern to have machine set the
+#  value - if there is no size, set value (we're first), if there is
+#  size then append a comma, and add our value
+#
+#  alternately - when injecting the JSON blobs - just get it dynamically,
+#  any machine w/ the "vcf-builder/cluster-profile" set, get the JSON
+#  and inject then - manual wait operation until all ESXi are complete
+
+JSON="{
+  \"association\": \"$association\",
+  \"ipAddressPrivate\": {
+    \"ipAddress\": \"$ipAddress\",
+    \"cidr\": \"$cidr\",
+    \"gateway\": \"$gateway\",
+    \"subnet\": \"$subnet\"
+  },
+  \"esxiHostname\": \"$esxiHostname\",
+  \"esxiCredentials\": {
+    \"userName\": \"$username\",
+    \"password\": \"$password\"
+  },
+  \"vSwitch\": \"$vSwitch\",
+  \"serverId\": \"$serverId\"
+}"
+# general pattern
+SPECS="vcf-builder/esxiHostSpecs"
+drpcli -T "$PROFILE_TOKEN" profiles add "$CLUSTER_PROFILE" param "$SPECS" to "$JSON || true
+
+exit 0
+

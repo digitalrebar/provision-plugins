@@ -1,0 +1,11 @@
+---
+Name: "virtualbox/name"
+Description: "Name of the virtualbox machine"
+Documentation: |
+  This is the name used by virtualbox for the machine.
+Schema:
+  type: "string"
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

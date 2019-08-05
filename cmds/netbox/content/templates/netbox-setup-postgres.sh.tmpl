@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Include the helpers
+{{template "setup.tmpl" .}}
+
+set -e
+
+# Get postgres 9.6 repo info
+echo "Getting Postgres 9.6 repo info"
+yum install -y https://download.postgresql.org/pub/repos/yum/9.6/redhat/rhel-7-x86_64/pgdg-centos96-9.6-3.noarch.rpm
+
+# Install postgres 9.6
+echo "Installing postgres 9.6"
+yum install -y postgresql96 postgresql96-server postgresql96-devel
+
+echo "Initializing initial databases"
+/usr/pgsql-9.6/bin/postgresql96-setup initdb
+
+echo "Change auth method"
+sed -i 's/ident/md5/g' /var/lib/pgsql/9.6/data/pg_hba.conf
+
+echo "Reload systemctl"
+systemctl daemon-reload
+
+echo "Start postgres"
+systemctl start postgresql-9.6
+
+echo "Enable postgres"
+systemctl enable postgresql-9.6
+
+
+echo "Configure NetBox database and user"
+
+{{if .ParamExists "netbox/database-password" }}
+DB_PASSWORD={{.Param "netbox/database-password"}}
+{{else}}
+DB_PASSWORD=cowcowcow
+{{end}}
+
+sudo -u postgres psql <<EOF
+CREATE DATABASE netbox;
+CREATE USER netbox WITH PASSWORD '$DB_PASSWORD';
+GRANT ALL PRIVILEGES ON DATABASE netbox TO netbox;
+\q
+EOF
+
+exit 0

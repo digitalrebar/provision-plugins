@@ -1,0 +1,17 @@
+---
+Name: "vcf-builder-deploy"
+Description: "A task to deploy the vCloud Foundation Builder appliance to an ESXi host."
+Documentation: |
+  This task will use ``ovftool`` to deploy a vCloud Foundation
+  builder appliance to a specified ESXi node.
+
+Meta:
+  color: "yellow"
+  feature-flags: "sane-exit-codes"
+  icon: "cloud"
+  title: "RackN Content"
+Templates:
+- Contents: ""
+  ID: "vcf-builder-deploy.sh.tmpl"
+  Name: "vCloud Foundation Builder Deploy"
+  Path: ""

@@ -1,0 +1,14 @@
+Description: AWX / Tower Job Template
+Documentation: |
+  AWX / Tower Job Template specifies the job template to execute on an invoke call.
+
+  This needs to be specified on a stage or machine through a profile.
+Meta:
+  color: blue
+  icon: money
+  title: RackN
+Name: tower/job-template
+Schema:
+  type: string
+Secure: false
+

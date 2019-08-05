@@ -1,0 +1,118 @@
+---
+Name: raid-target-config
+Description: The desired RAID configuration for a system as a list of virtual disks to build.
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  type: array
+  default:
+    - RaidLevel: jbod
+      DiskCount: max
+      Controller: 0
+  items:
+    type: object
+    properties:
+      RaidLevel:
+        description: |
+          RaidLevel is one of the usual RAID levels.
+        type: string
+        default: jbod
+        enum:
+          - jbod
+          - raidS
+          - raid0
+          - raid1
+          - raid1e
+          - raid5
+          - raid6
+          - raid10
+          - raid50
+          - raid60
+      Size:
+        description: |
+          Size is the desired size of the virtual disk.  Size can be 'min','max', or an integer
+          value with an optional  KB, MB, GB, or TB suffix.
+        type: string
+        default: min
+      StripeSize:
+        description: |
+          The size of an individual stripe of data on the RAID volume.   It must be a power of two, and defaults to 64K
+        default: "64KB"
+        type: string
+      Name:
+        description: "An optional name of the volume.  Not all controllers support naming volumes"
+        type: string
+      VolumeID:
+        description: |
+          The ID of the created volume.  Only meaningful when the underlying tooling
+          is reporting on existing volumes.
+        type: string
+      Bootable:
+        type: boolean
+        default: false
+        description: |
+          Whether or not the tooling should attempt to have the RAID controller mark this volume as
+          the bootable volume.
+      Encrypt:
+        type: boolean
+        default: false
+        description: |
+          Whether or not the volume should be encrypted.
+      Type:
+        type: string
+        default: "disk,ssd"
+        description: |
+          What type of drives (spindles or SSD) shoud be used to build the volume.
+          "disk" means use spindles, "ssd" means use SSD volumes.  The tooling will not
+          attempt to build a volume using multiple disk types
+        enum:
+          - disk
+          - ssd
+          - disk,ssd
+          - ssd,disk
+      Protocol:
+        type: string
+        default: "sas,sata"
+        description: |
+          What protocol is used to communicate with the disks.
+        enum:
+          - sas
+          - sata
+          - nvme
+          - sas,sata
+          - sata,sas
+          - nvme,sas,sata
+      Controller:
+        type: integer
+        default: 0
+        description: |
+          Controller is the index of the controller that should be used to build
+          this VolSpec on.  Controllers are ordered by PCI bus address in ascending order.
+      Disks:
+        type: array
+        description: |
+          An array of objects that uniquely identify the disks that should be used to
+          build this array.  This must be specified of the DiskCount field is left empty,
+          and must not be specified of DiskCount is not empty.
+        items:
+          type: object
+          properties:
+            Enclosure:
+              type: string
+              description: |
+                The enclosure attached to the Contoller that this disk is in.
+            Slot:
+              type: integer
+              description: |
+                The slot within the enclosure that the disk is located in.
+      DiskCount:
+        type: string
+        description: |
+          The number of disks that should be used to build the volume.  If this is not empty,
+          the underlying tooling will attempt to pick disks to build the volume based
+          the rest of the parameters in the volume specification.  Valid values for DiskCount can
+          be "min" to pick the smallest number of disks required to build the volume,
+          "max" to pick the remainder of disks to build the volume, or an integer to build a
+          volume containing the specified number of disks.

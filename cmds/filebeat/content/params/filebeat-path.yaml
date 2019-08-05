@@ -1,0 +1,14 @@
+Description: Filebeat log file path
+Documentation: |
+  Filebeat log file path.  The plugin writes the events to this log file.
+  This file should be under log rotate.
+Meta:
+  color: blue
+  icon: tag
+  title: RackN
+Name: filebeat/path
+Schema:
+  default: "/var/log/filebeat-plugin/json.log"
+  type: string
+Secure: false
+

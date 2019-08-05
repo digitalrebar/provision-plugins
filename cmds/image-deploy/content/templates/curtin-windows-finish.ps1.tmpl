@@ -1,0 +1,4 @@
+
+& \usr\local\bin\drpcli.exe -T {{.GenerateToken}} -E {{.ApiURL}} machines update {{.Machine.UUID}} '{ "Runnable": true }'
+& \usr\local\bin\drpcli.exe -T {{.GenerateToken}} -E {{.ApiURL}} machines processjobs {{.Machine.UUID}}
+

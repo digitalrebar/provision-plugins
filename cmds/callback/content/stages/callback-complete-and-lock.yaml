@@ -1,0 +1,17 @@
+---
+Description: "Stage to trigger the 'complete' callback and lock the machine"
+Documentation: |
+  This stage will cause the 'complete' callback to be triggered.
+  This assumes that the callback is configured.
+
+  This will also lock the machine.
+Meta:
+  color: blue
+  icon: sitemap
+Name: callback-complete-and-lock
+Params:
+  callback/action: complete
+Tasks:
+- callback-task
+- lock-machine
+

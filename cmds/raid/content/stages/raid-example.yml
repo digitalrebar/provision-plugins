@@ -1,0 +1,11 @@
+---
+Name: raid-example
+Description: "Discover and update hardware RAID configurations on a system"
+BootEnv: sledgehammer
+Tasks:
+  - raid-tools-install
+  - raid-configure-example
+Meta:
+  icon: "disk outline"
+  color: "yellow"
+  title: "RackN Content"

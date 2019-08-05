@@ -1,0 +1,11 @@
+---
+Name: "image-deploy-no-erase"
+Description: "Deploy an image within sledgehammer without wiping disks first"
+BootEnv: "sledgehammer"
+Tasks:
+  - "curtin-install"
+  - "curtin-deploy"
+Meta:
+  icon: "image"
+  color: "yellow"
+  title: "RackN Content"

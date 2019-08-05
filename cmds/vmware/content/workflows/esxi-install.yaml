@@ -1,0 +1,7 @@
+Meta:
+  color: yellow
+  icon: cloud
+Name: esxi-install
+Description: "Install a selected ESXi"
+Stages:
+- vmware-selector

@@ -1,0 +1,21 @@
+---
+Name: esxi/skip-version
+Description: "**WARNING** Skip the 'version' call back to DRP to ."
+Documentation: |
+  This Param lets the operator skip the version call back to the DRP
+  endpoint during kickstart installation.  It is used to get the DRP
+  version info and inject it in to the DCUI screen for identify
+  verification purposes on a built DRP endpoint.
+
+  This option is primarily intended for debugging kickstart components
+  that are rendered to the machine via DRP's templating system.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

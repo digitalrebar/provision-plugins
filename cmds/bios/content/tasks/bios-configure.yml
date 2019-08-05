@@ -1,0 +1,53 @@
+---
+Name: "bios-configure"
+Description: "Configure BIOS settings on a system"
+RequiredParams:
+  - bios-target-configuration
+  - bios-driver
+Prerequisites:
+  - bios-tools-install
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: "configure"
+    Contents: |
+      #!/usr/bin/env bash
+      {{ template "setup.tmpl" . }}
+      if [[ {{.Param "bios-driver"}} = "lenovo" ]]; then
+          {{ if .ParamExists "lenovo-onecli-install-target" }}
+          export PATH="$PATH:{{.Param "lenovo-onecli-install-target"}}"
+          {{ else }}
+          echo "Please install the lenovo-support content package"
+          exit 1
+          {{ end }}
+      fi
+      target="$(
+      cat <<"EOF"
+      {{.ParamAsJSON "bios-target-configuration"}}
+      EOF
+      )"
+      lastAttempt="$(
+      cat <<"EOF"
+      {{.ParamAsJSON "bios-last-attempted-configuration"}}
+      EOF
+      )"
+      toTry="$(drp-bioscfg -driver {{.Param "bios-driver"}} -operation test <<< "$target")"
+      if grep -q true < <( jq '. == {}' <<< "${toTry}"); then
+          drpcli machines remove {{.Machine.UUID}} param bios-last-attempted-configuration || :
+          echo "BIOS settings up to date"
+          exit 0
+      fi
+      if grep -q true < <( jq ". == ${lastAttempt}" <<< "${toTry}"); then
+          echo "Duplicate attempt to set the same target config"
+          echo "This is either a bug in the BIOS or an invalid selection of settings."
+          echo
+          echo "Settings that are being attempted again:"
+          jq '.' <<< "$toTry"
+          echo
+          exit 1
+      fi
+      drpcli machines remove {{.Machine.UUID}} param bios-last-attempted-configuration || :
+      drpcli machines set {{.Machine.UUID}} param bios-last-attempted-configuration to "$toTry"
+      drp-bioscfg -driver {{.Param "bios-driver"}} -operation apply <<< "$target"

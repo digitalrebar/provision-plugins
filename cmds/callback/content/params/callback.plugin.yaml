@@ -1,0 +1,11 @@
+Description: The specific callback plugin to use for this action.
+Documentation: |
+  The specific callback plugin to call.
+Meta:
+  color: blue
+  icon: "volume up"
+  title: RackN
+Name: callback/plugin
+Schema:
+  type: string
+  default: callback

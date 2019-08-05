@@ -1,0 +1,51 @@
+---
+Name: "ipmi-configure"
+Description: "A task to configure the BMC of a machine from parameters."
+Documentation: |
+  This task uses the ipmi.configure parameters to configure the system BMC.
+
+  The administrator may choose to configure a user, the network pieces, or both.
+
+  Defaults:
+    impi/configure/address = unset
+    impi/configure/gateway = unset
+    impi/configure/ip-mode = dhcp
+    impi/configure/netmask = unset
+    impi/configure/network = false
+    impi/configure/no-bmc-fatal = false
+    impi/configure/reserve-ip = true
+    impi/configure/port = unset
+    impi/configure/user = false
+    impi/configure/username = root
+    impi/configure/password = cr0wBar!
+    impi/configure/userid = unset
+
+Templates:
+  - Name: "Copy ipmi-quirks file"
+    Path: "ipmi-quirks.yaml"
+    ID: "ipmi-quirks.yaml.tmpl"
+  - Name: "Configure BMC"
+    Path: ""
+    ID: "ipmi-configure.sh.tmpl"
+Prerequisites:
+  - ipmi-discover
+RequiredParams:
+  - "ipmi/service-user"
+OptionalParams:
+  - "impi/configure/no-bmc-fatal"
+  - "impi/configure/network"
+  - "impi/configure/user"
+  - "impi/configure/address"
+  - "impi/configure/gateway"
+  - "impi/configure/ip-mode"
+  - "impi/configure/netmask"
+  - "impi/configure/reserve-ip"
+  - "impi/configure/port"
+  - "impi/configure/username"
+  - "impi/configure/password"
+  - "impi/configure/userid"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

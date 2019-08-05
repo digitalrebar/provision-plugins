@@ -1,0 +1,26 @@
+---
+Name: "vmware/esxi-hcl-validated"
+Description: "Status of the ESXi Compatibility Checker verification report"
+Meta:
+  color: "blue"
+  icon: "search"
+  title: "RackN"
+Documentation: |
+  Once the VMware ESXi Compatibility Checker has been completed, this
+  Param will contain the results of the check.  If the machine is
+  marked ``compatible`` by the VMware tools, then the value will be
+  set to ``True`` otherwise, it's ``False``
+
+  If ``True`` then it is implied the machine is compliant with the HCL.
+
+  Note that both this Param and ``vmware/esxi-hcl-completed`` should
+  be set to ``True`` to insure that the tooling ran, and the machine
+  passed validation.
+
+  However, in DevTest situations, you may set the value to ``True`` to
+  allow for subsequent installers to complete successfully, regardless
+  of the actual HCL compatibility check results.
+Schema:
+  type: "boolean"
+  default: false
+Secure: false

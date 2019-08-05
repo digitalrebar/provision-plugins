@@ -1,0 +1,11 @@
+---
+Name: raid-configure
+Description: "Update hardware RAID configurations on a system"
+BootEnv: sledgehammer
+Tasks:
+  - raid-tools-install
+  - raid-configure
+Meta:
+  icon: "disk outline"
+  color: "yellow"
+  title: "RackN Content"

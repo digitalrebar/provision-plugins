@@ -1,0 +1,43 @@
+---
+Name: "esxi/ks-custom-kickstart"
+Description: "VMware vSphere ESXi custom kickstart commands to add."
+Documentation: |
+  This Param allows an operator to create a list of additional "kickstart"
+  directives to apply to generated kickstart file. These directives will
+  be placed **after** the ``network`` template, but before any other
+  ``%pre``, ``%post``, and/or ``%firstboot`` sections.
+
+  If you wish to add additional templates for ``%pre``, ``%post``,
+  and/or ``%firstboot`` sections, use the ``esxi/ks-custom-sections`` param.
+
+  Multiple additional templates can be called with kickstart commands
+  in them.  Below is an example:
+
+    ::
+
+      # YAML example
+      esxi/ks-custom-kickstart:
+        - "my-kickstart-1.ks.tmpl"
+        - "my-kickstart-2.ks.tmpl"
+
+      # JSON example
+      {
+        [
+          "my-kickstart-1.ks.tmpl",
+          "my-kickstart-2.ks.tmpl"
+        ]
+      }
+
+  .. note: **WARNING** Insure that any commands you enter in your templates are valid kickstart directives.
+
+Meta:
+  color: "blue"
+  icon: "hashtag"
+  title: "RackN Content"
+ReadOnly: true
+Secure: false
+Schema:
+  type: "array"
+  default: []
+  items:
+    type: "string"

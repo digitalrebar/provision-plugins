@@ -1,0 +1,18 @@
+---
+Name: "vcf-builder/association"
+Description: "vCF Builder profile that associates the cluster resources together"
+Documentation: |
+  Defines the grouping for the vCloud Foundation Builder association
+  between elements.
+
+  Example:
+    ``digitalrebar-sddc-01``
+
+Schema:
+  type: "string"
+  default: "digitalrebar-sddc-01"
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+  render: "param"

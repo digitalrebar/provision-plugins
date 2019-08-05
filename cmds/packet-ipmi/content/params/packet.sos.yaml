@@ -1,0 +1,12 @@
+---
+Name: "packet/sos"
+Description: "The ssh hostname to access the serial console"
+Documentation: |
+  This parameter is the ssh hostname to use to access the serial console of this machine.
+Schema:
+  type: "string"
+Meta:
+  readonly: "yes"
+  icon: "terminal"
+  color: "blue"
+  title: "RackN Content"

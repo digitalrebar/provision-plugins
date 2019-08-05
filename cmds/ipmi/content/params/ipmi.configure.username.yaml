@@ -1,0 +1,12 @@
+---
+Name: "ipmi/configure/username"
+Description: "Username to create on the BMC"
+Documentation: |
+  Username to create on the BMC
+Schema:
+  type: "string"
+  default: "root"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

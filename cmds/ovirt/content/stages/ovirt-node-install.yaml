@@ -1,0 +1,11 @@
+---
+Name: "ovirt-node-install"
+Description: "Install the Ovirt Node"
+RunnerWait: true
+BootEnv: "ovirt-node-install"
+Tasks:
+  - "ovirt-node-join"
+Meta:
+  icon: "tag"
+  color: "yellow"
+  title: "RackN Content"

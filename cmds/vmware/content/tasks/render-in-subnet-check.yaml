@@ -1,0 +1,22 @@
+---
+Name: "render-in-subnet-check"
+Description: "Render the in-subnet-check.py to local ESXi for use."
+Meta:
+  icon: "money"
+  color: "grey"
+  title: "RackN Content"
+Templates:
+  - Name: "render-in-subnet-check"
+    Path: "/tmp/in-subnet-check.py"
+    ID: "in-subnet-check.py.tmpl"
+  - Name: "chmod-in-subnet-check"
+    Contents: |
+      #!/usr/bin/env sh
+      CHK=/tmp/in-subnet-check.py
+      if [[ -f "$CHK" ]]
+      then
+        chmod 755 $CHK
+      else
+         echo "FATAL: No file '$CHK' rendered on system, can't chmod it"
+         exit 1
+      fi

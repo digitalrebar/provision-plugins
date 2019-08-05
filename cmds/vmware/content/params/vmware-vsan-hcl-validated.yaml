@@ -1,0 +1,14 @@
+---
+Name: "vmware/vsan-hcl-validated"
+Description: "Status of the VSAN HCL compatibility checker validation"
+Meta:
+  color: "blue"
+  icon: "search"
+  title: "RackN"
+Documentation: |
+  Defines if the machine has been validated for VMware vSphere VSAN
+  installation by the validation tool.
+Schema:
+  type: "boolean"
+  default: false
+Secure: false

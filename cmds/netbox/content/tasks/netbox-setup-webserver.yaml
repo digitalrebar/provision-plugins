@@ -1,0 +1,12 @@
+---
+Name: "netbox-setup-webserver"
+Description: "Install and configure the webserver for NetBox"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+Templates:
+  - Name: "netbox-setup-webserver"
+    Contents: ""
+    ID: netbox-setup-webserver.sh.tmpl

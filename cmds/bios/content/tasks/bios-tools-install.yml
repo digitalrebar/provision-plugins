@@ -1,0 +1,46 @@
+---
+Name: "bios-tools-install"
+Description: "Install vendor tools needed to manage BIOS settings"
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: "add-real-install-task"
+    Contents: |
+      #!/usr/bin/env bash
+      {{ template "setup.tmpl" . }}
+      if ! curl -fgL \
+          -o /usr/local/bin/drp-bioscfg \
+          "{{.ProvisionerURL}}/files/plugin_providers/bios/drp-bioscfg.amd64.linux"; then
+          echo "Failed to download drp-bioscfg"
+          exit 1
+      fi
+      chmod 755 /usr/local/bin/drp-bioscfg
+      mfgr="$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')"
+      case $mfgr in
+          'Dell Inc.')
+              drpcli machines set {{.Machine.UUID}} param bios-driver to dell
+              which omconfig && exit 0 || :
+              drpcli machines tasks add {{.Machine.UUID}} at 0 \
+                  dell-dsu-setup \
+                  dell-install-omsa;;
+          'HP'|'HPE')
+              drpcli machines set {{.Machine.UUID}} param bios-driver to hp
+              which conrep && exit 0 || :
+              drpcli machines tasks add {{.Machine.UUID}} at 0 hpe-tools-install;;
+          Lenovo)
+              drpcli machines set {{.Machine.UUID}} param bios-driver to lenovo
+              {{ if .ParamExists "lenovo-onecli-install-target" }}
+              [[ -x {{.Param "lenovo-onecli-install-target"}}/OneCli ]] && exit 0 || :
+              drpcli machines tasks add {{.Machine.UUID}} at 0 lenovo-onecli-install;;
+              {{ else }}
+              echo "Please install the lenovo-support content package"
+              exit 1;;
+              {{ end }}
+          'innotek GmbH')
+              drpcli machines set {{.Machine.UUID}} param bios-driver to none;;
+          *)
+              echo "No idea how to install BIOS tooling for $mfgr"
+              exit 1;;
+      esac

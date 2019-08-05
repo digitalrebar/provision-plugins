@@ -1,0 +1,54 @@
+---
+Name: esxi-670u2-install
+Description: (DEPRECATED) Install BootEnv for ESXi 6.7.0update2
+Documentation: |
+  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documenation.
+               https://provision.readthedocs.io/en/tip/doc/content-packages/vmware.html#vmware-vsphere-tools
+
+  Provides VMware BootEnv for ESXi 6.7.0update2.  For more details, and Download ISO see:
+
+    - https://my.vmware.com/group/vmware/details?downloadGroup=ESXI67U2&productId=742
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Name: esxi-670u2
+  Family: "vmware"
+  Codename: "esxi"
+  Version: "6.7.0u2"
+  IsoFile: VMware-VMvisor-Installer-6.7.0.update02-13006603.x86_64.iso
+  IsoSha256: 73950afff2637470b9d347847b2f21cad5a6992becd8c14324668ac6a6ee0f3f
+OptionalParams:
+  - provisioner-default-password-hash
+BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+Kernel: ../../chain.c32
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain-mac
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi-670u2.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+  - ID: esxi-670u2.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'

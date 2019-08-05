@@ -1,0 +1,35 @@
+---
+# This stage moves to complete once the phone sets the stage to complete.
+Name: "image-deploy-cloud-init"
+BootEnv: "local"
+OptionalParams:
+  - "cloud-init/user-data"
+  - "cloud-init/x509-certs"
+  - "access-keys"
+Templates:
+  - Contents: |
+      {{if .ParamExists "cloud-init/user-data"}}{{.Param "cloud-init/user-data"}}{{end}}
+    Name: "cloud-init-user-data"
+    Path: "{{.Machine.Path}}/2012-03-01/user-data"
+  - Contents: |
+      {{if .ParamExists "cloud-init/x509-certs"}}{{.Param "cloud-init/x509-certs"}}{{end}}
+    Name: "cloud-init-x509-certs"
+    Path: "{{.Machine.Path}}/2012-03-01/meta-data/x509"
+  - Contents: "{{.Machine.UUID}}"
+    Name: "cloud-init-instance-id"
+    Path: "{{.Machine.Path}}/2012-03-01/meta-data/instance-id"
+  - Contents: |
+      {{if .ParamExists "access-keys"}}
+      {{range $key := .Param "access-keys"}}
+      {{$key}}
+      {{end}}
+      {{end}}
+    Name: "cloud-init-public-keys"
+    Path: "{{.Machine.Path}}/2012-03-01/meta-data/public-keys"
+  - Contents: "{{.Machine.Name}}"
+    Name: "cloud-init-local-hostname"
+    Path: "{{.Machine.Path}}/2012-03-01/meta-data/local-hostname"
+Meta:
+  icon: "map"
+  color: "yellow"
+  title: "RackN Content"

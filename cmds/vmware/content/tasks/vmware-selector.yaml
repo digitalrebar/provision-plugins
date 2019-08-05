@@ -1,0 +1,40 @@
+---
+Name: "vmware-selector"
+Description: "Select the ESXi bootenv to install"
+Documentation: |
+  Deprecated in favor of the new ``vmware-esxi-selector`` tooling.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "RackN Content"
+Templates:
+  - Name: "vmware-selector.sh"
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{ template "setup.tmpl" . }}
+
+      {{ if .Param "vmware/esxi-generic" }}
+      echo "Requested to use generic ESXi install"
+      drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-670u1-install;;
+      {{ else }}
+      mfgr="$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')"
+      case $mfgr in
+          'Dell Inc.')
+              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-dellemc-esxi-6.7u1-10764712-a04-install;;
+          'HP'|'HPE')
+              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-hpe-esxi-6.7.0-update1-iso-gen9p-install;;
+          'NEC')
+              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-6.7.1-10302608-nec-6.702-install;;
+          'fujitsu')
+              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-fujitsu-vmvisor-installer-6.7-10-install;;
+          'Lenovo'|'lenovo')
+              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-lenovo_esxi6.7u1-10302608_201810-install;;
+          *)
+              echo "No idea how to install ESXi for $mfgr - selecting generic"
+              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-670u1-install;;
+      esac
+      {{ end }}
+
+      exit 0

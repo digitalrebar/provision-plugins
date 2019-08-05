@@ -1,0 +1,13 @@
+---
+Name: "ipmi/configure/gateway"
+Description: "The gateway IP to use for this machine's BMC"
+Documentation: |
+  The Gateway IP for this machine's BMC.  This will be used
+  if set for the *static* ip-mode configuration.
+Schema:
+  type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

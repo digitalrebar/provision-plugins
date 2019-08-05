@@ -1,0 +1,19 @@
+Name: "discover-virtualbox"
+Description: "Simplest Virtual Box Discovery Workflow"
+Documentation: |
+  This workflow is the most basic provisioning process for DRP
+  when using Virtual Box.
+
+  REMINDER: Change the DefaultWorkflow to use this workflow in Virtual Box!
+
+  Similar to discover-base except that it adds the virtualbox-discover stage.
+
+  NOTE: To enable, upload Sledgehammer as per the sledgehammer BootEnv
+Stages:
+  - "discover"
+  - "virtualbox-discover"
+  - "sledgehammer-wait"
+Meta:
+  icon: "tag"
+  color: "purple"
+  title: "RackN Content"

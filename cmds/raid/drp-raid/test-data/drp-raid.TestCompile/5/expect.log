@@ -1,0 +1,10 @@
+Considering spec raid5:max at 0
+Picking disks heuristically
+Considering disks of type disk speaking protocol sas
+6 candidates of type disk speaking protocol sas chosen
+Picked 6 disks
+Considering spec raid1:min at 1
+Picking disks heuristically
+spec at 1: No disks available
+Spec raid1:min at 1 missing disks
+Started with 2 specs, compiled to 1

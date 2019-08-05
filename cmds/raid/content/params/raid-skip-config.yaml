@@ -1,0 +1,10 @@
+---
+Name: raid-skip-config
+Description: Whether to skip RAID volume configuration
+Schema:
+  type: boolean
+  default: false
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"

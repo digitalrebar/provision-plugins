@@ -1,0 +1,12 @@
+---
+Name: "virtualbox/vram-size-mb"
+Description: "The size of the virtual Video Ram in MB"
+Documentation: |
+  The size of the virtual Video Ram in MB.
+Schema:
+  type: "integer"
+  default: 128
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

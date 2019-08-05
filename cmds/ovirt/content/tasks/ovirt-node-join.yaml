@@ -1,0 +1,13 @@
+---
+Description: "A task to join the ovirt node to the server"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+Name: ovirt-node-join
+Templates:
+- Contents: ""
+  ID: ovirt-node-join.sh.tmpl
+  Name: join the ovirt node to the server
+  Path: ""

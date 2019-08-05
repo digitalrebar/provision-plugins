@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Start DHCP on unconfigured broadcast networks.
+ip a | grep BROADCAST | awk -F: '{ print $2 }' | while read line
+do
+  ip a show $line | grep -q "inet "
+  if [[ $? -ne 0 ]] ; then
+      dhclient --no-pid $line
+  fi
+done
+
+exit 0

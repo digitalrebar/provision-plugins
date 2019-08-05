@@ -1,0 +1,8 @@
+Considering spec jbod:max at 0
+Picking disks heuristically
+Max JBOD, taking the rest of the disks
+Picked 1 disks
+Started with 1 specs, compiled to 1
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -PDMakeJBOD -PhysDrv [:0] -a0
+
+Created jbod on megacli:0

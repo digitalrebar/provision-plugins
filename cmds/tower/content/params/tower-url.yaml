@@ -1,0 +1,13 @@
+Description: AWX / Tower services URL
+Documentation: |
+  This parameter specifies the URL to access the AWX / Tower deployment.
+Meta:
+  color: blue
+  icon: money
+  title: RackN
+  render: "link"
+Name: tower/url
+Schema:
+  type: string
+Secure: false
+

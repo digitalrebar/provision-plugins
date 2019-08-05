@@ -1,0 +1,10 @@
+---
+Name: "ipmi-configure"
+Description: "A stage to configure the IPMI out-of-band management system"
+RunnerWait: true
+Tasks:
+  - "ipmi-configure"
+Meta:
+  icon: "server"
+  color: "yellow"
+  title: "RackN Content"

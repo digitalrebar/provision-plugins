@@ -1,0 +1,26 @@
+---
+Name: esxi/skip-notify
+Description: "**WARNING** Skip the 'notify' back to DRP to set bootenv to local."
+Documentation: |
+  This Param lets the operator skip the notification back to the DRP
+  endpoint during kickstart installation, to set the ``bootenv`` to
+  boot from ``local`` disk.
+
+  .. note: **WARNING** This option means that on install success and
+    reboot, the ESXi node will re-start a new PXE install, unless you
+    intervene to set the ``bootenv`` to ``local``.
+
+  This option is primarily intended for debugging kickstart components
+  that are rendered to the machine via DRP's templating system, or to
+  allow an operator to do continuous ESXi kickstart installations for
+  testing purposes.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

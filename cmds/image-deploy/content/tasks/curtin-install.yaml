@@ -1,0 +1,12 @@
+---
+Name: "curtin-install"
+Description: "A task to install curtin."
+Templates:
+- ID: "curtin-tools-install.sh.tmpl"
+  Name: "Install curtin"
+  Path: ""
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

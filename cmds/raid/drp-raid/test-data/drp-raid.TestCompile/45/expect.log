@@ -1,0 +1,9 @@
+Considering spec raid6:max at 0
+Picking disks heuristically
+Considering disks of type ssd speaking protocol sas
+5 candidates of type ssd speaking protocol sas chosen
+Picked 5 disks
+Started with 1 specs, compiled to 1
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r6 [:0,:1,:2,:3,:4] WB RA -strpsz64 -Force -a0
+
+Created raid6 on megacli:0

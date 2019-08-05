@@ -1,0 +1,12 @@
+---
+Name: "packet/facility"
+Description: "The Packet Facility of this node"
+Documentation: |
+  This parameter describes the Packet facility for this node.
+Schema:
+  type: "string"
+  default: "ewr1"
+Meta:
+  icon: "flag"
+  color: "blue"
+  title: "RackN Content"

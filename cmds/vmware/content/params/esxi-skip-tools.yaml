@@ -1,0 +1,27 @@
+---
+Name: esxi/skip-tools
+Description: Removes the 'tools.t00' module during install
+Documentation: |
+  If set to ``True``, the ``tools.t00`` module will be removed from
+  the modules list at install time of the ESXi node.  Since this module
+  is over 155 MB in size, this increases the speed of the install
+  and reduces the bandwidth needed to for pulling down the modules.
+
+  This is typically used in a dev/test environment where rapid
+  (re)build of ESXi hypervisors is occuring, or in environments
+  where the Guest tools are staged in an alternate location, or
+  injected in to prebuilt images.
+
+  .. note:  Removing the tools may have an impact on installing the
+    tools in the Guest VM instances if you have not made other arrangements
+    to insure the tools are installed through some other means.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

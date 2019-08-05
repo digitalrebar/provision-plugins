@@ -1,0 +1,12 @@
+---
+Name:  "packet-ssh-keys"
+Description: "A task to place the packet ssh keys in the root account"
+Templates:
+  - ID: "packet-ssh-keys.sh.tmpl"
+    Name: "Install packet ssh keys in the root user"
+    Path: ""
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

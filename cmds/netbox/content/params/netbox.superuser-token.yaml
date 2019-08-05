@@ -1,0 +1,10 @@
+---
+Name: netbox/superuser-token
+Description: The superuser token to use.
+Schema:
+  type: string
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"
+  password: "hideme"

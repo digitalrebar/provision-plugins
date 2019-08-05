@@ -1,0 +1,12 @@
+---
+Name: "packet/api-key"
+Description: "The API Key that the plugin will use to access Packet.net"
+Documentation: |
+  The API implies the user and the Project that the plugin will act as.
+Schema:
+  type: "string"
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"
+  password: "hideme"

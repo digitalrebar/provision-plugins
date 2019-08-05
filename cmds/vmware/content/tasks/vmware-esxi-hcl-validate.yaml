@@ -1,0 +1,19 @@
+---
+Name: "vmware-esxi-hcl-validate"
+Description: "A task to run and test for VMware ESXi HCL compatibility"
+Documentation: |
+  This task will run the VMware ESXi HCL compatibility checker and determine
+  if the Machine meets the HCL compatibility for ESXi.
+
+    - see: https://labs.vmware.com/flings/esxi-compatibility-checker
+
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Templates:
+- Contents: ""
+  ID: "vmware-esxi-hcl-validate.sh.tmpl"
+  Name: "Vmware ESXi HCL Compatibility Checker"
+  Path: ""

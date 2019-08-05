@@ -1,0 +1,8 @@
+Considering spec raid5:max at 0
+Picking disks heuristically
+Considering disks of type ssd speaking protocol sas
+Not enough disks to make raid5: have 1, want at least 3
+Not enough of type ssd speaking protocol sas (want max, have 1)
+spec at 0: No disks available
+Spec raid5:max at 0 missing disks
+Started with 1 specs, compiled to 0

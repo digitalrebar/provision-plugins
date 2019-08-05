@@ -1,0 +1,11 @@
+---
+Name: "eikon"
+Description: "Deploy an image within sledgehammer"
+BootEnv: "sledgehammer"
+Tasks:
+  - "eikon-install"
+  - "eikon-deploy"
+Meta:
+  icon: "image"
+  color: "yellow"
+  title: "RackN Content"

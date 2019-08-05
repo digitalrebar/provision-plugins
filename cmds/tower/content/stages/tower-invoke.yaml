@@ -1,0 +1,13 @@
+Description: Invoke an AWX / Tower job template against a machine
+Documentation: |-
+  This stage will invoke an AWX/ Tower Job Template against a machine.  The specific
+  job template is specified by the tower/job-template parameter.
+Meta:
+  color: yellow
+  icon: money
+  title: RackN
+Name: tower-invoke
+Reboot: false
+RunnerWait: true
+Tasks:
+  - tower-invoke

@@ -1,0 +1,18 @@
+---
+Name: esxi/disk-install-override-options
+Description: Defines the options to apply to the esxi/disk-install-override strategy.
+Documentation: |
+  Sets addtional options to add to the esxi/disk-install-override strategy
+  that is defined.  See that param for more documentation.
+
+  Defaults to setting `--overwritevmfs` for the Kickstart `install` command.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: "--overwritevmfs"
+Secure: false

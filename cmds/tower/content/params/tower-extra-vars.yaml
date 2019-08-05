@@ -1,0 +1,29 @@
+Description: AWX / Tower invoke call extra variables
+Documentation: |
+  This parameter defines an untype object that gets passed to AWX / Tower
+  as the extra-vars field of a job template request.  The object can any valid
+  JSON or YAML.
+
+  An example yaml format:
+
+  ::
+
+    var1: "string"
+    var2: 33
+    var3:
+      - arr-item1
+      - arr-item2
+    var4:
+      mapfield1: "string"
+      mapfield2: true
+
+Meta:
+  color: blue
+  icon: money
+  title: RackN
+Name: tower/extra-vars
+Schema:
+  default: {}
+  type: object
+Secure: false
+

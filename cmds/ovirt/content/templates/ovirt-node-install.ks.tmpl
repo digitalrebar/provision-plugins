@@ -1,0 +1,17 @@
+liveimg --url={{.Env.InstallUrl}}/ovirt-node-ng-image.squashfs.img
+
+clearpart --all
+autopart --type=thinp
+rootpw --iscrypted {{if .ParamExists "provisioner-default-password-hash"}}{{.Param "provisioner-default-password-hash"}}{{else}}$6$drprocksdrprocks$upAIK9ynEEdFmaxJ5j0QRvwmIu2ruJa1A1XB7GZjrnYYXXyNr4qF9FttxMda2j.cmh.TSiLgn4B/7z0iSHkDC1{{end}}
+timezone --utc UTC
+zerombr
+text
+
+reboot
+
+%post --erroronfail
+nodectl init
+
+{{template "reset-workflow.tmpl" .}}
+{{template "runner.tmpl" .}}
+%end

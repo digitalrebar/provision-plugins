@@ -1,0 +1,27 @@
+---
+Name: esxi/install-datastore
+Description: "Set the installed datastore location on ESXi"
+Documentation: |
+  This location defines the ESXi datastore that will be used for
+  storing install logs, RackN related status files and information,
+  and the scratch partition that will be used.
+
+  By default that location will be on the first found (install) disk
+  and default to:
+
+    * /vmfs/volumes/datastore1
+
+  It's important to note that this location will contain all copies
+  of the Weasel kickstart install logs, artifacts that RackN needs
+  for installation/reference, and the scratch partition.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+  password: showable
+ReadOnly: true
+Schema:
+  type: string
+  default: /vmfs/volumes/datastore1
+Secure: false

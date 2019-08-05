@@ -1,0 +1,11 @@
+---
+Name: "packet/project-id"
+Description: "The Packet Project ID"
+Documentation: |
+  This parameter describes the Packet Project ID for this node.
+Schema:
+  type: "string"
+Meta:
+  icon: "flag"
+  color: "blue"
+  title: "RackN Content"

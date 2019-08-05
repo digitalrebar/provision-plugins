@@ -1,0 +1,39 @@
+---
+Name: esxi/network-firstboot-vlan
+Description: Set the final installed VLANID on first boot for ESXi.
+Documentation: |
+  Sets the VLAN tag ID (VLANID) for the installed ESXi instance on
+  first boot.
+
+  Note that there are three possible places you may want/need to set a
+  ``VLANID``:
+
+    1. At PXE boot time for the kernel - use ``kernel-options`` and ``vlanid=N`` syntax
+    2. During the installation phase in the kickstart process - use the Param ``esxi/network-kickstart-vlan``
+    3. After final reboot, to transition to a "production" or similar network, use the Param ``esxi/network-firstboot-vlan``
+
+  In many cases, the provisioning network may or may not be a VLAN tagged
+  network, which may very likely be different from the final installed
+  ESXi production use case network configuration.  On ``firstboot`, you
+  can specify values separately from the installation phases to support
+  network transitions from install to production use.
+
+  If you set a different value for the ``firstboot`` stage VLANID, you
+  must also insure the network settings are correctly reflected for the
+  new VLAN.  Your options are to use DHCP or Manual modes in this case
+  (see ``esxi/network-type`` Param).  Convert would not be correct in
+  this case as the provisioning network is likely to not be the same
+  IP address space as a production network when changing VLANIDs.
+
+  Valid values as defined by VMware for this field are from ``1`` to ``4095``.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: number
+  minimum: 1
+  maximum: 4095
+Secure: false

@@ -1,0 +1,12 @@
+---
+Name: "packet/always-pxe"
+Description: "Is the node always PXEing"
+Documentation: |
+  This parameter indicates if the node should always pxe.
+Schema:
+  type: "boolean"
+  default: true
+Meta:
+  icon: "options"
+  color: "blue"
+  title: "RackN Content"

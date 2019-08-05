@@ -1,0 +1,21 @@
+---
+Name: "vmware-devtest"
+Description: "Dev/Test profile for the various VMware content pieces"
+Documentation: |
+  Typically clone this profile and remove/modify the Params according
+  to your DevTest needs.  This is intended as a helper profile for use
+  when doing development testing of the various bits of the VMware
+  content bundle.
+Meta:
+  color: "purple"
+  icon: "pin"
+  title: "VMware DevTest Profile"
+  origin: "RackN"
+Params:
+  vmware/esxi-version: "esxi_670u2-13006603_vmware"
+  vmware/esxi-hcl-location: "/tmp/compchecker/compchecker.py"
+  vmware/esxi-hcl-completed: true
+  vmware/esxi-hcl-validated: true
+  vmware/vsan-hcl-completed: true
+  vmware/vsan-hcl-validated: true
+ReadOnly: true

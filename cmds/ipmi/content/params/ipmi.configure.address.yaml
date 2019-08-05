@@ -1,0 +1,15 @@
+---
+Name: "ipmi/configure/address"
+Description: "BMC Address to configure on this machine"
+Documentation: |
+  The *ipmi-configure* stage will use this value to set the BMC's
+  address to this value.
+
+  This is required for static ip-mode configuration.
+Schema:
+  type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

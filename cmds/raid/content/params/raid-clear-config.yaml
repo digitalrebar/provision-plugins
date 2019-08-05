@@ -1,0 +1,10 @@
+---
+Name: raid-clear-config
+Description: Whether to clear current RAID volume configuration before configuration
+Schema:
+  type: boolean
+  default: false
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"

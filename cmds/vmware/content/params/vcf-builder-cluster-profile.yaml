@@ -1,0 +1,14 @@
+---
+Name: "vcf-builder/cluster-profile"
+Description: "The vCloud Foundation Builder Cluster information"
+Documentation: |
+  This parameter is used to identify the Profile name to record
+  the vCloud Foundation Builder build information.
+Schema:
+  type: "string"
+  default: "vcf-builder-cluster-profile"
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+  render: "param"

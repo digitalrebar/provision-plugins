@@ -1,0 +1,24 @@
+---
+Name: esxi/ntp-conf
+Description: Allow overriding the kickstart NTP Config template.
+Documentation: |
+  This is a simple string type that defines the name of a user created
+  template file that contains your NTP configuration settings.  The current
+  `/etc/ntp.conf` template is somewhat rigid and only allows injecting the
+  NTP servers to use.  If you need more advanced customizations, use this
+  to create an `ntp.conf` file for your needs.
+
+  You may still use the `ntp-servers` array if desired in your own template.
+  See the Kickstart template on how to use the Param to inject in your own
+  template (`esxi-install-py3.ks.tmpl`).
+
+  The template you specify should be a valid `ntp.conf` format.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+Secure: false

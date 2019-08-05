@@ -1,0 +1,17 @@
+---
+Name: esxi/skip-reboot
+Description: "**WARNING** Skip the reboot of the installer."
+Documentation: |
+  This Param lets the operator skip the reboot in to the installed
+  ESXi node.  Typically used for debugging purposes to examine
+  the installed node, prior to it rebooting.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

@@ -1,0 +1,27 @@
+# Adds custom templates for extending 'esxi/disk-install-override' strategies
+#############################################################################
+# Uses the "esxi/disk-install-override" Param to specify various additional
+# custom functions to include.  See Param documentation for data structure
+# and usage.
+#
+# This is intended to inject ESXi shell functions as "name() { ... }" stanzas
+# in to the the 'disk-install-override.sh.tmpl' template which allows you to
+# define custom strategies to match the disk to install to.  Use the
+# 'esxi/disk-install-override' Param to call the custom strategy.
+#
+# Custom functions MUST set the shell global variable "SET_DISK" to a valid
+# kickstart disk directive (eg '--firstboot', '--disk=<FOO>', etc.) as
+# defined in the ESXi install documentation, for example:
+#    https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.esxi.upgrade.doc/GUID-61A14EBB-5CF3-43EE-87EF-DB8EC6D83698.html
+
+{{ $dot := . -}}
+{{range $index, $template := .Param "esxi/disk-install-override-custom" -}}
+
+#############################################################################
+# injecting custom template: {{ squote $template }}
+{{ $dot.CallTemplate $template $dot }}
+# end injection of template: {{ squote $template }}
+
+{{ end -}}
+### end custom template injection
+#############################################################################

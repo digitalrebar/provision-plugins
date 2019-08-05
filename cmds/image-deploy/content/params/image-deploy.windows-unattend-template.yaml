@@ -1,0 +1,11 @@
+---
+Name: "image-deploy/windows-unattend-template"
+Description: "The template to use for the unattend.xml"
+Documentation: |
+  The template to use for unattend.xml file.
+Schema:
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

@@ -1,0 +1,17 @@
+---
+Name: esxi/network-firstboot-vmk
+Description: ESXi network device name for the firstboot configuration.
+Documentation: |
+  Use this param to specify the device to plumb the network configuration up
+  with post install.  By default we assume "vmk0", however, this may not
+  be correct.  This param allows the operator to override the Management NIC
+  for the installed OS.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: vmk0
+Secure: false

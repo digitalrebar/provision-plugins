@@ -1,0 +1,5 @@
+---
+Name: "kvm-test/storage-pool"
+Description: "The storage pool images should be created in"
+Schema:
+  type: string

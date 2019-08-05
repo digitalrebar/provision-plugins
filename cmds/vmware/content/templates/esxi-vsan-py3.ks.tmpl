@@ -1,0 +1,103 @@
+#
+# Install VSAN on ESXi via kickstart
+# VMware vSphere ESXi Kickstart - Python 3 based
+#
+
+# Accept the VMware End User License Agreement
+vmaccepteula
+
+# Set the root password for the DCUI and Tech Support Mode
+rootpw --iscrypted {{if .ParamExists "provisioner-default-password-hash"}}{{ .Param "provisioner-default-password-hash" }}{{else}}$6$rebar$HBaBj/uDmsQMEw4Si6eja9Yba3rhB73Na36hbrp9KxDHm6s5veeWyXlsUkoxRACtP47978iiidziRdsYUC7gC/{{end}}
+
+# ESXi license to apply to the system
+{{if .ParamExists "esxi/license"}}serialnum --esx={{ .Param "esxi/license" }}{{else}}# no license specified, installing in evaluation mode{{end}}
+
+# Install on the first local disk available on machine
+install --firstdisk --overwritevmfs
+
+# Set the network to DHCP on the first network adapter
+network --bootproto=dhcp --device={{ .Param "esxi/vmnic-device" }}
+
+reboot
+
+# Updating the machine in dr-provision has to be done as part of the %pre
+# so that the esxi firewall does not eat our requests.
+# also note that this is python3.
+%pre --interpreter=python
+import urllib,urllib.request,socket, ssl
+url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}'
+
+# There is nothing we can do with a system once ESXi is installed.
+# So, just force the machine to an empty workflow, the none stage, and the local bootenv.
+patch = b'''
+[
+{"op":"replace","path":"/Workflow","value":""},
+{"op":"replace","path":"/Stage","value":"none"},
+{"op":"replace","path":"/BootEnv","value":"local"}
+]
+'''
+req = urllib.request.Request(url, method='PATCH',data=patch)
+req.add_header('Content-Type', 'application/json')
+req.add_header('Authorization','Bearer {{.GenerateInfiniteToken}}')
+urllib.request.urlopen(req,context=ssl.SSLContext(ssl.PROTOCOL_SSLv23))
+
+
+%firstboot --interpreter=busybox
+{{ template "esxi-firstboot.tmpl" .}}
+
+echo "SECTION: %firstboot --interpreter=busybox"
+
+vsan_syslog_key = "VSAN-KS"
+
+logger $vsan_syslog_key " Reconfiguring VSAN Default Policy"
+esxcli vsan policy setdefault -c vdisk -p "((\"hostFailuresToTolerate\" i1) (\"forceProvisioning\" i1))"
+esxcli vsan policy setdefault -c vmnamespace -p "((\"hostFailuresToTolerate\" i1) (\"forceProvisioning\" i1))"
+
+logger $vsan_syslog_key "Enabling VSAN Traffic on vmk0"
+esxcli vsan network ipv4 add -i vmk0
+
+
+# assign license
+{{if .ParamExists "vsan/license"}}vim-cmd vimsvc/license --set {{ .Param "vsan/license" }}{{else}}# no license specified, installing in evaluation mode{{end}}
+
+%firstboot --interpreter=python
+print("SECTION: %firstboot --interpreter=busybox")
+
+import commands, os, uuid, syslog
+
+vsan_syslog_key = "VSAN-KS"
+debug = False
+
+# Build VSAN Disk Group command based on vdq -q output
+def createVsanDiskGroup():
+ vdqoutput = eval(commands.getoutput("/sbin/vdq -q"))
+ md = []
+ ssd = ''
+ for i in vdqoutput:
+ if i['State'] == 'Eligible for use by VSAN':
+ if i['Reason'] == 'Non-local disk':
+ syslog.syslog(vsan_syslog_key + " Setting enable_local and reclaiming " + i['Name'])
+ if debug == False:
+ os.system("esxcli storage nmp satp rule add -s VMW_SATP_LOCAL -o enable_local -d " + i['Name'])
+ os.system("esxcli storage core claiming reclaim -d " + i['Name'])
+ if i['IsSSD'] == '1':
+ ssd = i['Name']
+ else:
+ md.append(i['Name'])
+
+ diskgroup_cmd = 'esxcli vsan storage add -s ' + ssd + ' -d ' + ' -d '.join(md)
+ syslog.syslog(vsan_syslog_key + " Creating VSAN Disk Group using SSD: " + ssd +  " MD: " + ', '.join(md))
+ if debug == False:
+ os.system(diskgroup_cmd)
+
+# Create VSAN Cluster (required only for first ESXi node)
+def createVsanCluster():
+ # generate UUID for VSAN Cluster
+ vsan_uuid = str(uuid.uuid4())
+
+ syslog.syslog(vsan_syslog_key + " Creating VSAN Cluster using UUID: " + vsan_uuid)
+ if debug == False:
+ os.system("esxcli vsan cluster join -u " + vsan_uuid)
+
+createVsanDiskGroup()
+createVsanCluster()

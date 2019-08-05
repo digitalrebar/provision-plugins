@@ -1,0 +1,25 @@
+---
+Name: "vmware-esxi-install"
+BootEnv: "sledgehammer"
+Description: "Install VMware vSphere ESXi if Compatibility Checks pass"
+Documentation: |
+  This stage will install VMware vSphere ESXi on the machine of the
+  ESXi and VSAN compatibility checks have succeeded (both set to ``True``).
+
+  Future implementations of this should allow for a ``force-install`` option
+  to allow installation even if the compatibility checks have failed.
+
+ReadOnly: true
+Reboot: false
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Tasks:
+  - "vmware-esxi-install"
+OptionalParams: []
+Profiles: []
+RequiredParams: []
+Tasks: []
+Templates: []

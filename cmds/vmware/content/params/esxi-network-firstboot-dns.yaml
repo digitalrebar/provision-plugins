@@ -1,0 +1,21 @@
+---
+Name: esxi/network-firstboot-dns
+Description: ESXi network configuration parameter for DNS Nameservers
+Documentation: |
+  Use this param with ``esxi/network-firstboot-type`` set to ``manual`` to specify
+  the ESXi nodes network configuration post-kickstart.  NOTE, you must
+  verify that the IP addressing and Layer 2 characteristics are correct
+  for proper network connectivity post-reboot.
+
+  Up to two DNS nameservers may be specified by separating them with a
+  comma (``,``) without any spaces (eg. ``1.1.1.1,1.0.0.1``
+
+  The two nameserver and format limitation is a VMware defined limit.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+Secure: false

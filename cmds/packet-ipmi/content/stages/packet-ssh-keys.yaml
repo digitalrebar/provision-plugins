@@ -1,0 +1,10 @@
+---
+Name: "packet-ssh-keys"
+Description: "Stage to add ssh keys from the Packet.net environment"
+RunnerWait: true
+Tasks:
+  - "packet-ssh-keys"
+Meta:
+  icon: "rocket"
+  color: "yellow"
+  title: "RackN Content"

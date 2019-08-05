@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SSH_KEYS=$(curl https://metadata.packet.net/2009-04-04/meta-data/public-keys)
+if [[ $SSH_KEYS == "Packet::NotFound" ]] ; then
+    echo "Finished, but not a Packet machine.  Nothing to do return success"
+    exit 0
+fi
+
+echo "Setting Packet Root ssh keys"
+
+mkdir -p /root/.ssh
+cat >>/root/.ssh/authorized_keys <<EOFSSHACCESS
+### BEGIN Packet Keys GENERATED CONTENT
+${SSH_KEYS}
+### END Packet Keys GENERATED CONTENT
+EOFSSHACCESS
+chmod 600 /root/.ssh/authorized_keys
+
+echo "Finished successfully"
+exit 0

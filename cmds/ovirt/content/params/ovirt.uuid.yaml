@@ -1,0 +1,11 @@
+---
+Name: "ovirt/uuid"
+Description: "UUID of this VM in ovirt"
+Documentation: |
+  This parameter is used by the Ovirt Plugin to access the API
+Schema:
+  type: "string"
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

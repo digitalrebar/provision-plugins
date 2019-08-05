@@ -1,0 +1,14 @@
+---
+Description: "Stage to trigger the 'complete' callback"
+Documentation: |
+  This stage will cause the 'complete' callback to be triggered.
+  This assumes that the callback is configured.
+Meta:
+  color: blue
+  icon: sitemap
+Name: callback-complete
+Params:
+  callback/action: complete
+Tasks:
+- callback-task
+

@@ -1,0 +1,16 @@
+Description: AWX / Tower Job Id
+Documentation: |
+  Once tower-invoke is called, the Job ID from the call is stored on the machine.
+
+  This Job ID is used by the tasks to validate that the job is running or complete.
+
+  This is used to determine if reboots have occured and if a new job is needed or not.
+Meta:
+  color: blue
+  icon: clock
+  title: RackN
+Name: tower/job-id
+Schema:
+  type: integer
+Secure: false
+

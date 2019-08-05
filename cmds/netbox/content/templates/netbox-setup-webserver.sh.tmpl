@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Include the helpers
+{{template "setup.tmpl" .}}
+
+set -e
+
+echo "Install nginx"
+yum install -y nginx
+
+chown -R nginx:nginx /opt/netbox
+
+echo "Add netbox config"
+cat > /etc/nginx/default.d/netbox.conf <<EOF
+    client_max_body_size 25m;
+
+    location /static/ {
+        alias /opt/netbox/netbox/static/;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8001;
+    }
+EOF
+
+sed -i '/^[ \t]*location \//c\location \/jjj {' /etc/nginx/nginx.conf
+
+cat > /etc/systemd/system/nginx.service <<EOF
+[Unit]
+Description=The NGINX HTTP and reverse proxy server
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t
+ExecStart=/usr/sbin/nginx
+ExecReload=/bin/kill -s HUP \$MAINPID
+ExecStop=/bin/kill -s QUIT \$MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+echo "Start nginx service"
+systemctl daemon-reload
+systemctl enable nginx
+systemctl start nginx
+
+echo "Install gunicorn"
+pip3 install gunicorn
+
+echo "Configure gunicorn"
+cat > /opt/netbox/gunicorn_config.py <<EOF
+command = '/usr/bin/gunicorn'
+pythonpath = '/opt/netbox/netbox'
+bind = '127.0.0.1:8001'
+workers = 3
+user = 'nginx'
+EOF
+
+echo "Install supervisord"
+yum install -y supervisor
+
+echo "Configure supervisord"
+cat > /etc/supervisord.d/netbox.ini <<EOF
+[program:netbox]
+command = gunicorn -c /opt/netbox/gunicorn_config.py netbox.wsgi
+directory = /opt/netbox/netbox/
+user = nginx
+EOF
+
+echo "Start supervisord"
+systemctl start supervisord
+systemctl enable supervisord
+
+exit 0

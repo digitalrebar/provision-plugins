@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+###
+#  Set the Machine to the VMware vSphere ESXi BootEnv that is
+#  specified in the "vmware/esxi-version" Param.
+###
+
+{{ template "setup.tmpl" .}}
+
+BE={{ .Param "vmware/esxi-version" }}
+
+drpcli machines bootenv {{.Machine.UUID}} ${BE}-install

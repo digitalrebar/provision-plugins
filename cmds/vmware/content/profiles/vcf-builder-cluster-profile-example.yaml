@@ -1,0 +1,36 @@
+---
+Name: "vcf-builder-cluster-profile-example"
+Description: "(clone me) Sample profile for vCloud Foundation Builder cluster"
+Documentation: |
+  Sets some basic Param values that are used for building the vCloud
+  Foundating Builder bringup JSON.
+
+  ======================================== ======================================
+  param                                    notes
+  ======================================== ======================================
+  ``vcf-builder/cluster-profile``          defines name of Profile to use
+  ``vcf-builder/association``              sets the cluster resources association
+  ``vcf-builder/esxiCredentials-username`` username for ESXi machines in cluster
+  ``vcf-builder/esxiCredentials-password`` password for ESXi machines in cluster
+  ``vcf-builder/vSwitch``                  the vSwitch for the cluster members
+  ======================================== ======================================
+
+  This profile is intended to be cloned and applied to a Machine(s) for
+  subsequent use.  You can then remove/modify the values appropriate to
+  your use case.
+
+  If you clone this to ``vcf-builder-cluster-profile`` the default values
+  may work fine for testing purposes.
+
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+  render: "profile"
+Params:
+  vcf-builder/cluster-profile: "vcf-builder-cluster-profile"
+  vcf-builder/association: "digitalrebar-sddc-01"
+  vcf-builder/esxiCredentials-username: "root"
+  vcf-builder/esxiCredentials-password: "RocketSkates"
+  vcf-builder/vSwitch: "vSwitch0"
+

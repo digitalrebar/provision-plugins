@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+# Fix up hostname for now.
+if grep -q "ovirt-engine" /etc/hosts ; then
+  sed -i '/ovirt-engine/c\{{.Machine.Address}} ovirt-engine' /etc/hosts
+else
+echo "{{.Machine.Address}} ovirt-engine" >> /etc/hosts
+fi
+
+engine-setup --config=answer.txt
+

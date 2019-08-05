@@ -1,0 +1,12 @@
+Description: Delete a machine from AWX / Tower
+Documentation: |-
+  This stage will delete a machine from AWX / Tower.
+Meta:
+  color: yellow
+  icon: money
+  title: RackN
+Name: tower-delete
+Reboot: false
+RunnerWait: true
+Tasks:
+  - tower-delete

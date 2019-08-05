@@ -1,0 +1,17 @@
+---
+Name: "ipmi/configure/reserve-ip"
+Description: "Creates a DRP reservation for the BMC"
+Documentation: |
+  Set to true to enable the DRP to create a Reservation for the
+  BMC's MAC address and IP.  This is the default.
+
+  Set to false to skip the creation of a Reservation for the
+  BMC's MAC address and IP.
+Schema:
+  type: "boolean"
+  default: true
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

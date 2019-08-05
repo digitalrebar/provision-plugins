@@ -1,0 +1,55 @@
+---
+Name: esxi-hpe-esxi-6.7.0-update1-iso-gen9p-install
+Description: (DEPRECATED) Install BootEnv for HPE Gen9+ for ESXi 6.7.0u1 - 10302608
+Documentation: |
+  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documenation.
+               https://provision.readthedocs.io/en/tip/doc/content-packages/vmware.html#vmware-vsphere-tools
+
+  Provides custom VMware BootEnv for HPE specific hardware and drivers.  For
+  more details, and Download ISO see:
+
+    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-HPE&productId=742
+
+Meta:
+  color: yellow
+  icon: zip
+  title: RackN Content
+OS:
+  Name: esxi-hpe-esxi-6.7.0-update1-iso-gen9p
+  Family: vmware
+  Codename: esxi
+  Version: custom
+  IsoFile: VMware-ESXi-6.7.0-Update1-11675023-HPE-Gen9plus-670.U1.10.4.0.19-Apr2019.iso
+  IsoSha256: 1b39904356b5c4cf14b9ed8b30cba39011a95b23a140d30ad79e666cb19d3f53
+OptionalParams:
+  - provisioner-default-password-hash
+BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+Kernel: ../../chain.c32
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain-mac
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi-hpe-esxi-6.7.0-update1-iso-gen9p.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+  - ID: esxi-hpe-esxi-6.7.0-update1-iso-gen9p.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'

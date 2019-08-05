@@ -1,0 +1,57 @@
+# set the kickstart to configure the network on the ESXi instance
+#
+# uses the value of the Param "esxi/network-kickstart-type"
+#
+# "dhcp"
+#   the default use the intial DHCP address, and continue to rely
+#   on DHCP for our addressing
+#
+# "convert"
+#   uses the DHCP assigned initial addressing info and converts it
+#   to manual assignment after first boot
+#
+# "manual"
+#   define addressing via additional Params set by operator
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+#### TODO:  * notify DRP endpoint to set DHCP lease to reservation
+####          if we use "convert" mode
+VLAN={{ if .ParamExists "esxi/network-kickstart-vlan" }}--vlanid={{ .Param "esxi/network-kickstart-vlan" }}{{ end }}
+NIC={{ .Param "esxi/vmnic-device" }}
+{{ $networkconfig := "echo \"network --bootproto=${BOOTPROTO} --addvmportgroup=true --device=${NIC} --ip=${IPADDR} --netmask=${NETMASK} --gateway=${GATEWAY} --nameserver=${DNS} --hostname=${HOSTNAME} ${VLAN}\" >> /tmp/kickstart-customizations.cfg" -}}
+
+{{ if eq (.Param "esxi/network-kickstart-type") "convert" -}}
+# Setting network type values for type:  'convert'
+# extract network info from dhcp bootup values
+# VMK_INT is not the same as what the NIC will be
+VMK_INT="vmk0"
+VMK_LINE=$(localcli network ip interface ipv4 get | grep "^${VMK_INT} ")
+IPADDR=$(echo "${VMK_LINE}" | awk '{print $2}')
+NETMASK=$(echo "${VMK_LINE}" | awk '{print $3}')
+GATEWAY=$(esxcfg-route | awk '{print $5}')
+DNS=$(localcli network ip dns server list | grep -v "^NameServerList" | sed 's/, /,/g' | awk '{print $NF}')
+HOSTNAME={{.Machine.Name}}
+BOOTPROTO="static"
+{{ $networkconfig -}}
+
+{{- else if eq (.Param "esxi/network-kickstart-type") "manual" -}}
+# Setting network type values for type:  'manual'
+# (DNS is comma separated list, no spaces)
+IPADDR={{ .Param "esxi/network-kickstart-ipaddr" }}
+NETMASK={{ .Param "esxi/network-kickstart-netmask" }}
+GATEWAY={{ .Param "esxi/network-kickstart-gateway" }}
+DNS={{ .Param "esxi/network-kickstart-dns" }}
+HOSTNAME={{ .Param "esxi/network-kickstart-hostname" }}
+BOOTPROTO="static"
+{{ $networkconfig -}}
+
+{{- else if eq (.Param "esxi/network-kickstart-type") "dhcp" -}}
+# Setting network type values for type:  'dhcp'
+BOOTPROTO="dhcp"
+echo "network --bootproto=${BOOTPROTO} --device=${NIC}" >> /tmp/kickstart-customizations.cfg
+
+{{- else -}}
+
+# FATAL FATAL FATAL:  unknown 'esxi/network-type' ('{{ .Param "esxi/network-kickstart-type" }}') specified
+{{ end -}}

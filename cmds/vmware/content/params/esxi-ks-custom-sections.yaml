@@ -1,0 +1,74 @@
+---
+Name: "esxi/ks-custom-sections"
+Description: "VMware vSphere ESXi custom kickstart configurations to apply."
+Documentation: |
+  This Param allows an operator to create a list of additional Templates
+  to include during the ESXi kickstart installation phase.  Kicstarts support
+  three additional installation phases supported by this Param:
+
+    - ``%pre``
+    - ``%post``
+    - ``%firstboot``
+
+  Each phase can use ``busybox`` (shell) or ``python`` interpreter to implement
+  customizations. This results in the "phase" types that you can set as follows:
+
+    - ``pre-busybox``
+    - ``pre-python``
+    - ``post-busybox``
+    - ``post-python``
+    - ``fistboot-busybox``
+    - ``fistboot-python``
+
+  .. note: At this time, this tooling does not support the ``%post --nochroot``
+    capability.
+
+  To inject custom *kickstart* directives, see the ``esxi/ks-custom-kickstart``
+  param.
+
+  Each "phase" has a an array of various templates that can be injected in
+  that given phase to build up the Kickstart file.  Below is an example:
+
+    ::
+
+      # YAML example
+      esxi/ks-custom-sections:
+        pre-busybox:
+          - "my-pre-busybox-chunk1.ks.tmpl"
+          - "my-pre-busybox-chunk2.ks.tmpl"
+        post-python:
+          - "my-post-python3-chunk2.ks.tmpl"
+        firstboot-busybox:
+          - "my-fistboot-busybox-chunk1.ks.tmpl"
+
+      # JSON example
+      {
+        "firstboot-busybox": [
+          "my-fistboot-busybox-chunk1.ks.tmpl"
+        ],
+        "post-python": [
+          "my-post-python3-chunk2.ks.tmpl"
+        ],
+        "pre-busybox": [
+          "my-pre-busybox-chunk1.ks.tmpl",
+          "my-pre-busybox-chunk2.ks.tmpl"
+        ]
+      }
+
+  .. note: **WARNING** for "python" interpreter template types, you must
+    insure you use the correct python2 or python3 code for the given
+    version of ESXi you are kickstart installing. Don't blame us for that ...
+
+Meta:
+  color: "blue"
+  icon: "hashtag"
+  title: "RackN Content"
+ReadOnly: true
+Secure: false
+Schema:
+  default: {}
+  type: object
+  additionalProperties:
+    type: array
+    items:
+      type: string

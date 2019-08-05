@@ -1,0 +1,11 @@
+---
+Name: "virtualbox/vm-path"
+Description: "The path to store VMs at.  It will default to '~user/VirtualBox VMs'."
+Documentation: |
+  This is the path to store vms.
+Schema:
+  type: "string"
+Meta:
+  icon: "user circle"
+  color: "blue"
+  title: "RackN Content"

@@ -1,0 +1,18 @@
+---
+Name: "vcf-builder-settings"
+Description: "A task to set the vCloud Foundation Builder JSON structures"
+Documentation: |
+  This task will set the JSON structures needed for an ESXi node
+  to be included in the vCloud Foundation Builder built cluster.
+  It must be run on Sledgehammer, prior to ESXi being installed.
+
+Meta:
+  color: "yellow"
+  feature-flags: "sane-exit-codes"
+  icon: "cloud"
+  title: "RackN Content"
+Templates:
+- Contents: ""
+  ID: "vcf-builder-settings.sh.tmpl"
+  Name: "vCloud Foundation Builder Settings"
+  Path: ""

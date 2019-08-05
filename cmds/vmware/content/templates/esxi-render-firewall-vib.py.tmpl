@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+# Render the base64 encoded Param as a file on the system
+
+import base64, sys, os
+
+rackn_dir ="{{ .Param "esxi/install-datastore" }}/rackn"
+if not os.path.isdir(rackn_dir):
+    os.mkdir(rackn_dir)
+
+vib_file_output = {{ if .ParamExists "esxi/vib-drpy-firewall" }}"{{ .Param "esxi/vib-drpy-firewall"}}"{{ else }}rackn_dir + "/firewall.vib"{{ end }}
+vib_file_content = """{{ template "DRP-Firewall-Rule.vib.base64.tmpl" .}}"""
+if not vib_file_content:
+  sys.exit('No base64 encoded data found in tmplate "esxi-vib-fw.base64.tmpl".')
+
+try:
+   vib_file_content=base64.b64decode(vib_file_content)
+   with open(vib_file_output,"wb") as f:
+        f.write(vib_file_content)
+except Exception as e:
+   print(str(e))
+
+print("Installing VIB and enabling rule ...")
+os.system("localcli software vib install -v " + vib_file_output  + " -f")
+os.system("localcli network firewall refresh")

@@ -1,0 +1,57 @@
+---
+Name: esxi/network-kickstart-type
+
+Description: Specifies the kickstart network config mode for ESXi node.
+Documentation: |
+  This Param specifies how the ESXi node should be configured for it's
+  network interface during kickstart installation.  The supported mode types are:
+
+    =======  ======================================================
+    type     notes
+    =======  ======================================================
+    dhcp     **(default)** requests IP info via DHCP service
+    convert  converts the existing DHCP lease to a static assignment
+    manual   operator provides values via additonal params
+    =======  ======================================================
+
+  If set to ``manual`` use the following Params to configure the network
+
+    =========================  ===============================================
+    param                      notes
+    =========================  ===============================================
+    ``esxi/network-ipaddr``    sets the IP Address
+    ``esxi/network-netmask``   sets the subnet Netmask
+    ``esxi/network-gateway``   sets the Default Gateway
+    ``esxi/network-dns``       sets DNS server(s) (comma, no spaces separated)
+    ``esxi/network-hostname``  defines nodes Hostname
+    =========================  ===============================================
+
+  All values must be specified for "manual" type.
+
+    **WARNING**
+      Currently, changing the network type from DHCP will not cause any
+      interaction with your DRP Endpoint.  This means that if you use
+      ``convert`` to static IP assignment, the DRP endpoint will not be
+      aware of this.  You will need to create a :ref:`rs_model_reservation`
+      manually to insure your IP assignment isn't stomped on.
+
+      Similarly, if you use ``manual``, it is your responsibility to insure
+      you do not map a manual IP assignment to any DHCP ranges, unless you
+      also arrange to have that IP assignment converted to a :ref:`rs_model_reservation`
+      (when using DRP as the DHCP service).
+
+      Future versions of this plugin should correct this issue.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: dhcp
+  enum:
+    - dhcp
+    - convert
+    - manual
+Secure: false

@@ -1,0 +1,23 @@
+# Uses the "esxi/ks-custom-sections" Param to specify various additional
+# custom kickstart templates to include in to the base kickstart.  See Param
+# documentation for data structure and usage.
+#
+# DO NOT include the "%pre", "%post", and "%firstboot" tags in your templates
+# to include additional "kickstart" command directives, use the param named
+# "esxi/ks-custom-kickstart"
+
+{{ $dot := . -}}
+{{range $section, $templates := .Param "esxi/ks-custom-sections" -}}
+{{range $template := $templates -}}
+
+# injecting custom template: {{ squote $template }}
+{{ if hasSuffix "-nochroot" $section }}
+%{{ $section | replace "-nochroot" " --chroot" }}
+{{ else -}}
+%{{ $section | replace "-" " --interpreter=" }}
+{{ end -}}
+{{ $dot.CallTemplate $template $dot }}
+
+{{ end -}}
+{{ end -}}
+### end custom template injection

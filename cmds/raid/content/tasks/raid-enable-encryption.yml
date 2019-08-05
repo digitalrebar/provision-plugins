@@ -1,0 +1,39 @@
+---
+Name: raid-enable-encryption
+Description: Turn on Raid Controller encryption
+Prerequisites:
+  - raid-tools-install
+OptionalParams:
+  - raid-encryption-key
+  - raid-encryption-password
+  - raid-skip-encryption
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: set-raid-encryption
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{template "setup.tmpl" .}}
+
+      if [[ {{.Param "raid-skip-encryption"}} == true ]]; then
+          echo "Skipping RAID encryption"
+          exit 0
+      fi
+
+      mfgr="$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')"
+      mstrkey="{{.Param "raid-encryption-key"}}"
+      password="{{.Param "raid-encryption-password"}}"
+      if [[ "$mstrkey" == "unset" ]] ; then
+          mstrkey=$(dmidecode -s system-serial-number)
+      fi
+      if [[ "$password" == "unset" ]] ; then
+          password=$( date +%s | sha256sum | base64 | head -c 12 | sed "s/$/-$(( $RANDOM % 10 ))aZ/g" )
+      fi
+
+      drp-raid -encrypt -password "$password" -key "$mstrkey"
+
+      drpcli machines set "$RS_UUID" param raid-skip-encryption to true
+      exit 0

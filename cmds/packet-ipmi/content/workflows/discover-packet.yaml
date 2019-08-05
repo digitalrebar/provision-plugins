@@ -1,0 +1,19 @@
+Name: "discover-packet"
+Description: "Simplest PacketHost Discovery Workflow"
+Documentation: |
+  This workflow is the most basic provisioning process for DRP
+  when using PacketHost.
+
+  REMINDER: Change the DefaultWorkflow to use this workflow in PacketHost!
+
+  Similar to discover-base except that it adds the packet-discover stage.
+
+  NOTE: To enable, upload Sledgehammer as per the sledgehammer BootEnv
+Stages:
+  - "discover"
+  - "packet-discover"
+  - "sledgehammer-wait"
+Meta:
+  icon: "rocket"
+  color: "purple"
+  title: "RackN Content"

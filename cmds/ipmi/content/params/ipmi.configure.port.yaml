@@ -1,0 +1,15 @@
+---
+Name: "ipmi/configure/port"
+Description: "For Dell servers, the mode of the iDrac port (shared or dedicated)"
+Documentation: |
+  For Dell servers, this optional parameter will set the iDrac port mode.
+  Many values are supported. Validated values are shared or dedicated.
+Schema:
+  type: "string"
+  enum:
+  - "shared"
+  - "dedicated"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

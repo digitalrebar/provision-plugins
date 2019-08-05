@@ -1,0 +1,63 @@
+{{ if .ParamExists "esxi/disk-install-override" -}}
+# this template uses an "override strategy" to find a specific
+# disk based on the selected strategy for the ESXi install
+#
+# supported strategies:
+#
+#     find_first_naa    - finds first device that matches the pattern
+#                         /vmfs/devices/disks/naa.*
+#     first_disk        - mainly used to test code path to return the
+#                         existing default behavior to set install disk
+#                         to '--firstdisk'
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+set -e
+SET_DISK=""
+
+# option for testing to set default behavior of '--firstdisk'
+first_disk() {
+  SET_DISK="--firstdisk"
+
+  # debug dump of the devices found in %pre stage
+  ls -1 /vmfs/devices/disks/* > /tmp/disks
+}
+
+# find first device beginning with "naa."
+find_first_naa() {
+  DISK=$(ls -1 /vmfs/devices/disks/naa\.* | head -1)
+  SET_DISK="--disk=$DISK"
+
+  # debug dump of the devices found in %pre stage
+  ls -1 /vmfs/devices/disks/* > /tmp/disks
+}
+
+# on some systems (eg Dell R640) - the SATA controller RAID volume
+# is iterated as a DELLBOSS device name - however, the device name
+# also contains a unique identifier string that is not accessible
+# in Sledgehammer with any command lines
+find_first_dellboss_vd() {
+  DISK="$(ls -1 /vmfs/devices/disks/*ATA*DELLBOSS_VD* | head -1)"
+  SET_DISK="--disk=$DISK"
+
+  # debug dump of the devices found in %pre stage
+  ls -1 /vmfs/devices/disks/* > /tmp/disks
+}
+
+# if any custom strategy functions are specified, inject them here
+{{ template "esxi-disk-install-override-custom.tmpl" .}}
+
+# strategy should be set to the name of a supported function
+# that sets the shell variable "SET_DISK" to the appropriate
+# '--firstdisk' or other value - this may be the in-built
+# functions listed above, or may be custom function contained in
+# templates defined by the Param 'esxi/disk-install-override-custom'
+{{ .Param "esxi/disk-install-override" }}
+
+if [[ -z "$SET_DISK" ]]
+then
+  echo "FATAL:  Did not get valid SET_DISK values to create overridden 'install' directives."
+  exit 1
+else
+  echo "install $SET_DISK {{.Param "esxi/disk-install-override-options"}} " >> /tmp/kickstart-customizations.cfg
+fi
+{{ end -}}

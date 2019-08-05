@@ -1,0 +1,13 @@
+---
+Description: "A task to install ovirt engine software"
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: tag
+  title: RackN Content
+Name: ovirt-engine-install
+Templates:
+- Contents: ""
+  ID: ovirt-engine-install.sh.tmpl
+  Name: Install the ovirt engine code
+  Path: ""

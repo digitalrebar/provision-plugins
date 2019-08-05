@@ -1,0 +1,20 @@
+---
+Name: esxi/welcome-customize
+Description: By default customize the /etc/vmware/welcome DCUI screen.
+Documentation: |
+  By default Digital Rebar Provision VMware plugin will customize the
+  ``/etc/vmware/welcome`` screen with DRP, RackN, and other additional
+  information.
+
+  To disable this behavior and fall back to the product default, set
+  this Param value to ``false``.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: true
+Secure: false

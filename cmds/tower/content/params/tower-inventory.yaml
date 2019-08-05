@@ -1,0 +1,12 @@
+Description: AWX / Tower Inventory
+Documentation: |
+  The AWX / Tower Inventory to apply to the Host during registration.
+Meta:
+  color: blue
+  icon: money
+  title: RackN
+Name: tower/inventory
+Schema:
+  type: string
+Secure: false
+

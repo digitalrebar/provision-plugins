@@ -1,0 +1,22 @@
+---
+Name: "vmware/esxi-hcl-location"
+Description: "Location of the python3 VMware vSphere Compatibility Checker"
+Meta:
+  color: "blue"
+  icon: "search"
+  title: "RackN"
+Documentation: |
+  The python3 path location to the installed ESXi Compatibility Checker.
+  This should be correctly setup by the ``vmware-esxi-hcl-install`` Stage.
+
+  Note that the Compatibility Checker tool currently requires access to
+  a vCenter server and ESXi already installed on a host to gather the
+  compatibility report information for.  Additionaly, you must have
+  internet access to the VMware API Gateway located at:
+
+    - https://apigw.vmware.com/m4/compatibility/v1
+
+Schema:
+  type: "string"
+  default: "/tmp/compchecker/compchecker.py"
+Secure: false

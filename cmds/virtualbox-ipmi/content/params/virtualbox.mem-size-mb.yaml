@@ -1,0 +1,12 @@
+---
+Name: "virtualbox/mem-size-mb"
+Description: "The size of the virtual memory in MB"
+Documentation: |
+  The size of the memory disk in MB.
+Schema:
+  type: "integer"
+  default: 2048
+Meta:
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

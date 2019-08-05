@@ -1,0 +1,21 @@
+Description: The cert data stored on the plugin
+Documentation: |
+  This is the data store for the certs plugin.
+  Stores values for certificates in *certs-data* profile
+Meta:
+  color: "blue"
+  icon: "lock"
+  title: "RackN Content"
+  password: "hideme"
+Name: "certs/data"
+Schema:
+  type: "object"
+  additionalProperties:
+    type: "object"
+    properties:
+      Cert:
+        type: string
+      Key:
+        type: string
+      AuthKey:
+        type: string

@@ -1,0 +1,10 @@
+---
+Name: "honeycomb/writekey"
+Description: "The Key that the plugin will use to push event to Honeycomb.io"
+Schema:
+  type: "string"
+Meta:
+  icon: "forumbee"
+  color: "blue"
+  title: "RackN Content"
+  password: "hideme"

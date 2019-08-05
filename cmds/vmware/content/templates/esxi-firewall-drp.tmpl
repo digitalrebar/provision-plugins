@@ -1,0 +1,39 @@
+#!/bin/sh
+# enable ESXi firewall service outbound port for 'dr-provision' access
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+date > /tmp/drp-esxi-firewall-timestamp
+PORT=$(echo "{{ .ApiURL }}" | cut -d ":" -f 3 | sed 's:/$::')
+SVCFILE="/etc/vmware/firewall.xml"
+# octal modes don't work in limited busybox environment
+chmod u+w $SVCFILE
+chmod +t $SVCFILE
+
+# this is stupid, but 'sed' doesn't seem to behave sanely in
+# esxi environment - so using '$i'$RULE'' ... syntax no good
+sed -i.bak '$d' $SVCFILE
+cat >> $SVCFILE << FWRULE
+
+  <service id="9999">
+    <id>dr-provision</id>
+    <rule id="0000">
+      <direction>outbound</direction>
+      <protocol>tcp</protocol>
+      <porttype>dst</porttype>
+      <port>$PORT</port>
+    </rule>
+    <enabled>true</enabled>
+    <required>false</required>
+  </service>
+
+</ConfigRoot>
+FWRULE
+
+chmod a=r $SVCFILE
+
+localcli network firewall refresh
+localcli network firewall ruleset list > /tmp/scratch/log/firewall-ruleset-list.log
+
+# preserve changes
+/sbin/auto-backup.sh

@@ -1,0 +1,11 @@
+Description: The proxy URL to use for the callback requests
+Documentation: |
+  The proxy URL to use for the callback requests.
+Meta:
+  color: blue
+  icon: "volume up"
+  title: RackN
+Name: callback/proxy
+Schema:
+  type: string
+  default: ""

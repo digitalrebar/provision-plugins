@@ -1,0 +1,16 @@
+---
+Name: esxi/network-kickstart-hostname
+Description: ESXi network configuration parameter for Hostname
+Documentation: |
+  Use this param with ``esxi/network-kickstart-type`` set to ``manual`` to specify
+  the ESXi nodes network configuration post-kickstart.  NOTE, you must
+  verify that the IP addressing and Layer 2 characteristics are correct
+  for proper network connectivity post-reboot.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+Secure: false

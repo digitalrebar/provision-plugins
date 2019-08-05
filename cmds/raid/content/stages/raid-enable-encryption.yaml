@@ -1,0 +1,10 @@
+---
+Name: raid-enable-encryption
+Description: "Turn on RAID Encryption"
+BootEnv: sledgehammer
+Tasks:
+  - raid-enable-encryption
+Meta:
+  icon: "disk outline"
+  color: "yellow"
+  title: "RackN Content"

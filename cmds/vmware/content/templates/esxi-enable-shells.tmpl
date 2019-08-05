@@ -1,0 +1,43 @@
+# Enable Local and SSH shells if the appropriate Params are set
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+# Short wait to make sure hostd is ready
+while ! vim-cmd hostsvc/runtimeinfo; do
+  sleep 10
+done
+
+# set the ESXi local shell to enabled or disabled
+{{ if eq (.Param "esxi/shell-local") true -}}
+vim-cmd hostsvc/enable_esx_shell
+vim-cmd hostsvc/start_esx_shell
+# Suppress ESXi Shell warning
+esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
+{{else}}# "esxi/shell-local" is false, local shell not enabled{{end}}
+
+# set the ESXi remote shell (SSH access) to enabled or disabled
+{{ if eq (.Param "esxi/shell-remote") true -}}
+vim-cmd hostsvc/enable_ssh
+vim-cmd hostsvc/start_ssh
+# Suppress ESXi Shell warning
+esxcli system settings advanced set -o /UserVars/SuppressShellWarning -i 1
+
+# if we enable ssh, then also inject authorized_keys, if we have any
+# to /etc/ssh/keys-root/authorized_keys
+{{if .ParamExists "access-keys"}}
+KEYS=/etc/ssh/keys-root/authorized_keys
+TMP_KEYS=$(mktemp /tmp/authorized_keys.tmp.XXXXXXX)
+echo "Putting ssh access keys for root in place"
+cat >>$KEYS <<EOFSSHACCESS
+{{range $key := .Param "access-keys" -}}
+{{$key}}
+{{end -}}
+EOFSSHACCESS
+# if the we are called multiple times in a workflow we get dup keys
+cat $KEYS | sort -u > $TMP_KEYS
+[[ -s "$TMP_KEYS" ]] && cp $TMP_KEYS $KEYS
+[[ -f "$TMP_KEYS" ]] && rm -f $TMP_KEYS
+chmod u=r,go-rwx $KEYS
+{{end}}
+
+{{else}}# "esxi/shell-remote" is false, SSH shell access not enabled{{end}}

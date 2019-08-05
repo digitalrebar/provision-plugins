@@ -1,0 +1,14 @@
+---
+Name: netbox-install
+RunnerWait: true
+Description: "Installs and configures netbox on CentOS"
+Tasks:
+  - netbox-setup-postgres
+  - netbox-setup-python
+  - netbox-install-netbox
+  - netbox-configure-netbox
+  - netbox-setup-webserver
+Meta:
+  icon: "tag"
+  color: "yellow"
+  title: "RackN Content"

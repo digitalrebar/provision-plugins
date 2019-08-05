@@ -1,0 +1,8 @@
+# test post-python template - write to /var/log/test-post-python.txt
+
+import time
+import datetime
+ts = time.time()
+st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+f = open("/var/log/test-post-python.txt",'w')
+f.write("TEST:  Test file create at " + st + "\n")

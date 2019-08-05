@@ -1,0 +1,25 @@
+---
+Name: esxi/network-firstboot-mtu
+Description: Set the Frame MTU size ("jumbo" frames) for the Management Network vswitch.
+Documentation: |
+  Sets the MTU frame size ("jumbo" frames) for the installed ESXi instance on
+  first boot for the Management Network vSwitch (typically ``vSwitch0``).
+
+  Valid values as defined by VMware for this field are from ``1000`` to ``9999``.
+
+  Typically the system default is 1500 bytes. This value may be set larger in
+  environments using large frames (aka "jumbo"), which typically are a value
+  close to 9000 bytes.  In some virtualized environments where additional layers
+  of overhead for encapsulation are needed, the packet may be larger than 9000
+  bytes.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: number
+  minimum: 1000
+  maximum: 9999
+Secure: false

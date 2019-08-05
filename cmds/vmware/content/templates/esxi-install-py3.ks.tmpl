@@ -1,0 +1,108 @@
+#
+# VMware vSphere ESXi Kickstart - Python 3 based
+#
+
+# Accept the VMware End User License Agreement
+vmaccepteula
+
+# Set the root password for the DCUI and Tech Support Mode
+rootpw --iscrypted {{if .ParamExists "provisioner-default-password-hash"}}{{ .Param "provisioner-default-password-hash" }}{{else}}$6$rebar$HBaBj/uDmsQMEw4Si6eja9Yba3rhB73Na36hbrp9KxDHm6s5veeWyXlsUkoxRACtP47978iiidziRdsYUC7gC/{{end}}
+
+# ESXi license to apply to the system
+{{if .ParamExists "esxi/license"}}serialnum --esx={{ .Param "esxi/license" }}{{else}}# no license specified, installing in evaluation mode{{end}}
+
+{{ if .ParamExists "esxi/disk-install-override" -}}
+# Using esxi/disk-install-override (set to strategey of '{{.Param "esxi/disk-install-override"}}').
+# Directive will append to the '/tmp/kickstart-customizations.cfg' file.
+{{ else -}}
+# Install on the first local disk available on machine (defaults to
+# "--firstdisk --overwritevmfs")
+install {{ .Param "esxi/disk-install-options" }}
+{{ end -}}
+
+# created in the %pre section, which runs before the kickstart is processed
+%include /tmp/kickstart-customizations.cfg
+
+# include any custom kickstart directive templates
+{{ template "esxi-ks-custom-kickstart.tmpl" .}}
+
+{{ if eq (.Param "esxi/skip-reboot") true -}}
+# Param "esxi/skip-reboot" requested no reboot
+{{ else -}}
+reboot --noeject
+{{ end -}}
+
+###
+### end of kickstart directives
+### begin pre/post/firstboot sections
+###
+
+# Set the network according to the "esxi/network-type" (default is "dhcp")
+# Also set /tmp/install-override if Param "esxi/disk-install-override" set
+%pre --interpreter=busybox
+{{ template "esxi-network-kickstart.tmpl" .}}
+
+{{ if .ParamExists "esxi/disk-install-override" }}{{ template "esxi-disk-install-override.tmpl" .}}{{ end }}
+
+# render the Firewall Rule VIB to base64 decoded local file
+%post --interpreter=python
+{{ template "esxi-render-firewall-vib.py.tmpl" .}}
+
+%post --interpreter=python
+{{ template "esxi-render-drpy-vib.py.tmpl" .}}
+
+{{ if eq (.Param "esxi/skip-version") true -}}
+# esxi/skip-notify set to true, skipping version call
+{{ else -}}
+%post --interpreter=python
+# used in the esxi-network-firstboot.tmpl
+{{ template "esxi-get-version.py3.tmpl" .}}
+{{ end -}}
+
+%post --interpreter=busybox
+
+# Generate a new scratch directory for this host on a Datastore
+scratchdirectory={{ .Param "esxi/install-datastore" }}/locker
+# Create the scratch directory
+mkdir -p $scratchdirectory
+# Change the advanced configuration option
+vim-cmd hostsvc/advopt/update ScratchConfig.ConfiguredScratchLocation string $scratchdirectory
+
+{{ template "esxi-preserve-logs.tmpl" .}}
+
+%firstboot --interpreter=python
+{{ template "esxi-render-firewall-vib.py.tmpl" .}}
+
+%firstboot --interpreter=busybox
+{{ template "esxi-network-firstboot.tmpl" .}}
+{{ template "esxi-welcome.tmpl" .}}
+{{ template "esxi-enable-shells.tmpl" .}}
+{{ if eq (.Param "esxi/is-nested") true -}}
+grep -i "^vhv.enable" /etc/vmware/config || echo "vhv.enable = \"TRUE\"" >> /etc/vmware/config
+{{ end -}}
+
+# include any custom %pre, %post, %firstboot sections
+{{ template "esxi-ks-custom-sections.tmpl" .}}
+
+{{ if eq (.Param "esxi/drp-port-disable") true -}}
+%firstboot --interpreter=busybox
+# disable the DRP API outbound port access if requested
+# NOTE: this should be run last - as actions above require API port access
+#       during the install
+esxcli network firewall ruleset set --ruleset-id=dr-provision --enabled=false
+{{ else -}}
+echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disable' Param."
+{{ end -}}
+
+%firstboot --interpreter=python
+{{ template "esxi-render-drpy-vib.py.tmpl" .}}
+
+{{ if eq (.Param "esxi/skip-notify") true -}}
+# ***************************************************************** #
+# Param "esxi/skip-notify" set to true. as requested, NOT NOTIFYING #
+# the DRP endpoint to set boot to local disk !!!!!!!!!!!!!!!!!!!!!! #
+# ***************************************************************** #
+{{ else -}}
+%post --interpreter=python
+{{ template "esxi-notify-drp-py3.tmpl" .}}
+{{ end -}}

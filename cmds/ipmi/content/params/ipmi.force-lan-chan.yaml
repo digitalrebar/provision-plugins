@@ -1,0 +1,11 @@
+---
+Name: "ipmi/force-lan-chan"
+Description: "The IPMI Lan Chan to use regardless of detection"
+Documentation: |
+  The IPMI Lan Chan to use regardless of detection
+Schema:
+  type: "integer"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

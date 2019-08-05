@@ -1,0 +1,23 @@
+---
+Name: "vcf-builder/serverId"
+Description: "vCF Builder cluster server ID string"
+Documentation: |
+  The ESXi server ID string in the cluster.  By default the DRP
+  Machine UUID will be used as the serverId.
+
+  If you choose to set a different value than this default behavior,
+  then you will have to apply it as an individual Param (or as a
+  different Profile from the ``vcf-builder-cluster-profile`` defined
+  profile) on the given Machine.
+
+  .. note: **WARNING**: You can NOT set the value in the
+    ``vcf-builder-cluster-profile`` as that profile is set on every machine
+    in the cluster, the value *MUST* be unique to each ESXi instance.
+
+Schema:
+  type: "string"
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+  render: "profile"

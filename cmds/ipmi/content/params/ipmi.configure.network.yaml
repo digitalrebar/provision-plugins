@@ -1,0 +1,12 @@
+---
+Name: "ipmi/configure/network"
+Description: "Configure IPMI Address and networking pieces"
+Documentation: |
+  Set to true to enable the IPMI configuring of network address.
+Schema:
+  type: "boolean"
+  default: false
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

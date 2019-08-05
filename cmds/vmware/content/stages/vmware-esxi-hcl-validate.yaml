@@ -1,0 +1,24 @@
+---
+Name: "vmware-esxi-hcl-validate"
+BootEnv: "sledgehammer"
+Description: "A task to run and test for VMware ESXi HCL compatibility"
+Documentation: |
+  This task will run the VMware ESXi HCL compatibility checker and determine
+  if the Machine meets the HCL compatibility for ESXi.
+
+    - see: https://labs.vmware.com/flings/esxi-compatibility-checker
+
+ReadOnly: true
+Reboot: false
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Tasks:
+  - "vmware-esxi-hcl-validate"
+OptionalParams: []
+Profiles: []
+RequiredParams: []
+Tasks: []
+Templates: []

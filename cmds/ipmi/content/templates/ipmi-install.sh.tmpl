@@ -1,0 +1,28 @@
+#!/bin/bash
+# Install IPMI packages for IPMI plugin use
+
+{{ if eq (.Param "rs-debug-enable") true -}}
+set -x
+{{end -}} 
+
+if [[ -f /etc/os-release ]]; then
+  . /etc/os-release
+fi
+
+if ! which ipmitool 2>/dev/null >/dev/null ; then
+    if [[ -f /etc/redhat-release || -f /etc/centos-release ]]; then
+        yum -y makecache
+        yum install -y ipmitool
+    elif [[ -d /etc/apt ]]; then
+        apt-get -y update
+        apt-get -y install --force-yes ipmitool
+    else
+        echo "The 'ipmi-install.sh.tmpl' tool does not know how to install 'ipmitool' for this platform."
+        exit 1
+    fi
+else
+    echo "ipmitool already installed."
+fi
+
+exit 0
+

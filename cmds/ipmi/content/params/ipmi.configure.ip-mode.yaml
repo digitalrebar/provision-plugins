@@ -1,0 +1,20 @@
+---
+Name: "ipmi/configure/ip-mode"
+Description: "BMC's Network mode (dhcp or static)"
+Documentation: |
+  This parameter defines which method the BMC should use to get its IP address.
+
+  Valid values are:
+  * dhcp (default)
+  * static
+
+Schema:
+  type: "string"
+  default: "dhcp"
+  enum:
+    - "dhcp"
+    - "static"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

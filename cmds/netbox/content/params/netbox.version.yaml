@@ -1,0 +1,9 @@
+---
+Name: netbox/version
+Description: The verion of netbox to install (e.g. 2.3.1)
+Schema: 
+  type: string
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"

@@ -1,0 +1,167 @@
+# This file is a list of quirks
+# The bash script the processes it is silly, but
+# works.  Each entry should have a name,
+# a quirklist and then match.  Order is
+# important for now.
+dell-rseries:
+  quirklist:
+  - ipmi-nodelay
+  - ipmi-dell-dedicated-nic
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "32"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "674"
+        score: 5
+      product_id:
+        __sm_leaf: true
+        op: ==
+        match: 256 (0x0100)
+        score: 3
+hp-19-11-bmc:
+  quirklist:
+  - ipmi-crossed-access-channels
+  - ipmi-hard-reset-after-config
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "19"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "11"
+        score: 5
+intel-33-343-bmc:
+  quirklist:
+  - ipmi-immutable-rootname
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "33"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "343"
+        score: 5
+ibm-2-220-bmc:
+  quirklist:
+  - ipmi-immutable-root
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "32"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "2"
+        score: 5
+      product_id:
+        __sm_leaf: true
+        op: ==
+        match: 220 (0x00dc)
+        score: 3
+ibm-2-291-bmc:
+  quirklist:
+  - ipmi-immutable-root
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "32"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "2"
+        score: 5
+      product_id:
+        __sm_leaf: true
+        op: ==
+        match: 291 (0x0123)
+        score: 3
+ibm-2-other-bmc:
+  quirklist:
+  - ipmi-immutable-root
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "32"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "2"
+        score: 6
+super-micro-bmc:
+  quirklist:
+  - ipmi-immutable-root
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "32"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "47488"
+        score: 5
+super-micro-redfish-bmc:
+  quirklist:
+  - ipmi-immutable-root
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        match: "32"
+        op: ==
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "10876"
+        score: 5
+      product_id:
+        __sm_leaf: true
+        op: ==
+        match: 2084 (0x0824)
+        score: 5
+quanta-bmc:
+  quirklist:
+  - ipmi-immutable-root
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "32"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "7244"
+        score: 5
+ibm-20301-bmc:
+  quirklist:
+  - ipmi-immutable-root
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        op: ==
+        match: "32"
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "20301"
+        score: 5

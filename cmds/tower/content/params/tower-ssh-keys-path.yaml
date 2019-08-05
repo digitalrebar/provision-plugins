@@ -1,0 +1,21 @@
+Description: The path to put the AWX / Tower ssh keys
+Documentation: |
+  This parameter specifies the path (including filename) to place the AWX / Tower ssh-keys.
+
+  This is used with the tower/ssh-keys-path-userid, tower/ssh-keys-path, and tower/ssh-keys-path-groupid parameters.
+
+  The set of parameters is used to create additional ssh keys that AWX / Tower can use
+  to access the system beyond the normal root ssh keys.
+
+  The userid and groupid parameters define the user and group for the files.  The ssh-keys-path
+  parameter defines the path to the key file (including filename).  The ssh-keys parameter defines
+  the set of keys to put in place.
+Meta:
+  color: blue
+  icon: money
+  title: RackN
+Name: tower/ssh-keys-path
+Schema:
+  type: string
+Secure: false
+

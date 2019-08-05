@@ -1,0 +1,11 @@
+---
+Name: "virtualbox/user"
+Description: "The user that virtualbox is running as"
+Documentation: |
+  This is the user that the virtualbox machine is running as
+Schema:
+  type: "string"
+Meta:
+  icon: "user circle"
+  color: "blue"
+  title: "RackN Content"

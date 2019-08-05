@@ -1,0 +1,17 @@
+---
+Name: "vmware-esxi-selector"
+Description: "Select the ESXi bootenv to install"
+Documentation: |
+  This tasks calls the ``vmware-esxi-selector.tmpl`` which implements the
+  automatic ESXi install based on the hardware vendor of the machine
+  (if ``vmware/esxi-version`` is set to ``select-vendor``), and the map
+  of Param values (``vmware/esxi-version-vendor-map``).
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "RackN Content"
+Templates:
+  - Contents: ""
+    ID: "vmware-esxi-selector.tmpl"
+    Name: "vmware-esxi-selector.tmpl"
+    Path: ""

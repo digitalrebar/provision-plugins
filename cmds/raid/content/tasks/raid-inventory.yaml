@@ -1,0 +1,17 @@
+---
+Name: raid-inventory
+Description: Inventory current RAID volumes on the system
+Prerequisites:
+  - raid-tools-install
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: raid-inventory
+    Contents: |
+      #!/usr/bin/env bash
+      {{template "setup.tmpl" .}}
+      echo "Gathering configuration:"
+      drp-raid | drpcli machines set {{.Machine.UUID}} param raid-current-config to -
+

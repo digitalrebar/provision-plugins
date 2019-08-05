@@ -1,0 +1,67 @@
+#
+# This is an example two disk system with two volgroups and lvm partitions
+# This fits in 20G / 10G disks for testing purposes, respectively.
+#
+# No images are specified.
+#
+disks:
+  - name: firstdisk
+    path: /dev/sda
+    ptable: msdos
+    grub_device: true
+    wipe: true
+    partitions:
+      - name: bootpart
+        size: 1G
+        flag: boot|bios_grub
+        fs:
+          name: bootfs
+          fstype: xfs
+          resize: true
+          mount: /boot
+      - name: vg0part
+        size: REST
+  - name: seconddisk
+    path: /dev/sdb
+    ptable: gpt
+    wipe: true
+    partitions:
+      - name: vg1part
+        size: REST
+
+vgs:
+  - name: vg0
+    devices:
+      - vg0part
+    lvs:
+      - name: root_lv
+        size: 1G
+        fs:
+          name: root_fs
+          fstype: xfs
+          mount: /
+          resize: true
+      - name: var_lv
+        size: 3G
+        fs:
+          name: var_fs
+          fstype: xfs
+          mount: /var
+          resize: true
+      - name: swap_lv
+        size: 2G
+        fs:
+          name: swap_fs
+          fstype: swap
+          resize: true
+  - name: vg1
+    devices:
+      - vg1part
+    lvs:
+      - name: data_lv
+        size: REST
+        fs:
+          name: data_fs
+          fstype: xfs
+          mount: /data
+          resize: true

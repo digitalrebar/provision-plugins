@@ -1,0 +1,51 @@
+---
+Name: "esxi/disk-install-override-custom"
+Description: "Add custom templates to the 'esxi/disk-install-override' capability"
+Documentation: |
+  Use this Param to specify additional custom templates to include in to
+  the ``esxi-disk-install-override.tmpl`` tool for setting custom
+  strategies for the ESXi disk selection for install location.
+
+  This is intended to inject ESXi BASH "name() { ... }" function stanzas in the
+  existing 'esxi-disk-install-override.tmpl' template to extend the
+  functionality to include on-the-fly strategy types discovered in the field.
+
+    ::
+
+      # YAML example
+      - "my-esxi-disk-override-1.tmpl"
+      - "my-esxi-disk-override-2.tmpl"
+
+      # JSON example
+      [
+        "my-esxi-disk-override-1.tmpl",
+        "my-esxi-disk-override-2.tmpl"
+      ]
+
+  WARNING - The executing environment is ESXi kickstart installer (Weasel).  You
+            must insure that the Function you inject operates correctly in
+            this environment.  For reference, see the Functions in the existing
+            Template "esxi-disk-install-override.tmpl".
+
+  Any functions MUST set the shell global variable named 'SET_DISK' to a correct
+  value for defining which disk to install to.  The values are documented in the
+  ESXi documenation, for example:
+
+    https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.esxi.upgrade.doc/GUID-61A14EBB-5CF3-43EE-87EF-DB8EC6D83698.html
+
+  Valid examples include:
+
+    * `--firstboot`
+    * `--disk=mpx.vmhba1:C0:T0:L0`
+
+Meta:
+  color: "blue"
+  icon: "hashtag"
+  title: "RackN Content"
+ReadOnly: true
+Secure: false
+Schema:
+  type: "array"
+  default: []
+  items:
+    type: "string"

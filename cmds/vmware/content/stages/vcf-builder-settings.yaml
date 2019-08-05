@@ -1,0 +1,37 @@
+---
+Name: "vcf-builder-settings"
+Description: "A stage to set the vCloud Foundation Builder JSON structures"
+Documentation: |
+  This Stage will set the JSON structures needed for an ESXi node
+  to be included in the vCloud Foundation Builder built cluster.
+  It must be run on Sledgehammer, prior to ESXi being installed.
+
+  The following Optional Params will be injected in to the JSON
+  esxiHostSpec stanzas if set.  If not specified, the default values
+  will be used.
+
+    ========================================  ========================
+    Param                                     Default
+    ========================================  ========================
+    ``vcf-builder/association``               ``digitalrebar-sddc-01``
+    ``vcf-builder/esxiCredentials-username``  ``root``
+    ``vcf-builder/esxiCredentials-password``  ``RocketSkates``
+    ``vcf-builder/vSwitch``                   ``vswitch0``
+    ``vcf-builder/serverId``                  ``Machine.UUID``
+    ========================================  ========================
+
+Meta:
+  color: "yellow"
+  feature-flags: "sane-exit-codes"
+  icon: "cloud"
+  title: "RackN Content"
+OptionalParams:
+  - "vcf-builder/association"
+  - "vcf-builder/esxiCredentials-username"
+  - "vcf-builder/esxiCredentials-password"
+  - "vcf-builder/vSwitch"
+  - "vcf-builder/serverId"
+Profiles: []
+RequiredParams: []
+Tasks: []
+Templates: []

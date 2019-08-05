@@ -1,0 +1,12 @@
+---
+Name: "ipmi/identify-duration"
+Description: "Duration in seconds to leave the identify light on"
+Documentation: |
+  Duration in seconds to leave the identify light on
+Schema:
+  type: "integer"
+  default: 60
+Meta:
+  icon: "podcast"
+  color: "blue"
+  title: "RackN Content"

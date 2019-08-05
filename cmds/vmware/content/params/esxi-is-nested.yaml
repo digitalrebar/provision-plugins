@@ -1,0 +1,17 @@
+---
+Name: esxi/is-nested
+Description: Set VHV value for Nested ESXi instance.
+Documentation: |
+  If set to ``true``, set the VHV value duing install to flag that we're
+  running in a nested setup environment (ESXi on a hypervisor).
+
+  By default, this option is false.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

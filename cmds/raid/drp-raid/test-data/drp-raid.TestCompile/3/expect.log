@@ -1,0 +1,6 @@
+Considering spec jbod:max at 0
+Picking disks heuristically
+Max JBOD, taking the rest of the disks
+spec at 0: No disks available
+Spec jbod:max at 0 missing disks
+Started with 1 specs, compiled to 0

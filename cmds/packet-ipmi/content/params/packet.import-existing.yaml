@@ -1,0 +1,11 @@
+---
+Name: "packet/import-existing"
+Description: "Should the plugin import existing VMs"
+Documentation: |
+  This parameter tells the plugin to import existing VMs or not.
+Schema:
+  type: "boolean"
+Meta:
+  icon: "flag"
+  color: "blue"
+  title: "RackN Content"

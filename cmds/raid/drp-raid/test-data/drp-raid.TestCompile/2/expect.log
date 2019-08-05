@@ -1,0 +1,113 @@
+Considering spec jbod:max at 0
+Picking disks heuristically
+Max JBOD, taking the rest of the disks
+Picked 36 disks
+Started with 1 specs, compiled to 36
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:0] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:1] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:2] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:3] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:4] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:5] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:6] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:7] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:8] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:9] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:10] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:11] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:12] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:13] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:14] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [32:15] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:0] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:1] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:2] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:3] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:4] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:5] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:6] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:7] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:8] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:9] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:10] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:11] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:12] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:13] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:14] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [31:15] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:4] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:5] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:6] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:7] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0

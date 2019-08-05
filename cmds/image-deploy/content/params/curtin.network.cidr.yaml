@@ -1,0 +1,9 @@
+---
+Name: "curtin/network/cidr"
+Description: "The numeric netmask for this machine's address"
+Schema:
+  type: "string"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

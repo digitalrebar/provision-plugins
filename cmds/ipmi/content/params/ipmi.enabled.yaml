@@ -1,0 +1,11 @@
+---
+Name: "ipmi/enabled"
+Description: "Was IPMI enabled on this system"
+Documentation: |
+  This parameter indicates if the *ipmi-configure* task enabled IPMI.
+Schema:
+  type: "boolean"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"

@@ -1,0 +1,36 @@
+Description: A task to delete a machine from AWX / Tower (all OSes)
+Documentation: |
+  This task will delete a machine from AWX / Tower.  The task works for linux, darwin, and windows OSes.
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: money
+  title: RackN
+Name: tower-delete
+Templates:
+- Name: tower-delete.sh
+  Meta:
+    OS: "linux,darwin"
+  Contents: |-
+    #!/usr/bin/env bash
+    # Remove the machine from tower.
+    #
+
+    set -e
+
+    # Get access and who we are.
+    {{template "setup.tmpl" .}}
+    [[ $RS_UUID ]] && export RS_UUID="{{.Machine.UUID}}"
+
+    echo "Register host with ansible tower"
+    echo drpcli machines runaction $RS_UUID tower-delete
+    drpcli machines runaction $RS_UUID tower-delete
+
+    exit 0
+- Name: tower-delete.ps1
+  Meta:
+    OS: "windows"
+  Contents: |-
+    & \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower-delete
+
+    exit $lastExitCode

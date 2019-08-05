@@ -1,0 +1,11 @@
+---
+Name: "ipmi/username"
+Description: "Username to access the BMC"
+Documentation: |
+  This parameter is used by the IPMI Plugin to access the BMC
+Schema:
+  type: "string"
+Meta:
+  icon: "user circle"
+  color: "blue"
+  title: "RackN Content"

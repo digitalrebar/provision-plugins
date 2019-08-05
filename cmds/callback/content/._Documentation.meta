@@ -1,0 +1,38 @@
+
+The callback plugin allows for the definition of callbacks triggered by stages.
+
+The callback adds an action to machines, `callbackDo`.  This command takes one parameter,
+`callback/action`.
+
+When the `callbackDo` action is called, the callbacks for the plugin are indexed by the the
+parameter, `callback/action`, and, if found, the plugin does the requested callback to the
+external service.  If the action is not found, the action return an error.
+
+The callback plugin will build a web request that will be sent to the external service.  The callback
+can be defined by the structure.  The callback structure is stored on the plugin in a map with
+the action name as the key for this structure.
+
+  ::
+    Url - string - url to the service - This is the full path to the service.
+    Method - optional string (POST) - method to use for the web request. e.g. POST, PUT
+    Username - optional string - username to access the service
+    Password - optional string - password to access the service
+    Headers - optional key/value pairs - These are passed directly as Request headers.
+    Aggregate - boolean (false) - Include profile, stage, and global parameters for the machine object.
+    Decode - boolean (false) - Should secure parameters be decoded.
+    ExcludeParams - array of strings ([]) - a list of parameters to exclude from the machine object.
+
+If the web request returns an error code larger than or equal to 400, the action returns that error.
+
+Otherwise, the action returns the body of the response.
+
+The expected usage is to build a stage with the `callback/action` parameter.  The `callback-task`
+is provided to use as the task for the stage.  This stage is placed in a workflow at stages to
+indicate to external services what state a machine is in.  Additional parameters can be added to
+the stage to augment the machine object that is posted to the external service.
+
+
+Additionally, the callback plugin can be used to notify a callback when the machine's current job fails.
+If the callback map contains "jobfail" as a registered callback, the callback plugin will issue
+the callback with the machine object.
+

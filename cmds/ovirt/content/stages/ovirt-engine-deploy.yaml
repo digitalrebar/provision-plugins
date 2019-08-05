@@ -1,0 +1,11 @@
+---
+Name: "ovirt-engine-deploy"
+Description: "Deploy the Ovirt Engine"
+RunnerWait: true
+Tasks:
+  - "ovirt-engine-install"
+  - "ovirt-engine-deploy"
+Meta:
+  icon: "tag"
+  color: "yellow"
+  title: "RackN Content"

@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# Attempts to automatically select ESXI BootEnv version, or set to Operator defined version
+
+###
+#  This tool selects the VMware ESXi BootEnv version to install on the system.
+#  The operator may specify a precise version via the use of the "vmware/esxi-version"
+#  Param (which is an enumerated list), or via use of the override Param if the
+#  version is not listed in the enum list ("vmware/esxi-version-override").
+#
+#  The operator also has the choice to set "vmware/esxi-version" value to "select-vendor"
+#  and the map in the "vmware/esxi-version-vendor-map" will be used to set which
+#  vendor specific BootEnv/ISO to use.
+#
+#  REQUIRES:  DRP Endpoint version v3.13.7 / v3.14.0 and newer
+###
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+{{ template "setup.tmpl" . }}
+
+set -e
+
+{{ if .ParamExists "vmware/esxi-version-override"}}
+BOOTENV="{{ .Param "vmware/esxi-version-override"}}"
+{{ else }}
+BOOTENV="{{ .Param "vmware/esxi-version"}}"
+
+###
+#  handle the old default mapping for some customers ('esxi-670u1') by
+#  remapping it to our new default name/version
+###
+if [[ "$BOOTENV" == "esxi-670u1" ]]
+then
+  echo "Old plugin version BootEnv name specified ('esxi-670u1')."
+  echo "Remapping 'esxi-670u1' to new BootEnv name 'esxi_670u1-10302608_vmware'"
+  BOOTENV="esxi_670u1-10302608_vmware"
+fi
+
+if [[ "$BOOTENV" == "select-vendor" ]]
+then
+  # operator wants vendor magically selected based on hardware mfg and map
+  mfgr="$(echo \"$(drpcli gohai | jq -r '.DMI | .System | .Manufacturer')\" | tr '[:upper:]' '[:lower:]')"
+  case $mfgr in
+    *dell*)       VENDOR="dell"    ;;
+    *hp*)         VENDOR="hpe"     ;;
+    *nec*)        VENDOR="nec"     ;;
+    *fujitsu*)    VENDOR="fujitsu" ;;
+    *lenovo*)     VENDOR="lenovo"  ;;
+    *cisco*)      VENDOR="cisco"   ;;
+    *supermicro*) VENDOR="generic" ;;
+    *hitachi*)    VENDOR="hitachi"
+        # <<<UNFINISHED>>> need some form of gohai to match model
+        # MODEL="$(echo \"$(drpcli gohai |jq -r '.DMI | .System | .ProductName')\" | tr '[:upper:]' '[:lower:]'"
+        # defaulting for now:
+        MODEL="ha8000v-gen10"
+        #MODEL="blade-ha8000"
+      ;;
+    *) echo "No idea how to install ESXi for identified manufactuer '$mfgr' - selecting generic bootenv"
+        VENDOR="generic"
+      ;;
+  esac
+
+  echo "   Hardware vendor identified as:  $VENDOR"
+  [[ -n "$MODEL" ]] && echo "            model identified as:  $MODEL"
+  [[ -n "$MODEL" ]] && MODEL=" and .model == \"$MODEL\""
+
+  BE=$(echo '{{ .ParamAsJSON "vmware/esxi-version-vendor-map" }}' \
+    | jq -r ".[] | select((.mfg == \"${VENDOR}\")${MODEL}) | .bootenv")
+  BOOTENV="${BE}"
+fi
+
+{{ end }}
+
+echo "   Requesting install of BootEnv: '$BOOTENV'"
+
+BOOT_INSTALL="${BOOTENV}-install"
+if ( drpcli bootenvs exists $BOOT_INSTALL > /dev/null 2>&1 || true )
+then
+{{if .ParamExists "esxi/http-mirror" }}
+  # we could do better - expand mirror/bootenv path to see if 'install' dir exists
+  echo " Param 'esxi/http-mirror' is set:  ...not testing if remote exploded ISO contents exists :("
+  echo "Assuming mirror has ISO contents:  {{ .Param "esxi/http-mirror" }}/$BOOTENV/install"
+{{ else }}
+#TODO: if Token scope allows "drpcli bootenvs show ... " then we can
+#      make our safety check on the ISO - but for now, it's not allowed
+#  ISO=$(drpcli bootenvs show $BOOT_INSTALL | jq -r '.OS.IsoFile')
+#  drpcli isos exists "$ISO" > /dev/null 2>&1 || true
+#  (( $? )) && xiterr 1 "FATAL: ISO '$ISO' not installed on DRP Endpoint"
+{{ end }}
+  echo "      VMware ESXi BootEnv set to:  $BOOTENV"
+  drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:${BOOT_INSTALL}
+else
+  xiterr 1 "FATAL: selected bootenv '$BOOTENV' does not exist"
+fi
+
+exit 0

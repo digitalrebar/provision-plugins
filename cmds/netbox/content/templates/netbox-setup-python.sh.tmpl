@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Include the helpers
+{{template "setup.tmpl" .}}
+
+set -e
+
+# Make sure we have epel
+echo "Setup centos epel"
+yum install -y epel-release
+
+
+# Make sure we have python34
+echo "Installing python 3.4"
+yum install -y gcc python34 python34-devel python34-setuptools libxml2-devel libxslt-devel libffi-devel graphviz openssl-devel redhat-rpm-config
+
+# Make sure we have pip
+echo "Install pip for 3.4"
+easy_install-3.4 pip
+
+exit 0

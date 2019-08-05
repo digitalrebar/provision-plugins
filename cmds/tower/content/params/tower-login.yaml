@@ -1,0 +1,13 @@
+Description: AWX / Tower login account
+Documentation: |
+  The account to use to login into AWX / Tower.
+
+  This is a plugin parameter.
+Meta:
+  color: blue
+  icon: money
+  title: RackN
+Name: tower/login
+Schema:
+  type: string
+Secure: false

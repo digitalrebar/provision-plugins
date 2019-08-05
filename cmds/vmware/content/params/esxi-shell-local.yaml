@@ -1,0 +1,17 @@
+---
+Name: esxi/shell-local
+Description: Enable the ESXi Local shell during install (disabled by default)
+Documentation: |
+  If set to ``True``, enable the local ESXi shell during the installation
+  of the VMware vSphere ESXi host.
+
+  By default, the shell will not be enabled.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

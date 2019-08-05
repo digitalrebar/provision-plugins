@@ -1,0 +1,19 @@
+---
+Name: esxi/serial-console
+Description: Defines the serial console for the ESXi host (off by default)
+Documentation: |
+  Sets the serial console for the ESXi host.  By default this is not enabled.
+
+  For Packet environment, insure to set com port to ``com2`` like:
+
+    ``gdbPort=none logPort=none tty2Port=com2``
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: ""
+Secure: false

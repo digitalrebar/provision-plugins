@@ -1,0 +1,12 @@
+---
+Name: "packet/uuid"
+Description: "UUID of this node in packet"
+Documentation: |
+  This parameter is used by the Packet IPMI Plugin to access the API
+Schema:
+  type: "string"
+Meta:
+  readonly: "yes"
+  icon: "tag"
+  color: "blue"
+  title: "RackN Content"

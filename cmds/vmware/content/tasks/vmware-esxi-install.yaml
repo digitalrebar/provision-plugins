@@ -1,0 +1,20 @@
+---
+Name: "vmware-esxi-install"
+Description: "A task to install ESXi if compatibility checks passed."
+Documentation: |
+  If the given Machine has passed both ESXi and VSAN HCL compatibility
+  checks, then install the VMware vSphere ESXi version specified.
+
+  Uses the ``vmware/esxi-version`` Param (enum type) to define which
+  supported version to install.
+
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Templates:
+- Contents: ""
+  ID: "vmware-esxi-install.sh.tmpl"
+  Name: "VMware ESXi Install"
+  Path: ""

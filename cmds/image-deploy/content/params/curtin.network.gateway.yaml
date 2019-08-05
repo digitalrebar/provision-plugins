@@ -1,0 +1,9 @@
+---
+Name: "curtin/network/gateway"
+Description: "The gateway address for the network."
+Schema:
+  type: "string"
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

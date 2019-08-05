@@ -1,0 +1,8 @@
+Considering spec raidS:max at 0
+Picking disks heuristically
+Max Raid0, taking the rest of the disks
+Picked 1 disks
+Started with 1 specs, compiled to 1
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:0] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0

@@ -1,0 +1,9 @@
+---
+Name: netbox/superuser-email
+Description: The superuser email to use.
+Schema:
+  type: string
+Meta:
+  icon: "key"
+  color: "blue"
+  title: "RackN Content"

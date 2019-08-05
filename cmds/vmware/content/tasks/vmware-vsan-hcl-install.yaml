@@ -1,0 +1,19 @@
+---
+Name: "vmware-vsan-hcl-install"
+Description: "A task to install the VMware VSAN HCL check tool"
+Documentation: |
+  This task will install all prerequisites for the VMware VSAN HCL
+  compatibility checker tool.
+
+  .. note: **WARNING**: this is not completed - the tool does not exist for LINUX yet
+
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Templates:
+- Contents: ""
+  ID: "vmware-vsan-hcl-install.sh.tmpl"
+  Name: "VMware VSAN Compatiblity Checker Install"
+  Path: ""

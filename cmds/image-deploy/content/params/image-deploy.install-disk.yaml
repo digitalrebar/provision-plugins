@@ -1,0 +1,12 @@
+---
+Name: "image-deploy/install-disk"
+Description: "The disk curtin should install upon"
+Documentation: |
+  The disk curtin should install upon
+Schema:
+  type: string
+  default: "/dev/sda"
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

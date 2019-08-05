@@ -1,0 +1,26 @@
+Considering spec raidS:max at 0
+Picking disks heuristically
+Max Raid0, taking the rest of the disks
+Picked 7 disks
+Started with 1 specs, compiled to 7
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:0] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:1] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:2] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:3] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:4] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:5] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0
+Running command: /opt/MegaRAID/MegaCli/MegaCli64 -CfgLdAdd -r0 [:6] WB RA -strpsz64 -Force -a0
+
+Created raid0 on megacli:0

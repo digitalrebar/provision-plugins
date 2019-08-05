@@ -1,0 +1,26 @@
+---
+Name: "bios-current-config"
+Description: "Get current BIOS configuration for the system"
+RequiredParams:
+  - bios-driver
+Prerequisites:
+  - bios-tools-install
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: "current-config"
+    Contents: |
+      #!/usr/bin/env bash
+      {{ template "setup.tmpl" . }}
+      if [[ {{.Param "bios-driver"}} = "lenovo" ]]; then
+          {{ if .ParamExists "lenovo-onecli-install-target" }}
+          export PATH="$PATH:{{.Param "lenovo-onecli-install-target"}}"
+          {{ else }}
+          echo "Please install the lenovo-support content package"
+          exit 1
+          {{ end }}
+      fi
+      drpcli machines remove {{.Machine.UUID}} param bios-current-configuration || :
+      drp-bioscfg -driver {{.Param "bios-driver"}} |drpcli machines set {{.Machine.UUID}} param bios-current-configuration to -
