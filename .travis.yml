@@ -6,7 +6,6 @@ git:
 sudo: false
 install:
 - "./tools/build.sh"
-- "./tools/package.sh"
 script:
 - "./tools/test.sh"
 - "./tools/publish.sh"
