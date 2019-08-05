@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	version = v4.RS_VERSION
+	version = v4.RSVersion
 	def     = models.PluginProvider{
 		Name:          "honeycomb",
 		Version:       version,
@@ -55,7 +55,7 @@ func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]
 		Dataset:  dataset,
 	}
 	libhoney.Init(honeyconfig)
-	libhoney.UserAgentAddition = fmt.Sprintf("rackn/%s", v4.RS_VERSION)
+	libhoney.UserAgentAddition = fmt.Sprintf("rackn/%s", v4.RSVersion)
 	return
 }
 

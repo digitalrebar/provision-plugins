@@ -33,7 +33,7 @@ import (
 
 // def information is passed to DRP during plugin registration
 var (
-	version = v4.RS_VERSION
+	version = v4.RSVersion
 	def     = models.PluginProvider{
 		Name:          "callback",
 		Version:       version,
