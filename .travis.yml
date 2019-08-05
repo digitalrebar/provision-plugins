@@ -26,7 +26,7 @@ deploy:
   skip_cleanup: true
   on:
     repo: digitalrebar/provision-plugins
-    tags: true
+    branch: v4
 env:
   global:
     secure: rJ6QnC/zvxOo17WwH7r1oN2y00iJiF+O/QrzRZpU3pD/NQbPIoD7uCvZ/jlz5m5HQR9CsiNovi/Da9Fw0dty8LoE5cw3PfNdpNoNbii0ZE7xwCWmVAImZEyHLYSJTbEXgIlQuHo5jxlK5SyotElaRF8Eq3u+4FeWFCvgB6J3CZVxlUwbWCcY8vp7qSrP/jtw7QYX9n95BpcR4flpApgArMBTD1xF4SsIboJKztHe6DuDPcFSLnA2RNmIxZBl8UfVhWcwIx6R5ff9VH749Na8x2IBCxT8r/lTC7NkQ/MXTlWd0yNGv5rDIqq1Sfgie2PYLczyIWvGb7GzHzJT/6ZIsChe/dSFEriKdXGXi4M0mF3FVxDKAuT5iW5o2tL08jmXhCEsvOYmUy+l6I3Me6qNs4zDNWUYbXWltYEqDKGoI7+eZV/SkVYCdDFvRZjzbQNLbCtbXlR3nWLV2quC1vVdYEVm9WOHPydaCjRKOZ1ugorqTmIv4uGCaucPA7FREbe6k9JY0tZsYVE25fYqWMJmKbviDQKy/oInMG0U/QsAeuVOl+f+JqBKrN1sFFPYjWvsCF6ZNRZU6P4qoVOTw2Nf6EKPwXXAH3IC0PeQa5s9mDSle6wU9pQPEeuliBzU5KxCMdchFnP6Q5JOyNsA3Pj4Cgg6g+umeVmy6qtf8CvXjIE=
