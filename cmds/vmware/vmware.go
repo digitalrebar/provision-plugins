@@ -14,7 +14,7 @@ import (
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision/v4/plugin"
-	"github.com/rackn/provision-plugins/v4"
+	"github.com/digitalrebar/provision-plugins/v4"
 )
 
 var (

@@ -11,7 +11,7 @@ import (
 	"github.com/cloudflare/cfssl/signer"
 	"github.com/cloudflare/cfssl/signer/local"
 	"github.com/digitalrebar/provision/v4/models"
-	"github.com/rackn/provision-plugins/v4/utils"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 type SignerWrapper struct {

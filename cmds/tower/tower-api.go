@@ -10,7 +10,7 @@ import (
 
 	utils2 "github.com/VictorLowther/jsonpatch2/utils"
 	"github.com/digitalrebar/provision/v4/models"
-	"github.com/rackn/provision-plugins/v4/utils"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 func statusNotFinished(status string) bool {
