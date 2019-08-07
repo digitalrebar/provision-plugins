@@ -12,11 +12,11 @@ import (
 	"github.com/digitalocean/go-netbox/netbox"
 	"github.com/digitalocean/go-netbox/netbox/client"
 	"github.com/digitalrebar/logger"
+	"github.com/digitalrebar/provision-plugins/v4"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision/v4/plugin"
-	"github.com/digitalrebar/provision-plugins/v4"
-	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 	def     = models.PluginProvider{
 		Name:          "netbox",
 		Version:       version,
-		PluginVersion: 2,
+		PluginVersion: 4,
 		HasPublish:    true,
 		RequiredParams: []string{
 			"netbox/access-point",

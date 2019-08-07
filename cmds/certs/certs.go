@@ -11,11 +11,11 @@ import (
 
 	"github.com/cloudflare/cfssl/log"
 	"github.com/digitalrebar/logger"
+	"github.com/digitalrebar/provision-plugins/v4"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision/v4/plugin"
-	"github.com/digitalrebar/provision-plugins/v4"
-	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 var (
@@ -24,7 +24,7 @@ var (
 		Name:          "certs",
 		Version:       version,
 		AutoStart:     true,
-		PluginVersion: 2,
+		PluginVersion: 4,
 		AvailableActions: []models.AvailableAction{
 			{
 				Command: "makeroot",
