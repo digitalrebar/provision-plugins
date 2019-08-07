@@ -17,7 +17,7 @@ export GO111MODULE=on
 mkdir -p tools/build
 exepath="$PWD/tools/build"
 
-while ! go list -e $(go list -f '{{.Path}}' -m all)
+while ! go mod download
 do
         echo "get mods failed - trying again"
 done
