@@ -20,6 +20,13 @@ export VERFLAGS="-s -w \
           -X github.com/digitalrebar/provision-plugins/v4.GitHash=$GITHASH"
 set -e
 cd "$1"
+if [[ $TRAVIS = true ]]; then
+    # Sigh.  Work around some rate-limiting hoodoo, hopefully
+    for i in 1 2 3 4 5; do
+        go mod download && break
+        sleep $i
+    done
+fi
 if [[ -d content ]] ; then
         printf 'v%s.%s.%s%s' >content/._Version.meta $MajorV $MinorV $PatchV $Extra
 fi

@@ -17,10 +17,13 @@ export GO111MODULE=on
 mkdir -p tools/build
 exepath="$PWD/tools/build"
 
-while ! go mod download
-do
-        echo "get mods failed - trying again"
-done
+if [[ $TRAVIS = true ]]; then
+    # Sigh.  Work around some rate-limiting hoodoo, hopefully
+    for i in 1 2 3 4 5; do
+        go mod download && break
+        sleep $i
+    done
+fi
 
 for f in drbundler drpcli; do
     [[ -x $exepath/$f ]] && continue
