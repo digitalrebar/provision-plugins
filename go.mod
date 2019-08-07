@@ -35,6 +35,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/packethost/packngo v0.0.0-20181206143517-b36133050ae5
 	github.com/pborman/uuid v1.2.0
+	github.com/pin/tftp v2.1.0+incompatible // indirect
 	github.com/vishvananda/netlink v0.0.0-20181208180451-78a3099b7080
 	github.com/vishvananda/netns v0.0.0-20180720170159-13995c7128cc // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect

@@ -17,6 +17,11 @@ export GO111MODULE=on
 mkdir -p tools/build
 exepath="$PWD/tools/build"
 
+while ! go list -e $(go list -f '{{.Path}}' -m all)
+do
+        echo "get mods failed - trying again"
+done
+
 for f in drbundler drpcli; do
     [[ -x $exepath/$f ]] && continue
     go build -o "$exepath/$f" github.com/digitalrebar/provision/v4/cmds/$f
