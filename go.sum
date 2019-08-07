@@ -32,6 +32,7 @@ github.com/digitalocean/go-netbox v0.0.0-20180319151450-29433ec527e7 h1:6ZubWpWb
 github.com/digitalocean/go-netbox v0.0.0-20180319151450-29433ec527e7/go.mod h1:0iYGwNwEw1E1whoXj9ro2Or2ROjKxzbeGll7YGp660M=
 github.com/digitalrebar/logger v0.3.0 h1:7/XP3BQiWfl1Lqmm7tvkvdwjPilDUUPC/iWbeWO9G6g=
 github.com/digitalrebar/logger v0.3.0/go.mod h1:zH2t4FBhzVxZJTg+eaPzNCRL50nlcRLxWurfTsl5jWE=
+github.com/digitalrebar/provision/v4 v4.0.0/go.mod h1:AWhC3b3eBPL2c9hC8FnHwfL7X2EiEascOYvwHW3tkIs=
 github.com/digitalrebar/tftp v2.1.0+incompatible h1:CzBcnsUaMtdLSOf3dSycinnfpajAAro7l8oo/ILyzOI=
 github.com/digitalrebar/tftp v2.1.0+incompatible/go.mod h1:k1tcsyQwHE72oTU5sfXPJdOCHFiZUt3M2BdYdHsfw6c=
 github.com/digitalrebar/tftp/v3 v3.0.0 h1:Ft2i3s2gCZ795rISs9vlcy3YSqfd6mtodxGoUcPSrhs=
