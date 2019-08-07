@@ -1,12 +1,12 @@
 ---
-Name: "render-in-subnet-check"
+Name: "in-subnet-check-render"
 Description: "Render the in-subnet-check.py to local ESXi for use."
 Meta:
   icon: "money"
   color: "grey"
   title: "RackN Content"
 Templates:
-  - Name: "render-in-subnet-check"
+  - Name: "in-subnet-check-render"
     Path: "/tmp/in-subnet-check.py"
     ID: "in-subnet-check.py.tmpl"
   - Name: "chmod-in-subnet-check"

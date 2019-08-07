@@ -1,5 +1,5 @@
 ---
-Name: render-in-subnet-check
+Name: in-subnet-check-render
 BootEnv: ""
 Description: Render the in-subnet-check.py.tmpl template to Machine
 Documentation: |
@@ -9,6 +9,8 @@ Documentation: |
 
   To call and use the python file, insure ``python3`` is found by ``env``,
   and simply call it as ``/tmp/in-subnet-check.py <OPTIONS>``.
+
+  See the Task ``in-subnet-check-validate`` to use it.
 
 Meta:
   color: blue
@@ -23,4 +25,4 @@ RequiredParams: []
 RunnerWait: true
 Templates: []
 Tasks:
-  - render-in-subnet-check
+  - in-subnet-check-render

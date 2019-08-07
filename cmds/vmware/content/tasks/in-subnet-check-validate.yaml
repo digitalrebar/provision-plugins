@@ -1,0 +1,41 @@
+---
+Name: "in-subnet-check-validate"
+Description: "Validate the IP and GW in same subnet for ESXi firstboot network"
+Meta:
+  icon: "money"
+  color: "grey"
+  title: "RackN Content"
+Templates:
+  - Name: "in-subnet-check-validate.sh.tmpl"
+    Contents: |
+      #!/usr/bin/env sh
+      # Validate IP and Def GW are in same Subnet for ESXi network configuration
+      #
+      # WARNING:  'in-subnet-check-render' Task must be run prior to this task,
+      #           making the Python script '/tmp/in-subnet-check.py' available.
+
+      CHK=/tmp/in-subnet-check.py
+
+      missing_param_error() {
+        local _p=$1
+        echo "Missing required Param '$_p' to validate.  All of the following Params"
+        echo "MUST exist on the Machine object to be validated."
+        echo ""
+        echo "      esxi/network-firstboot-ipaddr"
+        echo "      esxi/network-firstboot-gateway"
+        echo "      esxi/network-firstboot-netmask"
+        exit 1
+      }
+
+      {{ if .ParamExists "esxi/network-firstboot-ipaddr"  }}IP={{ .Param "esxi/network-firstboot-ipaddr"  }}{{ else }}missing_param_error ipaddr{{ end }}
+      {{ if .ParamExists "esxi/network-firstboot-gateway" }}GW={{ .Param "esxi/network-firstboot-gateway" }}{{ else }}missing_param_error gateway{{ end }}
+      {{ if .ParamExists "esxi/network-firstboot-netmask" }}NM={{ .Param "esxi/network-firstboot-netmask" }}{{ else }}missing_param_error netmask{{ end }}
+
+      if [[ -f "$CHK" && -x "$CHK" ]]
+      then
+        $CHK $IP $GW $NM
+      else
+        echo "FATAL: Required validation script '$CHK' not available on system or executable."
+        echo "       Insure Task 'in-subnet-check-render' is run first."
+        exit 1
+      fi

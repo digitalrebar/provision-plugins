@@ -1,0 +1,35 @@
+---
+Name: in-subnet-check-validate
+BootEnv: ""
+Description: Validate the IP, Def GW and Netmask are in same subnet.
+Documentation: |
+  Validates that the ESXi firstboot IP, Def GW, and Netmask are in the
+  same subnet to prevent failures of ESXi firstboot network configuration.
+
+  Requires that the following Params are accessible to the validate script:
+
+    * esxi/network-firstboot-ipaddr
+    * esxi/network-firstboot-gateway
+    * esxi/network-firstboot-netmask
+
+  This stage will also run the Task ``in-subnet-check-render`` to make the
+  python script (``in-subnet-check.py``) available for use.
+
+Meta:
+  color: blue
+  icon: search
+  title: RackN
+  feature-flags: sane-exit-codes
+OptionalParams: []
+Params: {}
+Profiles: []
+Reboot: false
+RequiredParams:
+  - esxi/network-firstboot-ipaddr
+  - esxi/network-firstboot-gateway
+  - esxi/network-firstboot-netmask
+RunnerWait: true
+Templates: []
+Tasks:
+  - in-subnet-check-render
+  - in-subnet-check-validate
