@@ -10,11 +10,11 @@ import (
 	"os"
 
 	"github.com/digitalrebar/logger"
+	"github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision/v4/plugin"
 	"github.com/honeycombio/libhoney-go"
-	"github.com/digitalrebar/provision-plugins/v4"
 )
 
 var (
@@ -22,7 +22,7 @@ var (
 	def     = models.PluginProvider{
 		Name:          "honeycomb",
 		Version:       version,
-		PluginVersion: 2,
+		PluginVersion: 4,
 		HasPublish:    true,
 		RequiredParams: []string{
 			"honeycomb/writekey",

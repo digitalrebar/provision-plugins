@@ -19,11 +19,11 @@ import (
 	"github.com/VictorLowther/simplexml/search"
 	libvirt "github.com/digitalocean/go-libvirt"
 	"github.com/digitalrebar/logger"
+	"github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision/v4/plugin"
 	"github.com/pborman/uuid"
-	"github.com/digitalrebar/provision-plugins/v4"
 	"github.com/vishvananda/netlink"
 	"github.com/vishvananda/netlink/nl"
 )
@@ -33,7 +33,7 @@ var (
 	def     = models.PluginProvider{
 		Name:          "kvm-test",
 		Version:       version,
-		PluginVersion: 2,
+		PluginVersion: 4,
 		HasPublish:    true,
 		AvailableActions: []models.AvailableAction{
 			models.AvailableAction{

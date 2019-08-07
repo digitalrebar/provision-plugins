@@ -9,10 +9,10 @@ import (
 	"os"
 
 	"github.com/digitalrebar/logger"
+	"github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision/v4/plugin"
-	"github.com/digitalrebar/provision-plugins/v4"
 )
 
 var (
@@ -20,7 +20,7 @@ var (
 	def     = models.PluginProvider{
 		Name:          "slack",
 		Version:       version,
-		PluginVersion: 2,
+		PluginVersion: 4,
 		HasPublish:    true,
 		RequiredParams: []string{
 			"slack/bot-key",
