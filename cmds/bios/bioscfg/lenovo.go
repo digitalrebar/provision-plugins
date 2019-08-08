@@ -2,17 +2,30 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
 type lenovoConfig struct {
 	source io.Reader
 	items  map[string]string
+}
+
+func runOneCli(args ...string) error {
+	cmd := exec.Command("OneCli", args...)
+	cmd.Stdout = os.Stderr
+	cmd.Stderr = os.Stderr
+	err := cmd.Run()
+	if err != nil || !cmd.ProcessState.Success() {
+		if err == nil {
+			err = fmt.Errorf("Error running OneCli: %s", cmd.ProcessState)
+		}
+	}
+	return err
 }
 
 func (l *lenovoConfig) Source(src io.Reader) {
@@ -22,15 +35,7 @@ func (l *lenovoConfig) Source(src io.Reader) {
 func (l *lenovoConfig) Current() (res map[string]Entry, err error) {
 	res = map[string]Entry{}
 	if l.source == nil {
-		cmd := exec.Command("OneCli", "config", "save", "--file", "settings.dat")
-		out := []byte{}
-		out, err = cmd.CombinedOutput()
-		os.Stderr.Write(out)
-		if err != nil {
-			return
-		}
-		if !cmd.ProcessState.Success() {
-			err = errors.New("Error running OneCli")
+		if err == runOneCli("config", "save", "--file", "settings.dat") {
 			return
 		}
 		var fi *os.File
@@ -75,17 +80,17 @@ func (l *lenovoConfig) Apply(current map[string]Entry, trimmed map[string]string
 			return
 		}
 	}
-	cmd := exec.Command("OneCli", "config", "restore", "--file", "apply.dat")
-	out := []byte{}
-	out, err = cmd.CombinedOutput()
-	os.Stderr.Write(out)
-	if err != nil {
+	if err = runOneCli("config", "restore", "--file", "apply.dat"); err == nil {
+		needReboot = true
 		return
 	}
-	if !cmd.ProcessState.Success() {
-		err = errors.New("Error running OneCli")
-		return
+	logs, _ := filepath.Glob("logs/OneCli-*/OneCli-config-restore-*.txt")
+	for _, lName := range logs {
+		fi, fe := os.Open(lName)
+		if fe == nil {
+			defer fi.Close()
+			io.Copy(os.Stderr, fi)
+		}
 	}
-	needReboot = true
 	return
 }
