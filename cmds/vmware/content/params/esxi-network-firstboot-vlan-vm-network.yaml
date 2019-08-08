@@ -1,0 +1,20 @@
+---
+Name: esxi/network-firstboot-vlan-vm-network
+Description: Set the installed VLANID on firstboot for 'VM Network' portgroup.
+Documentation: |
+  Sets the VLAN tag ID (VLANID) for the installed ESXi instance on
+  first boot for the 'VM Network' portgroup.
+
+  You may set either a VLAN number (1-4096), or the value ``management``; in
+  which case the ``VM Network`` portgroup will be set to the same value as
+  defined for ``esxi/network-firstboot-vlan`` (the ``Management Network``
+  portgroup).
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+Secure: false
