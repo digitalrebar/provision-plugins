@@ -562,3 +562,69 @@ to enable licensed use of ESXi.
 **The following documentation defines the various components of the vmware
 content and how to use them.**
 
+
+Various Error Messages You May See
+----------------------------------
+
+If you are regularly installing ESXi systems and observing the installation from the
+systems console (keyboard, video, mouse, etc.), you may observe a few error messages
+that the Weasel installer kicks out.  These are considered "normal" and are documented
+here just in case you go looking for them.
+
+Validation Disabled
+===================
+
+Error Message:
+
+  ::
+
+    Attempting to install an image profile with validation disabled.  This may result
+    in an image with unsatisfied dependencies, file or package conflicts, and potential
+    security violations.
+
+
+*Explanation:*
+
+  VMware VIBs (software installer bundles) have four levels of "trusted" levels.  Currently,
+  the RackN Firewall and DRPY Agent VIB are set at ``CommunitySupported`` level. This means
+  that if the ESXi system is installed to accept software any higher level, then this message
+  will be displayed.
+
+  RackN is a Partner with VMware, however, we do not have certifications for these packages
+  yet.  Until then, you'll have to live with this error message.
+
+  For more details on VMware *Acceptance Levels*, please see:
+
+    * https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.esxi.install.doc/GUID-0410FAFA-A007-4BD5-A0CC-B1D7303853A3.html
+
+Scratch Partition Location
+==========================
+
+Error Message:
+
+  ::
+
+    Logs are stored on a non-persistent storage.  Consult product documentation to configure a
+    syslog server or a scratch partition.
+
+*Explanation:*
+
+  This is an expected message due to the installer (Weasel) architecture.  The installation
+  is performed from a memory backed filesystem, and any installer logs are written to this
+  location.  When you reboot, the installer logs are nuked.
+
+  To preserve the logs, RackN copies them to ``/vmfs/volumes/datastore1/install-logs/`` for
+  post-install review if there are any questions on the installer actions, or errors in the
+  installation.
+
+  At some future point, these logs may be forwarded to the Endpoint and accessible within the
+  Job Logs subsystem.
+
+
+  For more details on Scratch partition, please see:
+
+    * https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.esxi.install.doc/GUID-F149EDB3-F00F-43AB-9508-72331F4FE8DB.html
+
+.. note:: Unfortunately, the scratch partition can't be located within the Weasel installer,
+          so this error message will always be present.
+
