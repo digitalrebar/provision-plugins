@@ -13,6 +13,7 @@ main() {
     echo "   VIB_BASE set to:  $VIB_BASE"
     echo "  VIB_FORCE set to:  $VIB_FORCE"
     echo ""
+
     mkdir -p embedded
     files=(DRP-Agent DRP-Firewall-Rule)
 
