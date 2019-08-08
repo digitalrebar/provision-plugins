@@ -33,7 +33,7 @@ Templates:
               drpcli machines set {{.Machine.UUID}} param bios-driver to lenovo
               {{ if .ParamExists "lenovo-onecli-install-target" }}
               [[ -x {{.Param "lenovo-onecli-install-target"}}/OneCli ]] && exit 0 || :
-              drpcli machines tasks add {{.Machine.UUID}} at 0 lenovo-onecli-install;;
+              drpcli machines tasks add {{.Machine.UUID}} at 0 lenovo-install-onecli;;
               {{ else }}
               echo "Please install the lenovo-support content package"
               exit 1;;
