@@ -19,7 +19,7 @@ Documentation: |
   network transitions from install to production use.
 
   If you set a different value for the ``firstboot`` stage VLANID, you
-  must also insure the network settings are correctly reflected for the
+  must also ensure the network settings are correctly reflected for the
   new VLAN.  Your options are to use DHCP or Manual modes in this case
   (see ``esxi/network-type`` Param).  Convert would not be correct in
   this case as the provisioning network is likely to not be the same

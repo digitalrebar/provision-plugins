@@ -7,7 +7,7 @@ Documentation: |
   the local ESXi filesystem as ``/tmp/in-subnet-check.py`` for use by the
   system.  The task will also set the rendered python file executable.
 
-  To call and use the python file, insure ``python3`` is found by ``env``,
+  To call and use the python file, ensure ``python3`` is found by ``env``,
   and simply call it as ``/tmp/in-subnet-check.py <OPTIONS>``.
 
   See the Task ``in-subnet-check-validate`` to use it.

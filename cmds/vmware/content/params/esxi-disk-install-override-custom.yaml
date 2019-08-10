@@ -23,7 +23,7 @@ Documentation: |
       ]
 
   WARNING - The executing environment is ESXi kickstart installer (Weasel).  You
-            must insure that the Function you inject operates correctly in
+            must ensure that the Function you inject operates correctly in
             this environment.  For reference, see the Functions in the existing
             Template "esxi-disk-install-override.tmpl".
 

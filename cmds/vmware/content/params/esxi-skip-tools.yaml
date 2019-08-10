@@ -14,7 +14,7 @@ Documentation: |
 
   .. note:  Removing the tools may have an impact on installing the
     tools in the Guest VM instances if you have not made other arrangements
-    to insure the tools are installed through some other means.
+    to ensure the tools are installed through some other means.
 
 Meta:
   color: blue

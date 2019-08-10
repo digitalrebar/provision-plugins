@@ -14,7 +14,7 @@ Documentation: |
   If ``True`` then it is implied the machine is compliant with the HCL.
 
   Note that both this Param and ``vmware/esxi-hcl-completed`` should
-  be set to ``True`` to insure that the tooling ran, and the machine
+  be set to ``True`` to ensure that the tooling ran, and the machine
   passed validation.
 
   However, in DevTest situations, you may set the value to ``True`` to

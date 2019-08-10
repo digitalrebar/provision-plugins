@@ -36,6 +36,6 @@ Templates:
         $CHK $IP $GW $NM
       else
         echo "FATAL: Required validation script '$CHK' not available on system or executable."
-        echo "       Insure Task 'in-subnet-check-render' is run first."
+        echo "       ensure Task 'in-subnet-check-render' is run first."
         exit 1
       fi

@@ -28,7 +28,7 @@ Documentation: |
         ]
       }
 
-  .. note: **WARNING** Insure that any commands you enter in your templates are valid kickstart directives.
+  .. note: **WARNING** Ensure that any commands you enter in your templates are valid kickstart directives.
 
 Meta:
   color: "blue"

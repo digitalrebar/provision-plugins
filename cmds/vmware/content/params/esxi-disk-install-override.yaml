@@ -54,7 +54,7 @@ Documentation: |
   for custom in-the-field templates to be built, and injected in to the
   DRP endpoint to support new "strategies" as needed.
 
-  If new strategies are developed/used, please contact RackN to help insure
+  If new strategies are developed/used, please contact RackN to help ensure
   these are added in to standard product so field customizations are not
   necessary.
 
