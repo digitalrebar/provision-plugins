@@ -18,7 +18,7 @@ Documentation: |
   ``tftpboot`` directory.  For full details please see the VMware content
   documentation found at:
 
-    - https://provision.readthedocs.io/en/tip/doc/content-packages/vmware.html
+    - https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html
 
 Meta:
   color: yellow
