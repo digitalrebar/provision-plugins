@@ -29,9 +29,9 @@ Documentation: |
       interaction with your DRP Endpoint.  This means that if you use
       ``convert`` to static IP assignment, the DRP endpoint will not be
       aware of this.  You will need to create a :ref:`rs_model_reservation`
-      manually to insure your IP assignment isn't stomped on.
+      manually to ensure your IP assignment isn't stomped on.
 
-      Similarly, if you use ``manual``, it is your responsibility to insure
+      Similarly, if you use ``manual``, it is your responsibility to ensure
       you do not map a manual IP assignment to any DHCP ranges, unless you
       also arrange to have that IP assignment converted to a :ref:`rs_model_reservation`
       (when using DRP as the DHCP service).

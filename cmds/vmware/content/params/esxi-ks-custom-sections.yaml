@@ -56,7 +56,7 @@ Documentation: |
       }
 
   .. note: **WARNING** for "python" interpreter template types, you must
-    insure you use the correct python2 or python3 code for the given
+    ensure you use the correct python2 or python3 code for the given
     version of ESXi you are kickstart installing. Don't blame us for that ...
 
 Meta:

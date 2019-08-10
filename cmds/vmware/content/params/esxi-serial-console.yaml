@@ -4,7 +4,7 @@ Description: Defines the serial console for the ESXi host (off by default)
 Documentation: |
   Sets the serial console for the ESXi host.  By default this is not enabled.
 
-  For Packet environment, insure to set com port to ``com2`` like:
+  For Packet environment, ensure to set com port to ``com2`` like:
 
     ``gdbPort=none logPort=none tty2Port=com2``
 
