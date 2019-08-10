@@ -1,7 +1,7 @@
 package main
 
-//go:generate drbundler content content.go
-//go:generate drbundler content content.yaml
+//go:generate sh -c "cd content ; drpcli contents bundle ../content.go"
+//go:generate sh -c "cd content ; drpcli contents bundle ../content.yaml"
 //go:generate sh -c "drpcli contents document content.yaml > image-deploy.rst"
 //go:generate rm content.yaml
 //go:generate ./get-curtin.sh
