@@ -25,7 +25,7 @@ if [[ $TRAVIS = true ]]; then
     done
 fi
 
-for f in drbundler drpcli; do
+for f in drpcli; do
     [[ -x $exepath/$f ]] && continue
     go build -o "$exepath/$f" github.com/digitalrebar/provision/v4/cmds/$f
 done
