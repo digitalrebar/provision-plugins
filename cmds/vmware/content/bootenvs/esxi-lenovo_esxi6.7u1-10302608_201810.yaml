@@ -3,7 +3,7 @@ Name: esxi-lenovo_esxi6.7u1-10302608_201810-install
 Description: (DEPRECATED) Install BootEnv for ESXi 6.7.0update1
 Documentation: |
   DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documenation.
-               https://provision.readthedocs.io/en/tip/doc/content-packages/vmware.html#vmware-vsphere-tools
+               https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html#vmware-vsphere-tools
 
   Provides custom VMware BootEnv for Lenovo specific hardware and drivers.
   For more details, and Download ISO see:
