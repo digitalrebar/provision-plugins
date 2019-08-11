@@ -108,6 +108,8 @@ var (
 	}
 )
 
+// Plugin is the main control structure of the plugin
+// and should implement the desired interface for the plugin.
 type Plugin struct {
 	session *api.Client
 	name    string
@@ -119,6 +121,7 @@ func (p *Plugin) certsProfileName() string {
 	return fmt.Sprintf("%s-data", p.name)
 }
 
+// Config implements the plugin's configuration callback
 func (p *Plugin) Config(thelog logger.Logger, session *api.Client, config map[string]interface{}) *models.Error {
 	thelog.Infof("Config: %v\n", config)
 	p.session = session
@@ -152,6 +155,8 @@ func (p *Plugin) Config(thelog logger.Logger, session *api.Client, config map[st
 	return nil
 }
 
+// IsPresentAndAuth checks to see if the root is in the signers map and that
+// the authKey is valid for access of that root.
 func (p *Plugin) IsPresentAndAuth(root string, ma *models.Action) (*SignerWrapper, *models.Error) {
 	s, ok := p.signers[root]
 	if !ok {
@@ -172,6 +177,7 @@ func (p *Plugin) IsPresentAndAuth(root string, ma *models.Action) (*SignerWrappe
 	return s, nil
 }
 
+// Action implements the plugin's Action plugin callback
 func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{}, err *models.Error) {
 	root, ok := ma.Params["certs/root"].(string)
 	if !ok && ma.Command != "list" {
@@ -231,10 +237,6 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 	}
 
 	return
-}
-
-func (p *Plugin) Validate(thelog logger.Logger, session *api.Client) (interface{}, *models.Error) {
-	return def, nil
 }
 
 func main() {

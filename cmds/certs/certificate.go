@@ -10,15 +10,18 @@ import (
 	"github.com/cloudflare/cfssl/initca"
 	"github.com/cloudflare/cfssl/signer"
 	"github.com/cloudflare/cfssl/signer/local"
-	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision-plugins/v4/utils"
+	"github.com/digitalrebar/provision/v4/models"
 )
 
+// SignerWrapper - allows the signer to
+// have custom data of the CertData
 type SignerWrapper struct {
 	signer signer.Signer
 	Data   CertData
 }
 
+// CertData defines the basics for a certificate root.
 type CertData struct {
 	Name    string
 	Cert    string
@@ -26,10 +29,10 @@ type CertData struct {
 	AuthKey string
 }
 
+// ParamData is a map of root cert data
 type ParamData map[string]CertData
 
-var (
-	basicConfig string = `{
+var basicConfig = `{
   "signing": {
     "profiles": {
       "CA": {
@@ -80,7 +83,6 @@ var (
   }
 }
 `
-)
 
 func (p *Plugin) buildSigner(root, authKey, certS, keyS string) (*SignerWrapper, error) {
 	key, err := helpers.ParsePrivateKeyPEM([]byte(keyS))
@@ -207,9 +209,8 @@ func (p *Plugin) saveData() *models.Error {
 	}
 	if len(pp) == 1 {
 		return utils.AddDrpParam(p.session, "profiles", p.certsProfileName(), "certs/data", pp)
-	} else {
-		return utils.SetDrpParam(p.session, "profiles", p.certsProfileName(), "certs/data", nil, pp)
 	}
+	return utils.SetDrpParam(p.session, "profiles", p.certsProfileName(), "certs/data", nil, pp)
 }
 
 func (p *Plugin) loadSigners() *models.Error {
