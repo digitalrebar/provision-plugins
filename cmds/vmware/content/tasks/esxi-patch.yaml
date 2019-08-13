@@ -1,0 +1,14 @@
+---
+Name: "esxi-patch"
+Description: "A task to patch an ESXi instance after install."
+Documentation: ""
+Meta:
+  color: "yellow"
+  feature-flags: "sane-exit-codes"
+  icon: "cloud"
+  title: "RackN"
+Templates:
+  - Name: "ESXi Patch"
+    Path: ""
+    ID: "esxi-patch.sh.tmpl"
+    Contents: ""

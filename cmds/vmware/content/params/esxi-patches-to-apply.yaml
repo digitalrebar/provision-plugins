@@ -1,0 +1,21 @@
+---
+Name: esxi/patches-to-apply
+Description: "Array of patches to apply to ESXi, specified by VMware Build Number"
+Documentation: |
+  Defines the VMware patches to apply, in order, to the ESXi system.  The patch(es)
+  must be specified by the VMware reference Build Number, which has an entry
+  defined in the ``esxi/patch-map`` map.
+
+  Pathces are applied in order.  For each patch that specifies a ``reboot-required: true``,
+  the system will be rebooted before applying the next patch set.  If not set to ``true``,
+  then patches will be applied until the next required reboot is specified.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+RequiredParams:
+  - esxi/patch-map
+Schema:
+  type: array
+  default: []

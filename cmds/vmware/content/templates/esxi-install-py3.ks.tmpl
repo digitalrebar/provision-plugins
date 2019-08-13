@@ -49,7 +49,10 @@ reboot --noeject
 {{ template "esxi-render-firewall-vib.py.tmpl" .}}
 
 %post --interpreter=python
-{{ template "esxi-render-drpy-vib.py.tmpl" .}}
+{{ template "esxi-drpy-vib-render.py.tmpl" .}}
+
+%post --interpreter=python
+{{ template "esxi-drpy-run.py.tmpl" .}}
 
 {{ if eq (.Param "esxi/skip-version") true -}}
 # esxi/skip-notify set to true, skipping version call
@@ -95,7 +98,10 @@ echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disab
 {{ end -}}
 
 %firstboot --interpreter=python
-{{ template "esxi-render-drpy-vib.py.tmpl" .}}
+{{ template "esxi-drpy-vib-render.py.tmpl" .}}
+
+%firstboot --interpreter=python
+{{ template "esxi-drpy-run.py.tmpl" .}}
 
 {{ if eq (.Param "esxi/skip-notify") true -}}
 # ***************************************************************** #

@@ -1,0 +1,15 @@
+---
+Name: esxi/patch-mirror
+Description: The HTTP mirror location to find ESXi patches at.
+Documentation: |
+  The HTTP mirror location to find the ESXi patches at.  Note that the Param
+  ``esxi/patch-map`` can override this value on an indivual patch basis.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: ""
+  type: string
+

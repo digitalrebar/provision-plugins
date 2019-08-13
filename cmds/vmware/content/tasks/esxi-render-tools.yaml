@@ -1,0 +1,20 @@
+---
+Name: "esxi-render-tools"
+Description: "A task to render various helper utilities for ESXi"
+Documentation: ""
+Meta:
+  color: "yellow"
+  feature-flags: "sane-exit-codes"
+  icon: "cloud"
+  title: "RackN"
+Templates:
+  - Name: "esxi-drpy-run.py"
+    Path: "/opt/rackn/bin/esxdi-drpy-run.py"
+    ID: "esxi-drpy-run.py.tmpl"
+  - Name: "esxi-drpy-startup.sh"
+    Path: "/opt/rackn/bin/esxi-drpy-startup.sh"
+    ID: "esxi-drpy-startup.sh.tmpl"
+  - Name: "ESXi Patch"
+    Path: ""
+    ID: "esxi-patch.sh.tmpl"
+    Contents: ""

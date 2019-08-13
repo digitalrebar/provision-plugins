@@ -1,0 +1,17 @@
+---
+Name: esxi/patches-apply-from-map
+Description:  Enables patch application if patches specified in vmware/esxi-version-vendor-map
+Documentation: |
+  If set to ``true``, then the stage ``esxi-patch`` will apply all specified patches
+  in the ``vmware/esxi-version-vendor-map`` for the selected bootenv.
+
+  By default, patches will not be installed.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  type: boolean
+  default: false
+Secure: false

@@ -1,0 +1,65 @@
+---
+Name: "esxi/patch-map"
+Description: "Mapping of VMware Build Number to artifacts for patch install."
+Documentation: |
+  This Param allows an operator to create a list of VMware ESXi patches by
+  Build Number mapped to the locations of the patch.  An operator specifies
+  which patch to apply to a system with the ``esxi/patches-to-apply`` Param
+  which is a Build Number reference in to this data structure.
+
+  *NOTES:*
+
+    * "build-number" - referes to the VMware build number assigned to the patch release
+    * "filename" - used if the "location" is not set, then ``esxi/patch-mirror`` plus this value is used
+    * "reboot-required" - specify if this patch requires a reboot of the system
+    * "checksum" - specify the checksump **type** (md5, sha1, or sha254), and value of the checksum type
+    * "location" - if this patch not located at ``esxi/patch-mirror`` location, specify alternate location (``filename`` will be appended)
+
+
+Meta:
+  color: "blue"
+  icon: "hashtag"
+  title: "RackN Content"
+ReadOnly: true
+Secure: false
+Schema:
+  default:
+    13981272:
+      release_name: ESXi670-201906002
+      filename: ESXi670-201906002.zip
+      reboot_required: true
+      checksum:
+        type: md5
+        value: 430e218c8401d3f1c15b5538e0ec4c97
+    13932383:
+      release_name: ESXi650-201907217
+      filename: update-from-esxi6.5-6.5_update03.zip
+      reboot_required: true
+      checksum:
+        type: md5
+        value: 81124de9717295f8b8afc94084ef6eff
+  type: "object"
+  build_number:
+    required:
+      - "release_name"
+      - "filename"
+      - "reboot_required"
+    properties:
+      release_name:
+        type: "string"
+      filename:
+        type: "string"
+      reboot_required:
+        type: "boolean"
+      location:
+        type: "string"
+      checksum:
+          properties:
+            type:
+              type: "string"
+              enum:
+                - md5
+                - sha1
+                - sha256
+            value:
+              type: "string"

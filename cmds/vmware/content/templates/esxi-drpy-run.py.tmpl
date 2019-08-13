@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+# Start up the DRPY agent on an ESXi system.
+
+###
+#  Requires
+#     * Firewall VIB has been installed and activated for API port
+#       access to the DRP Endpoint.
+#     * DRPY VIB has been installed successfully on the system
+#     * Config file has been rendered for use by DRPY
+#
+#  Above should be met by the 'esxi-drpy-vib-render.py.tmpl' template
+###
+
+import sys, os, datetime, re
+
+# see if we golang template rendered ourself - else defaults (usually for testing)
+apiurl='{{.ApiURL}}'
+if re.search(r'.ApiURL', apiurl):
+  agent = "/opt/rackn/drpy/agent"
+  rackn_dir = "/vmfs/volumes/datastore1/rackn"
+  agent_output_log = rackn_dir + "/drpy.log"
+  conf_file = rackn_dir + "/drpy.conf"
+else:
+  rackn_dir = '{{ .Param "esxi/install-datastore" }}/rackn'
+  agent_output_log = '{{ if .ParamExists "esxi/drpy-agent-log" }}{{ .Param "esxi/drpy-agent-log"}}{{ end }}'
+  if not str(agent_output_log):
+    agent_output_log = rackn_dir + "/drpy.log"
+  conf_file = '{{ if .ParamExists "esxi/drpy-agent-conf" }}{{ .Param "esxi/drpy-agent-conf"}}{{ end }}'
+  if not str(conf_file):
+    conf_file = rackn_dir + "/drpy.conf"
+
+start_agent = "python" + agent + "-f " + conf_file + " >> " + agent_output_log + " 2>&1"
+
+if not os.path.isdir(rackn_dir):
+    os.mkdir(rackn_dir)
+
+if not conf_file:
+  sys.exit('No DRPY conf file found on system ("' + conf_file + '".')
+
+if not agent:
+  sys.exit('DRPY agent not found on system"' + agent + '.')
+
+# rotate if log larger than 1 MB
+if os.path.exists(agent_output_log):
+  log_size = os.path.getsize(agent_output_log)
+  if log_size > 1048576:
+    datestamp = ".rotated." + datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    rotate_log = agent_output_log + datestamp
+    os.rename(agent_output_log, rotate_log)
+    if rotate_log:
+      print("Rotated log file to: " + rotate_log)
+
+# yes - for some reason we have to start agent twice to get it to work ...
+print("Starting agent with config file named '" + conf_file + "'.")
+os.system('echo "--------------------------- $(date) ---------------------------" | tee -a ' + agent_output_log)
+os.system(start_agent)
+os.system('echo "--------------------------- $(date) ---------------------------" | tee -a ' + agent_output_log)
+os.system(start_agent)
+
+print("Completed processing workflow jobs. Agent exited.")
+

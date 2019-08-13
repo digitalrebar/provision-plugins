@@ -1,0 +1,55 @@
+---
+Name: "esxi-patch-start"
+Description: "Start the ESXi patch process (put in maintenance mode)"
+Documentation: |
+  Set ``maintenanceMode`` on an ESXi system.  In addition to setting it on
+  the system, also record the state on DRP in the Param ``esxi/maintenance-mode``.
+
+  Subsequently, when maintenance mode is disabled, BOTH the system state must be
+  in maintenance (enabled), and the DRP Param set to enabled.  This is a safety
+  check to insure that DRP set the maintenance mode, and to not disable it
+  unless we've set it.
+
+  Uses the ``esxi-params.py.tmpl`` python code to set/manage Params on the system.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-params.py"
+    Path: "/tmp/esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+  - Name: "esxi-patch-start"
+    Contents: |
+      #!/usr/bin/env sh
+      # Put the ESXi node in to maintenance mode
+
+      set -e
+
+      STATE=$(localcli system maintenanceMode get)
+
+      if [[ "$STATE" == "Enabled" ]]
+      then
+        echo "system maintenanceMode already set"
+      else
+        localcli system maintenanceMode set -–enable true > /dev/null || true
+        echo "FATAL:  Unable to set maintenance mode successfully."
+        exit 1
+      fi
+
+      MODE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+      if [[ "$MODE" != "enabled" ]]
+      then
+        python3 /tmp/esxi-params.py add 'esxi/maintenance-mode' 'enabled'
+      else
+        echo "DRP esxi/maintenance-mode already set to 'enabled'"
+      fi
+
+      SYS=$(localcli system maintenanceMode get)
+      DRP=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+
+      echo ""
+      echo ">>> 'maintenanceMode' system state    :: '$SYS'"
+      echo ">>> 'esxi/maintenance-mode' DRP param :: '$DRP'"
+      echo ""

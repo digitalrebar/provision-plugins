@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+# ensure DRPY is set to start on boot of ESXi instance - this needs help - lots
+
+###
+#  use the local.sh script to fire up DRPY on boot
+#
+#  this desperately needs better integration
+#
+#  DRP-Agent.vib must have been installed previously
+#  esxi-drpy-run.py.tmpl must have been rendered prior to us running
+###
+
+{{ if eq (.Param "esxi/drpy-agent-enable") true -}}
+echo "Setting DRPY Agent to start at ESXi boot time."
+{{ else -}}
+# DRPY Agent set to not start at boot time by 'esxi/drpy-agent-enable' Param false
+exit 0
+{{ end -}}
+
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+RB="/opt/rackn/drpy"
+RP="$RB/bin"
+RC="/etc/rc.local.d/local.sh"
+
+[[ ! -d "$RP" ]] && xiterr "No '$RP' path - appears DRPY wasn't installed yet."
+
+TOOL="$RP/esxi-drpy-run.py"
+[[ ! -r "$TOOL" ]] && xiterr "Tool '$TOOL' not available - run esxi-render-tools task"
+chmod 755 $TOOL
+
+if $( grep -q "^$TOOL" $RC )
+then
+  echo "Tool '$TOOL' setup in $RC already.  Nothing done."
+else
+  sed -i "\$i $TOOL" $RC
+  $( grep -eq "^$TOOL" $RC ) && echo "Startup tool ('$TOOL') installed successfully" || xiterr "Failed to install '$TOOL'"
+fi

@@ -1,0 +1,16 @@
+---
+Name: "esxi-patch"
+Description: "Stage to patch ESXi instance"
+Reboot: false
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+OptionalParams: []
+Profiles: []
+RequiredParams:
+  - esxi/patch-map
+Tasks:
+  - esxi-render-tools
+  - esxi-patch
+Templates: []

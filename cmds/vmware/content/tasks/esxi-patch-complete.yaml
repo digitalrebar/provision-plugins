@@ -1,0 +1,56 @@
+---
+Name: "esxi-patch-compleete"
+Description: "Complete the ESXi patch process (take ESXi out of maintenance mode)"
+Documentation: |
+  Remove ``maintenanceMode`` on an ESXi system, but only when the system is
+  in maintenanceMode, and the DRP param ``esxi/maintenance-mode`` is set to
+  ``enabled``.  This is a safety check to insure that DRP set the maintenance
+  mode, and to not disable it unless we've set it.
+
+  Uses the ``esxi-params.py.tmpl`` python code to set/manage Params on the system.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-params.py"
+    Path: "/tmp/esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+  - Name: "esxi-patch-complete"
+    Contents: |
+      #!/usr/bin/env sh
+      # Put the ESXi node in to maintenance mode
+
+      function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+      set -e
+
+      STATE=$(localcli system maintenanceMode get)
+
+      if [[ "$STATE" == "Enabled" ]]
+      then
+        localcli system maintenanceMode set -–enable false
+        STATE=$(localcli system maintenanceMode get)
+        [[ "$STATE" == "Enabled" ]] && xiterr "FATAL: Unable to remove maintenanceMode from system."
+      else
+        echo "System was not in maintenanceMode - no changes made."
+      fi
+
+      # remove from DRP side in either case above
+      MODE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+      if [[ "$MODE" == "enabled" ]]
+      then
+        python3 /tmp/esxi-params.py delete 'esxi/maintenance-mode'
+        STATE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+        [[ "$STATE" != "null" ]] && xiterr "FATAL: Unable to remove 'esxi/maintenance-mode' state from DRP."
+      else
+        echo "NOTICE: system maintenanceMode was NOT recorded on DRP ('esxi/maintenance-mode'), nothing done."
+      fi
+
+      SYS=$(localcli system maintenanceMode get)
+      DRP=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+
+      echo ""
+      echo ">>> 'maintenanceMode' system state    :: '$SYS'"
+      echo ">>> 'esxi/maintenance-mode' DRP param :: '$DRP'"
+      echo ""
