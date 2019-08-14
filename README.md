@@ -25,10 +25,10 @@ provide the DRP -> Plugin API calls, Config, Stop, Action, and Publish.
 
 These are handled by these endpoints that are not exposed on the API port:
 
-* /api-plugin/v3/config  - POST - map[string]interface{}
-* /api-plugin/v3/stop    - POST - no data
-* /api-plugin/v3/action  - POST - models.Action
-* /api-plugin/v3/publish - POST - models.Event
+* /api-plugin/v4/config  - POST - map[string]interface{}
+* /api-plugin/v4/stop    - POST - no data
+* /api-plugin/v4/action  - POST - models.Action
+* /api-plugin/v4/publish - POST - models.Event
 
 Additionally, all requests on the DRP API port will be forwarded to the plugin if sent to:
 
@@ -42,8 +42,8 @@ to send information back.
 
 The current endpoints for that API are:
 
-* /api-server-plugin/v3/log     - POST - Logger.Line
-* /api-server-plugin/v3/publish - POST - Model.Event
+* /api-server-plugin/v4/log     - POST - Logger.Line
+* /api-server-plugin/v4/publish - POST - Model.Event
 
 All the basic input and output options are provided in a plugin wrapper.
 
@@ -100,7 +100,7 @@ It looks like this:
         def     = models.PluginProvider{
                 Name:          "incrementer",
                 Version:       version,
-                PluginVersion: 2,
+                PluginVersion: 4,
                 HasPublish:    true,
                 AvailableActions: []models.AvailableAction{
                         models.AvailableAction{Command: "increment",
