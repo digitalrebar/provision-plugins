@@ -11,7 +11,7 @@ exit 0
 BLANK_TOP="{bgcolor:dark-grey}{color:yellow}{align:left}{/align}{align:right}{/align}{/color}{/bgcolor}"
 BLANK_BOT="{bgcolor:yellow}{color:black}{align:left}{/align}{align:right}{/align}{/color}{/bgcolor}"
 
-{{ if eq (.Param "esxi/dcui-messaage") true }}
+{{ if eq (.Param "esxi/dcui-message") true }}
 VEND1="{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:6}{/align}{align:padding:39}Installed by Digital Rebar Provision:  {/align}https://rebar.digital/{align:right}{/align}{/color}{/bgcolor}"
 VEND2="{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:26}{/align}{align:padding:19}From RackN, Inc.:  {/align}https://rackn.com/{align:right}{/align}{/color}{/bgcolor}"
 {{ else }}
