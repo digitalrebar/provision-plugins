@@ -1,0 +1,16 @@
+---
+Name: esxi/dcui-message
+Description: Disable the vendor DCUI message in the installed ESXi instance.
+Documentation: |
+  If set to ``false``, disable the installed ESXi instance DCUI vendor message.
+
+  By default the message will be displayed.
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: true
+Secure: false
