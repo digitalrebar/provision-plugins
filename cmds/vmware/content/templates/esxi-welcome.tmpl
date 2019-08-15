@@ -11,6 +11,14 @@ exit 0
 BLANK_TOP="{bgcolor:dark-grey}{color:yellow}{align:left}{/align}{align:right}{/align}{/color}{/bgcolor}"
 BLANK_BOT="{bgcolor:yellow}{color:black}{align:left}{/align}{align:right}{/align}{/color}{/bgcolor}"
 
+{{ if eq (.Param "esxi/dcui-messaage") true }}
+VEND1="{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:6}{/align}{align:padding:39}Installed by Digital Rebar Provision:  {/align}https://rebar.digital/{align:right}{/align}{/color}{/bgcolor}"
+VEND2="{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:26}{/align}{align:padding:19}From RackN, Inc.:  {/align}https://rackn.com/{align:right}{/align}{/color}{/bgcolor}"
+{{ else }}
+VEND1="$BLANK_TOP"
+VEND2="$BLANK_TOP"
+{{ end }}
+
 # we have to get the version in the kickstart/install stage because if
 # switch networks on firstboot - we may not have access to the DRP endpoint
 _v="{{ .Param "esxi/install-datastore" }}/rackn/rackn-drp-version.txt"
@@ -22,7 +30,7 @@ TYPE_IPV4=$(esxcfg-vmknic --list | grep IPv4 | head -1 | awk ' { print " ("$12")
 IPV6=$(esxcfg-vmknic --list | grep IPv6 | head -1 | awk ' { print $5 } ')
 if [[ -n "$IPV6" ]]
 then
-ADDR_IPV6="https://${IPV6}"
+  ADDR_IPV6="https://${IPV6}"
   TYPE_IPV6=$(esxcfg-vmknic --list | grep IPv6 | head -1 | awk ' { print " ("$11 " " $12")" } ')
 else
   ADDR_IPV6="(none)"
@@ -87,8 +95,8 @@ fi
 cat > /etc/vmware/welcome << WELCOME
 $BLANK_TOP
 $BLANK_TOP
-{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:6}{/align}{align:padding:39}Installed by Digital Rebar Provision:  {/align}https://rebar.digital/{align:right}{/align}{/color}{/bgcolor}
-{bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:26}{/align}{align:padding:19}From RackN, Inc.:  {/align}https://rackn.com/{align:right}{/align}{/color}{/bgcolor}
+$VEND1
+$VEND2
 {bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:31}{/align}{align:padding:14}DRP Version:  {/align}$DRP_VERSION{/align}{align:right}{/align}{/color}{/bgcolor}
 {bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:26}{/align}{align:padding:19}DRP Install Date:  {/align}$DRP_DATE{/align}{align:right}{/align}{/color}{/bgcolor}
 {bgcolor:dark-grey}{color:yellow}{align:left}{align:padding:31}{/align}{align:padding:14}DRP API URL:  {/align}$DRP_APIURL{/align}{align:right}{/align}{/color}{/bgcolor}
