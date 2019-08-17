@@ -116,12 +116,14 @@ DOMAIN=$(echo ${NAME#*.} | sed 's/\.$//')
 {{ end -}}
 
 {{ if .ParamExists "dns-servers" -}}
+# wipe our DNS servers we previously acquired - if any
+esxcli network ip dns server remove --all
 {{ range $key, $dns := .Param "dns-servers" -}}
 DNS="{{ $dns }}"
 [[ -n "$DNS" ]] && esxcli network ip dns server add --server="$DNS"
 {{ end -}}
 {{ else -}}
-# maybe check if we have this from lease ?
+# maybe check if we have dns servers from lease ?
 {{ end -}}
 
 {{ if .ParamExists "esxi/ntp-conf" -}}
