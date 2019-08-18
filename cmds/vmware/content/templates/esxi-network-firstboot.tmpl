@@ -160,6 +160,11 @@ TWIDDLE_NTP="yes"
 if [[ -n "$TWIDDLE_NTP" ]]
 then
   echo "Setting and starting 'ntpd' sevices to be on"
+  localcli network firewall ruleset set --ruleset-id ntpClient --enabled true
   /sbin/chkconfig ntpd on
   /etc/init.d/ntpd restart
+  echo "Collecting NTP connection peer status..."
+  sleep 30
+  ntpq -np
+  echo "Done."
 fi
