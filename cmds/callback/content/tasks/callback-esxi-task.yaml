@@ -1,0 +1,42 @@
+Description: A task to generate a callback in the esxi python3 env
+Documentation: |
+  A task to generate a callback from a custom stage.  The stage should
+  have the callback/action parameter set to indicate the action to do.
+  THIS TASK IS FOR ESXI PYTHON3 ENV.
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: building
+  title: RackN
+Name: callback-esxi-task
+Templates:
+  - Name: callback-esxi-task.py
+    Path: ""
+    Contents: |-
+      #!/usr/bin/env python
+      #
+      # A Callback to DRP from ESXI python3 env
+      # This assumes that the firewall rules are already adjusted
+      #
+      # drpcli machines runaction $RS_UUID callbackDo --plugin "{{.Param "callback/plugin" }}" callback/action "{{.Param "callback/action" }}"
+      #
+
+      import os, urllib, urllib.request, socket, ssl, time
+      url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}/actions/callbackDo?plugin={{.Param "callback/plugin" }}'
+
+      print(url)
+
+      # Create the json blob needed to call the action
+      data = b'''
+      {
+        "callback/action": "{{.Param "callback/action" }}"
+      }
+      '''
+
+      print(data)
+
+      req = urllib.request.Request(url, method='POST',data=data)
+      req.add_header('Content-Type', 'application/json')
+      req.add_header('Authorization','Bearer {{.GenerateInfiniteToken}}')
+      rep = urllib.request.urlopen(req,context=ssl.SSLContext(ssl.PROTOCOL_SSLv23))
+      print(rep)
