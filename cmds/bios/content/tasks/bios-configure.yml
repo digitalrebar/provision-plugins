@@ -15,6 +15,10 @@ Templates:
     Contents: |
       #!/usr/bin/env bash
       {{ template "setup.tmpl" . }}
+      if [[ {{.Param "bios-skip-config"}} == true ]] ; then
+        echo "bios-skip-config set to true.  Skipping configuration..."
+        exit 0
+      fi
       if [[ {{.Param "bios-driver"}} = "lenovo" ]]; then
           {{ if .ParamExists "lenovo-onecli-install-target" }}
           export PATH="$PATH:{{.Param "lenovo-onecli-install-target"}}"
