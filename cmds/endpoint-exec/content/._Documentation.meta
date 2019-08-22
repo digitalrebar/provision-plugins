@@ -1,0 +1,42 @@
+Endpoint Exec
+-------------
+
+Endpoint Exec (endpoint-exe) provides the ability to execute some restricted commands on the DRP Enpdoint on behalf of the machine.
+
+The machine would execute a task that does a "runaction" that triggers the command and it returns the result of that command.
+
+The result is sent through as a JSON blob.
+
+  ::
+
+    {
+      "ReturnCode": 0,
+      "StandardOut": "standard out of command",
+      "StandardErr": "standard err of command"
+    }
+
+
+The command is specified by the "endpoint-exec/action" parameter.  Additional command line args can be sent by setting the
+"endpoint-exec/parameters" parameter.
+
+The plugin requires those actions map to a structure in the plugin parameter, endpoint-exec/actions.
+
+That structure looks like this:
+
+  ::
+
+    {
+      "my-command": {
+        "Path": "/path/to/command.py",
+        "BaseArgs": "arg1 arg2"
+      }
+    }
+
+
+Path defines the path to the command to execute.  It should be an absolute path.
+
+BaseArgs defines additional arguments for that command.  This is optional.
+
+
+
+

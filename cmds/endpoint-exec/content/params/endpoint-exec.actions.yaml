@@ -1,0 +1,25 @@
+Description: Endpoint Exec actions that can be run
+Documentation: |
+  The actions that the endpoint-exec plugin allows to be called.
+Meta:
+  color: blue
+  icon: keyboard outline
+  title: RackN
+Name: endpoint-exec/actions
+Schema:
+  type: object
+  additionalProperties:
+    type: object
+    properties:
+      Path:
+        type: string
+      BaseArgs:
+        type: string
+      Delay:
+        type: integer
+      Retry:
+        type: integer
+      Timeout:
+        type: integer
+  default: {}
+

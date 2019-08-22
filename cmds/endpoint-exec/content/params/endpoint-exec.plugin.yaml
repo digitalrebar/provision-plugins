@@ -1,0 +1,11 @@
+Description: The specific endpoint exec plugin to use for this action.
+Documentation: |
+  The specific endpoint exec plugin to call.
+Meta:
+  color: blue
+  icon: keyboard outline
+  title: RackN
+Name: endpoint-exec/plugin
+Schema:
+  type: string
+  default: endpoint-exec

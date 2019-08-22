@@ -1,0 +1,10 @@
+Description: Additional parameters to pass through to the command
+Documentation: |
+  Additional parameters to pass through to the command
+Meta:
+  color: blue
+  icon: keyboard outline
+  title: RackN
+Name: endpoint-exec/parameters
+Schema:
+  type: string

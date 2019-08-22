@@ -1,0 +1,10 @@
+Description: The specific endpoint-exec action to use.
+Documentation: |
+  The specific endpoint-exec action to call.
+Meta:
+  color: blue
+  icon: keyboard outline
+  title: RackN
+Name: endpoint-exec/action
+Schema:
+  type: string
