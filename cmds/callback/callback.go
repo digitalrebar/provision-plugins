@@ -467,6 +467,10 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 		return nil
 	}
 
+	if _, ok := p.callbacks["jobfail"]; !ok {
+		return nil
+	}
+
 	if e.Type != "jobs" {
 		return nil
 	}
@@ -480,10 +484,6 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 		return nil
 	}
 	job := obj.(*models.Job)
-
-	if _, ok := p.callbacks["jobfail"]; !ok {
-		return nil
-	}
 
 	res, rerr := models.New(e.Type)
 	if rerr != nil {
