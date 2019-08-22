@@ -12,7 +12,7 @@ Templates:
 - Name: callback-task.sh
   Path: ""
   Contents: |-
-    #!/usr/bin/env bash
+    #!/usr/bin/env sh
     #
 
     set -e
