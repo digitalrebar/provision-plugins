@@ -1,0 +1,19 @@
+---
+Description: "Stage to run /bin/true on the endpoint"
+Documentation: |
+  This stage will run the command, /bin/true, on the
+  endpoint.  This is an example and requires the
+  parameter, *endpoint-exec/actions*, on the plugin
+  is configured with this json:
+
+  { "true-call": { "Path": "/bin/true" } }
+
+Meta:
+  color: blue
+  icon: keyboard outline
+Name: endpoint-exec-true-call
+Params:
+  endpoint-exec/action: true-call
+Tasks:
+- endpoint-exec-task
+

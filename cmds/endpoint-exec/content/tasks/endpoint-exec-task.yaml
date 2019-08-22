@@ -1,0 +1,45 @@
+---
+Description: A task to generate a endpoint-exec call
+Documentation: |
+  A task to generate a endpoint-exec call from a stage.  The stage should
+  have the endpoint-exec/action parameter set to indicate the action to do.
+
+  Optionally, the endpoint-exec/plugin parameter can be used to override
+  which instance of the plugin should be called for execution.
+
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: keyboard outline
+  title: RackN
+Name: endpoint-exec-task
+Templates:
+- Name: endpoint-exec-task.sh
+  Path: ""
+  Contents: |-
+    #!/usr/bin/env bash
+    #
+
+    set -e
+
+    # Get access and who we are.
+    {{template "setup.tmpl" .}}
+
+    {{if .ParamExists "endpoint-exec/action" }}
+    action="{{.Param "endpoint-exec/action" }}"
+    echo "Generate endpoint-exec - $action"
+    returnStr=$(drpcli machines runaction $RS_UUID endpointExecDo --plugin "{{.Param "endpoint-exec/plugin" }}" endpoint-exec/action "$action")
+
+    echo "Received:"
+    echo $returnStr
+
+    RC=$(jq .ReturnCode <<< "$returnStr")
+    if (( $RC != 0 )) ; then
+      exit 1
+    fi
+    exit 0
+    {{ else }}
+    echo "Action not specified - failing"
+    exit 1
+    {{ end }}
+
