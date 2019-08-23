@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# Validate that IP and GW are in same Subnet (BASH Version)
+
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+# requies dotted quad format for subnet as input for netmask
+# ipcalc can convert prefix to dotted quad/vice-versa, but usage blows chunks
+IP=${IP:-"$1"}
+GW=${GW:-"$2"}
+NM=${NM:-"$3"}
+
+NET_IP=""
+NET_GW=""
+
+function usage() {
+  echo ""
+  echo "USAGE:  $0 IP_ADDRESS GATEWAY NETMASK"
+  echo "   OR:  IP=IP_ADDRESS GW=GATEWAY NM=NETMASK $0"
+  echo ""
+  echo "NOTES:  All addresses (and netmask) must be in dotted quad format."
+  echo ""
+}
+
+(which ipcalc > /dev/null 2>&1 ) || xiterr "'ipcalc' not found in PATH ($PATH)"
+[[ -z "$IP" ]] && { usage; xiterr "Required IP Address not specified"; }
+[[ -z "$GW" ]] && { usage; xiterr "Required Gateway not specified"; }
+[[ -z "$NM" ]] && { usage; xiterr "Required Netmask not specified"; }
+
+function validate() {
+  local ip=$1
+  local stat=1
+  if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+    OIFS=$IFS
+    IFS='.'
+    ip=($ip)
+    IFS=$OIFS
+    [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
+    && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+    stat=$?
+  fi
+  return $stat
+}
+
+validate $IP || xiterr "IP Address ('$IP') not valid dotted quad format"
+validate $GW || xiterr "Gateway ('$GW') not valid dotted quad format"
+validate $NM || xiterr "Netmask ('$NM') not valid dotted quad format"
+
+eval $(ipcalc -n $IP $NM)
+NET_IP=$NETWORK
+[[ -z "$NET_IP" ]] && NET_IP="fail_ip"
+unset NETWORK
+
+eval $(ipcalc -n $GW $NM)
+NET_GW=$NETWORK
+[[ -z "$NET_GW" ]] && NET_GW="fail_gw"
+
+if [[ $NET_IP == $NET_GW ]]
+then
+  echo "SUCCESS: IP '$IP' and GW '$GW' are in the same subnet (${NET_IP}/${NM})."
+else
+  xiterr "IP and GW in different subnets (IP network is '$NET_IP' and GW network is '$NET_GW')."
+fi
+
+exit 0
