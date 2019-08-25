@@ -33,7 +33,7 @@ var (
 		Name:          "endpoint-exec",
 		Version:       version,
 		PluginVersion: 4,
-		HasPublish:    true,
+		HasPublish:    false,
 		AutoStart:     true,
 		AvailableActions: []models.AvailableAction{
 			{
@@ -141,6 +141,7 @@ func (p *Plugin) postTrigger(l logger.Logger, ma *models.Action) (answer interfa
 	}
 
 	cmd := exec.Command(act.Path, params...)
+	// GREG: Add env variables here
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
