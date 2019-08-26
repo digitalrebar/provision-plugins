@@ -163,6 +163,8 @@ then
   localcli network firewall ruleset set --ruleset-id ntpClient --enabled true
   /sbin/chkconfig ntpd on
   /etc/init.d/ntpd restart
+  # restart hostd for Web UI to reflect changes correctly
+  /etc/init.d/hostd restart
   echo "Collecting NTP connection peer status..."
   sleep 30
   ntpq -np
