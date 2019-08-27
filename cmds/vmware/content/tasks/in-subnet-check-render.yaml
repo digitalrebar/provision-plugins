@@ -6,17 +6,24 @@ Meta:
   color: "grey"
   title: "RackN Content"
 Templates:
-  - Name: "in-subnet-check-render"
+  - Name: "in-subnet-check-render-PY"
     Path: "/tmp/in-subnet-check.py"
     ID: "in-subnet-check.py.tmpl"
+  - Name: "in-subnet-check-render-SH"
+    Path: "/tmp/in-subnet-check.sh"
+    ID: "in-subnet-check.sh.tmpl"
   - Name: "chmod-in-subnet-check"
     Contents: |
       #!/usr/bin/env sh
-      CHK=/tmp/in-subnet-check.py
-      if [[ -f "$CHK" ]]
-      then
-        chmod 755 $CHK
-      else
-         echo "FATAL: No file '$CHK' rendered on system, can't chmod it"
-         exit 1
-      fi
+      # chmod the in-subnet-check pieces
+
+      CHKS="/tmp/in-subnet-check.py /tmp/in-subnet-check.sh"
+      for CHK in $CHKS
+      do
+        if [[ -f "$CHK" ]]
+        then
+          chmod 755 $CHK
+        else
+           echo "No file '$CHK' rendered on system, not chmod'ing it"
+        fi
+      done

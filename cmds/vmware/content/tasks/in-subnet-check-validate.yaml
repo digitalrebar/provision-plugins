@@ -12,9 +12,11 @@ Templates:
       # Validate IP and Def GW are in same Subnet for ESXi network configuration
       #
       # WARNING:  'in-subnet-check-render' Task must be run prior to this task,
-      #           making the Python script '/tmp/in-subnet-check.py' available.
+      #           making the Python script '/tmp/in-subnet-check.py' or the BASH
+      #           '/tmp/in-subnet-check.sh' available.
 
-      CHK=/tmp/in-subnet-check.py
+      #CHK=/tmp/in-subnet-check.py
+      CHK=/tmp/in-subnet-check.sh
 
       missing_param_error() {
         local _p=$1
@@ -24,12 +26,14 @@ Templates:
         echo "      esxi/network-firstboot-ipaddr"
         echo "      esxi/network-firstboot-gateway"
         echo "      esxi/network-firstboot-netmask"
-        exit 1
+        echo ""
+        XIT_ERR=1
       }
 
       {{ if .ParamExists "esxi/network-firstboot-ipaddr"  }}IP={{ .Param "esxi/network-firstboot-ipaddr"  }}{{ else }}missing_param_error ipaddr{{ end }}
       {{ if .ParamExists "esxi/network-firstboot-gateway" }}GW={{ .Param "esxi/network-firstboot-gateway" }}{{ else }}missing_param_error gateway{{ end }}
       {{ if .ParamExists "esxi/network-firstboot-netmask" }}NM={{ .Param "esxi/network-firstboot-netmask" }}{{ else }}missing_param_error netmask{{ end }}
+      [[ XIT_ERR -eq 1 ]] && exit 1
 
       if [[ -f "$CHK" && -x "$CHK" ]]
       then
