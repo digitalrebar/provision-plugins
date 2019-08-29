@@ -97,6 +97,9 @@ esxcli network firewall ruleset set --ruleset-id=dr-provision --enabled=false
 echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disable' Param."
 {{ end -}}
 
+# set the software acceptance level according to esxi/acceptance-level Param
+{{ template "esxi-acceptance-level.sh.tmpl" .}}
+
 %firstboot --interpreter=python
 {{ template "esxi-drpy-vib-render.py.tmpl" .}}
 
