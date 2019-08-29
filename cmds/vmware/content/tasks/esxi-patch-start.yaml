@@ -6,7 +6,7 @@ Documentation: |
   the system, also record the state on DRP in the Param ``esxi/maintenance-mode``.
 
   Subsequently, when maintenance mode is disabled, BOTH the system state must be
-  in maintenance (enabled), and the DRP Param set to enabled.  This is a safety
+  in maintenance (Enabled), and the DRP Param set to Enabled.  This is a safety
   check to insure that DRP set the maintenance mode, and to not disable it
   unless we've set it.
 
@@ -25,8 +25,9 @@ Templates:
       #!/usr/bin/env sh
       # Put the ESXi node in to maintenance mode
 
-      set -e
+      function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }set -e
 
+      [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
       STATE=$(localcli system maintenanceMode get)
 
       if [[ "$STATE" == "Enabled" ]]
@@ -39,11 +40,11 @@ Templates:
       fi
 
       MODE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
-      if [[ "$MODE" != "enabled" ]]
+      if [[ "$MODE" != "Enabled" ]]
       then
-        python3 /tmp/esxi-params.py add 'esxi/maintenance-mode' 'enabled'
+        python3 /tmp/esxi-params.py add 'esxi/maintenance-mode' 'Enabled'
       else
-        echo "DRP esxi/maintenance-mode already set to 'enabled'"
+        echo "DRP esxi/maintenance-mode already set to 'Enabled'"
       fi
 
       SYS=$(localcli system maintenanceMode get)

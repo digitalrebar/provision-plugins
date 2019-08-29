@@ -1,0 +1,31 @@
+---
+Name: esxi/patch-list
+Description: "Array of patches to apply to ESXi, specified by VMware Build Number"
+Documentation: |
+  Defines the VMware patches that will be applied to the system.  This value
+  can be programmatically built up any number of ways.  Currently, the
+  ``vmware/esxi-version-vendor-map`` in use on the machine may optionally
+  carry the ``patches`` data structure.  If patches are specified there, then
+  this Param will be built up with the list from that structure.
+
+  If an operator wishes to completely override the programmatic build up of the
+  patch list, use the ``esxi/patch-list-override``.
+
+  In both cases, the ``esxi/patch-map`` must contain a map for the specified
+  patches to be applied with appropriate values.
+
+  Pathces are applied in order.  For each patch that specifies a ``reboot-required: true``,
+  the system will be rebooted before applying the next patch set.  If not set to ``true``,
+  then patches will be applied until the next required reboot is specified.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+RequiredParams:
+  - esxi/patch-map
+OptionalParams:
+  - vmware/esxi-version-vendor-map
+Schema:
+  type: array
+  default: []

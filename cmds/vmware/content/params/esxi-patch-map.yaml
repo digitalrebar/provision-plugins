@@ -14,7 +14,14 @@ Documentation: |
     * "reboot-required" - specify if this patch requires a reboot of the system
     * "checksum" - specify the checksump **type** (md5, sha1, or sha254), and value of the checksum type
     * "location" - if this patch not located at ``esxi/patch-mirror`` location, specify alternate location (``filename`` will be appended)
+    * "reference-url" - reference documentation and/or download url to get more inforamtion about the patch
 
+  The VMware website to search for patches is located at:
+    * https://my.vmware.com/group/vmware/patch#search
+
+  Most patches download URLs will be found via the Patch Search link above. Do to how VMware stages
+  patch updates for download on their website, it is not possible to provide a direct download reference
+  link.
 
 Meta:
   color: "blue"
@@ -31,6 +38,7 @@ Schema:
       checksum:
         type: md5
         value: 430e218c8401d3f1c15b5538e0ec4c97
+      reference-url: https://docs.vmware.com/en/VMware-vSphere/6.7/rn/esxi670-201906002.html
     13932383:
       release_name: ESXi650-201907217
       filename: update-from-esxi6.5-6.5_update03.zip
@@ -38,6 +46,7 @@ Schema:
       checksum:
         type: md5
         value: 81124de9717295f8b8afc94084ef6eff
+      reference-url: https://docs.vmware.com/en/VMware-vSphere/6.5/rn/vsphere-esxi-65u3-release-notes.html
   type: "object"
   build_number:
     required:
@@ -54,12 +63,16 @@ Schema:
       location:
         type: "string"
       checksum:
-          properties:
-            type:
-              type: "string"
-              enum:
-                - md5
-                - sha1
-                - sha256
-            value:
-              type: "string"
+        properties:
+          type:
+            type: "string"
+            enum:
+              - md5
+              - sha1
+              - sha256
+          value:
+            type: "string"
+      reference-url:
+        properties:
+          type:
+            type: "string"

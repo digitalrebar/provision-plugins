@@ -4,7 +4,7 @@ Description: "Complete the ESXi patch process (take ESXi out of maintenance mode
 Documentation: |
   Remove ``maintenanceMode`` on an ESXi system, but only when the system is
   in maintenanceMode, and the DRP param ``esxi/maintenance-mode`` is set to
-  ``enabled``.  This is a safety check to insure that DRP set the maintenance
+  ``Enabled``.  This is a safety check to insure that DRP set the maintenance
   mode, and to not disable it unless we've set it.
 
   Uses the ``esxi-params.py.tmpl`` python code to set/manage Params on the system.
@@ -20,11 +20,12 @@ Templates:
   - Name: "esxi-patch-complete"
     Contents: |
       #!/usr/bin/env sh
-      # Put the ESXi node in to maintenance mode
+      # Remove the ESXi node from maintenance mode
 
       function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
       set -e
 
+      [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
       STATE=$(localcli system maintenanceMode get)
 
       if [[ "$STATE" == "Enabled" ]]
@@ -38,11 +39,11 @@ Templates:
 
       # remove from DRP side in either case above
       MODE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
-      if [[ "$MODE" == "enabled" ]]
+      if [[ "$MODE" == "Enabled" ]]
       then
         python3 /tmp/esxi-params.py delete 'esxi/maintenance-mode'
         STATE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
-        [[ "$STATE" != "null" ]] && xiterr "FATAL: Unable to remove 'esxi/maintenance-mode' state from DRP."
+        [[ "$STATE" != "null" && "$STATE" != "Disabled" ]] && xiterr "FATAL: Unable to remove 'esxi/maintenance-mode' state from DRP."
       else
         echo "NOTICE: system maintenanceMode was NOT recorded on DRP ('esxi/maintenance-mode'), nothing done."
       fi

@@ -6,7 +6,7 @@ Documentation: |
   check to insure that DRP set the maintenance mode on, and that should be safe
   to toggle off.
 
-  The only allowed values are ``enabled`` or ``disaabled``, with the default set
+  The only allowed values are ``Enabled`` or ``Disaabled``, with the default set
   to disabled.
 
 Meta:
@@ -14,9 +14,9 @@ Meta:
   icon: cloud
   title: Digital Rebar
 Schema:
-  default: disabled
+  default: Disabled
   type: string
   enum:
-    - enabled
-    - disabled
+    - Enabled
+    - Disabled
 

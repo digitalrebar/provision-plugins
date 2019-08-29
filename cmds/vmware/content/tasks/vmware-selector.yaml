@@ -17,24 +17,40 @@ Templates:
 
       {{ if .Param "vmware/esxi-generic" }}
       echo "Requested to use generic ESXi install"
-      drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-670u1-install;;
+      VENDOR="generic"
+      BOOTENV="esxi-670u1-install"
       {{ else }}
       mfgr="$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')"
       case $mfgr in
           'Dell Inc.')
-              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-dellemc-esxi-6.7u1-10764712-a04-install;;
+              VENDOR="dell"
+              BOOTENV="esxi-dellemc-esxi-6.7u1-10764712-a04-install"
+              ;;
           'HP'|'HPE')
-              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-hpe-esxi-6.7.0-update1-iso-gen9p-install;;
+              VENDOR="hpe"
+              BOOTENV="esxi-hpe-esxi-6.7.0-update1-iso-gen9p-install"
+              ;;
           'NEC')
-              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-6.7.1-10302608-nec-6.702-install;;
+              VENDOR="nec"
+              BOOTENV=""esxi-6.7.1-10302608-nec-6.702-install"
+              ;;
           'fujitsu')
-              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-fujitsu-vmvisor-installer-6.7-10-install;;
+              VENDOR="fujitsu"
+              BOOTENV="esxi-fujitsu-vmvisor-installer-6.7-10-install"
+              ;;
           'Lenovo'|'lenovo')
-              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-lenovo_esxi6.7u1-10302608_201810-install;;
+              VENDOR="lenovo"
+              BOOTENV="esxi-lenovo_esxi6.7u1-10302608_201810-install"
+              ;;
           *)
               echo "No idea how to install ESXi for $mfgr - selecting generic"
-              drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:esxi-670u1-install;;
+              VENDOR="generic"
+              BOOTENV="esxi-670u1-install"
+              ;;
       esac
+
+      drpcli machines set {{.Machine.UUID}} param "esxi/selected-vendor" to $VENDOR
+      drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:$BOOTENV
       {{ end }}
 
       exit 0

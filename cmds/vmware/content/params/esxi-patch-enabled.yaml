@@ -1,0 +1,20 @@
+---
+Name: esxi/patches-enabled
+Description:  Enables patch application if patches specified in vmware/esxi-version-vendor-map
+Documentation: |
+  If set to ``true``, then apply all specified patches in the ``vmware/esxi-version-vendor-map``
+  or the ``esxi/patch-list-override`` for the selected bootenv.
+
+  By default, if the ``patches`` data structure in the vendor map exists and contains patch
+  references, then they patches will be installed.  This value allows an operator to
+  override the default behavior and disable the patching system even if the pathces have
+  been specified in the vendor map.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  type: boolean
+  default: true
+Secure: false

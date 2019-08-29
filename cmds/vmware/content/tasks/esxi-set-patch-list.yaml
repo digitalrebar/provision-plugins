@@ -1,6 +1,6 @@
 ---
-Name: "esxi-patch"
-Description: "A task to patch an ESXi instance after install."
+Name: "esxi-set-patch-list"
+Description: "A task to set the patch list for ESXi instance during firstboot."
 Documentation: ""
 Meta:
   color: "yellow"
@@ -10,5 +10,5 @@ Meta:
 Templates:
   - Name: "ESXi Patch"
     Path: ""
-    ID: "esxi-patch.sh.tmpl"
+    ID: "esxi-set-patch-list.sh.tmpl"
     Contents: ""

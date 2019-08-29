@@ -5,11 +5,14 @@ Documentation: |
   The HTTP mirror location to find the ESXi patches at.  Note that the Param
   ``esxi/patch-map`` can override this value on an indivual patch basis.
 
+  The default value is to find patches on the Provisioner URL ``files/patches/esxi``
+  location. (eg http://127.0.0.1:8091/files/patches/esxi )
+
 Meta:
   color: yellow
   icon: cloud
   title: Digital Rebar
 Schema:
-  default: ""
+  default: "{{ .ProvisionerURL }}/files/patches/esxi"
   type: string
 
