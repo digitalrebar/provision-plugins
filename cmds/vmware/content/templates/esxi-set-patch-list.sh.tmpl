@@ -1,14 +1,13 @@
-#!/usr/bin/env sh
-# Update an ESXi installed instance to a set patch level. Run in installed ESXi environment.
+#!/usr/bin/env bash
+# Update an ESXi installed instance to a set patch level. MUST BE RUN IN SLEDGEHAMMER.
 
 {{ if not (.Param "esxi/patches-enabled" ) -}}
 echo "ESXi patching system turned off by Param 'esxi/patches-enabled'"
 exit 0
 {{ end -}}
 
-xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
-# setup.tmpl blows up in esxi
-#\{\{ template "setup.tmpl" .\}\}
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+{{ template "setup.tmpl" .}}
 
 {{ if .ParamExists "esxi/patch-list-override" -}}
   # collect our defined list of patches
@@ -37,6 +36,11 @@ PATCH_LIST="$(echo -e "${P}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 
 # param expansion must happen outside of 'range' unless use other constructs inside
 MIRROR="{{ .Param "esxi/patch-mirror" }}"
+if [[ "$MIRROR" =~ ^provisioner:.* ]]
+then
+  MIRROR="{{.ProvisionerURL}}$(echo $MIRROR | sed 's/^provisioner://')"
+fi
+echo "Patch Mirror location set to: $MIRROR"
 PATCH_DS="{{ .Param "esxi/install-datastore" }}/rackn/patches"
 [[ ! -d "$PATCH_DS" ]] && mkdir -p "$PATCH_DS"
 
@@ -45,59 +49,67 @@ for PATCH in $PATCH_LIST
 do
   {{ range $index, $build := .Param "esxi/patch-map" -}}
 
-  BUILD_NUMBER="{{$index}}"
-  [[ "$PATCH" != "$BUILD_NUMBER" ]] && continue
+    CHECK_INDEX="{{$index}}"
+    echo ">>> CHECK_INDEX:  $CHECK_INDEX"
+    echo ">>>       PATCH:  $PATCH"
+    [[ "$PATCH" != "$CHECK_INDEX" ]] && continue
 
-  REL_NAME="{{$build.release_name}}"
-  FILE_NAME="{{$build.filename}}"
-  REBOOT_REQUIRED="{{$build.reboot_required}}"
-  LOCATION="{{$build.location}}"
-  CHECKSUM_TYPE="{{$build.checksum.type}}"
-  CHECKSUM_VALUE="{{$build.checksum.value}}"
+    REL_NAME="{{$build.release_name}}"
+    FILE_NAME="{{$build.filename}}"
+    REBOOT_REQUIRED="{{$build.reboot_required}}"
+    LOCATION="{{$build.location}}"
+    CHECKSUM_TYPE="{{$build.checksum.type}}"
+    CHECKSUM_VALUE="{{$build.checksum.value}}"
 
-  [[ $RS_DEBUG_ENABLE ]] FMT="%16s: "
-  [[ $RS_DEBUG_ENABLE ]] printf "$FMT %s\n" "BUILD_NUMBER" "$BUILD_NUMBER"
-  [[ $RS_DEBUG_ENABLE ]] printf "$FMT %s\n" "REL_NAME" "$REL_NAME"
-  [[ $RS_DEBUG_ENABLE ]] printf "$FMT %s\n" "FILE_NAME" "$FILE_NAME"
-  [[ $RS_DEBUG_ENABLE ]] printf "$FMT %s\n" "REBOOT_REQUIRED" "$REBOOT_REQUIRED"
-  [[ $RS_DEBUG_ENABLE ]] printf "$FMT %s\n" "LOCATION" "$LOCATION"
-  [[ $RS_DEBUG_ENABLE ]] printf "$FMT %s\n" "CHECKSUM_TYPE" "$CHECKSUM_TYPE"
-  [[ $RS_DEBUG_ENABLE ]] printf "$FMT %s\n" "CHECKSUM_VALUE" "$CHECKSUM_VALUE"
+    [[ $RS_DEBUG_ENABLE ]] && FMT="%16s: "
+    [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECK_INDEX" "$CHECK_INDEX"
+    [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "REL_NAME" "$REL_NAME"
+    [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "FILE_NAME" "$FILE_NAME"
+    [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "REBOOT_REQUIRED" "$REBOOT_REQUIRED"
+    [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "LOCATION" "$LOCATION"
+    [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECKSUM_TYPE" "$CHECKSUM_TYPE"
+    [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECKSUM_VALUE" "$CHECKSUM_VALUE"
 
-  [[ "$LOCATION" =~ ^\<no\ value\>$ ]] && LOCATION="${MIRROR}"
-  [[ -z "$LOCATION" ]] && xiterr "No download location specified (see 'esxi/patch-mirror' param)"
+    [[ "$LOCATION" =~ ^\<no\ value\>$ ]] && LOCATION="${MIRROR}"
+    [[ -z "$LOCATION" ]] && xiterr "No download location specified (see 'esxi/patch-mirror' param)"
 
-  SUM=$(mktemp /tmp/checksum.XXXXXXX)
-  wget -P "$PATCH_DS" $LOCATION/$FILE_NAME
-  echo "$CHECKSUM_VALUE  $PATCH_DS/$FILE_NAME" > $SUM
-  if $(eval ${CHECKSUM_TYPE}sum -cs $SUM)
-  then
-    echo "$CHECKSUM_TYPE checksum value ('$CHECKSUM_VALUE') matches for file $PATCH_DS/$FILE_NAME"
-  else
-    xiterr 1 "BAD $CHECKSUM_TYPE checksum value ('$CHECKSUM_VALUE') for file $PATCH_DS/$FILE_NAME.  Corrupted Download?"
-  fi
-  rm -f $SUM
-
-  echo "Saved patch file:"
-  ls -lh "$PATCH_DS/$FILE_NAME"
-
-  ########################## TODO
-  #
-  #  check if the current version matches the patch set
-  #  if not - Need to set maintenance mode
-  #  apply patch set
-  #  insure DRPY starts up on boot
-  #  if reboot set, reboot
-  #  on boot up validate current version matches patch set
-  #  clear maintenance mode
-  #
-  ########################## TODO
-
-  {{ end -}}
-done # end for PATCH in
-
+    {{ end -}}
+done # end for PATCH_LIST
 
 exit 0
+
+
+#### this works - assuming we get the right patch structure from above
+#### but this needs to be shifted over to the task running on ESXi to
+#### get the patch from the MIRROR location
+    SUM=$(mktemp /tmp/checksum.XXXXXXX)
+    wget -P "$PATCH_DS" $LOCATION/$FILE_NAME
+    echo "$CHECKSUM_VALUE  $PATCH_DS/$FILE_NAME" > $SUM
+    if $(eval ${CHECKSUM_TYPE}sum -c $SUM)
+    then
+      echo "$CHECKSUM_TYPE checksum value ('$CHECKSUM_VALUE') matches for file $PATCH_DS/$FILE_NAME"
+    else
+      xiterr 1 "BAD $CHECKSUM_TYPE checksum value ('$CHECKSUM_VALUE') for file $PATCH_DS/$FILE_NAME.  Corrupted Download?"
+    fi
+    rm -f $SUM
+
+    echo "Saved patch file:"
+    ls -lh "$PATCH_DS/$FILE_NAME"
+
+    ########################## TODO
+    #
+    #  check if the current version matches the patch set
+    #  if not - Need to set maintenance mode
+    #  apply patch set
+    #  insure DRPY starts up on boot
+    #  if reboot set, reboot
+    #  on boot up validate current version matches patch set
+    #  clear maintenance mode
+    #
+    ########################## TODO
+
+
+
 
 
 #  NOTES

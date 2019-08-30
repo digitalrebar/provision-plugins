@@ -8,11 +8,13 @@ Documentation: |
   The default value is to find patches on the Provisioner URL ``files/patches/esxi``
   location. (eg http://127.0.0.1:8091/files/patches/esxi )
 
+  The special syntax of ``provisioner:/some/path`` can be used which will expand
+  to the \{\{.ProvisionerUFL\}\}/some/path location.
 Meta:
   color: yellow
   icon: cloud
   title: Digital Rebar
 Schema:
-  default: "{{ .ProvisionerURL }}/files/patches/esxi"
+  default: provisioner:/files/patches/esxi
   type: string
 
