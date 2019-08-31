@@ -1,0 +1,30 @@
+---
+Name: "validation-machine-name-dns-to-ip"
+Description: "Using the Machine.Name  validate that the esxi/firstboot-ipaddr is what DNS returns."
+Meta:
+  icon: "money"
+  color: "grey"
+  title: "RackN Content"
+OptionalParams:
+  - "esxi/firstboot-ipaddr"
+Templates:
+  - Name: "check-dns-by-ip.sh"
+    Contents: |
+      #!/usr/bin/env bash
+      set -e
+
+      {{ template "setup.tmpl" . }}
+      {{ template "validation-lib.tmpl" . }}
+
+      {{ if eq (.ParamExists "esxi/firstboot-ipaddr") false }}
+      echo "esxi/firstboot-ipaddr is not specified"
+      exit 1
+      {{ end }}
+      validate_machine_name_dns_by_ip (.Param "esxi/firstboot-ipaddr")
+      x=$?
+      if [[ ${x} == 1 ]]; then
+          echo "DNS validation failed."
+      else
+          echo "DNS validation succeeded."
+      fi
+      exit ${x}
