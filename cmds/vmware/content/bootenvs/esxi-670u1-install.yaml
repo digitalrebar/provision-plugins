@@ -1,7 +1,7 @@
 ---
 Name: esxi-670u1-install
 BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
-Description: Install BootEnv for ESXi 6.7.0update1
+Description: (DEPRECATED) Install BootEnv for ESXi 6.7.0update1
 Documentation: |
   Provides VMware BootEnv for ESXi 6.7.0update1.  For more details, and Download ISO see:
 
