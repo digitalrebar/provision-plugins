@@ -2,6 +2,9 @@
 Name: esxi/patch-list
 Description: "Array of patches to apply to ESXi, specified by VMware Build Number"
 Documentation: |
+  THIS IS A CONSTRUCTED VALUE.  It should not be set on the machine.
+  It will get overwritten by the ``esxi-set-patch-list`` task.
+
   Defines the VMware patches that will be applied to the system.  This value
   can be programmatically built up any number of ways.  Currently, the
   ``vmware/esxi-version-vendor-map`` in use on the machine may optionally

@@ -11,14 +11,12 @@ function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf 
 
 {{ if .ParamExists "esxi/patch-list-override" -}}
   # collect our defined list of patches
-  {{ if .Param "esxi/patch-list" -}}
-    {{ range $index, $list := .Param "esxi/patch-list" -}}
-      P="$P {{ $list }}"
-    {{ end -}}
+  {{ range $index, $list := .Param "esxi/patch-list-override" -}}
+    P="$P {{ $list }}"
   {{ end -}}
 
-{{ else -}}{{/* exists esxi/patch-list-override */}}
-  # no 'esxi/patch-list-override' was set - process 'esxi/patch-list'
+{{ else -}}{{/* not exists esxi/patch-list-override */}}
+  # no 'esxi/patch-list-override' was set
   # process the vmware/esxi-version-vendor-map for patch list
   {{ $vend := .Param "esxi/selected-vendor" }}
   {{ range $index, $vendmap := .Param "vmware/esxi-version-vendor-map" }}
