@@ -25,23 +25,28 @@ Templates:
       #!/usr/bin/env sh
       # Put the ESXi node in to maintenance mode
 
-      function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }set -e
+      set -e
+      function xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+      PATH=$PATH:/usr/bin
 
       [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
       STATE=$(localcli system maintenanceMode get)
 
-      if [[ "$STATE" == "Enabled" ]]
-      then
+      if [[ "$STATE" == "Enabled" ]] ; then
         echo "system maintenanceMode already set"
       else
         localcli system maintenanceMode set -–enable true > /dev/null || true
-        echo "FATAL:  Unable to set maintenance mode successfully."
-        exit 1
+        STATE=$(localcli system maintenanceMode get)
+        if [[ "$STATE" != "Enabled" ]] ;  then
+          echo "FATAL:  Unable to set maintenance mode successfully."
+          exit 1
+        fi
       fi
 
       MODE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
-      if [[ "$MODE" != "Enabled" ]]
-      then
+      if [[ "$MODE" != "Enabled" ]] ; then
+        python3 /tmp/esxi-params.py delete 'esxi/maintenance-mode' || true
         python3 /tmp/esxi-params.py add 'esxi/maintenance-mode' 'Enabled'
       else
         echo "DRP esxi/maintenance-mode already set to 'Enabled'"
@@ -49,6 +54,12 @@ Templates:
 
       SYS=$(localcli system maintenanceMode get)
       DRP=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+
+      {{ $patchIndex := atoi (.Param "esxi/patch-index") }}
+      {{ if eq $patchIndex -1 }}
+      python3 /tmp/esxi-params.py delete 'esxi/patch-index' || true
+      python3 /tmp/esxi-params.py add 'esxi/patch-index' 0
+      {{ end }}
 
       echo ""
       echo ">>> 'maintenanceMode' system state    :: '$SYS'"

@@ -1,0 +1,144 @@
+---
+Name: "esxi-patch-install"
+Description: "Install the patches for this esxi system"
+Documentation: |
+  Iterates through the list of patches and applies them.  Rebooting as necessary.
+
+  Uses the ``esxi-params.py.tmpl`` python code to set/manage Params on the system.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-params.py"
+    Path: "/tmp/esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+  - Name: "esxi-patch-install"
+    Contents: |
+      #!/usr/bin/env sh
+      # Install the patches
+      # Assumes we are already in maintenance mode
+
+      set -e
+      RS_DEBUG_ENABLE=true
+
+      function xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+      {{ if not (.Param "esxi/patches-enabled" ) -}}
+      echo "ESXi patching system turned off by Param 'esxi/patches-enabled'"
+      exit 0
+      {{ end -}}
+
+      [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
+
+      {{ $patchList := list }}
+      {{ if .ParamExists "esxi/patch-list-override" -}}
+        {{ $patchList = .Param "esxi/patch-list-override" }}
+      {{ else -}}{{/* not exists esxi/patch-list-override */}}
+        # no 'esxi/patch-list-override' was set
+        # process the vmware/esxi-version-vendor-map for patch list
+        {{ $vend := .Param "esxi/selected-vendor" }}
+        {{ if not (hasKey (.Param "vmware/esxi-version-vendor-map") $vend) }}
+          echo "Vendor not found, {{$vend}}"
+          exit 1
+        {{ end }}
+        {{ $vendMap := index (.Param "vmware/esxi-version-vendor-map") $vend }}
+        {{ $patchList = $vendMap.patches }}
+        echo "Using {{$vend}} as the vendor"
+      {{ end -}}{{/* exists esxi/patch-list-override */}}
+
+      {{/* patch up our patch list */}}
+      {{ if empty $patchList }}
+      echo "No patches to apply"
+      exit 0
+      {{ end }}
+
+      {{ $patchIndex := atoi (.Param "esxi/patch-index") }}
+      {{ if eq $patchIndex -1 }}
+      python3 /tmp/esxi-params.py delete 'esxi/patch-index' || true
+      python3 /tmp/esxi-params.py add 'esxi/patch-index' 0
+      {{ $patchIndex := 0 }}
+      {{ end }}
+
+      {{ $mirror := .ParamExpand "esxi/patch-mirror" }}
+      MIRROR="{{$mirror}}"
+      echo "Patch Mirror location set to: $MIRROR"
+
+      {{ $patchDS := .Param "esxi/install-datastore" }}
+      PATCH_DS="{{$patchDS}}/rackn/patches"
+      [[ ! -d "$PATCH_DS" ]] && mkdir -p "$PATCH_DS"
+
+      {{ $rebooted := false }}
+      {{ range $index, $patchId := $patchList }}
+        {{ $patchMap := $.Param "esxi/patch-map" }}
+        {{ if not (hasKey ($.Param "esxi/patch-map") $patchId) }}
+        echo "{{$patchId}} not in patch map.  Stopping..."
+        exit 1
+        {{ else }}
+        {{ $build := index $patchMap $patchId }}
+
+        echo ">>> CHECK_INDEX:  {{$index}}"
+        echo ">>>       PATCH:  {{$patchId}}"
+
+        {{ if and (eq $index $patchIndex) (not $rebooted) }}
+          REL_NAME="{{$build.release_name}}"
+          FILE_NAME="{{$build.filename}}"
+          REBOOT_REQUIRED="{{$build.reboot_required}}"
+          LOCATION="{{$build.location}}"
+          CHECKSUM_TYPE="{{$build.checksum.type}}"
+          CHECKSUM_VALUE="{{$build.checksum.value}}"
+
+          [[ $RS_DEBUG_ENABLE ]] && FMT="%16s: "
+          [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECK_INDEX" "{{$index}}"
+          [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "REL_NAME" "$REL_NAME"
+          [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "FILE_NAME" "$FILE_NAME"
+          [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "REBOOT_REQUIRED" "$REBOOT_REQUIRED"
+          [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "LOCATION" "$LOCATION"
+          [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECKSUM_TYPE" "$CHECKSUM_TYPE"
+          [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECKSUM_VALUE" "$CHECKSUM_VALUE"
+
+          [[ "$LOCATION" =~ ^\<no\ value\>$ ]] && LOCATION="${MIRROR}"
+          [[ -z "$LOCATION" ]] && xiterr "No download location specified (see 'esxi/patch-mirror' param)"
+
+          # Get the checksum and patch file
+          SUM=$(mktemp /tmp/checksum.XXXXXXX)
+          rm -f "$PATCH_DS/$FILE_NAME"
+          wget -P "$PATCH_DS" $LOCATION/$FILE_NAME
+          echo "$CHECKSUM_VALUE  $PATCH_DS/$FILE_NAME" > $SUM
+          if eval ${CHECKSUM_TYPE}sum -c $SUM
+          then
+            echo "$CHECKSUM_TYPE checksum value ('$CHECKSUM_VALUE') matches for file $PATCH_DS/$FILE_NAME"
+          else
+            xiterr 1 "BAD $CHECKSUM_TYPE checksum value ('$CHECKSUM_VALUE') for file $PATCH_DS/$FILE_NAME.  Corrupted Download?"
+          fi
+          rm -f $SUM
+
+          echo "Saved patch file:"
+          ls -lh "$PATCH_DS/$FILE_NAME"
+
+          # install the patches/updates
+          # likely need to find the Vendor specific version of these to stage/use
+          # if in Weasel - do:
+          esxcli software vib update -d "$PATCH_DS/$FILE_NAME"
+
+          {{ $patchIndex := add $patchIndex 1 }}
+          python3 /tmp/esxi-params.py delete 'esxi/patch-index' || true
+          python3 /tmp/esxi-params.py add 'esxi/patch-index' {{$patchIndex}}
+
+          {{ if eq $build.reboot_required true }}
+          # Reboot required - reboot incomplete to make sure we come back.
+          exit 192
+          {{ $rebooted := true }}
+          {{ end }}
+        {{ else }}
+          {{ if lt $index $patchIndex }}
+            echo "Patch {{$index}} is already installed - skipping ..."
+          {{ else }}
+            echo "Patch {{$index}} is yet to be installed, but a reboot is required first..."
+          {{ end }}
+        {{ end -}}{{/* $index == $patchIndex */}}
+        {{ end }}{{/* missing patch test */}}
+      {{ end }}{{/* range */}}
+
+      exit 0

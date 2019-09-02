@@ -1,0 +1,28 @@
+---
+Name: "esxi-install-patches"
+Description: "Stage to install patches for an ESXi node"
+Documentation: |
+  This stage installs the patches contained in the ``esxi/patch-list`` array.
+  The list is created by the ``esxi-set-patch-list`` stage.
+  It is possible that other programmatic methods can be used to generate
+  the ``esxi/patch-list``, in which case, the ``esxi-set-patch-list`` stage
+  is not necessary.
+
+  The patches specified in ``esxi/patch-list`` must be represented in the
+  ``esxi/patch-map``, which is used to reference the actual patch file,
+  and it's checksum.
+
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+RequiredParams:
+  - esxi/patch-map
+OptionalParams:
+  - esxi/patch-list-override
+  - esxi/patch-mirror
+  - esxi/patch-enabled
+Tasks:
+  - esxi-patch-start
+  - esxi-patch-install
+  - esxi-patch-complete

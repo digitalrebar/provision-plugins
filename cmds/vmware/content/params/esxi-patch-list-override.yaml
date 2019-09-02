@@ -3,9 +3,7 @@ Name: esxi/patch-list-override
 Description: "Array of patches to apply to ESXi, overriding the programmatically built list"
 Documentation: |
   Defines the VMware patches that will be applied to the system.  This value
-  will override all construction methods and set the ``esxi/patch-list``
-  replacing the ``vmware/esxi-version-vendor-map`` or any other programmatic
-  method to build up the list array.
+  will override all construction methods replacing the ``vmware/esxi-version-vendor-map``.
 
   Generally speaking, the vendor map should be used to select the patches to
   apply to the system.  However, this override exists to allow an operator

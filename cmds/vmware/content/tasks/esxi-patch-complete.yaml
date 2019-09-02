@@ -1,5 +1,5 @@
 ---
-Name: "esxi-patch-compleete"
+Name: "esxi-patch-complete"
 Description: "Complete the ESXi patch process (take ESXi out of maintenance mode)"
 Documentation: |
   Remove ``maintenanceMode`` on an ESXi system, but only when the system is
@@ -50,6 +50,8 @@ Templates:
 
       SYS=$(localcli system maintenanceMode get)
       DRP=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+
+      python3 /tmp/esxi-params.py delete 'esxi/patch-index' || true
 
       echo ""
       echo ">>> 'maintenanceMode' system state    :: '$SYS'"
