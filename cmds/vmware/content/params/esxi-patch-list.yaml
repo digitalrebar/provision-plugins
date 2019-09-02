@@ -22,10 +22,6 @@ Meta:
   color: yellow
   icon: cloud
   title: Digital Rebar
-RequiredParams:
-  - esxi/patch-map
-OptionalParams:
-  - vmware/esxi-version-vendor-map
 Schema:
   type: array
   default: []
