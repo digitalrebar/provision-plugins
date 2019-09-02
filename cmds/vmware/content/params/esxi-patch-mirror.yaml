@@ -8,13 +8,14 @@ Documentation: |
   The default value is to find patches on the Provisioner URL ``files/patches/esxi``
   location. (eg http://127.0.0.1:8091/files/patches/esxi )
 
-  The special syntax of ``provisioner:/some/path`` can be used which will expand
-  to the \{\{.ProvisionerUFL\}\}/some/path location.
+  The special syntax of ``{{.ProvisionerURL}}/some/path`` can be used to reference the local server's files.
+
+  This parameter should use the .ParamExpand function.
 Meta:
   color: yellow
   icon: cloud
   title: Digital Rebar
 Schema:
-  default: provisioner:/files/patches/esxi
+  default: "{{.ProvisionerURL}}/files/patches/esxi"
   type: string
 

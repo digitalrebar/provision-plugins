@@ -35,11 +35,7 @@ PATCH_LIST="$(echo -e "${P}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 [[ -z "$PATCH_LIST" ]] && { echo "No 'esxi/patch-list' generated, skipping patches"; exit 0; }
 
 # param expansion must happen outside of 'range' unless use other constructs inside
-MIRROR="{{ .Param "esxi/patch-mirror" }}"
-if [[ "$MIRROR" =~ ^provisioner:.* ]]
-then
-  MIRROR="{{.ProvisionerURL}}$(echo $MIRROR | sed 's/^provisioner://')"
-fi
+MIRROR="{{ .ParamExpand "esxi/patch-mirror" }}"
 echo "Patch Mirror location set to: $MIRROR"
 PATCH_DS="{{ .Param "esxi/install-datastore" }}/rackn/patches"
 [[ ! -d "$PATCH_DS" ]] && mkdir -p "$PATCH_DS"
