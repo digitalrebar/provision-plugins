@@ -15,7 +15,7 @@ Meta:
   color: grey
   icon: money
 Params:
-  esxi/dcui-message: "false"
+  esxi/dcui-message: false
   esxi/network-firstboot-vlan-vm-network: management
   esxi/shell-remote: true
   esxi/skip-notify: true
