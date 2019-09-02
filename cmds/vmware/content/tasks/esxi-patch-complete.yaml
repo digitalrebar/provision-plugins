@@ -51,8 +51,6 @@ Templates:
       SYS=$(localcli system maintenanceMode get)
       DRP=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
 
-      python3 /tmp/esxi-params.py delete 'esxi/patch-index' || true
-
       echo ""
       echo ">>> 'maintenanceMode' system state    :: '$SYS'"
       echo ">>> 'esxi/maintenance-mode' DRP param :: '$DRP'"
