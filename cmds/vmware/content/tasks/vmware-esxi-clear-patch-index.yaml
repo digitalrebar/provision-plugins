@@ -1,0 +1,23 @@
+---
+Name: "vmware-esxi-clear-patch-index"
+Description: "A task to reset the patch index so that patches can be applied"
+Documentation: |
+  A task to reset the patch index so that patches can be applied.  This is useful
+  to ensure that the sledgehammer pre-phase of esxi install makes sure that
+  patches can be applied in the install phse.
+
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Templates:
+- Name: "clear-patch-vmware.sh"
+  Path: ""
+  Contents: |-
+    #/bin/bash
+
+    {{template "setup.tmpl" .}}
+
+    # Make sure we can re-apply patches
+    drpcli machines remove $RS_UUID param esxi/patch-index || :

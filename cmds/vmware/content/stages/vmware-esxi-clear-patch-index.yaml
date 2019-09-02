@@ -1,0 +1,7 @@
+Meta:
+  color: yellow
+  icon: cloud
+Name: vmware-esxi-clear-patch-index
+Description: Clear the patch index parameter to enable future patches
+Tasks:
+- vmware-esxi-clear-patch-index
