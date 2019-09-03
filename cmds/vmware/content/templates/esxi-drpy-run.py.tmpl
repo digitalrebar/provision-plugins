@@ -16,6 +16,7 @@ import sys, os, datetime, re
 # see if we golang template rendered ourself - else defaults (usually for testing)
 apiurl='{{.ApiURL}}'
 agent = "/opt/rackn/drpy/agent"
+
 if re.search(r'.ApiURL', apiurl):
   rackn_dir = "/vmfs/volumes/datastore1/rackn"
   agent_output_log = rackn_dir + "/drpy.log"
@@ -30,7 +31,7 @@ else:
     conf_file = rackn_dir + "/drpy.conf"
 
 if not os.path.isdir(rackn_dir):
-    os.mkdir(rackn_dir)
+  os.mkdir(rackn_dir)
 
 if not conf_file:
   sys.exit('No DRPY conf file found on system ("' + conf_file + '".')
@@ -38,7 +39,7 @@ if not conf_file:
 if not agent:
   sys.exit('DRPY agent not found on system"' + agent + '.')
 
-start_agent = "python" + agent + "-f " + conf_file + " >> " + agent_output_log + " 2>&1"
+start_agent = "python " + agent + " -f " + conf_file + " >> " + agent_output_log + " 2>&1"
 
 # rotate if log larger than 1 MB
 if os.path.exists(agent_output_log):
