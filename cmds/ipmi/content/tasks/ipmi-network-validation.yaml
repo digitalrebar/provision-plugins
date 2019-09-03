@@ -1,0 +1,47 @@
+---
+Name: "ipmi-network-validation"
+Description: Validate the network settings for ipmi
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"
+OptionalParams:
+  - "ipmi/configure/address"
+  - "ipmi/configure/gateway"
+  - "ipmi/configure/netmask"
+Templates:
+  - Name: "validate-ipmi-network.sh"
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{ template "setup.tmpl" . }}
+      {{ template "validation-lib.tmpl" . }}
+
+      {{ if eq (.ParamExists "ipmi/configure/address") false }}
+            echo "ipmi/configure/address is not specified"
+            exit 1
+      {{ end }}
+
+      {{ if eq (.ParamExists "ipmi/configure/gateway") false }}
+            echo "ipmi/configure/gateway is not specified"
+            exit 1
+      {{ end }}
+
+      {{ if eq (.ParamExists "ipmi/configure/netmask") false }}
+            echo "ipmi/configure/netmask is not specified"
+            exit 1
+      {{ end }}
+
+      IP={{ .Param "ipmi/configure/address" }}
+      GW={{ .Param "ipmi/configure/gateway" }}
+      NM={{ .Param "ipmi/configure/netmask" }}
+
+      check_same_subnet ${IP} ${GW} ${NM}
+      xit=$?
+      if [[ ${xit} == 0 ]]; then
+          echo "IPMI Configure Network Validation Success"
+      else
+          echo "IPMI Configure Network Validation Failure"
+      fi
+      exit ${xit}
