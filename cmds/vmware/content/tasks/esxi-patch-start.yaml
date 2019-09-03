@@ -36,7 +36,7 @@ Templates:
       if [[ "$STATE" == "Enabled" ]] ; then
         echo "system maintenanceMode already set"
       else
-        localcli system maintenanceMode set -–enable true > /dev/null || true
+        localcli system maintenanceMode set --enable true > /dev/null || true
         STATE=$(localcli system maintenanceMode get)
         if [[ "$STATE" != "Enabled" ]] ;  then
           echo "FATAL:  Unable to set maintenance mode successfully."
