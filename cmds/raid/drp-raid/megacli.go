@@ -527,7 +527,7 @@ func (m *MegaCli) Encrypt(c *Controller, key, password string) error {
 		passwordParam = "-Passphrase"
 	}
 	cmds := [][]string{
-		[]string{"-DestroySecurityKey", "-Force"},
+		[]string{"-DeleteSecurityKey", "-Force"},
 		[]string{"-CreateSecurityKey", passwordParam, password, "-KeyID", key},
 	}
 	var (
