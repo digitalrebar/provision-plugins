@@ -98,7 +98,7 @@ Templates:
           [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECKSUM_TYPE" "$CHECKSUM_TYPE"
           [[ $RS_DEBUG_ENABLE ]] && printf "$FMT %s\n" "CHECKSUM_VALUE" "$CHECKSUM_VALUE"
 
-          [[ "$LOCATION" =~ ^\<no\ value\>$ ]] && LOCATION="${MIRROR}"
+          [[ "$LOCATION" = "<no value>" ]] && LOCATION="${MIRROR}"
           [[ -z "$LOCATION" ]] && xiterr "No download location specified (see 'esxi/patch-mirror' param)"
 
           # Get the checksum and patch file

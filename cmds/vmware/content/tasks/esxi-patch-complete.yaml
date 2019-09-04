@@ -30,7 +30,7 @@ Templates:
 
       if [[ "$STATE" == "Enabled" ]]
       then
-        localcli system maintenanceMode set -–enable false
+        localcli system maintenanceMode set --enable false
         STATE=$(localcli system maintenanceMode get)
         [[ "$STATE" == "Enabled" ]] && xiterr "FATAL: Unable to remove maintenanceMode from system."
       else

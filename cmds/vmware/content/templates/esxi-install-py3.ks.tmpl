@@ -55,7 +55,7 @@ reboot --noeject
 {{ template "esxi-drpy-run.py.tmpl" .}}
 
 {{ if eq (.Param "esxi/skip-version") true -}}
-# esxi/skip-notify set to true, skipping version call
+# esxi/skip-versino set to true, skipping version call
 {{ else -}}
 %post --interpreter=python
 # used in the esxi-network-firstboot.tmpl
@@ -63,7 +63,6 @@ reboot --noeject
 {{ end -}}
 
 %post --interpreter=busybox
-
 # Generate a new scratch directory for this host on a Datastore
 scratchdirectory={{ .Param "esxi/install-datastore" }}/locker
 # Create the scratch directory
@@ -84,6 +83,9 @@ vim-cmd hostsvc/advopt/update ScratchConfig.ConfiguredScratchLocation string $sc
 grep -i "^vhv.enable" /etc/vmware/config || echo "vhv.enable = \"TRUE\"" >> /etc/vmware/config
 {{ end -}}
 
+%firstboot --interpreter=python
+{{ template "esxi-drpy-run.py.tmpl" .}}
+
 # include any custom %pre, %post, %firstboot sections
 {{ template "esxi-ks-custom-sections.tmpl" .}}
 
@@ -96,15 +98,6 @@ esxcli network firewall ruleset set --ruleset-id=dr-provision --enabled=false
 {{ else -}}
 echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disable' Param."
 {{ end -}}
-
-# set the software acceptance level according to esxi/acceptance-level Param
-{{ template "esxi-acceptance-level.sh.tmpl" .}}
-
-%firstboot --interpreter=python
-{{ template "esxi-drpy-vib-render.py.tmpl" .}}
-
-%firstboot --interpreter=python
-{{ template "esxi-drpy-run.py.tmpl" .}}
 
 {{ if eq (.Param "esxi/skip-notify") true -}}
 # ***************************************************************** #

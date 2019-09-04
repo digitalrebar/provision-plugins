@@ -51,10 +51,7 @@ if os.path.exists(agent_output_log):
     if rotate_log:
       print("Rotated log file to: " + rotate_log)
 
-# yes - for some reason we have to start agent twice to get it to work ...
 print("Starting agent with config file named '" + conf_file + "'.")
-os.system('echo "--------------------------- $(date) ---------------------------" | tee -a ' + agent_output_log)
-os.system(start_agent)
 os.system('echo "--------------------------- $(date) ---------------------------" | tee -a ' + agent_output_log)
 os.system(start_agent)
 
