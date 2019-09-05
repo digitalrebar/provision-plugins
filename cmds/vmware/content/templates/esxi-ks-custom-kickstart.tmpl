@@ -1,16 +1,4 @@
-# Uses the "esxi/ks-custom-kickstart" Param to specify various additional
-# custom kickstart directives to include in to the base kickstart.  See Param
-# documentation for data structure and usage.
-#
-# Injected prior "%pre", "%post", and "%firstboot" sections. See the 
-# "esxi/ks-custom-sections" param to inject those templates.
-
 {{ $dot := . -}}
 {{range $key, $template := .Param "esxi/ks-custom-kickstart" -}}
-# injecting custom template: {{ squote $template }}
 {{ $dot.CallTemplate $template $dot }}
 {{ end -}}
-
-###
-### end custom kickstart directives injection
-###
