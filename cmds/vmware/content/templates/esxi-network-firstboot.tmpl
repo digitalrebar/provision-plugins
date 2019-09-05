@@ -32,28 +32,29 @@ VLAN_VM={{ .Param "esxi/network-firstboot-vlan-vm-network" }}
 
 if [[ ${VLAN_VM} = "management" ]]
 then
-  # set to same value as Management Network VLAN
-  if [[ $VLAN_MGMT -ge 0 && $VLAN_MGMT -le 4096 ]]
-  then
-    VLAN_VM=$VLAN_MGMT
-  else
-    echo "FATAL: Requested 'VM Network' portgroup be set to value of 'Management"
-    echo "       Network' VLAN - but Management VLAN did not validate to 0-4096"
-    echo "       ** We should never have gotten here ... :( **"
-    exit 1
+  if [[ "$VLAN_MGMT" != "" ]] ; then
+    # set to same value as Management Network VLAN
+    if [[ $VLAN_MGMT -ge 0 && $VLAN_MGMT -le 4096 ]]
+    then
+      VLAN_VM=$VLAN_MGMT
+      SET_VLAN_VM="esxcli network vswitch standard portgroup set --portgroup-name=\"VM Network\" --vlan-id=$VLAN_VM"
+    else
+      echo "FATAL: Requested 'VM Network' portgroup be set to value of 'Management"
+      echo "       Network' VLAN - but Management VLAN did not validate to 0-4096"
+      echo "       ** We should never have gotten here ... :( **"
+      exit 1
+    fi
   fi
 elif [[ $VLAN_VM -ge 0 && $VLAN_VM -le 4096 ]]
 then
   # valid VLAN value
-  true
+  SET_VLAN_VM="esxcli network vswitch standard portgroup set --portgroup-name=\"VM Network\" --vlan-id=$VLAN_VM"
 else
   echo "FATAL: Requested portgroup 'VM Network' be set to something, but failed"
   echo "       validation checks.  Must be 'management' or range between the"
   echo "       numbers '0-4095'"
   exit 1
 fi
-
-SET_VLAN_VM="esxcli network vswitch standard portgroup set --portgroup-name=\"VM Network\" --vlan-id=$VLAN_VM"
 {{ end -}}
 
 {{ if .ParamExists "esxi/network-firstboot-mtu" -}}

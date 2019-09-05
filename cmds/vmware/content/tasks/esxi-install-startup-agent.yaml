@@ -9,9 +9,6 @@ Meta:
   color: "yellow"
   title: "Digital Rebar"
 Templates:
-  - Name: "esxi-drpy-run.py"
-    Path: "/opt/rackn/drpy/bin/esxi-drpy-run.py"
-    ID: "esxi-drpy-run.py.tmpl"
   - Name: "esxi-install-agent.sh"
     Contents: |
       #!/usr/bin/env sh
@@ -23,7 +20,6 @@ Templates:
       #  this desperately needs better integration
       #
       #  DRP-Agent.vib must have been installed previously
-      #  esxi-drpy-run.py.tmpl must have been rendered prior to us running
       ###
 
       {{ if eq (.Param "esxi/drpy-agent-enable") true -}}
@@ -35,20 +31,29 @@ Templates:
 
       function xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
       RB="/opt/rackn/drpy"
-      RP="$RB/bin"
+      RA="$RB/agent"
+      RD="$RB/bin"
+      RP="$RD/esxi-drp-run.py"
       RC="/etc/rc.local.d/local.sh"
 
-      [[ ! -d "$RP" ]] && xiterr "No '$RP' path - appears DRPY wasn't installed yet."
+      [[ ! -d "$RB" ]] && xiterr "No '$RB' path - appears DRPY wasn't installed yet."
 
-      TOOL="$RP/esxi-drpy-run.py"
-      [[ ! -r "$TOOL" ]] && xiterr "Tool '$TOOL' not available - run esxi-render-tools task"
-      chmod 755 $TOOL
-
-      if $( grep -q "^$TOOL" $RC )
+      if $( grep -qe "^# Start up the DRPY agent on an ESXi system." $RC )
       then
-        echo "Tool '$TOOL' setup in $RC already.  Nothing done."
+        echo "DRPY execution in $RC already.  Nothing done."
       else
-        sed -i "\$i /bin/nohup $TOOL &" $RC
-        $(grep -qe "^/bin/nohup $TOOL" $RC) && echo "Startup tool ('$TOOL') installed successfully" || xiterr "Failed to install '$TOOL'"
+        head -n -1 $RC > /tmp/jj
+        cat >> /tmp/jj <<EOF
+      mkdir -p $RD
+      cat >> $RP <<INSIDEEOF
+      {{template "esxi-drpy-run.py.tmpl" .}}
+      INSIDEEOF
+      chmod +x $RP
+      /bin/nohup $RP &
+      exit 0
+      EOF
+        cp /tmp/jj $RC
+
+        $(grep -qe "^# Start up the DRPY agent on an ESXi system." $RC) && echo "Startup tool ('$TOOL') installed successfully" || xiterr "Failed to install '$TOOL'"
       fi
       exit 0

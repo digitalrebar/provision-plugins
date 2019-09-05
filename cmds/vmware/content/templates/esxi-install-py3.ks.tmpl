@@ -54,14 +54,6 @@ reboot --noeject
 %post --interpreter=python
 {{ template "esxi-drpy-run.py.tmpl" .}}
 
-{{ if eq (.Param "esxi/skip-version") true -}}
-# esxi/skip-versino set to true, skipping version call
-{{ else -}}
-%post --interpreter=python
-# used in the esxi-network-firstboot.tmpl
-{{ template "esxi-get-version.py3.tmpl" .}}
-{{ end -}}
-
 %post --interpreter=busybox
 # Generate a new scratch directory for this host on a Datastore
 scratchdirectory={{ .Param "esxi/install-datastore" }}/locker
@@ -75,6 +67,17 @@ vim-cmd hostsvc/advopt/update ScratchConfig.ConfiguredScratchLocation string $sc
 %firstboot --interpreter=python
 {{ template "esxi-render-firewall-vib.py.tmpl" .}}
 
+%firstboot --interpreter=python
+{{ template "esxi-drpy-vib-render.py.tmpl" .}}
+
+{{ if eq (.Param "esxi/skip-version") true -}}
+# esxi/skip-versino set to true, skipping version call
+{{ else -}}
+%firstboot --interpreter=python
+# used in the esxi-network-firstboot.tmpl
+{{ template "esxi-get-version.py3.tmpl" .}}
+{{ end -}}
+
 %firstboot --interpreter=busybox
 {{ template "esxi-network-firstboot.tmpl" .}}
 {{ template "esxi-welcome.tmpl" .}}
@@ -83,14 +86,14 @@ vim-cmd hostsvc/advopt/update ScratchConfig.ConfiguredScratchLocation string $sc
 grep -i "^vhv.enable" /etc/vmware/config || echo "vhv.enable = \"TRUE\"" >> /etc/vmware/config
 {{ end -}}
 
-%firstboot --interpreter=python
-{{ template "esxi-drpy-run.py.tmpl" .}}
-
 # include any custom %pre, %post, %firstboot sections
 {{ template "esxi-ks-custom-sections.tmpl" .}}
 
-{{ if eq (.Param "esxi/drp-port-disable") true -}}
+%firstboot --interpreter=python
+{{ template "esxi-drpy-run.py.tmpl" .}}
+
 %firstboot --interpreter=busybox
+{{ if eq (.Param "esxi/drp-port-disable") true -}}
 # disable the DRP API outbound port access if requested
 # NOTE: this should be run last - as actions above require API port access
 #       during the install
@@ -100,6 +103,7 @@ echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disab
 {{ end -}}
 
 {{ if eq (.Param "esxi/skip-notify") true -}}
+%post --interpreter=busybox
 # ***************************************************************** #
 # Param "esxi/skip-notify" set to true. as requested, NOT NOTIFYING #
 # the DRP endpoint to set boot to local disk !!!!!!!!!!!!!!!!!!!!!! #

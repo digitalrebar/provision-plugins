@@ -4,8 +4,6 @@
 import os, urllib, urllib.request, socket, ssl, json, time
 url = '{{.ApiURL}}/api/v3/info'
 
-os.system("localcli network firewall set --enabled false")
-time.sleep( {{ .Param "esxi/python-sleep" }} )
 ds = "{{ .Param "esxi/install-datastore" }}"
 
 req = urllib.request.Request(url, method='GET')
@@ -19,8 +17,6 @@ print (info["version"])
 path = ds + "/rackn"
 if not os.path.isdir(path):
     os.mkdir( path )
-
-os.system("localcli network firewall set --enabled true")
 
 f = open(path + "/rackn-drp-version.txt", "a")
 print(info["version"], file=f)
