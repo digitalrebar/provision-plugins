@@ -34,17 +34,19 @@ reboot --noeject
 
 ###
 ### end of kickstart directives
-### begin pre/post/firstboot sections
+### begin pre/post/firstboot sections#
+###
+### NO MORE COMMENTS AFTER THIS POINT UNLESS THEY ARE NEXT TO A
+### SPECIFIC pre/post/firstboot section
 ###
 
+%pre --interpreter=busybox
 # Set the network according to the "esxi/network-type" (default is "dhcp")
 # Also set /tmp/install-override if Param "esxi/disk-install-override" set
-%pre --interpreter=busybox
 {{ template "esxi-network-kickstart.tmpl" .}}
 
 {{ if .ParamExists "esxi/disk-install-override" }}{{ template "esxi-disk-install-override.tmpl" .}}{{ end }}
 
-# render the Firewall Rule VIB to base64 decoded local file
 %post --interpreter=python
 {{ template "esxi-render-firewall-vib.py.tmpl" .}}
 
@@ -60,7 +62,6 @@ reboot --noeject
 %firstboot --interpreter=python
 {{ template "esxi-drpy-vib-render.py.tmpl" .}}
 
-# include any custom %pre, %post, %firstboot sections
 {{ template "esxi-ks-custom-sections.tmpl" .}}
 
 %firstboot --interpreter=python
