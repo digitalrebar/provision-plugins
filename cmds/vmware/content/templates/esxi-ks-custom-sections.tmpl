@@ -1,3 +1,4 @@
+%post --interpreter=busybox
 # Uses the "esxi/ks-custom-sections" Param to specify various additional
 # custom kickstart templates to include in to the base kickstart.  See Param
 # documentation for data structure and usage.
@@ -5,12 +6,16 @@
 # DO NOT include the "%pre", "%post", and "%firstboot" tags in your templates
 # to include additional "kickstart" command directives, use the param named
 # "esxi/ks-custom-kickstart"
+#
+# This will generate a noop section script - to allow these comments
+#
+# No more COMMENTS AFTER THIS!
+#
 
 {{ $dot := . -}}
 {{range $section, $templates := .Param "esxi/ks-custom-sections" -}}
 {{range $template := $templates -}}
 
-# injecting custom template: {{ squote $template }}
 {{ if hasSuffix "-nochroot" $section }}
 %{{ $section | replace "-nochroot" " --chroot" }}
 {{ else -}}
@@ -20,4 +25,3 @@
 
 {{ end -}}
 {{ end -}}
-### end custom template injection
