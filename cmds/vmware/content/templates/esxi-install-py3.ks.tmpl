@@ -54,37 +54,11 @@ reboot --noeject
 %post --interpreter=python
 {{ template "esxi-drpy-run.py.tmpl" .}}
 
-%post --interpreter=busybox
-# Generate a new scratch directory for this host on a Datastore
-scratchdirectory={{ .Param "esxi/install-datastore" }}/locker
-# Create the scratch directory
-mkdir -p $scratchdirectory
-# Change the advanced configuration option
-vim-cmd hostsvc/advopt/update ScratchConfig.ConfiguredScratchLocation string $scratchdirectory
-
-{{ template "esxi-preserve-logs.tmpl" .}}
-
 %firstboot --interpreter=python
 {{ template "esxi-render-firewall-vib.py.tmpl" .}}
 
 %firstboot --interpreter=python
 {{ template "esxi-drpy-vib-render.py.tmpl" .}}
-
-{{ if eq (.Param "esxi/skip-version") true -}}
-# esxi/skip-versino set to true, skipping version call
-{{ else -}}
-%firstboot --interpreter=python
-# used in the esxi-network-firstboot.tmpl
-{{ template "esxi-get-version.py3.tmpl" .}}
-{{ end -}}
-
-%firstboot --interpreter=busybox
-{{ template "esxi-network-firstboot.tmpl" .}}
-{{ template "esxi-welcome.tmpl" .}}
-{{ template "esxi-enable-shells.tmpl" .}}
-{{ if eq (.Param "esxi/is-nested") true -}}
-grep -i "^vhv.enable" /etc/vmware/config || echo "vhv.enable = \"TRUE\"" >> /etc/vmware/config
-{{ end -}}
 
 # include any custom %pre, %post, %firstboot sections
 {{ template "esxi-ks-custom-sections.tmpl" .}}

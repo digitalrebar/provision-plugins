@@ -1,0 +1,11 @@
+---
+Name: "esxi-activate-shells"
+Description: "Using parameters activate shells for ESXi"
+Documentation: |
+  Using parameters, this stage activate shells for ESXi.
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-activate-shells

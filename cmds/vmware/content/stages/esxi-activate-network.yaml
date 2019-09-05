@@ -1,0 +1,14 @@
+---
+Name: "esxi-activate-network"
+Description: "Setup the Network components of ESXi"
+Documentation: |
+  Using parameters, this stage sets up the ESXi networking.
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-set-hostname
+  - esxi-set-network
+  - esxi-set-dns
+  - esxi-set-ntp

@@ -65,3 +65,5 @@ Templates:
       echo ">>> 'maintenanceMode' system state    :: '$SYS'"
       echo ">>> 'esxi/maintenance-mode' DRP param :: '$DRP'"
       echo ""
+
+      exit 0

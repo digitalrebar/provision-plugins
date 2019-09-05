@@ -1,0 +1,11 @@
+---
+Name: "esxi-activate-nested"
+Description: "Using parameters, set allowing nested ESXi."
+Documentation: |
+  Using parameters, this stage enables ESXi nesting.
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-activate-nesting

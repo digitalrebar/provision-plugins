@@ -1,0 +1,11 @@
+---
+Name: "esxi-preserve-logs"
+Description: "Backup logs to persist reboot and change of environments."
+Documentation: |
+  Backup logs to persist reboot and change of environments.
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-preserve-logs

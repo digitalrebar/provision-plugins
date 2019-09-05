@@ -27,3 +27,5 @@ Templates:
            echo "No file '$CHK' rendered on system, not chmod'ing it"
         fi
       done
+
+      exit 0
