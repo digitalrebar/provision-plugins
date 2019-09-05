@@ -1,0 +1,69 @@
+---
+Name: "esxi-patch-start"
+Description: "Start the ESXi patch process (put in maintenance mode)"
+Documentation: |
+  Set ``maintenanceMode`` on an ESXi system.  In addition to setting it on
+  the system, also record the state on DRP in the Param ``esxi/maintenance-mode``.
+
+  Subsequently, when maintenance mode is disabled, BOTH the system state must be
+  in maintenance (Enabled), and the DRP Param set to Enabled.  This is a safety
+  check to insure that DRP set the maintenance mode, and to not disable it
+  unless we've set it.
+
+  Uses the ``esxi-params.py.tmpl`` python code to set/manage Params on the system.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-params.py"
+    Path: "/tmp/esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+  - Name: "esxi-patch-start"
+    Contents: |
+      #!/usr/bin/env sh
+      # Put the ESXi node in to maintenance mode
+
+      set -e
+      function xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+      PATH=$PATH:/usr/bin
+
+      [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
+      STATE=$(localcli system maintenanceMode get)
+
+      if [[ "$STATE" == "Enabled" ]] ; then
+        echo "system maintenanceMode already set"
+      else
+        localcli system maintenanceMode set --enable true > /dev/null || true
+        STATE=$(localcli system maintenanceMode get)
+        if [[ "$STATE" != "Enabled" ]] ;  then
+          echo "FATAL:  Unable to set maintenance mode successfully."
+          exit 1
+        fi
+      fi
+
+      MODE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+      if [[ "$MODE" != "Enabled" ]] ; then
+        python3 /tmp/esxi-params.py delete 'esxi/maintenance-mode' || true
+        python3 /tmp/esxi-params.py add 'esxi/maintenance-mode' 'Enabled'
+      else
+        echo "DRP esxi/maintenance-mode already set to 'Enabled'"
+      fi
+
+      SYS=$(localcli system maintenanceMode get)
+      DRP=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
+
+      {{ $patchIndex := atoi (.Param "esxi/patch-index") }}
+      {{ if eq $patchIndex -1 }}
+      python3 /tmp/esxi-params.py delete 'esxi/patch-index' || true
+      python3 /tmp/esxi-params.py add 'esxi/patch-index' 0
+      {{ end }}
+
+      echo ""
+      echo ">>> 'maintenanceMode' system state    :: '$SYS'"
+      echo ">>> 'esxi/maintenance-mode' DRP param :: '$DRP'"
+      echo ""
+
+      exit 0

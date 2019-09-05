@@ -2,7 +2,7 @@
 
 # VIB needs to be stage in S3 bucket for build process
 # specify the VIB version to use, or allow at compile time to override which to use
-VIB_VERSION=${VIB_VERSION:-"v0.5.7-0.0"}
+VIB_VERSION=${VIB_VERSION:-"v0.6.0-0.0"}
 VIB_FORCE=${VIB_FORCE:-""}
 VIB_BASE=${VIB_BASE:-"https://s3-us-west-2.amazonaws.com/get.rebar.digital/artifacts/vibs"}
 
@@ -23,8 +23,7 @@ main() {
         B64="$i.vib.base64.tmpl"
 
         if [[ -e embedded/$i-${VIB_VERSION}.vib && -z "$VIB_FORCE" ]] ; then
-            printf "VIB %-19s with version %-10s exists already, skipping...\n" "'$i'" "'$VIB_VERSION'"
-            continue
+            printf "VIB %-19s with version %-10s exists already, skipping download...\n" "'$i'" "'$VIB_VERSION'"
         else
             echo -n "Downloading VIB ('$VIB') ...  "
             wget --quiet -O embedded/$VIB ${VIB_BASE}/${VIB} || dl_failed $?

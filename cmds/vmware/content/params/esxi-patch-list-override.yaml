@@ -1,0 +1,25 @@
+---
+Name: esxi/patch-list-override
+Description: "Array of patches to apply to ESXi, overriding the programmatically built list"
+Documentation: |
+  Defines the VMware patches that will be applied to the system.  This value
+  will override all construction methods replacing the ``vmware/esxi-version-vendor-map``.
+
+  Generally speaking, the vendor map should be used to select the patches to
+  apply to the system.  However, this override exists to allow an operator
+  a method to specify precise patches to apply if your vendor map doesn't
+  support a patch list.
+
+  In both cases, the ``esxi/patch-map`` must contain a map for the specified
+  patches to be applied with appropriate values.
+
+  Pathces are applied in order.  For each patch that specifies a ``reboot-required: true``,
+  the system will be rebooted before applying the next patch set.  If not set to ``true``,
+  then patches will be applied until the next required reboot is specified.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  type: array

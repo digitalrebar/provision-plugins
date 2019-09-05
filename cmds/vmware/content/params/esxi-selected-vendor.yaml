@@ -1,0 +1,17 @@
+---
+Name: esxi/selected-vendor
+Description: Internally used Param that sets the vendor map selected vendor for use by the Patch system.
+Documentation: |
+  This param should not be manipulated directly the Vendor Map system uses
+  it to set the selected vendor for the ESXi bootenv.  This is subsequently
+  used by the Patch system - if patches need to be applied - to insure the
+  correct patch set is referenced in the ``vmware/esxi-version-vendor-map``
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: generic
+Secure: false

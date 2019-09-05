@@ -1,0 +1,21 @@
+---
+Name: esxi/patch-mirror
+Description: The HTTP mirror location to find ESXi patches at.
+Documentation: |
+  The HTTP mirror location to find the ESXi patches at.  Note that the Param
+  ``esxi/patch-map`` can override this value on an indivual patch basis.
+
+  The default value is to find patches on the Provisioner URL ``files/patches/esxi``
+  location. (eg http://127.0.0.1:8091/files/patches/esxi )
+
+  The special syntax of ``{{.ProvisionerURL}}/some/path`` can be used to reference the local server's files.
+
+  This parameter should use the .ParamExpand function.
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: "{{.ProvisionerURL}}/files/patches/esxi"
+  type: string
+

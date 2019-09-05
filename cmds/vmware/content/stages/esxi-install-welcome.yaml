@@ -1,0 +1,11 @@
+---
+Name: "esxi-install-welcome"
+Description: "Update the welcome banner"
+Documentation: |
+  Update the welcome banner
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-install-welcome

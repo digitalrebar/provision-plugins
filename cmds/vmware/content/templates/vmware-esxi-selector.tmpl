@@ -86,6 +86,7 @@ then
 #  (( $? )) && xiterr 1 "FATAL: ISO '$ISO' not installed on DRP Endpoint"
 {{ end }}
   echo "      VMware ESXi BootEnv set to:  $BOOTENV"
+  drpcli machines set {{.Machine.UUID}} param "esxi/selected-vendor" to $VENDOR
   drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:${BOOT_INSTALL}
 else
   xiterr 1 "FATAL: selected bootenv '$BOOTENV' does not exist"

@@ -1,0 +1,65 @@
+---
+Name: esxi-vcf38-example
+Description: "Example vCF 3.8 Profile with Patches"
+Documentation: |
+  Currently patches system only supports a single patch, but going
+  forward, they may support an array of pathces.
+
+  The patches value is a VMware Build Number index for the release
+  of the patch.  This is used as an index in to the ``esxi/patch-map``
+  structure to find all of the necessary data for the patch.
+
+Endpoint: ""
+Errors: []
+Meta:
+  color: grey
+  icon: money
+Params:
+  esxi/dcui-message: false
+  esxi/network-firstboot-vlan-vm-network: management
+  esxi/shell-remote: true
+  esxi/skip-notify: true
+  vmware/esxi-version: select-vendor
+  vmware/esxi-version-vendor-map:
+    cisco:
+      bootenv: esxi_670u2-13006603_cisco
+      mfg: cisco
+      patches:
+      - "13981272"
+    dell:
+      bootenv: esxi_670u2-13981272-A02_dell
+      mfg: dell
+      patches:
+      - "13981272"
+    fujitsu:
+      bootenv: esxi_670u2-13473784_fujitsu
+      mfg: fujitsu
+      patches:
+      - "13981272"
+    generic:
+      bootenv: esxi_670u2-13006603_vmware
+      mfg: generic
+      patches:
+      - "13981272"
+    hitachi:
+      bootenv: esxi_670u2-13006603_hitachi
+      mfg: hitachi
+      model: ha8000v-gen10
+      patches:
+      - "13981272"
+    hpe:
+      bootenv: esxi_670u2-13006603_hpe
+      mfg: hpe
+      patches:
+      - "13981272"
+    lenovo:
+      bootenv: esxi_670u2-13981272_lenovo
+      mfg: lenovo
+      patches:
+      - "13981272"
+    nec:
+      bootenv: esxi_670u2-13644319_nec_r120h-t120h-r110j
+      mfg: nec
+      model: r120h-t120h-r110j
+      patches:
+      - "13981272"

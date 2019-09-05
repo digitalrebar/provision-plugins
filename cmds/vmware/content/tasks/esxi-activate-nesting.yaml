@@ -1,0 +1,22 @@
+---
+Name: "esxi-activate-nesting"
+Description: "Activate Nesting ESXi in ESXi"
+Documentation: |
+  This task activates the activates nesting ESXi in ESXi"
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-activate-nesting.sh"
+    Contents: |
+      #!/usr/bin/env sh
+      # Activate Nesting ESXi in ESXi
+
+      {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+      {{ if eq (.Param "esxi/is-nested") true -}}
+      grep -i "^vhv.enable" /etc/vmware/config || echo "vhv.enable = \"TRUE\"" >> /etc/vmware/config
+      {{ end -}}
+
+      exit 0

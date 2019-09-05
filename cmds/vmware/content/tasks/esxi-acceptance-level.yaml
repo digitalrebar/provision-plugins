@@ -1,0 +1,34 @@
+---
+Name: "esxi-acceptance-level"
+Description: "Set the ESXi software VIB install acceptanceLevel"
+Documentation: |
+  This task will set ESXi node software VIB install acceptanceLevel.  NOTE
+  that as per VMware defined policies and behavior, you may NOT set the
+  acceptanceLevel to a level any higher than the lowest level install software
+  VIB package.
+
+  Currently, the RackN DRP-Agent and DRP-Firewall-Ruleset VIBs require that the
+  acceptanceLevel be set at ``CommunitySupported``.  If these components are
+  installed (as they are by default) you will not be able to raise the level.
+
+  The default value is ``CommunitySupported``.  The supported values are (from
+  highest to lowest):
+
+    * VMwareCertified
+    * VMwareAccepted
+    * PartnerSupported
+    * CommunitySupported
+
+  For more details, please see the VMware knoweldge base article:
+
+    https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.vsphere.security.doc/GUID-751034F3-5337-4DB2-8272-8DAC0980EACA.html
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-acceptancelevel"
+    ID: "esxi-acceptance-level.sh.tmpl"
+    Contents: ""
+    Path: ""

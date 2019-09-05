@@ -1,0 +1,63 @@
+---
+Name: "esxi-set-ntp"
+Description: "Set the NTP system in ESXi"
+Documentation: |
+  Set the NTP system in ESXi.
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-set-ntp.sh"
+    Contents: |
+      #!/usr/bin/env sh
+      # NTP pieces
+
+      {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+      {{ if .ParamExists "esxi/ntp-conf" -}}
+
+      {{ $tmpl := (.Param "esxi/ntp-conf") -}}
+      echo "Setting NTP config from template '{{ .Param "esxi/ntp-conf" }}'"
+      cat >/etc/ntp.conf <<NTPCONFIG
+      {{ .CallTemplate $tmpl .}}
+      NTPCONFIG
+      TWIDDLE_NTP="yes"
+
+      {{ else -}}
+
+      {{ if .ParamExists "ntp-servers" -}}
+
+      echo "Setting NTP from built in tooling..."
+      cat >/etc/ntp.conf <<NTPCONFIG
+      # installed by Digital Rebar Provision during provisioniing...
+      # to completely customize NTP settings, see the 'esxi/ntp-conf'
+      # param to provide your own NTP config template
+      restrict default kod nomodify notrap noquerynopeer
+      restrict 127.0.0.1
+
+      {{range $key, $ntp := .Param "ntp-servers" -}}
+      server {{ $ntp }} iburst
+      {{ end -}}
+      NTPCONFIG
+
+      TWIDDLE_NTP="yes"
+
+      {{ end -}}
+      {{ end -}}
+
+      if [[ -n "$TWIDDLE_NTP" ]]
+      then
+        echo "Setting and starting 'ntpd' sevices to be on"
+        localcli network firewall ruleset set --ruleset-id ntpClient --enabled true
+        /sbin/chkconfig ntpd on
+        /etc/init.d/ntpd restart
+        # restart hostd for Web UI to reflect changes correctly
+        /etc/init.d/hostd restart
+        echo "Collecting NTP connection peer status..."
+        sleep 30
+        ntpq -np
+        echo "Done."
+      fi
+
+      exit 0

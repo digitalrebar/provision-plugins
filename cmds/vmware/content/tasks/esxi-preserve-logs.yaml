@@ -1,0 +1,42 @@
+---
+Name: "esxi-preserve-logs"
+Description: "Preserve the logs to a datastore area"
+Documentation: |
+  Preserve the logs to a datastore area.
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-preserve-logs.sh"
+    Contents: |
+      #!/usr/bin/env sh
+      {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+      # Generate a new scratch directory for this host on a Datastore
+      scratchdirectory={{ .Param "esxi/install-datastore" }}/locker
+      # Create the scratch directory
+      mkdir -p $scratchdirectory
+      # Change the advanced configuration option
+      vim-cmd hostsvc/advopt/update ScratchConfig.ConfiguredScratchLocation string $scratchdirectory
+
+      # saves a copy of the install logs to permanent storage from /scratch
+
+      echo "$(date)" >  /tmp/esxi-preserve-logs-template-run-stamp
+
+      DS={{ .Param "esxi/install-datastore" }}
+      LOG_DIR="${DS}/install-logs/"
+
+      mkdir -p $LOG_DIR \
+        && cp -Lfr /var/log/* $LOG_DIR \
+        || echo "failed to 'mkdir -p $LOG_DIR'"
+
+      # save some other weasel/installer files
+      ONE="/tmp/onetime.tar"
+      KS="/tmp/kickstart-customizations.cfg"
+      JUMP="/tmp/jumpstrt.gz"
+      for FILE in "$ONE" "$KS" "$JUMP"
+      do
+        [[ -f "$FILE" ]] && cp "$FILE" "$LOG_DIR"
+      done
+
+      exit 0

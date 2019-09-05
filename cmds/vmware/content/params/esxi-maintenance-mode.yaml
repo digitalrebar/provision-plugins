@@ -1,0 +1,22 @@
+---
+Name: esxi/maintenance-mode
+Description: The status of the ESXi system maintenanceMode, recorded on DRP
+Documentation: |
+  The state of ESXi ``maintenanceMode``, as recorded by DRP.  This is a second
+  check to insure that DRP set the maintenance mode on, and that should be safe
+  to toggle off.
+
+  The only allowed values are ``Enabled`` or ``Disabled``, with the default set
+  to disabled.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: Disabled
+  type: string
+  enum:
+    - Enabled
+    - Disabled
+

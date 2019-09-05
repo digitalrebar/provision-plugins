@@ -1,0 +1,19 @@
+---
+Name: esxi/patch-index
+Descriptio: The index of the patch to apply currently.
+Documentation: |
+  This string variable is used to track the index of the patch to apply.
+  This allows machine to track position across reboots.
+
+  The parameter is a string because we don't have great tools for the esxi
+  environment yet and should be cast to an integer when being used.
+
+  The default value is -1 to indicate uninitialized.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: "-1"
+  type: string
