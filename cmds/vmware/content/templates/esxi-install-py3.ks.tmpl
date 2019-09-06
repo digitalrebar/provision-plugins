@@ -53,9 +53,6 @@ reboot --noeject
 %post --interpreter=python
 {{ template "esxi-drpy-vib-render.py.tmpl" .}}
 
-%post --interpreter=python
-{{ template "esxi-drpy-run.py.tmpl" .}}
-
 %firstboot --interpreter=python
 {{ template "esxi-render-firewall-vib.py.tmpl" .}}
 
@@ -64,8 +61,16 @@ reboot --noeject
 
 {{ template "esxi-ks-custom-sections.tmpl" .}}
 
-%firstboot --interpreter=python
+%post --interpreter=python
 {{ template "esxi-drpy-run.py.tmpl" .}}
+
+%firstboot --interpreter=busybox
+# This is backgrounded to allow for the system to stablize and installations to finish
+cat >> /tmp/drpy-start.py <<EOF
+{{ template "esxi-drpy-run.py.tmpl" .}}
+EOF
+chmod +x /tmp/drpy-start.py
+/bin/nohup /tmp/drpy-start.py &
 
 %firstboot --interpreter=busybox
 {{ if eq (.Param "esxi/drp-port-disable") true -}}
