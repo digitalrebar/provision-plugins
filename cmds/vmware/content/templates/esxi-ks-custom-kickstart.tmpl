@@ -1,3 +1,10 @@
+# Uses the "esxi/ks-custom-kickstart" Param to specify a list of additional
+# templates that expand to additional kickstart sections.
+#
+# This will generate a noop section script - to allow these comments
+#
+# No more COMMENTS AFTER THIS!
+#
 {{ $dot := . -}}
 {{range $key, $template := .Param "esxi/ks-custom-kickstart" -}}
 {{ $dot.CallTemplate $template $dot }}

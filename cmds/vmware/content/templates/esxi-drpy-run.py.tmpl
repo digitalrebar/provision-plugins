@@ -51,6 +51,14 @@ if os.path.exists(agent_output_log):
     if rotate_log:
       print("Rotated log file to: " + rotate_log)
 
+count = 0
+while not os.path.exists(agent):
+  print("Agent is not installed there....")
+  sleep(5)
+  count=count+1
+  if count > 30:
+    sys.exit('DRPY agent not found on system"' + agent + '.')
+
 print("Starting agent with config file named '" + conf_file + "'.")
 os.system('echo "--------------------------- $(date) ---------------------------" | tee -a ' + agent_output_log)
 os.system(start_agent)
