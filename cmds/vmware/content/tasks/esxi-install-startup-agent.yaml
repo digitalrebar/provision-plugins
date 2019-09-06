@@ -43,20 +43,20 @@ Templates:
         echo "DRPY execution in $RC already.  Nothing done."
       else
         head -n -1 $RC > /tmp/install-agent
-        cat >> /tmp/instal-agent <<EOF
+        cat >> /tmp/install-agent <<EOF
       mkdir -p $RD
       cat >> $RP <<INSIDEEOF
       {{template "esxi-drpy-run.py.tmpl" .}}
       INSIDEEOF
       chmod +x $RP
-      # If /tmp/instal-agent is there, we are still in firstboot, don't run until the next time
-      if [[ ! -e /tmp/instal-agent ]] ; then
+      # If /tmp/install-agent is there, we are still in firstboot, don't run until the next time
+      if [[ ! -e /tmp/install-agent ]] ; then
         /bin/nohup $RP &
       fi
-      rm -f /tmp/instal-agent
+      rm -f /tmp/install-agent
       exit 0
       EOF
-        cp /tmp/instal-agent $RC
+        cp /tmp/install-agent $RC
 
         $(grep -qe "^# Start up the DRPY agent on an ESXi system." $RC) && echo "Startup tool ('$TOOL') installed successfully" || xiterr "Failed to install '$TOOL'"
       fi
