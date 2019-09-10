@@ -23,7 +23,7 @@ Templates:
       set -e
       RS_DEBUG_ENABLE=true
 
-      function xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+      xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
 
       {{ if not (.Param "esxi/patches-enabled" ) -}}
       echo "ESXi patching system turned off by Param 'esxi/patches-enabled'"

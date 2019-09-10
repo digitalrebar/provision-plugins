@@ -4,7 +4,7 @@
 
 # Validate that IP and GW are in same Subnet (BASH Version)
 
-function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
 
 # requies dotted quad format for subnet as input for netmask
 # ipcalc can convert prefix to dotted quad/vice-versa, but usage blows chunks
