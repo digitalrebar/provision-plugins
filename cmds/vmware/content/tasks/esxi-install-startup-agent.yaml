@@ -29,7 +29,7 @@ Templates:
       exit 0
       {{ end -}}
 
-      function xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+      xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
       RB="/opt/rackn/drpy"
       RA="$RB/agent"
       RD="$RB/bin"

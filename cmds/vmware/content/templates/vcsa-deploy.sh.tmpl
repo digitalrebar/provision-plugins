@@ -8,7 +8,7 @@
 #      Site: www.virtuallyghetto.com
 #      Reference: http://www.virtuallyghetto.com/2015/01/ultimate-automation-guide-to-deploying-vcsa-6-0-part-1-embedded-node.html
 ###
-function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
 
 OVFTOOL=$(which ovftool || xiterr 1 "Unable to locate 'ovftool'")
 

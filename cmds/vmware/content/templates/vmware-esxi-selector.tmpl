@@ -13,7 +13,7 @@
 #
 #  REQUIRES:  DRP Endpoint version v3.13.7 / v3.14.0 and newer
 ###
-function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
 {{ template "setup.tmpl" . }}
 
 set -e

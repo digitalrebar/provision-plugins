@@ -26,7 +26,7 @@ Templates:
       # Put the ESXi node in to maintenance mode
 
       set -e
-      function xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+      xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
 
       PATH=$PATH:/usr/bin
 

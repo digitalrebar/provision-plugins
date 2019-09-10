@@ -22,7 +22,7 @@ Templates:
       #!/usr/bin/env sh
       # Remove the ESXi node from maintenance mode
 
-      function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+      xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
       set -e
 
       [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
