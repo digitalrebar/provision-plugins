@@ -18,9 +18,14 @@ xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL:
 
 set -e
 
-{{ if .ParamExists "vmware/esxi-version-override"}}
+NEED_TO_SET_VENDOR="false"
+SUPPORTED_VENDORS="cisco dell fujitsu hitachi hpe lenovo nec vmware"
+MATCHED=false
+
+{{ if .ParamExists "vmware/esxi-version-override" -}}
 BOOTENV="{{ .Param "vmware/esxi-version-override"}}"
-{{ else }}
+NEED_TO_SET_VENDOR="true"
+{{ else -}}
 BOOTENV="{{ .Param "vmware/esxi-version"}}"
 
 ###
@@ -38,6 +43,7 @@ if [[ "$BOOTENV" == "select-vendor" ]]
 then
   # operator wants vendor magically selected based on hardware mfg and map
   mfgr="$(echo \"$(drpcli gohai | jq -r '.DMI | .System | .Manufacturer')\" | tr '[:upper:]' '[:lower:]')"
+  model="$(echo \"$(drpcli gohai |jq -r '.DMI | .System | .ProductName')\" | tr '[:upper:]' '[:lower:]')"
   case $mfgr in
     *dell*)       VENDOR="dell"    ;;
     *hp*)         VENDOR="hpe"     ;;
@@ -46,9 +52,14 @@ then
     *lenovo*)     VENDOR="lenovo"  ;;
     *cisco*)      VENDOR="cisco"   ;;
     *supermicro*) VENDOR="generic" ;;
+    *red\ hat*)
+      case $model in
+        *kvm*)    VENDOR="generic" ;;
+        *)        VENDOR="generic" ;;
+      esac
+      ;;
     *hitachi*)    VENDOR="hitachi"
-        # <<<UNFINISHED>>> need some form of gohai to match model
-        # MODEL="$(echo \"$(drpcli gohai |jq -r '.DMI | .System | .ProductName')\" | tr '[:upper:]' '[:lower:]'"
+        # <<<UNFINISHED>>> need some form of gohai to match model or similar
         # defaulting for now:
         MODEL="ha8000v-gen10"
         #MODEL="blade-ha8000"
@@ -58,38 +69,74 @@ then
       ;;
   esac
 
-  echo "   Hardware vendor identified as:  $VENDOR"
-  [[ -n "$MODEL" ]] && echo "            model identified as:  $MODEL"
+  echo ">>> Hardware vendor identified as:  $VENDOR"
+  [[ -n "$MODEL" ]] && echo ">>> Model identified as:  $MODEL"
   [[ -n "$MODEL" ]] && MODEL=" and .model == \"$MODEL\""
 
   BE=$(echo '{{ .ParamAsJSON "vmware/esxi-version-vendor-map" }}' \
     | jq -r ".[] | select((.mfg == \"${VENDOR}\")${MODEL}) | .bootenv")
+  MATCHED="true"
   BOOTENV="${BE}"
+  NEED_TO_SET_VENDOR="false"
+else
+  NEED_TO_SET_VENDOR="true"
 fi
 
-{{ end }}
+{{ end -}}
 
-echo "   Requesting install of BootEnv: '$BOOTENV'"
+[[ -z "$BOOTENV" ]] && xiterr 1 "Bootenv is unset, this shouldn't have happend."
+
+if [[ "$NEED_TO_SET_VENDOR" == "true" ]]
+then
+  echo "Attempting to match vendor from Bootenv since manual or preset Bootenv specified."
+  for SV in $SUPPORTED_VENDORS
+  do
+    [[ "$BOOTENV" =~ $SV ]] && { VENDOR=$SV; MATCHED=true; break; }
+  done
+fi
+
+if [[ "$MATCHED" == "false" ]]
+then
+  echo "!!! Unable to match VENDOR for Bootenv named '$BOOTENV' !!!"
+  echo "VENDOR list tried matching against is '$SUPPORTED_VENDORS'"
+  echo "Setting VENDOR to 'generic'."
+  VENDOR="generic"
+else
+  echo ">>> Matched '$VENDOR' for specified Bootenv ('$BOOTENV')."
+fi
+
+[[ -z "$VENDOR" ]] && xiterr 1 "VENDOR variable is empty, this shouldn't have happend."
+
+if [[ "$BOOTENV" =~ -install$ ]]
+then
+  echo "Specified bootenv ends with '-install', stripping it off."
+  BOOTENV=$(echo $BOOTENV | sed 's/-install$//g')
+fi
+
+echo ">>> Requesting install of BootEnv: '$BOOTENV'"
 
 BOOT_INSTALL="${BOOTENV}-install"
 if ( drpcli bootenvs exists $BOOT_INSTALL > /dev/null 2>&1 || true )
 then
 {{if .ParamExists "esxi/http-mirror" }}
   # we could do better - expand mirror/bootenv path to see if 'install' dir exists
-  echo " Param 'esxi/http-mirror' is set:  ...not testing if remote exploded ISO contents exists :("
-  echo "Assuming mirror has ISO contents:  {{ .Param "esxi/http-mirror" }}/$BOOTENV/install"
+  echo "Param 'esxi/http-mirror' is set - not testing if remote exploded ISO contents exists :("
+  echo "Assuming mirror has ISO contents at:  {{ .Param "esxi/http-mirror" }}/$BOOTENV/install"
 {{ else }}
 #TODO: if Token scope allows "drpcli bootenvs show ... " then we can
 #      make our safety check on the ISO - but for now, it's not allowed
 #  ISO=$(drpcli bootenvs show $BOOT_INSTALL | jq -r '.OS.IsoFile')
 #  drpcli isos exists "$ISO" > /dev/null 2>&1 || true
-#  (( $? )) && xiterr 1 "FATAL: ISO '$ISO' not installed on DRP Endpoint"
+#  (( $? )) && xiterr 1 "ISO '$ISO' not installed on DRP Endpoint"
 {{ end }}
-  echo "      VMware ESXi BootEnv set to:  $BOOTENV"
-  drpcli machines set {{.Machine.UUID}} param "esxi/selected-vendor" to $VENDOR
-  drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:${BOOT_INSTALL}
+  HIDE_OUTPUT=' > /dev/null'
+  [[ $RS_DEBUG_ENABLE ]] && HIDE_OUTPUT=""
+  eval drpcli machines set {{.Machine.UUID}} param "esxi/selected-vendor" to ${VENDOR}${HIDE_OUTPUT}
+  echo "Successfully set machine param 'esxi/selected-vendor' to '${VENDOR}'"
+  eval drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:${BOOT_INSTALL}${HIDE_OUTPUT}
+  echo "Successfully set machine Bootenv to '${BOOT_INSTALL}'"
 else
-  xiterr 1 "FATAL: selected bootenv '$BOOTENV' does not exist"
+  xiterr 1 "selected bootenv '$BOOTENV' does not exist"
 fi
 
 exit 0
