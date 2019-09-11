@@ -42,6 +42,8 @@ Templates:
               drpcli machines set {{.Machine.UUID}} param bios-driver to none;;
           'VMware, Inc.')
               drpcli machines set {{.Machine.UUID}} param bios-driver to none;;
+          'SolidFire')
+              drpcli machines set {{.Machine.UUID}} param bios-driver to none;;
           *)
               echo "No idea how to install BIOS tooling for $mfgr"
               exit 1;;
