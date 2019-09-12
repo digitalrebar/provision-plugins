@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 {{ template "setup.tmpl" .}}
-{{ template "valildation-lib.tmpl" .}}
+{{ template "validation-lib.tmpl" .}}
 
 # Validate that IP and GW are in same Subnet (BASH Version)
 
@@ -25,20 +25,47 @@ function usage() {
 }
 
 (which ipcalc > /dev/null 2>&1 ) || xiterr "'ipcalc' not found in PATH ($PATH)"
-[[ -z "$IP" ]] && { usage; xiterr "Required IP Address not specified"; }
-[[ -z "$GW" ]] && { usage; xiterr "Required Gateway not specified"; }
-[[ -z "$NM" ]] && { usage; xiterr "Required Netmask not specified"; }
 
-validate_ipv4_ip_syntax $IP || xiterr "IP Address ('$IP') not valid dotted quad format"
-validate_ipv4_ip_syntax $GW || xiterr "Gateway ('$GW') not valid dotted quad format"
-validate_ipv4_ip_syntax $NM || xiterr "Netmask ('$NM') not valid dotted quad format"
+ERR=0
+if [[ -z "$IP" ]] ; then
+  echo "Required IP Address not specified"
+  ERR=1
+fi
+if [[ -z "$GW" ]] ; then
+  echo "Required Gateway not specified"
+  ERR=1
+fi
+if [[ -z "$NM" ]] ; then
+  echo "Required Netmask not specified"
+  ERR=1
+fi
+if [[ $ERR == 1 ]] ; then
+  usage
+  xiterr "Invalid arguments"
+fi
 
-check_same_subnet ${IP} ${GW} ${NM}
-xit=$?
-if [[ ${xit} == 0 ]]; then
+if ! validate_ipv4_ip_syntax $IP ; then
+  ERR=1
+  echo "IP Address ('$IP') not valid dotted quad format"
+fi
+if ! validate_ipv4_ip_syntax $GW ; then
+  ERR=1
+  echo "Gateway ('$GW') not valid dotted quad format"
+fi
+if ! validate_ipv4_ip_syntax $NM ; then
+  ERR=1
+  echo "Netmask ('$NM') not valid dotted quad format"
+fi
+
+if [[ $ERR == 1 ]] ; then
+  usage
+  xiterr "Arguments not valid"
+fi
+
+if check_same_subnet ${IP} ${GW} ${NM} ; then
   echo "SUCCESS: IP '$IP' and GW '$GW' are in the same subnet (${NET_IP}/${NM})."
 else
   xiterr "IP and GW in different subnets (IP network is '$NET_IP' and GW network is '$NET_GW')."
 fi
 
-exit ${xit}
+exit 0

@@ -11,20 +11,17 @@ Templates:
   - Name: "check-dns-by-ip.sh"
     Contents: |
       #!/usr/bin/env bash
-      set -e
 
       {{ template "setup.tmpl" . }}
       {{ template "validation-lib.tmpl" . }}
 
-      {{ if eq (.ParamExists "esxi/firstboot-ipaddr") false }}
-      echo "esxi/firstboot-ipaddr is not specified"
+      {{ if eq (.ParamExists "esxi/network-firstboot-ipaddr") false }}
+      echo "esxi/network-firstboot-ipaddr is not specified"
       exit 1
       {{ end }}
-      validate_machine_name_dns_by_ip (.Param "esxi/firstboot-ipaddr")
-      x=$?
-      if [[ ${x} == 1 ]]; then
+      if ! validate_machine_name_dns_by_ip {{.Param "esxi/network-firstboot-ipaddr"}} ; then
           echo "DNS validation failed."
-      else
-          echo "DNS validation succeeded."
+          exit 1
       fi
-      exit ${x}
+      echo "DNS validation succeeded."
+      exit 0

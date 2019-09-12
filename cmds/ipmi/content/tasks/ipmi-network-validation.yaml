@@ -18,30 +18,36 @@ Templates:
       {{ template "setup.tmpl" . }}
       {{ template "validation-lib.tmpl" . }}
 
+      ERR=0
       {{ if eq (.ParamExists "ipmi/configure/address") false }}
             echo "ipmi/configure/address is not specified"
-            exit 1
+            ERR=1
+      {{ else }}
+      IP={{ .Param "ipmi/configure/address" }}
       {{ end }}
 
       {{ if eq (.ParamExists "ipmi/configure/gateway") false }}
             echo "ipmi/configure/gateway is not specified"
-            exit 1
+            ERR=1
+      {{ else }}
+      GW={{ .Param "ipmi/configure/gateway" }}
       {{ end }}
 
       {{ if eq (.ParamExists "ipmi/configure/netmask") false }}
             echo "ipmi/configure/netmask is not specified"
-            exit 1
+            ERR=1
+      {{ else }}
+      NM={{ .Param "ipmi/configure/netmask" }}
       {{ end }}
 
-      IP={{ .Param "ipmi/configure/address" }}
-      GW={{ .Param "ipmi/configure/gateway" }}
-      NM={{ .Param "ipmi/configure/netmask" }}
+      if [[ $ERR == 1 ]] ; then
+          exit 1
+      fi
 
-      check_same_subnet ${IP} ${GW} ${NM}
-      xit=$?
-      if [[ ${xit} == 0 ]]; then
+      if check_same_subnet ${IP} ${GW} ${NM} ; then
           echo "IPMI Configure Network Validation Success"
+          exit 0
       else
           echo "IPMI Configure Network Validation Failure"
+          exit 1
       fi
-      exit ${xit}
