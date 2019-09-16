@@ -8,3 +8,4 @@ Meta:
 Name: endpoint-exec/parameters
 Schema:
   type: string
+  default: ""
