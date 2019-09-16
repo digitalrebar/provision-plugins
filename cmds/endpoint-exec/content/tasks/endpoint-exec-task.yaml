@@ -28,7 +28,7 @@ Templates:
     {{if .ParamExists "endpoint-exec/action" }}
     action="{{.Param "endpoint-exec/action" }}"
     echo "Generate endpoint-exec - $action"
-    returnStr=$(drpcli machines runaction $RS_UUID endpointExecDo --plugin "{{.Param "endpoint-exec/plugin" }}" endpoint-exec/action "$action")
+    returnStr=$(drpcli machines runaction $RS_UUID endpointExecDo --plugin "{{.Param "endpoint-exec/plugin" }}" -- endpoint-exec/action "$action")
 
     echo "Received:"
     echo $returnStr
