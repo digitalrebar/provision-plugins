@@ -35,7 +35,7 @@ func (l *lenovoConfig) Source(src io.Reader) {
 func (l *lenovoConfig) Current() (res map[string]Entry, err error) {
 	res = map[string]Entry{}
 	if l.source == nil {
-		if err == runOneCli("config", "save", "--file", "settings.dat") {
+		if err != runOneCli("config", "save", "--file", "settings.dat") {
 			return
 		}
 		var fi *os.File
