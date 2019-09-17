@@ -1,0 +1,344 @@
+#!/usr/bin/env bash
+# Configure the IPMI subsystem
+
+. helper
+
+{{ if eq (.Param "rs-debug-enable") true -}}
+set -x
+{{end -}}
+
+fail() {
+    echo "Failed"
+    exit 1
+}
+
+success() {
+    echo "Success"
+    exit 0
+}
+
+# Who am I
+export RS_UUID={{.Machine.Uuid}}
+export RS_TOKEN={{.GenerateToken}}
+export RS_ENDPOINT={{.ApiURL}}
+
+# Gather Variables for configuration
+IPMI_ADDRESS=""
+
+IPMI_FORCE_LAN_CHAN=0
+IPMI_LAN_CHECK_START=1
+IPMI_LAN_CHECK_END=11
+{{if .ParamExists "ipmi/force-lan-chan"}}
+IPMI_FORCE_LAN_CHAN={{.Param "ipmi/force-lan-chan"}}
+IPMI_LAN_CHECK_START=$IPMI_FORCE_LAN_CHAN
+IPMI_LAN_CHECK_END=$IPMI_FORCE_LAN_CHAN
+{{end}}
+
+declare -A quirk_data
+declare -A mc_info
+declare -A lan_info
+declare -A mc_info_keys
+declare -A lan_info_keys
+lan_chan=0
+
+quirklist=()
+quirkid="UNKNOWN"
+
+mc_info_keys=(
+    ["Device ID"]="device_id"
+    ["Device Revision"]="device_rev"
+    ["Firmware Revision"]="firmware_rev"
+    ["IPMI Version"]="version"
+    ["Manufacturer ID"]="mfgr_id"
+    ["Manufacturer Name"]="mfgr_name"
+    ["Product ID"]="product_id"
+    ["Product Name"]="product_name"
+    ["Device Available"]="available"
+    ["Provides Device SDRs"]="provides_device_sdrs"
+    ["Additional Device Support"]="additional_devs"
+)
+
+lan_info_keys=(
+    ["IP Address"]="ipaddr"
+    ["Subnet Mask"]="netmask"
+    ["Default Gateway IP"]="defgw ipaddr"
+    ["MAC Address"]="macaddr"
+    ["IP Address Source"]="ipsrc"
+)
+
+#
+# This routine will mark the parameters to skip IPMI on
+# systems that don't have IPMI subsystems or fail.
+#
+disable_ipmi() {
+    echo "IPMI Subsystem not available on this node."
+
+    # Mark address as empty to make sure that actions aren't available.
+    drpcli machines set $RS_UUID param ipmi/enabled to false
+    if ! drpcli machines remove $RS_UUID param ipmi/address; then
+        true
+    fi
+
+    if [[ $IPMI_CONFIGURE_FAIL == true ]] ; then
+        fail
+    else
+        success
+    fi
+}
+
+
+load_ipmi() {
+    echo "Loading IPMI modules"
+    [[ -d /sys/module/ipmi_devintf ]] || modprobe ipmi_devintf &>/dev/null || :
+    [[ -d /sys/module/ipmi_si ]] || modprobe ipmi_si &>/dev/null || :
+    [[ -d /sys/module/ipmi_ssif ]] || modprobe ipmi_ssif &>/dev/null || :
+    if ! [[ -d /sys/module/ipmi_si ||
+            -d /sys/module/ipmi_devintf ||
+            -d /sys/module/ipmi_ssif ]]; then
+        echo "Failed to load ipmi kernel modules"
+        disable_ipmi
+        return
+    fi
+    [[ -e /dev/ipmi0 || -e /dev/ipmi/0 || -e /dev/ipmidev/0 ]] && return || :
+    echo "No IPMI devices present"
+    IPMI_CONFIGURE_FAIL=false
+    disable_ipmi
+}
+
+trim() {
+    local var="$*"
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"
+    echo -n "$var"
+}
+
+tool() {
+    if [[ $ipmi_nodelay == "" ]] ; then
+        sleep 5
+    fi
+    if ! [[  "$@" =~ password ]] ; then
+        echo "ipmitool $@"
+    else
+        echo "ipmitool password setting command"
+    fi >&2
+    ipmitool "$@"
+}
+
+process_quirks() {
+    OLD_IFS=$IFS
+    IFS=""
+    array=false
+    index=0
+    level=()
+    tq=()
+    score=0
+    maxscore=0
+    testvalue=""
+    while read line
+    do
+            if [[ $line =~ ^# ]] ; then
+                    continue
+            fi
+
+            front=${line%%:*}
+            back=$(trim ${line#*:})
+
+            oldarray=$array
+            if [[ $front == $line ]] ; then
+                front=${line%%-*}
+                back=$(trim ${line#*-})
+                array=true
+                tq=()
+            else
+                array=false
+            fi
+            if [[ $oldarray != $array && $array == true ]] ; then
+                index=0
+            fi
+
+            spaces="${front//[^ ]}"
+            count=$((${#spaces} / 2))
+
+            tf=$(trim $front)
+            if [[ $back == "" ]] ; then
+                    if [[ $count == 0 ]] ; then
+                         if [[ $testvalue != "" ]] ; then
+                                 if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                                 if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                         fi
+                         testvalue=""
+                         if (( $maxscore < $score )) ; then
+                             quirkid=${level[0]}
+                             maxscore=$score
+                             quirklist=$tq
+                         fi
+                         score=0
+                    fi
+                    if [[ $count == 3 ]] ; then
+                         if [[ $testvalue != "" ]] ; then
+                                 if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                                 if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                         fi
+                         testkey=$tf
+                         testscore=1
+                    fi
+                    level[$count]=$tf
+            else
+                    if [[ $array == true ]] ; then
+                        tq[$index]=$back
+                    else
+                        if [[ $count == 4 && $tf == "match" ]] ; then
+                            testvalue=$back
+                        fi
+                        if [[ $count == 4 && $tf == "score" ]] ; then
+                            testscore=$back
+                        fi
+                    fi
+            fi
+
+    done < "ipmi-quirks.yaml"
+    if [[ $testvalue != "" ]] ; then
+            if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
+                score=$(($score + $testscore))
+            fi
+            if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
+                score=$(($score + $testscore))
+            fi
+    fi
+    testvalue=""
+    if (( $maxscore < $score )) ; then
+        maxscore=$score
+        quirkid=${level[0]}
+        quirklist=$tq
+    fi
+    IFS=$OLD_IFS
+}
+
+mc_info() {
+    echo "Gathering MC info"
+    count=0
+    while (($count < 5)) ; do
+        while read line
+        do
+            tkey=$(trim ${line%%:*})
+            key=${mc_info_keys["$tkey"]}
+            value=$(trim ${line#*:})
+
+            if [[ $key == "" ]] ; then
+                continue
+            fi
+            if [[ $value == "" ]] ; then
+                continue
+            fi
+
+            mc_info["$key"]="$value"
+        done < <(tool mc info)
+
+        if [[ ${mc_info["version"]} != "" ]] ; then
+            break
+        fi
+
+        echo "attempt $count failed -  trying again..."
+        count=$(($count + 1))
+        sleep 1
+    done
+
+    if (($count == 5)) ; then
+        echo "Failed to get base board controller info"
+        disable_ipmi
+    fi
+}
+
+lan_info() {
+    echo "Gathering Lan Info"
+    for ((i=$IPMI_LAN_CHECK_START;i<=$IPMI_LAN_CHECK_END;i++)); do
+        lan_chan=$i
+        while read line
+        do
+            tkey=$(trim ${line%%:*})
+            if [[ $tkey == "" ]] ; then
+                continue
+            fi
+
+            key=${lan_info_keys["$tkey"]}
+            value=$(trim ${line#*:})
+
+            if [[ $key == "" ]] ; then
+                continue
+            fi
+            if [[ $value == "" ]] ; then
+                continue
+            fi
+
+            lan_info["$key"]="$value"
+        done < <(tool lan print $lan_chan)
+
+        if [[ $IPMI_FORCE_LAN_CHAN == $lan_chan ]] ; then
+            break
+        fi
+        if [[ ${lan_info["ipsrc"]} != "" ]] ; then
+            break
+        fi
+    done
+}
+
+
+# Load the ipmi layer
+load_ipmi
+
+# Get MC info
+mc_info
+
+# Get Lan Info
+lan_info
+
+# Identify MC and get quirks
+process_quirks
+
+echo "System has been identified as: $quirkid"
+echo "Using these quirks: ${quirklist[@]}"
+
+# Set the quirks as vars
+for q in "${quirklist[@]}"
+do
+        key=${q//-/_}
+        export ${key}=true
+done
+
+# Re-get the lan info
+IPMI_ADDRESS=${lan_info["ipaddr"]}
+IPMI_NETMASK=${lan_info["netmask"]}
+IPMI_GATEWAY=${lan_info["defgw ipaddr"]}
+IPMI_MACADDR=${lan_info["macaddr"]}
+IPMI_IPSRC=${lan_info["ipsrc"]}
+
+# Record parameters.
+if [[ $IPMI_ADDRESS != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/enabled to true
+    drpcli machines set $RS_UUID param ipmi/address to "$IPMI_ADDRESS"
+fi
+if [[ $IPMI_NETMASK != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/netmask to "$IPMI_NETMASK"
+fi
+if [[ $IPMI_GATEWAY != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/gateway to "$IPMI_GATEWAY"
+fi
+if [[ $IPMI_MACADDR != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/macaddr to "$IPMI_MACADDR"
+fi
+if [[ $IPMI_IPSRC != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/ipsrc to "$IPMI_IPSRC"
+fi
+
+success
+

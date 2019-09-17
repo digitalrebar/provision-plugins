@@ -1,0 +1,12 @@
+---
+Name: "ipmi/netmask"
+Description: "Netmask of the IP Address of the BMC"
+Documentation: |
+  This parameter shows the netmask of the IP address of the BMC.
+Schema:
+  type: "string"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"
