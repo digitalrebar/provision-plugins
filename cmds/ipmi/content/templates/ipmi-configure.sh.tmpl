@@ -586,6 +586,10 @@ fi
 # Re-get the lan info
 lan_info
 IPMI_ADDRESS=${lan_info["ipaddr"]}
+IPMI_NETMASK=${lan_info["netmask"]}
+IPMI_GATEWAY=${lan_info["defgw ipaddr"]}
+IPMI_MACADDR=${lan_info["macaddr"]}
+IPMI_IPSRC=${lan_info["ipsrc"]}
 
 # Record parameters.
 drpcli machines set $RS_UUID param ipmi/enabled to true
@@ -602,6 +606,18 @@ if [[ $IPMI_ADDRESS != "" ]] ; then
             fi
         fi
     fi
+fi
+if [[ $IPMI_NETMASK != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/netmask to "$IPMI_NETMASK"
+fi
+if [[ $IPMI_GATEWAY != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/gateway to "$IPMI_GATEWAY"
+fi
+if [[ $IPMI_MACADDR != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/macaddr to "$IPMI_MACADDR"
+fi
+if [[ $IPMI_IPSRC != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/ipsrc to "$IPMI_IPSRC"
 fi
 
 success

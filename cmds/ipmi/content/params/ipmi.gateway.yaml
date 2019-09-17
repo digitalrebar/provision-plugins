@@ -1,0 +1,12 @@
+---
+Name: "ipmi/gateway"
+Description: "Default Gateway Address of the BMC"
+Documentation: |
+  This parameter shows the current default gateway of the BMC.
+Schema:
+  type: "string"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

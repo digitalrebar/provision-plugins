@@ -1,0 +1,20 @@
+---
+Name: "ipmi-inventory"
+Description: "A task to inventory the BMC of a machine."
+Documentation: |
+  This task populates the ipmi parameters for discovery from the BMC.
+
+Templates:
+  - Name: "Copy ipmi-quirks file"
+    Path: "ipmi-quirks.yaml"
+    ID: "ipmi-quirks.yaml.tmpl"
+  - Name: "Inventory BMC"
+    Path: ""
+    ID: "ipmi-inventory.sh.tmpl"
+Prerequisites:
+  - ipmi-discover
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

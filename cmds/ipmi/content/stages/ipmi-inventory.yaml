@@ -1,0 +1,9 @@
+---
+Name: "ipmi-inventory"
+Description: "A stage to inventory the IPMI out-of-band management system"
+Tasks:
+  - "ipmi-inventory"
+Meta:
+  icon: "server"
+  color: "yellow"
+  title: "RackN Content"

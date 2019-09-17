@@ -1,0 +1,12 @@
+---
+Name: "ipmi/ipsrc"
+Description: "IP address configuration method of the BMC"
+Documentation: |
+  This parameter shows the method the BMC is using to configure the network.
+Schema:
+  type: "string"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

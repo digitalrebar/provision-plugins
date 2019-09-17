@@ -1,0 +1,12 @@
+---
+Name: "ipmi/macaddr"
+Description: "The MAC Address of the BMC"
+Documentation: |
+  This parameter shows the MAC Address of the BMC.
+Schema:
+  type: "string"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"
