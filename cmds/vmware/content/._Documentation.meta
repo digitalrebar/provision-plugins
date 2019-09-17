@@ -35,7 +35,10 @@ Basic Usage
 
 For basic usage, and to obtain the latest VMware generic ISO BootEnv
 installation, simply add the ``vmware-esxi-selector`` stage to your
-workflows, or use the sample ``vmware-esxi-selector`` workflow.
+workflows, or use the sample ``vmware-esxi-selector`` workflow. NOTE
+that the ``vmware-esxi-selector`` workflow must be run in the Sledgehammer
+(Discovery) image environment to transition the Machine to the appropriate
+ESXi bootenv installation.
 
 This workflow uses the following Params:
 
@@ -68,6 +71,20 @@ a default set defined by RackN.  Should you want to specify precise versions
 to use, you can set this Param to a map structure of your choosing.  Set this
 directly on the Machine as a Param, or via Profiles that are added to the
 machine (including ``global``, if appropriate).
+
+Patching ESXi Systems at Install Time
+=====================================
+
+The RackN VMware plugin also supports applying a patch version to the base install
+ISO at installation time.  The patching system relies on two separate sets of
+maps to specify where to find the Patches and related information (the
+``esxi/patch-map``, and the actual patch to install (via the ``vmware/esxi-version-vendor-map``
+param).
+
+The Patch Map defines the patch name based on the VMware "Build Number", which
+also serves as the index for the URL location, hash to validate the patch, and
+an optional custom location for finding the patch.  Please see the individual
+``esxi/patch-*`` named Params for more details.
 
 
 Adding Custom BootEnvs (VMware ESXi versions)
@@ -239,74 +256,33 @@ mappings between the names.
           and the 'esxi/select-version-map' Param to control your ESXi bootenv
           installation.
 
-Additional Kickstart Ideas
---------------------------
-
-The content section of this plugin also carries a few complex example
-Kickstart files that you can refer to for more advanced deployment
-ideas.  They include:
-
-  ::
-
-    esxi-example-firstboot-complex.ks.tmpl
-      Includes examples for multiple NICs, vswitches, security settings
-      syslog handling, firewall changes, storage changes, etc.
-
-    esxi-example-vsan.ks.tmpl
-      Builds VSAN disk group and creates VSAN cluster on the ESXi node.
-
-Additional advanced kickstart configuration examples can be found in various
-corners of the web, but a couple of excellent sites are as follows:
-
-  virtuallyGhetto - William Lam
-    https://www.virtuallyghetto.com/
-
-  VMware Hub by Altaro
-    https://www.altaro.com/vmware/scripted-deployment-esxi-part-1/
-
-  xenappblog
-    https://xenappblog.com/2018/automatically-install-vmware-esxi-6-7/
-
-.. note:: Kickstart installations are inherently finicky.  There are very
-  few ways to obtain interactive feedback on the installation process in
-  an automated way.  We highly suggest that you make small iterative changes
-  to your Kickstart templates and test each small change before introducing
-  a new one.  Debugging a complex Kickstart installation that has failed
-  is extremely hard.
-
-
-Kickstart Templating Usage
---------------------------
+ESXi Agent/Runner Information
+-----------------------------
 
 VMware ESXi environments are for the most part "closed appliances", and
 compiling third party tools for these environments is not an easy process.
-Consequently, there is currently no RackN/Digital Rebar Provision Agent
-available to run during the ESXi install process, or as a Post OS install
-agent.
+Consequently, the Golang based compiled Agent/Runner (``drpcli``) can not
+be cross compiled to run in the ESXi operationg environment.  RackN does
+build and maintain a Python3 capable Agent/Runner to support Workflow
+operations in the ESXi install environment (Weasel kickstart) and as a
+post-installed Agent for executing Workflow in installed systems.
 
-This means that no Workflow Stages can be run as part of the ESXi install
-process.  You must rely completely on the Kickstart to do all of the
-customization necessary.  Digital Rebar Provision can help piece together
-relatively capable kickstart via the use of our templating engine, and
-inherently composable content architecture.
+There are two primary components that must be installed to support
+Workflow in the ESXi environment:
 
-Since there is no DRP "runner" (agent) that can run in an ESXi environment,
-we can not execute workflow steps post-reboot of the installer.  This causes
-a problem since we need to notify DRP that the install has completed and
-that we can mark the machine done, and boot to "local" disk.
-There are two primary Kickstart templates used for ESXi installs with this
-content pack:
+  * DRPY ("derpy") Agent - an ESXi VIB module - installs the Python3
+    based tools to support Workflow/Stage execution
+  * Firewall-VIB - an ESXi VIB module - enables persistent firewall
+    port access from the installed ESXi environment to the DRP API
+    port
 
-  ::
+If you are using the Workflow system to mark machines as "complete" for
+install tracking purposes, you must also set the ``esxi/skip-notify`` Param
+value to ``true``.
 
-     esxi-install.ks.tmpl      --> Python 2.x based
-     esxi-install.py3.ks.tmpl  --> Python 3.x based
-
-
-A small Python snippet is used to make the API call back to DRP to notify that
-the install has finished.  But, we have to use the right version of Python,
-since ... Python.  Currently this is done in the "%pre" (Python interpreter)
-phase.
+To install the ESXi Agent/Runner, you must also install the Firewall-VIB
+module, or arrange to disable the ESXi built-in firewall system.  Please
+see the ``esxi-install-agent` Stage.
 
 Adding Custom Kickstart Sections
 ================================
@@ -314,6 +290,10 @@ Adding Custom Kickstart Sections
 Digital Rebar Provision provides on-the-fly customization of the built Kickstart
 through the use of injecting Templates in to the core Kickstart file, and also
 providing dynamic information available on the DRP endpoint, in to the Templates.
+
+.. note:: It is HIGHLY RECOMMENDED to use the RackN Workflow and Stages to add
+  customizations to the install process, and to  NOT INJECT custom kickstart
+  templates.  Please see the "ESXI Agent/Runner Information" section.
 
 ESXi kickstarts support three additional sections (or phases) that extra
 actions can be taken during the installation process:
@@ -570,6 +550,21 @@ If you are regularly installing ESXi systems and observing the installation from
 systems console (keyboard, video, mouse, etc.), you may observe a few error messages
 that the Weasel installer kicks out.  These are considered "normal" and are documented
 here just in case you go looking for them.
+
+Deleting vmk0 Management Interface
+==================================
+
+Error Message:
+
+  ::
+
+    Deleting vmk0 Management Interface, so setting advIface to NULL
+
+*Explanation:*
+
+  This is generally a non fatal issue, and due to forcing override on the
+  default gateway during the Weasel installation configuration stages.  You
+  should be able to safely ignore this error.
 
 Validation Disabled
 ===================
