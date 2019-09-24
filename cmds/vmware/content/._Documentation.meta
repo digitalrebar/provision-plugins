@@ -86,6 +86,19 @@ also serves as the index for the URL location, hash to validate the patch, and
 an optional custom location for finding the patch.  Please see the individual
 ``esxi/patch-*`` named Params for more details.
 
+VMware maintains their patch download URLs behind a CGI gateway that does not
+expose a direct download URL link.  RackN can not provide a direct download
+link in the individual Patch download locations.  Please follow the below
+steps to acquire patches:
+
+  * go to: https://my.vmware.com/group/vmware/patch#search
+  * login with your VMware account
+  * select "ESXi (Embedded and Installable)"
+  * select the version of ESXi that the patch applies to
+  * then in the "Enter Build Number" - put the build number ID which can be referenced in the ``esxi/patch-map`` Param
+  * hit search
+  * you'll get a table of results - cross reference the correct Build ID - and click on the "Download" button they provide
+  * send a gentle note to VMware to modernize their download process
 
 Adding Custom BootEnvs (VMware ESXi versions)
 =============================================
