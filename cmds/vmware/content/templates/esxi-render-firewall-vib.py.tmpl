@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Render the base64 encoded Param as a file on the system
 
-import base64, sys, os
+import base64, sys, os, time
 
 rackn_dir ="{{ .Param "esxi/install-datastore" }}/rackn"
 if not os.path.isdir(rackn_dir):
@@ -22,3 +22,5 @@ except Exception as e:
 print("Installing VIB and enabling rule ...")
 os.system("localcli software vib install -v " + vib_file_output  + " -f")
 os.system("localcli network firewall refresh")
+time.sleep( {{ .Param "esxi/python-sleep" }} )
+
