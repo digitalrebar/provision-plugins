@@ -1,0 +1,22 @@
+---
+Name: "image-deploy/cloud-init-base-url"
+Description: "The base path to access the meta-data and user-data"
+Documentation: |
+  This parameter defines the base path to the user-data and meta-data
+  files.  The valid values are ``file:///path``, ``http[s]://hostname:port/path``,
+  or just `\path`.
+
+  The default is for local mode, ``file:///curtin/``.
+
+  For remote usage, the value should be ```{{.Machine.Url}}/```.  This
+  works with the ``image-deploy-cloud-init`` stage.
+
+  The path MUST end in a slash.
+
+Schema:
+  type: "string"
+  default: "file:///curtin/"
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

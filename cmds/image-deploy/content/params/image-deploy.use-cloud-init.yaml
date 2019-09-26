@@ -1,0 +1,18 @@
+---
+Name: image-deploy/use-cloud-init
+Description: Should the image attempt to configure cloud-init
+Documentation: |
+  Set to true (the default) for the image deploy system to attempt
+  to configure cloud-init to use a meta-data/user-data pair
+  of files.  These rely on other paraemeters to fill in the
+  secondary files.
+
+  The type of cloud-init access is controlled by the parameter,
+  ``image-deploay/cloud-init-service``.
+Schema:
+  type: boolean
+  default: true
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

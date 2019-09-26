@@ -1,0 +1,165 @@
+
+The image-deploy plugin deploys images to systems.  These images can be tarballs that
+get untarred onto defined partition-based filesystems or raw disk images that get
+blown onto the disk.  In either case, additional files can be injected into the images
+for post-install operations.
+
+The provided stages and workflows also know how to drive cloud-init and provided the
+information required to let cloud-init startup the post-install process.  This includes
+injecting DRPCLI-based runners.
+
+The image-deploy system is built upon and extends the *curtin* project.  Curtin is driven by a configuration
+YAML file that is built dynamically based upon the value of parameters.  These parameters drive the actual imaging
+process.
+
+Image-Deploy Image Construction
+-------------------------------
+
+image-deploy requires an image.  This image can be in many different formats.  The format type defines what additional
+operational parameters that need to be set.  These images can be built using RackN's ``image-builder`` content pack,
+using Hashicorp's Packer tool (examples can be found here: *FILL_IN*), or other tools that generate images.  The images
+have some specific requirements that must be met for success.
+
+The first requirement is that all images must have a ``/curtin`` directory in the top-level directory of the base
+image file.  If the image is a raw disk image, this directory must be backed into that.  If the image is a rootfs
+tarball, the directory must be added as part of that tarball.  This must be created by the base image or first image
+applied.
+
+The second requirement is that all drivers must be added to the system in the base image or additional tarball packages.
+The image-deploy components do *NOT* handle driver updates or installs.
+
+The third requirement is for raw disk images.  The disk image must be constructed for the the boot-style of the target
+hardware.  If the hard is going to boot in UEFI mode, then the disk image must be formatted with EFI partitions that
+hold EFI bootloaders.  The same applies for legacy systems.  There are disk layouts that can work for both.
+
+A final item to consider during image construction is how will the next phase of operation start.  This means what will
+run the next phase of operation.  For windows, this could be an unattend.xml that is part of the image or injected by
+additional parameters.  Or it could be cloud-init is installed and set to automatically start.  The image-deploy
+system has the ability configure cloud-init ``meta-data`` and ``user-data`` with default to start a DRP runner on
+boot.  The system will also inject scripts to install a runner for the OS type in question.  These could also be called
+to install the agent as well.  Depending upon the choice of startup method, different things need to be done.  Some
+involve adding things to the image.
+
+
+Image-Deploy Operations
+-----------------------
+
+Once an image id built, the system needs to know where it is, what type of image it is, what OS it contains, and what
+startup process to use.  These are all defined as parameters that can be added to a machine.  Because all of this
+information is consistent across all machines using this image, it is best practice to create a profile that contains
+all these parameters.
+
+To define the location of the image file, you must use *ONE* of the following parameters.  If both are used, the system
+will use the ``image-deploy/image-file`` value.
+
+* image-deploy/image-file - This is a path relative to the tftpboot directory of the running DRP endpoint. e.g. If the
+  image has been uploaded with the files API to images/my-win-image.raw.gz, then the value of this parameter would be
+  ``files/images/my-win-image.tar.gz``.
+* image-deploy/image-url - This is a URL that references the image.  This must be an http or https URL that does *NOT*
+  require authentication.
+
+To define the type and content of the image, all of these values must be specified:
+
+* image-deploy/image-type - This is the curtin image type value.  These types are define in the parameter and validated
+  by the systems.  Some examples are: dd-gz, tgz, and others.
+* image-deploy/image-os - This is the type of OS being installed.  Current values are are linux or windows.  The
+  value of *basic* is deprecated and maps to *windows*.
+* image-deploy/image-os-subtype - This is the subtype of the `image-deploy/image-os` value.  This is ignored currently
+  for *windows*, but for *linux*, this is used to indicate family information.  Valid values for *linux* subtypes are
+  *centos* (and all its RHEL buddies) or *ubuntu* (and all its debian buddies).
+
+Additional parameters can be used to override and expand the system.
+
+Image-Deploy Customizations
+---------------------------
+
+With the basic parameters set in a profile, additional parameters can be added to drive further customization and enhancements.
+
+Partitioning
+============
+
+When using a raw disk image, partitioning is not used other than to select the hard disk.  By default, this will be
+specified by the ``image-deploy/install-disk`` parameter with a value of ``/dev/sda``.  This value can be overridden
+to direct the install to a different location.
+
+When using a rootfs and other tarballs, the system will use the ``image-deploy-install-disk`` as the default disk and
+use a simple GPT-based filesystem layout chosen by curtin.  A custom partition table can be added by using the
+``curtin/partitions`` parameter.  This object-based parameter will be converted to yaml and injected into the
+curtin-config yaml.
+
+The ``curtin/partitions`` parameter is an object that defines the disks, partitions, filesystems, and mount points for
+system.  The definition of the object can be found here: https://curtin.readthedocs.io/en/latest/topics/storage.html.
+
+Additional Content
+==================
+
+Once the base image and the RackN content tarball are added to the system, additional tarballs can be added to the main
+disk.  These are defined in the ``image-deploy/additional-tarballs`` parameter.  This is a list of objects that define
+file locations or URLs, and format (like the ``image-deploy/image-type`` parameter.  The assumption is that these tarballs
+will be applied at the root level of the mounted images.  These *MUST* be built prior to the `curtin-deploy` task is
+executed.
+
+The image-deploy tasks build one tarball and apply it for all systems.  This is the RackN Content tarball.  This contains
+at a minimum an OS appropriate runner, the curtin hooks needed to complete installation if required, an install script
+to install the DRPCLI as a runner, and optionally cloud-init configuration pieces.
+
+The following pieces are installed and their locations:
+
+* drpcli(.exe) - For linux, this is installed to ``/usr/local/bin``. For windows, this is ``/curtin``.
+* curtin hooks - These will go into ``/curtin`` and can be ignored.
+
+For window's systems, there is an additional file added if specified.  If ``image-deploy/windows-unattend-template``
+is defined, it should contain the name of a template that is loaded into the system.  This template will be expanded and
+stored in the newly imaged filesystem at the location specified by ``image-deploy/windows-unattend-path``.  The default
+path is ``Windows/Panther/unattend.xml``.  This can be used to inject a dynamic unattend xml file for startup usage.  This
+allows for a more flexible image.
+
+For further flexibility, the system can be configured to configure cloud-init or cloud-base as well.
+
+Cloud-Init / Cloud-Base
+=======================
+
+The image-deploy system will attempt to configure cloud-init (or Cloud-Base the windows version of cloud-init) by default.
+To turn this off, set the ``image-deploy/use-cloud-init`` parameter to ``false``.
+
+For linux systems, the system will configure cloud-init to use a data source to find ``meta-data`` and ``user-data``.
+These will be injected locally by default into the ``/curtin`` directory.  The ``image-deploy/cloud-init-base-url``
+parameter allows this to be overridden.  This can be other directory locations and the files will be placed accordingly.
+The system also allows for a remote file location through specific URLs or parameter expansion.  A common use would be
+to specific, ``{{.Machine.Url}}/``.  This expansion would map to files provided by the ``image-deploy-cloud-init``
+stage.
+
+For windows systems, the system will configure cloud-base to use the custom RackN data source that works similar to the
+data sources used by linux.  The same parameters control the location and contents of the ``meta-data`` and ``user-data``
+files.
+
+The contents of the ``meta-data`` file includes the hostname, ssh access keys, admin-username, and admin-password.
+Hostname is specified by the ``Machine.Name`` field.  The ssh access keys are pulled from the ``access-keys`` parameter.
+The admin-username and admin-password come from the parameters ``image-deploy/admin-username`` and ``image-deploy/admin-password``
+respectively if specified.
+
+The final piece of cloud-init data is the ``user-data`` file.  If not specified, the default action will be to install
+and start the DRP runner as a last action of cloud-init.  Other ``user-data`` content can be provided by filling in the
+string parameter, ``cloud-init/user-data``.  For best results, one should include a final run command to install
+and start the agent.
+
+For linux,
+
+  ::
+
+    #cloud-config
+    runcmd:
+      - /curtin/drpcli-install.sh
+
+For windows,
+
+  ::
+
+    #cloud-config
+    runcmd:
+      - /curtin/drpcli-install.bat
+
+Problem Determination
+---------------------
+
+To debug issues, you can set the ``curtin/debug`` parameter to true and addtional curtin logs will be generated.

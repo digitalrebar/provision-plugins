@@ -1,0 +1,11 @@
+---
+Name: "id-test-init-test"
+Description: "Stage to pick the init test"
+Documentation: |
+  Run another test stage
+Tasks:
+  - "id-test-init-test"
+Meta:
+  icon: "image"
+  color: "yellow"
+  title: "RackN Content"

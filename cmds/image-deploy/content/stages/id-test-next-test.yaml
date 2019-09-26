@@ -1,0 +1,12 @@
+---
+Name: "id-test-next-test"
+Description: "Stage to pick the next test"
+BootEnv: "sledgehammer"
+Documentation: |
+  Run another test stage
+Tasks:
+  - "id-test-next-test"
+Meta:
+  icon: "image"
+  color: "yellow"
+  title: "RackN Content"

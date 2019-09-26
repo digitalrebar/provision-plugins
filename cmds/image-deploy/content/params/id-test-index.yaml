@@ -1,0 +1,11 @@
+---
+Name: "id-test-index"
+Description: "The current test index."
+Documentation: |
+  If unset, the tests have not started.  If set, it is the index of the current test.
+Schema:
+  type: integer
+Meta:
+  icon: "bug"
+  color: "green"
+  title: "RackN Content"

@@ -1,0 +1,12 @@
+---
+Name: "image-deploy/admin-username"
+Description: "Admin username for cloud-init"
+Documentation: |
+  If specified, this can be used to set the admin username.
+  This should be used in conjunction with ``image-deploy/admin-password``.
+Schema:
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

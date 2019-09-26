@@ -2,7 +2,9 @@
 Name: "cloud-init/x509-certs"
 Description: "The cloud init x509 certs"
 Documentation: |
-  This contains all the x509 certs for the system as a single string
+  This contains all the x509 certs for the system as a single string.  Used to
+  configure access to HTTPS (TLS Enabled) services that may not be recognized
+  by as CA signed certificates.
 Schema:
   type: "string"
 Meta:

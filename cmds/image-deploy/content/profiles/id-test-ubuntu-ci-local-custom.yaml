@@ -1,0 +1,13 @@
+---
+Meta:
+  color: green
+  icon: bug
+Name: id-test-ubuntu-ci-local-custom
+Params:
+  image-deploy/admin-password: R0cektSk8ts
+  image-deploy/admin-username: vagrant
+  image-deploy/image-file: files/images/ubuntu1804.tgz
+  image-deploy/image-os: linux
+  image-deploy/image-os-subtype: ubuntu
+  image-deploy/image-type: tgz
+  image-deploy/cloud-init-base-url: file:///curtin/drive2/
