@@ -1,6 +1,15 @@
 ---
 Name: "curtin/network/ifname"
 Description: "The ifname to use inside the curtin network section."
+Documentation: |
+  The interface name to use inside the curtin network section.
+
+  Must be the same interface as the ``curtin/network/bootmac`` defined
+  interface.
+
+    * example: ``enp1s0f0``
+    * example: ``eth0``
+
 Schema:
   type: "string"
 Meta:

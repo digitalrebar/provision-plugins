@@ -2,7 +2,16 @@
 Name: "image-deploy/install-disk"
 Description: "The disk curtin should install upon"
 Documentation: |
-  The disk curtin should install upon
+  The disk that the image-deploy system should install to.  The default value
+  is ``/dev/sda``.  If the disks in the system are iterated with different device
+  names, then you must adjust this Param appropriately.  For example, virtual
+  machines may iterate their disks to the Sledgehammer environment as ``/dev/vda``,
+  so you would set this Param value to ``/dev/vda`` in that case.
+
+  For troubleshooting, boot the Machine in to Sledgehammer (eg via the ``discover-base``
+  workflow; or any other appropriate workflow), and use ``lsblk`` to iterate and identify
+  the device names of the disks.
+
 Schema:
   type: string
   default: "/dev/sda"

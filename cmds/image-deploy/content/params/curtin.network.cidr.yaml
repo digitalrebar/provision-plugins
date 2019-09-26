@@ -1,6 +1,11 @@
 ---
 Name: "curtin/network/cidr"
-Description: "The numeric netmask for this machine's address"
+Description: "The IP address and  netmask for the Machine in CIDR notation."
+Documentation: |
+  The numeric IP address and netmask for this Machine, in CIDR notation.
+
+    * example: ``10.10.10.10/24``
+
 Schema:
   type: "string"
 Meta:

@@ -14,8 +14,6 @@ set -e
 
 # This will contain a token appropriate for the path being
 # used below.  Either a create or update/show token
-export RS_UUID="{{.Machine.UUID}}"
-export RS_TOKEN="{{.GenerateToken}}"
 
 # Ubuntu Path is different than Centos Path - fix it.
 export PATH=$PATH:/usr/bin:/usr/sbin:/bin:/sbin
@@ -31,52 +29,134 @@ mkdir -p /tmp/drpcli/curtin
 
 # Set up the curtin files
 if [[ $OSTYPE == linux ]] ; then
+    # Agent in reasonable place
     cp /usr/local/bin/drpcli /tmp/drpcli/usr/local/bin
-    mkdir -p /tmp/drpcli/var/lib/cloud/scripts/per-once/
-    mv linux/drpcli.sh  /tmp/drpcli/var/lib/cloud/scripts/per-once/
-    chmod +x /tmp/drpcli/var/lib/cloud/scripts/per-once/drpcli.sh
+    chmod +x /tmp/drpcli/usr/local/bin
+
     cp linux/* /tmp/drpcli/curtin
-    cd /tmp/drpcli/curtin
-    chmod +x python_wrapper
-    ln -s python_wrapper finalize
+    chmod +x /tmp/drpcli/curtin/*
+
     if [[ $OSSUBTYPE == "" ]] || [[ $OSSUBTYPE == centos ]] || [[ $OSSUBTYPE == redhat ]] || [[ $OSSUBTYPE == rhel ]] ; then
+        cp centos/* /tmp/drpcli/curtin
+        cd /tmp/drpcli/curtin
         ln -s python_wrapper curtin-hooks
+        cd -
     fi
-    cd -
-elif [[ $OSTYPE == windows ]] ; then
-    curl -g -s -f -L -o /tmp/drpcli/usr/local/bin/drpcli.exe "{{.ProvisionerURL}}/files/drpcli.amd64.windows"
-    chmod 755 /tmp/drpcli/usr/local/bin/drpcli.exe
-    mkdir -p "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services"
-    mv windows/maasservice.py "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services"
-    chmod +x "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services/maasservice.py"
-    mkdir -p "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/LocalScripts"
-    mv windows/drpcli.ps1 "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/LocalScripts/drpcli.ps1"
-    cp windows/* /tmp/drpcli/curtin
-    cd /tmp/drpcli/curtin
-    chmod +x curtin-hooks finalize
-    cd -
-elif [[ $OSTYPE == basic ]] ; then
-    #
-    # General do nothing for windows and linux that puts files in place.
-    #
-    # That could be run.
-    #
-    cp /usr/local/bin/drpcli /tmp/drpcli/curtin
+
+    # Cloud-init hackery
+{{ if .Param "image-deploy/use-cloud-init" }}
+{{ $ci_url := .ParamExpand "image-deploy/cloud-init-base-url" }}
+{{ $ci_ran := "NoCloud" }}
+{{ $ci_net := or (hasPrefix "http://" $ci_url) (hasPrefix "https://" $ci_url) }}
+{{ if $ci_net }}
+{{ $ci_ran := "NoCloudNet" }}
+{{ end }}
+    mkdir -p /tmp/drpcli/etc/cloud/cloud.cfg.d
+    cat > /tmp/drpcli/etc/cloud/cloud.cfg.d/95_datasource.cfg <<EOFCFG
+datasource_list: [ {{ $ci_ran }} ]
+datasource:
+  {{$ci_ran}}:
+        seedfrom: "{{ $ci_url }}"
+EOFCFG
+{{ if not $ci_net }}
+{{ $ci_file := trimPrefix "file://" $ci_url }}
+    mkdir -p /tmp/drpcli{{$ci_file}}
+    cat > /tmp/drpcli{{$ci_file}}meta-data <<EOFMETA
+instance-id: {{.Machine.UUID}}
+local-hostane: {{.Machine.Name}}
+{{if .ParamExists "cloud-init/x509-certs"}}
+x509: {{.Param "cloud-init/x509-certs"}}
+{{end}}
+{{ if .ParamExists "image-deploy/admin-username" }}
+admin-username: "{{ .Param "image-deploy/admin-username" }}"
+{{ end }}
+{{ if .ParamExists "image-deploy/admin-password" }}
+admin-password: "{{ .Param "image-deploy/admin-password" }}"
+{{ end }}
+public-keys:
+{{if .ParamExists "access-keys"}}
+{{range $key := .Param "access-keys"}}
+- {{$key}}
+{{end}}
+{{end}}
+EOFMETA
+{{if .ParamExists "cloud-init/user-data"}}
+    cat > /tmp/drpcli/curtin/user-data <<EOFUSER
+{{.Param "cloud-init/user-data"}}
+EOFUSER
+{{else}}
+    cat > /tmp/drpcli{{$ci_file}}user-data <<EOFUSER
+#cloud-config
+runcmd:
+  - /curtin/drpcli-install.sh 2>/tmp/drpcli-install.err >/tmp/drpcli-install.out
+EOFUSER
+{{end}}
+{{end}}
+{{end}}
+
+elif [[ $OSTYPE == windows ]] || [[ $OSTYPE == basic ]] ; then
+    # Agent in reasonable place
     curl -g -s -f -L -o /tmp/drpcli/curtin/drpcli.exe "{{.ProvisionerURL}}/files/drpcli.amd64.windows"
     chmod 755 /tmp/drpcli/curtin/drpcli.exe
 
-{{if .ParamExists "image-deploy/windows-unattend-template"}}
-    # Allow for an unattend xml to be added.
+    # Add an unattended template
+    {{if .ParamExists "image-deploy/windows-unattend-template"}}
+    # Allow for an unattended xml to be added.
     mkdir -p "/tmp/drpcli/$(dirname "{{.Param "image-deploy/windows-unattend-path"}}")"
     cat > "/tmp/drpcli/{{.Param "image-deploy/windows-unattend-path"}}" <<EOF
-{{.CallTemplate (.Param "image-deploy/windows-unattend-template") . }}
-EOF
+    {{.CallTemplate (.Param "image-deploy/windows-unattend-template") . }}
+    EOF
+    {{end}}
+
+    cp windows/* /tmp/drpcli/curtin
+    chmod +x /tmp/drpcli/curtin/curtin-hooks
+
+    # Cloud-init hackery
+{{ if .Param "image-deploy/use-cloud-init" }}
+{{ $ci_url := .ParamExpand "image-deploy/cloud-init-base-url" }}
+{{ $ci_net := or (hasPrefix "http://" $ci_url) (hasPrefix "https://" $ci_url) }}
+    mkdir -p "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services"
+    cp /tmp/drpcli/curtin/cloudbase-rackn.py "/tmp/drpcli/Program Files/Cloudbase Solutions/Cloudbase-Init/Python/Lib/site-packages/cloudbaseinit/metadata/services/rackn.py"
+    cd /tmp/drpcli/curtin
+    ln -s curtin-windows-cloudinit-finalize finalize
+    cd -
+    chmod +x /tmp/drpcli/curtin/finalize
+{{ if not $ci_net }}
+{{ $ci_file := trimPrefix "file://" $ci_url }}
+    mkdir -p /tmp/drpcli{{$ci_file}}
+    cat > /tmp/drpcli{{$ci_file}}meta-data <<EOFMETA
+instance-id: {{.Machine.UUID}}
+local-hostname: {{.Machine.Name}}
+{{ if .ParamExists "image-deploy/admin-username" }}
+admin-username: "{{ .Param "image-deploy/admin-username" }}"
+{{ end }}
+{{ if .ParamExists "image-deploy/admin-password" }}
+admin-password: "{{ .Param "image-deploy/admin-password" }}"
+{{ end }}
+{{if .ParamExists "cloud-init/x509-certs"}}
+x509: {{.Param "cloud-init/x509-certs"}}
+{{end}}
+public-keys:
+{{if .ParamExists "access-keys" -}}
+{{range $key := .Param "access-keys" -}}
+- {{$key}}
+{{end}}
+{{end}}
+EOFMETA
+{{if .ParamExists "cloud-init/user-data"}}
+    cat > /tmp/drpcli{{$ci_file}}user-data <<EOFUSER
+{{.Param "cloud-init/user-data"}}
+EOFUSER
+{{else}}
+    cat > /tmp/drpcli{{$ci_file}}user-data <<EOFUSER
+#cloud-config
+runcmd:
+  - /curtin/drpcli-install.bat
+EOFUSER
+{{end}}
+{{end}}
 {{end}}
 
-    cp basic/* /tmp/drpcli/curtin
-    cd /tmp/drpcli/curtin
-    chmod +x curtin-hooks finalize
-    cd -
 else
     echo "Unknown OS type: $OSTYPE"
     exit 1
@@ -102,5 +182,14 @@ if ! curtin $CURTIN_DEBUG install -c curtin_config.yaml ; then
     # Don't reboot so we can look at the logs in /tmp.
     exit 1
 fi
+
+{{ if .Param "curtin/debug" }}
+while true ; do
+    if [[ -e /tmp/continue ]] ; then
+        break
+    fi
+    sleep 5
+done
+{{ end }}
 
 exit 0

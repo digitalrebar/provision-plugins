@@ -1,0 +1,11 @@
+---
+Meta:
+  color: green
+  icon: bug
+Name: id-test-centos-no-ci
+Params:
+  image-deploy/image-file: files/images/centos-tarball-20190822-193832-d61b71fc99.tgz
+  image-deploy/image-os: linux
+  image-deploy/image-os-subtype: centos
+  image-deploy/image-type: tgz
+  image-deploy/use-cloud-init: false

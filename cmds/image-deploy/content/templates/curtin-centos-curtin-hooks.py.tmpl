@@ -401,7 +401,7 @@ def main():
     print("%s: Auto Relabel" % str(datetime.datetime.now()))
     set_autorelabel(target)
 {{if (not (.Param "image-deploy/skip-network-configure"))}}
-    if os.path.exists(util.target_path(target,"etc/sysconfig/network-scripts/network-functions")):
+    if os.path.exists(os.path.join(target,"etc/sysconfig/network-scripts/network-functions")):
         print("%s: Writing network config" % str(datetime.datetime.now()))
         write_network_config(target, bootmac)
 {{end}}

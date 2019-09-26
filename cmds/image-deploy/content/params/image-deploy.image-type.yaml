@@ -6,8 +6,9 @@ Documentation: |
   method to use to install.
 
   Validated methods are:
-    - tgz = root file system in compressed tar file.
-    - dd-tgz = Compressed tar file with a single raw disk image.
+  * tgz = root file system in compressed tar file.
+  * dd-tgz = Compressed tar file with a single raw disk image.
+
 Schema:
   type: "string"
   enum:

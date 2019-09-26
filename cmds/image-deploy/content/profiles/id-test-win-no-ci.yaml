@@ -1,0 +1,10 @@
+---
+Meta:
+  color: green
+  icon: bug
+Name: id-test-win-no-ci
+Params:
+  image-deploy/image-file: files/images/win2019.raw.gz
+  image-deploy/image-os: windows
+  image-deploy/image-type: dd-gz
+  image-deploy/use-cloud-init: false
