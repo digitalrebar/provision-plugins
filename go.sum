@@ -33,6 +33,8 @@ github.com/digitalrebar/logger v0.3.0 h1:7/XP3BQiWfl1Lqmm7tvkvdwjPilDUUPC/iWbeWO
 github.com/digitalrebar/logger v0.3.0/go.mod h1:zH2t4FBhzVxZJTg+eaPzNCRL50nlcRLxWurfTsl5jWE=
 github.com/digitalrebar/provision/v4 v4.1.0-beta h1:Z8oIi0bDOuLnyI53KX8xmwM2on+R1zSzOmzUd8FJeeg=
 github.com/digitalrebar/provision/v4 v4.1.0-beta/go.mod h1:LjRvoXvY3uYzoLsQgBdV2BKo0YJIYOqL75WuCoP7rWQ=
+github.com/digitalrebar/provision/v4 v4.1.0 h1:mwJ+FoPJAT0MdJEVdIFqKYGXgBRDmpZ6SyJO+tPVxj0=
+github.com/digitalrebar/provision/v4 v4.1.0/go.mod h1:LjRvoXvY3uYzoLsQgBdV2BKo0YJIYOqL75WuCoP7rWQ=
 github.com/digitalrebar/tftp v2.1.0+incompatible h1:CzBcnsUaMtdLSOf3dSycinnfpajAAro7l8oo/ILyzOI=
 github.com/digitalrebar/tftp v2.1.0+incompatible/go.mod h1:k1tcsyQwHE72oTU5sfXPJdOCHFiZUt3M2BdYdHsfw6c=
 github.com/digitalrebar/tftp/v3 v3.0.0 h1:Ft2i3s2gCZ795rISs9vlcy3YSqfd6mtodxGoUcPSrhs=
