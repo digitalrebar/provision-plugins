@@ -2,7 +2,7 @@
 
 # VIB needs to be stage in S3 bucket for build process
 # specify the VIB version to use, or allow at compile time to override which to use
-VIB_VERSION=${VIB_VERSION:-"v0.6.1-0.0"}
+VIB_VERSION=${VIB_VERSION:-"v0.6.2-0.0"}
 VIB_FORCE=${VIB_FORCE:-""}
 VIB_BASE=${VIB_BASE:-"https://s3-us-west-2.amazonaws.com/get.rebar.digital/artifacts/vibs"}
 
