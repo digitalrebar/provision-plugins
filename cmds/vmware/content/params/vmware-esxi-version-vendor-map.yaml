@@ -70,6 +70,9 @@ Schema:
     generic:
       mfg: generic
       bootenv: esxi_670u2-13006603_vmware
+    vmware:
+      mfg: vmware
+      bootenv: esxi_670u2-13006603_vmware
     cisco:
       mfg: cisco
       bootenv: esxi_670u2-13006603_cisco
