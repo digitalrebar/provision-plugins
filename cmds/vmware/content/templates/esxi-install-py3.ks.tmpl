@@ -92,14 +92,3 @@ esxcli network firewall ruleset set --ruleset-id=dr-provision --enabled=false
 {{ else -}}
 echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disable' Param."
 {{ end -}}
-
-{{ if eq (.Param "esxi/skip-notify") true -}}
-%post --interpreter=busybox
-# ***************************************************************** #
-# Param "esxi/skip-notify" set to true. as requested, NOT NOTIFYING #
-# the DRP endpoint to set boot to local disk !!!!!!!!!!!!!!!!!!!!!! #
-# ***************************************************************** #
-{{ else -}}
-%post --interpreter=python
-{{ template "esxi-notify-drp-py3.tmpl" .}}
-{{ end -}}

@@ -31,12 +31,12 @@ Templates:
         || echo "failed to 'mkdir -p $LOG_DIR'"
 
       # save some other weasel/installer files
-      ONE="/tmp/onetime.tar"
+      ONE="/tmp/onetime/var/lib/vmware/firstboot"
       KS="/tmp/kickstart-customizations.cfg"
       JUMP="/tmp/jumpstrt.gz"
       for FILE in "$ONE" "$KS" "$JUMP"
       do
-        [[ -f "$FILE" ]] && cp "$FILE" "$LOG_DIR"
+        [[ -f "$FILE" ]] && cp -r "$FILE" "$LOG_DIR"
       done
 
       exit 0
