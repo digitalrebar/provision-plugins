@@ -32,7 +32,7 @@ Templates:
               ;;
           'NEC')
               VENDOR="nec"
-              BOOTENV=""esxi-6.7.1-10302608-nec-6.702-install"
+              BOOTENV="esxi-6.7.1-10302608-nec-6.702-install"
               ;;
           'fujitsu')
               VENDOR="fujitsu"
