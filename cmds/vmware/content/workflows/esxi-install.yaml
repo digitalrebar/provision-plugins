@@ -2,6 +2,36 @@ Meta:
   color: yellow
   icon: cloud
 Name: esxi-install
-Description: "Install a selected ESXi"
+Description: "Install a selected ESXi bootenv to a system."
+Documentation: |
+  This workflow is designed to install a VMWare ESXi system using the RackN
+  workflow stages.
+
+  You must initiate and run this workflow when the machine is in the ``Sledgehammer``
+  (also referred to as "discovery") environment.
+
+  ..note:: WARNING: The first stage 'prep-install' will erase the disks in preparatioon for the installation.
+
+  Please see the full documentation regarding use of the VMware plugin at:
+
+    https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html
+
+  If you have qny questions on customnization of the installation process.
+
 Stages:
-- vmware-selector
+  - prep-install
+  - vmware-esxi-clear-patch-index
+  - vmware-esxi-set-password
+  - vmware-esxi-selector
+  - esxi-preserve-logs
+  - finish-install
+  - esxi-acceptance-level
+  - esxi-install-agent
+  - esxi-preserve-logs
+  - esxi-install-patches
+  - esxi-activate-network
+  - esxi-activate-shells
+  - esxi-activate-nested
+  - esxi-install-welcome
+  - esxi-preserve-logs
+  - complete
