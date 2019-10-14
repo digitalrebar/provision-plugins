@@ -34,11 +34,11 @@ Basic Usage
 ===========
 
 For basic usage, and to obtain the latest VMware generic ISO BootEnv
-installation, simply add the ``vmware-esxi-selector`` stage to your
-workflows, or use the sample ``vmware-esxi-selector`` workflow. NOTE
-that the ``vmware-esxi-selector`` workflow must be run in the Sledgehammer
-(Discovery) image environment to transition the Machine to the appropriate
-ESXi bootenv installation.
+installation, simply use the ``esxi-install`` workflow.
+
+..note:: The 'esxi-install' workflow must be run in the Sledgehammer (Discovery) image environment to transition the Machine to the appropriate ESXi bootenv installation.
+
+..note:: The first stage of the workflow is 'prep-install' which WILL WIPE the disks in preparation of the installation.
 
 This workflow uses the following Params:
 
@@ -54,6 +54,12 @@ This workflow uses the following Params:
     use by default when a machine Vendor and Model has been automatically
     Classified - it allows for single workflows to address heterogeneous
     pools of hardware - see the Param documentation below for more details
+  - **esxi/patch-map**: allows the operator to specify additional patches to
+    install after the BootEnv is installed via the ISO contents - this is useful
+    for VMware Cloud Foundation (vCF) HCL compliance installations that require
+    additional patch levels be installed in preparation for vCF cluster builds.
+
+Please review below documentation for additional details on the above pieces.
 
 
 Advanced Usage
@@ -259,14 +265,21 @@ mappings between the names.
   * esxi_670u1-10302608_vmware
   * esxi_670u1-10764712-A04_dell
   * esxi_670u1-11675023_hpe_gen9plus
+  * esxi_670u2-13006603_cisco
+  * esxi_670u2-13006603_hitachi
+  * esxi_670u2-13006603_hpe
   * esxi_670u2-13006603_vmware
+  * esxi_670u2-13473784_fujitsu
+  * esxi_670u2-13644319_nec_r120h-t120h-r110j
+  * esxi_670u2-13644319_nec_standard
+  * esxi_670u2-13981272-A02_dell
+  * esxi_670u2-13981272_lenovo
 
 .. note:: There may be many more bootenv names than listed above, if support
-          for newer vendor ISOs and/or VMware versions are released (eg
-          '6.7.0update2').
+          for newer vendor ISOs and/or VMware versions are released.
 
-.. note:: It is advisable to use the new 'vmware-esxi-selector' Workflow
-          and the 'esxi/select-version-map' Param to control your ESXi bootenv
+.. note:: It is advisable to use the 'esxi-install' Workflow and the
+          'esxi/select-version-map' Param to control your ESXi bootenv
           installation.
 
 ESXi Agent/Runner Information

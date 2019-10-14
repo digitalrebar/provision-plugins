@@ -4,8 +4,12 @@ Meta:
 Name: esxi-install
 Description: "Install a selected ESXi bootenv to a system."
 Documentation: |
-  This workflow is designed to install a VMWare ESXi system using the RackN
-  workflow stages.
+  This workflow implements the automatic ESXi install based on the hardware
+  vendor of the machine (if ``vmware/esxi-version`` set to ``select-vendor``),
+  and the map Param values from ``vmware/esxi-version-vendor-map``.  If
+  ``select-vendor`` is not set, then the latest "generic" BootEnv will be
+  used.  Please examine the default Param values defined in the
+  ``vmware/esxi-version-vendor-map`` param for details.
 
   You must initiate and run this workflow when the machine is in the ``Sledgehammer``
   (also referred to as "discovery") environment.
@@ -17,6 +21,8 @@ Documentation: |
     https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html
 
   If you have qny questions on customnization of the installation process.
+
+
 
 Stages:
   - prep-install
