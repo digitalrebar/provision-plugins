@@ -141,7 +141,13 @@ func (p *Plugin) postTrigger(l logger.Logger, ma *models.Action) (answer interfa
 	}
 
 	cmd := exec.Command(act.Path, params...)
-	// GREG: Add env variables here
+
+	// Set RS_UUID and a TOKEN (this is a pretty powerful token) to machine the machine caller
+	env := os.Environ()
+	env = append(env, fmt.Sprintf("RS_UUID=%s", machine.UUID()))
+	env = append(env, fmt.Sprintf("RS_TOKEN=%s", p.drpClient.Token()))
+	cmd.Env = env
+
 	var outb, errb bytes.Buffer
 	cmd.Stdout = &outb
 	cmd.Stderr = &errb
