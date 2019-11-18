@@ -17,6 +17,19 @@ success() {
     exit 0
 }
 
+HP_SYSTEM=false
+DELL_SYSTEM=false
+mfgr=$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')
+if [[ $mfgr == HP ]] ; then
+  HP_SYSTEM=true
+fi
+if [[ $mfgr == HPE ]] ; then
+  HP_SYSTEM=true
+fi
+if [[ $mfgr == "Dell Inc." ]] ; then
+  DELL_SYSTEM=true
+fi
+
 # Who am I
 export RS_UUID={{.Machine.Uuid}}
 export RS_TOKEN={{.GenerateToken}}
@@ -436,7 +449,7 @@ configure_user() {
     [[ $ipmi_crossed_access_channels = true ]] || \
         tool channel setaccess $lan_chan $configure_id callin=on link=on ipmi=on privilege=4
     tool user enable $configure_id
-    if [[ $(drpcli gohai |jq -r '.DMI | .System | .Manufacturer') = HP ]]; then
+    if [[ $HP_SYSTEM == true ]] ; then
         if [[ -x /usr/sbin/hponcfg ]]; then
             fgrep '<IPMI_DCMI_OVER_LAN_ENABLED VALUE="Y"/>' < <(hponcfg -i <<EOI
 <RIBCL VERSION="2.0">
@@ -569,6 +582,79 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
         if [[ ${lan_info["defgw ipaddr"]} != $IPMI_CONFIGURE_GATEWAY && $IPMI_CONFIGURE_GATEWAY != "" ]] ; then
             tool lan set $lan_chan defgw ipaddr $IPMI_CONFIGURE_GATEWAY
             configured=true
+        fi
+    fi
+    # Configure the DNS and HOSTNAME
+    if [[ $HP_SYSTEM == true ]] ; then
+        if [[ -x /usr/sbin/hponcfg ]] ; then
+          hponcfg -i <<EOF_STATIC
+<RIBCL VERSION="2.1">
+  <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
+    <RIB_INFO MODE="write">
+      <MOD_NETWORK_SETTINGS>
+{{ if .ParamExists "ipmi/configure/hostname" -}}
+        <DNS_NAME VALUE = "{{.Param "ipmi/configure/hostname"}}"/>
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/domain" -}}
+        <DOMAIN_NAME VALUE = "{{.Param "ipmi/configure/domain"}}"/>
+{{ else if .ParamExists "dns-domain" -}}
+        <DOMAIN_NAME VALUE = "{{.Param "dns-domain"}}"/>
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/dns-server" -}}
+        <PRIM_DNS_SERVER value = "{{ .Param "ipmi/configure/dns-server" }}"/>
+{{ else if .ParamExists "dns-servers" -}}
+        {{ $p := .Param "dns-servers" -}}
+        {{ if $p -}}
+        <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
+        {{ end -}}
+{{ end -}}
+      </MOD_NETWORK_SETTINGS>
+    </RIB_INFO>
+    <USER_INFO MODE="write">
+    </USER_INFO>
+  </LOGIN>
+</RIBCL>
+EOF_STATIC
+        else
+            echo "HP system detected, but no hponcfg binary present."
+            echo "Please rework your ipmi configure workload to make sure the"
+            echo "hardware-tools-install stage is before the ipmi-configure stage."
+            echo
+            echo "This task cannot guarantee that remote access is enabled on this system without it."
+        fi
+    fi
+    if [[ $DELL_SYSTEM == true ]] ; then
+        if [[ which racadm ]] ; then
+{{ if .ParamExists "ipmi/configure/domain" -}}
+            DNS_DOMAIN="{{.Param "ipmi/configure/domain"}}"
+{{ else if .ParamExists "dns-domain" -}}
+            DNS_DOMAIN="{{.Param "dns-domain"}}
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/hostname" -}}
+            HOSTNAME="{{.Param "ipmi/configure/hostname"}}"
+            if [[ ${HOSTNAME} == ${HOSTNAME%%.*} ]] ; then
+                if [[ "$DNS_DOMAIN" != "" ]] ; then
+                    HOSTNAME="${HOSTNAM}E.${DNS_DOMAIN}"
+                fi
+            fi
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/dns-server" -}}
+            DNS_SERVER="{{ .Param "ipmi/configure/dns-server" }}"
+{{ else if .ParamExists "dns-servers" -}}
+        {{ $p := .Param "dns-servers" -}}
+        {{ if $p -}}
+            DNS_SERVER="{{ index $p 0 }}"
+        {{ end -}}
+{{ end -}}
+            test -z $HOSTNAME || racadm set iDRAC.NIC.DNSRacName $HOSTNAME
+            test -z $DNS_DOMAIN || racadm set iDRAC.NIC.DNSDomainName $DNS_DOMAIN
+            test -z $DNS_SERVER || racadm set iDRAC.IPv4.DNS1 $DNS_SERVER
+        else
+            echo "Dell system detected, but no racadm binary present."
+            echo "Please rework your ipmi configure workload to make sure the"
+            echo "hardware-tools-install stage is before the ipmi-configure stage."
+            echo
+            echo "This task cannot guarantee that remote access is enabled on this system without it."
         fi
     fi
 fi

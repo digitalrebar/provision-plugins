@@ -1,0 +1,11 @@
+---
+Name: "ipmi/configure/hostname"
+Description: "Hostname to apply to the BMC"
+Documentation: |
+  Hostname to apply to the BMC
+Schema:
+  type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
