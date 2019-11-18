@@ -1,0 +1,11 @@
+---
+Name: "ipmi/configure/dns-server"
+Description: "DNS Server for the BMC to use"
+Documentation: |
+  DNS Server for the BMC to use
+Schema:
+  type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
