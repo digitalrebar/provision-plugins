@@ -38,13 +38,7 @@ Templates:
               echo "Please install the lenovo-support content package"
               exit 1;;
               {{ end }}
-          'innotek GmbH')
-              drpcli machines set {{.Machine.UUID}} param bios-driver to none;;
-          'VMware, Inc.')
-              drpcli machines set {{.Machine.UUID}} param bios-driver to none;;
-          'SolidFire')
-              drpcli machines set {{.Machine.UUID}} param bios-driver to none;;
-          *)
-              echo "No idea how to install BIOS tooling for $mfgr"
-              exit 1;;
+          *)  drpcli machines set {{.Machine.UUID}} param bios-driver to none
+              echo "Cannot manage BIOS settings for $mfgr"
+              echo "BIOS configuration settings will be ignored.";;
       esac
