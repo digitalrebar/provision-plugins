@@ -47,6 +47,9 @@ var (
 				RequiredParams: []string{
 					"callback/action",
 				},
+				OptionalParams: []string{
+					"callback/data-override",
+				},
 			},
 		},
 		RequiredParams: []string{
@@ -273,7 +276,7 @@ auth_retry:
 	return out, nil
 }
 
-func (p *Plugin) postTrigger(l logger.Logger, machine *models.Machine, action string) (answer interface{}, err *models.Error) {
+func (p *Plugin) postTrigger(l logger.Logger, machine *models.Machine, overrideData interface{}, action string) (answer interface{}, err *models.Error) {
 	cb, ok := p.callbacks[action]
 	if !ok {
 		l.Infof("Callback action unknown: %s", action)
@@ -304,27 +307,30 @@ cb_retry:
 		return out, e
 	}
 
-	var res map[string]interface{}
-	rr := p.drpClient.Req().UrlFor("machines", machine.UUID(), "params")
-	if cb.Aggregate {
-		rr = rr.Params("aggregate", "true")
-	}
-	if cb.Decode {
-		rr = rr.Params("decode", "true")
-	}
-	if derr := rr.Do(&res); derr != nil {
-		if count < cb.Retry {
-			goto cb_retry
+	if overrideData == nil {
+		var res map[string]interface{}
+		rr := p.drpClient.Req().UrlFor("machines", machine.UUID(), "params")
+		if cb.Aggregate {
+			rr = rr.Params("aggregate", "true")
 		}
-		err = utils.ConvertError(400, derr)
-		return
-	}
-	machine.Params = res
-	for _, dk := range cb.ExcludeParams {
-		delete(machine.Params, dk)
+		if cb.Decode {
+			rr = rr.Params("decode", "true")
+		}
+		if derr := rr.Do(&res); derr != nil {
+			if count < cb.Retry {
+				goto cb_retry
+			}
+			err = utils.ConvertError(400, derr)
+			return
+		}
+		machine.Params = res
+		for _, dk := range cb.ExcludeParams {
+			delete(machine.Params, dk)
+		}
+		overrideData = machine
 	}
 
-	buf2, jerr := json.Marshal(machine)
+	buf2, jerr := json.Marshal(overrideData)
 	if jerr != nil {
 		if count < cb.Retry {
 			goto cb_retry
@@ -430,6 +436,7 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 		if err != nil {
 			return
 		}
+		overrideData, _ := ma.Params["callback/data-override"]
 
 		machine := &models.Machine{}
 		machine.Fill()
@@ -438,7 +445,7 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 			return
 		}
 
-		answer, err = p.postTrigger(l, machine, action)
+		answer, err = p.postTrigger(l, machine, overrideData, action)
 
 	default:
 		err = utils.MakeError(404, fmt.Sprintf("Unknown command: %s", ma.Command))
@@ -461,7 +468,7 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 		}
 
 		if machine.CurrentTask == len(machine.Tasks) {
-			_, err := p.postTrigger(l, machine, "taskcopmlete")
+			_, err := p.postTrigger(l, machine, nil, "taskcopmlete")
 			return err
 		}
 		return nil
@@ -505,7 +512,7 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 	}
 
 	if job.State == "failed" && (ojob.State == "running" || ojob.State == "created") {
-		_, err := p.postTrigger(l, machine, "jobfail")
+		_, err := p.postTrigger(l, machine, nil, "jobfail")
 		return err
 	}
 

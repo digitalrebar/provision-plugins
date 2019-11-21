@@ -126,7 +126,7 @@ type Plugin struct {
 }
 
 func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) (err *models.Error) {
-	if info, infoErr := session.Info(); err == nil {
+	if info, infoErr := session.Info(); infoErr == nil {
 		found := false
 		for _, feature := range info.Features {
 			if feature == "secure-param-upgrade" {
