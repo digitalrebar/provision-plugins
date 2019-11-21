@@ -596,15 +596,19 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
         <DNS_NAME VALUE = "{{.Param "ipmi/configure/hostname"}}"/>
 {{ end -}}
 {{ if .ParamExists "ipmi/configure/domain" -}}
+        <DHCP_DOMAIN_NAME VALUE="N"/>
         <DOMAIN_NAME VALUE = "{{.Param "ipmi/configure/domain"}}"/>
 {{ else if .ParamExists "dns-domain" -}}
+        <DHCP_DOMAIN_NAME VALUE="N"/>
         <DOMAIN_NAME VALUE = "{{.Param "dns-domain"}}"/>
 {{ end -}}
 {{ if .ParamExists "ipmi/configure/dns-server" -}}
-        <PRIM_DNS_SERVER value = "{{ .Param "ipmi/configure/dns-server" }}"/>
+        <DHCP_DNS_SERVER VALUE="N"/>
+        <PRIM_DNS_SERVER VALUE = "{{ .Param "ipmi/configure/dns-server" }}"/>
 {{ else if .ParamExists "dns-servers" -}}
         {{ $p := .Param "dns-servers" -}}
         {{ if $p -}}
+        <DHCP_DNS_SERVER VALUE="N"/>
         <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
         {{ end -}}
 {{ end -}}
@@ -624,33 +628,29 @@ EOF_STATIC
         fi
     fi
     if [[ $DELL_SYSTEM == true ]] ; then
-        if [[ which racadm ]] ; then
-{{ if .ParamExists "ipmi/configure/domain" -}}
+        racadm=/opt/dell/srvadmin/bin/idracadm7
+        if which $racadm ; then
+{{ if .ParamExists "ipmi/configure/domain" }}
             DNS_DOMAIN="{{.Param "ipmi/configure/domain"}}"
-{{ else if .ParamExists "dns-domain" -}}
-            DNS_DOMAIN="{{.Param "dns-domain"}}
-{{ end -}}
-{{ if .ParamExists "ipmi/configure/hostname" -}}
-            HOSTNAME="{{.Param "ipmi/configure/hostname"}}"
-            if [[ ${HOSTNAME} == ${HOSTNAME%%.*} ]] ; then
-                if [[ "$DNS_DOMAIN" != "" ]] ; then
-                    HOSTNAME="${HOSTNAM}E.${DNS_DOMAIN}"
-                fi
-            fi
-{{ end -}}
-{{ if .ParamExists "ipmi/configure/dns-server" -}}
+{{ else if .ParamExists "dns-domain" }}
+            DNS_DOMAIN="{{.Param "dns-domain"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/hostname" }}
+            DRACHOSTNAME="{{.Param "ipmi/configure/hostname"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/dns-server" }}
             DNS_SERVER="{{ .Param "ipmi/configure/dns-server" }}"
-{{ else if .ParamExists "dns-servers" -}}
-        {{ $p := .Param "dns-servers" -}}
-        {{ if $p -}}
+{{ else if .ParamExists "dns-servers" }}
+        {{ $p := .Param "dns-servers" }}
+        {{ if $p }}
             DNS_SERVER="{{ index $p 0 }}"
-        {{ end -}}
-{{ end -}}
-            test -z $HOSTNAME || racadm set iDRAC.NIC.DNSRacName $HOSTNAME
-            test -z $DNS_DOMAIN || racadm set iDRAC.NIC.DNSDomainName $DNS_DOMAIN
-            test -z $DNS_SERVER || racadm set iDRAC.IPv4.DNS1 $DNS_SERVER
+        {{ end }}
+{{ end }}
+            test -z $DRACHOSTNAME || $racadm set iDRAC.NIC.DNSRacName $DRACHOSTNAME
+            test -z $DNS_DOMAIN || $racadm set iDRAC.NIC.DNSDomainName $DNS_DOMAIN
+            test -z $DNS_SERVER || $racadm set iDRAC.IPv4.DNS1 $DNS_SERVER
         else
-            echo "Dell system detected, but no racadm binary present."
+            echo "Dell system detected, but no $racadm binary present."
             echo "Please rework your ipmi configure workload to make sure the"
             echo "hardware-tools-install stage is before the ipmi-configure stage."
             echo
