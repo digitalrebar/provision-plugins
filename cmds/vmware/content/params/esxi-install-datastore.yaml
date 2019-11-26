@@ -19,7 +19,6 @@ Meta:
   color: blue
   icon: hashtag
   title: RackN Content
-  password: showable
 ReadOnly: true
 Schema:
   type: string
