@@ -179,22 +179,47 @@ def update_grub_default(target, extra=[]):
 def grub2_install(target, root):
     """Installs grub2 to the root."""
     with util.RunInChroot(target) as in_chroot:
-        in_chroot(['grub2-install', '--recheck', root])
+        # mount any umount /boot if they exist, but do not care otherwise.
+        in_chroot.subp(["mount","/boot"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/var"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/boot/efi"],rcs=[0,1,32])
+        try:
+            in_chroot(['grub2-install', '--recheck', root])
+        finally:
+            in_chroot.subp(["umount","/boot/efi"],rcs=[0,32])
+            in_chroot.subp(["umount","/boot"],rcs=[0,32])
+            in_chroot.subp(["umount","/var"],rcs=[0,32])
 
 
 def grub2_mkconfig(target):
     """Writes the new grub2 config."""
     with util.RunInChroot(target) as in_chroot:
-        in_chroot(['grub2-mkconfig', '-o', '/boot/grub2/grub.cfg'])
+        in_chroot.subp(["mount","/boot"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/var"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/boot/efi"],rcs=[0,1,32])
+        try:
+            in_chroot(['grub2-mkconfig', '-o', '/boot/grub2/grub.cfg'])
+        finally:
+            in_chroot.subp(["umount","/boot/efi"],rcs=[0,32])
+            in_chroot.subp(["umount","/boot"],rcs=[0,32])
+            in_chroot.subp(["umount","/var"],rcs=[0,32])
 
 
 def grub2_install_efi(target):
     """Configure for EFI."""
     with util.RunInChroot(target) as in_chroot:
-        in_chroot([
-            'grub2-install', '--target=x86_64-efi',
-            '--efi-directory', '/boot/efi',
-            '--recheck'])
+        in_chroot.subp(["mount","/boot"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/var"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/boot/efi"],rcs=[0,1,32])
+        try:
+            in_chroot([
+                'grub2-install', '--target=x86_64-efi',
+                '--efi-directory', '/boot/efi',
+                '--recheck'])
+        finally:
+            in_chroot.subp(["umount","/boot/efi"],rcs=[0,32])
+            in_chroot.subp(["umount","/boot"],rcs=[0,32])
+            in_chroot.subp(["umount","/var"],rcs=[0,32])
 
 
 def set_autorelabel(target):
@@ -299,6 +324,7 @@ def update_initramfs(target):
         # mount any umount /boot if they exist, but do not care otherwise.
         in_chroot.subp(["mount","/boot"],rcs=[0,1,32])
         in_chroot.subp(["mount","/var"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/boot/efi"],rcs=[0,1,32])
         try:
             out, err = in_chroot(["/bin/bash","-c","""
 for d in /lib/modules/*/kernel; do
@@ -310,6 +336,7 @@ done
 ], capture=True)
             print("%s: dracut chroot:\nso=%s\nse=%s\n" % (str(datetime.datetime.now()), out, err))
         finally:
+            in_chroot.subp(["umount","/boot/efi"],rcs=[0,32])
             in_chroot.subp(["umount","/boot"],rcs=[0,32])
             in_chroot.subp(["umount","/var"],rcs=[0,32])
 
