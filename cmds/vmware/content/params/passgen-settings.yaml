@@ -25,12 +25,26 @@ Documentation: |
     length=10, chars=7, req_nums=2, special_chars=1,
     special_char_list=None, upper=2, lower=5, padding=None
 
+  It is necessary that the leading and trailing character is a lowercase letter,
+  due to internal processing.  By default the ``passgen-settings`` processing
+  will select a random character as leading and a random trailing value.  You can
+  alter this behavior and specify the exact leading and/or trailing character
+  by setting:
+
+    * ``leading_char="z"``
+    * ``trailing_char="a"``
+
+  Note that the double quotes are required.
+
   EXAMPLES:
 
   To set custom values for ``passgen.py.tmpl`; create a Param named
   "passgen-settings", add it to a Machine Object (via ``global`` profile,
   a custom profile applied to the given Machine, or a Param directly
   applied to the Machine), with the values set as below.
+
+  If a value is not specified, then the listed default (above) will be
+  used.
 
     Setting the length to 14 chars, all other values to default:
 
@@ -51,7 +65,7 @@ Documentation: |
 
         special_chars=2
 
-  ..note:: You must put commas between multiple settings values.
+  ..note :: You must put commas between multiple settings values.
 
 Meta:
   color: blue

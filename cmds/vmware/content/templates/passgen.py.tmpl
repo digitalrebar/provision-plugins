@@ -9,8 +9,11 @@ nums         = string.digits
 
 
 def gen_pass(length=10, chars=7, req_nums=2, special_chars=1,
-             special_char_list=None, upper=2, lower=5, padding=None):
-
+             special_char_list=None, upper=2, lower=5, padding=None,
+             **kwargs):
+    leading = kwargs.get("leading_char", random.choice(lowers))
+    trailing = kwargs.get("trailing_char", random.choice(lowers))
+    lower -= 2
     if padding is None:
         padding = lowers
     max_char = upper + lower
@@ -43,6 +46,8 @@ def gen_pass(length=10, chars=7, req_nums=2, special_chars=1,
         mypass += "".join(random.choice(padding) for i in range(more))
     mypass = list(mypass)
     random.shuffle(mypass)
+    mypass.insert(0, leading)
+    mypass.append(trailing)
     return "".join(mypass)
 
 
