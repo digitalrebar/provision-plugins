@@ -1,0 +1,31 @@
+---
+Name: esxi/boot-cfg-extra-options
+Description: Add optional boot.cfg key value pairs
+Documentation: |
+  If specified, sets additional ``key=value`` pairs to be injected in to
+  the ESXi ``boot.cfg`` file.  The boot configuration file used by ESXi
+  sets simple text based keys and associated values to control the
+  installation options from the ISO contents.
+
+  It may be necessary to add additional boot key and value pairs in the
+  ``boot.cfg`` template for a system to successfully install on a given
+  platform.  This Param can be used to add in extra options to the file.
+
+  To use it, simply set the Param string value to appropriate key and
+  value pairs, separate by newlines, like:
+
+    ::
+
+      key1=value1
+      key2=value2
+
+  **IT IS IMPORTANT** that you insert a newline between ``key=value``
+  pairs.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+Schema:
+  type: string
+Secure: false

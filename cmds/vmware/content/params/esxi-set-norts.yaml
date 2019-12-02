@@ -1,0 +1,25 @@
+---
+Name: esxi/set-norts
+Description:  Enables the ESXi boot value for norts set to 1, needed for some processor architectures.
+Documentation: |
+  If set to ``true``, then the template ``boot.cfg`` file will add the ``norts=1`` option
+  to the boot flags.
+
+  This is required for some hardware platforms, typically due to processor differences.  For example,
+  some Lenovo systems with Skylake processors.  The flag disables the UEFI runtime support.  Note
+  that other hardware systems may also require this value.  Some errors you may see in the middle
+  of the ESXi Weasel Kickstart installer on the systems console:
+
+    - ``Shutting down firmware services...``
+    - ``Using 'simple offset' UEFI RTS mapping policy``
+
+  By default, the value will not be added to the ``boot.cfg`` tempalte.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  type: boolean
+  default: false
+Secure: false

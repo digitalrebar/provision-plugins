@@ -1,0 +1,60 @@
+---
+Name: esxi_670u3-14320388_fujitsu-install
+Description: Install BootEnv for ESXi 670u3-14320388 for fujitsu
+Documentation: |
+  Provides VMware BootEnv for ESXi 670u3-14320388 for fujitsu
+
+  For more details, and to download ISO see:
+
+    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U3-FUJITSU&productId=742
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: VMware-ESXi-6.7.0-14320388-Fujitsu-v480-1.iso
+  IsoSha256: 5aa1f53f04a48d4271d91b671149aca7a24957f9b252ef3e284983bd5f17e849
+  IsoUrl: ""
+  Name: esxi_670u3-14320388_fujitsu
+  SupportedArchitectures: {}
+  Version: 670u3
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+Initrds: []
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain-mac
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_670u3-14320388_fujitsu.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_670u3-14320388_fujitsu.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'

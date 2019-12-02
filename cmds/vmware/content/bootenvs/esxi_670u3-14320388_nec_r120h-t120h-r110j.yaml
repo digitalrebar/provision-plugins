@@ -1,0 +1,60 @@
+---
+Name: esxi_670u3-14320388_nec_r120h-t120h-r110j-install
+Description: Install BootEnv for ESXi 670u3-14320388 for nec (r120h-t120h-r110j)
+Documentation: |
+  Provides VMware BootEnv for ESXi 670u3-14320388 for nec (r120h-t120h-r110j)
+
+  For more details, and to download ISO see:
+
+    - https://my.vmware.com/group/vmware/details?productId=742&downloadGroup=OEM_ESXI67U3_NEC
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: ESXi_6.7.3_14320388_NEC_GEN_6.7_04.iso
+  IsoSha256: d3a54cf0a6e9c17f1a496611c3a9353772bedc001227e36d793b6356c9f5faeb
+  IsoUrl: ""
+  Name: esxi_670u3-14320388_nec_r120h-t120h-r110j
+  SupportedArchitectures: {}
+  Version: 670u3
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+Initrds: []
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain-mac
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
+  - ID: esxi-pxelinux.tmpl
+    Name: pxelinux-chain
+    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_670u3-14320388_nec_r120h-t120h-r110j.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_670u3-14320388_nec_r120h-t120h-r110j.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
