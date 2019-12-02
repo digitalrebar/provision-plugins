@@ -1,6 +1,6 @@
 ---
-Name: "esxi-patch-start"
-Description: "Start the ESXi patch process (put in maintenance mode)"
+Name: "esxi-enable-maint-mode"
+Description: "Put host in maintenance mode"
 Documentation: |
   Set ``maintenanceMode`` on an ESXi system.  In addition to setting it on
   the system, also record the state on DRP in the Param ``esxi/maintenance-mode``.
@@ -20,7 +20,7 @@ Templates:
   - Name: "esxi-params.py"
     Path: "/tmp/esxi-params.py"
     ID: "esxi-params.py.tmpl"
-  - Name: "esxi-patch-start"
+  - Name: "esxi-maint-mode-enable"
     Contents: |
       #!/usr/bin/env sh
       # Put the ESXi node in to maintenance mode

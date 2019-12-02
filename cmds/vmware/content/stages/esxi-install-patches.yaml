@@ -23,6 +23,6 @@ OptionalParams:
   - esxi/patch-mirror
   - esxi/patch-enabled
 Tasks:
-  - esxi-patch-start
+  - esxi-enable-maint-mode
   - esxi-patch-install
-  - esxi-patch-complete
+  - esxi-exit-maint-mode
