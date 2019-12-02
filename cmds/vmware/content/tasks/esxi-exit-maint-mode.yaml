@@ -1,6 +1,6 @@
 ---
-Name: "esxi-patch-complete"
-Description: "Complete the ESXi patch process (take ESXi out of maintenance mode)"
+Name: "esxi-exit-maint-mode"
+Description: "Take ESXi out of maintenance mode"
 Documentation: |
   Remove ``maintenanceMode`` on an ESXi system, but only when the system is
   in maintenanceMode, and the DRP param ``esxi/maintenance-mode`` is set to
@@ -17,7 +17,7 @@ Templates:
   - Name: "esxi-params.py"
     Path: "/tmp/esxi-params.py"
     ID: "esxi-params.py.tmpl"
-  - Name: "esxi-patch-complete"
+  - Name: "esxi-exit-maint-mode"
     Contents: |
       #!/usr/bin/env sh
       # Remove the ESXi node from maintenance mode
