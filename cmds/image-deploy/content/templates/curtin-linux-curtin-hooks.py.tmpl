@@ -375,9 +375,11 @@ def main():
     if not devices:
         print("Unable to find block device for: %s" % target)
         sys.exit(1)
+{{if (not (.Param "image-deploy/skip-fstab"))}}
 {{if (not (.Param "image-deploy/skip-grub2-configure"))}}
     print("%s: write fstab" % str(datetime.datetime.now()))
     write_fstab(target, fstab)
+{{end}}
 {{end}}
 
     print("%s: update grub default" % str(datetime.datetime.now()))

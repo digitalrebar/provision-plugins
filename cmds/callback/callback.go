@@ -38,7 +38,6 @@ var (
 		Name:          "callback",
 		Version:       version,
 		PluginVersion: 4,
-		HasPublish:    true,
 		AutoStart:     true,
 		AvailableActions: []models.AvailableAction{
 			{
@@ -452,6 +451,14 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 	}
 
 	return
+}
+
+func (p *Plugin) SelectEvents() []string {
+	return []string{
+		"machines.update.*",
+		"jobs.update.*",
+		"jobs.save.*",
+	}
 }
 
 // Event handler - need to deal with this...
