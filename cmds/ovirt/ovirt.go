@@ -25,7 +25,6 @@ var (
 		Name:          "ovirt",
 		Version:       version,
 		PluginVersion: 4,
-		HasPublish:    true,
 		AvailableActions: []models.AvailableAction{
 			models.AvailableAction{Command: "createVm",
 				Model: "plugins",
@@ -239,6 +238,13 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 	}
 
 	return
+}
+
+func (p *Plugin) SelectEvents() []string {
+	return []string{
+		"machines.create.*",
+		"machines.delete.*",
+	}
 }
 
 func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {

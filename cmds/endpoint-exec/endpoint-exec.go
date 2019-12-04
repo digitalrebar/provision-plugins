@@ -33,7 +33,6 @@ var (
 		Name:          "endpoint-exec",
 		Version:       version,
 		PluginVersion: 4,
-		HasPublish:    false,
 		AutoStart:     true,
 		AvailableActions: []models.AvailableAction{
 			{

@@ -25,7 +25,6 @@ var (
 		Name:          "netbox",
 		Version:       version,
 		PluginVersion: 4,
-		HasPublish:    true,
 		RequiredParams: []string{
 			"netbox/access-point",
 			"netbox/superuser-token",
@@ -66,6 +65,12 @@ func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]
 	return p.ImportNetboxDevices(l)
 }
 
+func (p *Plugin) SelectEvents() []string {
+	return []string{
+		"machines.*.*",
+	}
+}
+
 func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 	// Make sure we get a model.
 	obj, err := e.Model()
@@ -75,7 +80,7 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 	}
 
 	switch e.Type {
-	case "machines", "machine":
+	case "machines":
 		m := obj.(*models.Machine)
 		if e.Action == "delete" {
 			p.RemoveNetboxDevice(l, m)

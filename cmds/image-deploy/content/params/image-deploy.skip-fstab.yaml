@@ -1,0 +1,10 @@
+---
+Name: image-deploy/skip-fstab
+Description: Skip rewriting the fstab on the target image.
+Schema:
+  type: boolean
+  default: false
+Meta:
+  icon: "beer"
+  color: "yellow"
+  title: "RackN Content"

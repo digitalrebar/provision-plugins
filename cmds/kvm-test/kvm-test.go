@@ -34,7 +34,7 @@ var (
 		Name:          "kvm-test",
 		Version:       version,
 		PluginVersion: 4,
-		HasPublish:    true,
+
 		AvailableActions: []models.AvailableAction{
 			models.AvailableAction{
 				Command:        "startVM",
@@ -220,6 +220,13 @@ func (p *Plugin) machineAction(lv *libvirt.Libvirt, l logger.Logger, m uuid.UUID
 		err.AddError(lv.DomainReboot(machine, 0))
 	default:
 		err.Errorf("Unknown action")
+	}
+}
+
+func (p *Plugin) SelectEvents() []string {
+	return []string{
+		"machines.create.*",
+		"machines.delete.*",
 	}
 }
 
