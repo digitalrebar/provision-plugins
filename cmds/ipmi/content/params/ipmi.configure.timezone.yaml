@@ -1,0 +1,12 @@
+---
+Name: "ipmi/configure/timezone"
+Description: "The timezone string to applie to the BMC"
+Documentation: |
+  The timezone value for the BMC to use for time presenation.
+Schema:
+  type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

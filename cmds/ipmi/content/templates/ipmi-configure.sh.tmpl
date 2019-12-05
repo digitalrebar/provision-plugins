@@ -612,6 +612,19 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
         <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
         {{ end -}}
 {{ end -}}
+{{ if .ParamExists "ipmi/configure/ntp-server" -}}
+        <DHCP_SNTP_SETTINGS VALUE="N"/>
+        <SNTP_SERVER1 VALUE = "{{ .Param "ipmi/configure/ntp-server" }}"/>
+{{ else if .ParamExists "ntp-servers" -}}
+        {{ $p := .Param "ntp-servers" -}}
+        {{ if $p -}}
+        <DHCP_SNTP_SETTINGS VALUE="N"/>
+        <SNTP_SERVER1 value = "{{ index $p 0 }}"/>
+        {{ end -}}
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/timezone" -}}
+        <TIMEZONE VALUE="{{.Param "ipmi/configure/timezone"}}"/>
+{{ end -}}
       </MOD_NETWORK_SETTINGS>
     </RIB_INFO>
     <USER_INFO MODE="write">
@@ -646,9 +659,23 @@ EOF_STATIC
             DNS_SERVER="{{ index $p 0 }}"
         {{ end }}
 {{ end }}
+{{ if .ParamExists "ipmi/configure/ntp-server" }}
+            NTP_SERVER1="{{ .Param "ipmi/configure/ntp-server" }}"
+{{ else if .ParamExists "ntp-servers" }}
+        {{ $p := .Param "ntp-servers" }}
+        {{ if $p }}
+            NTP_SERVER1="{{ index $p 0 }}"
+        {{ end }}
+{{ end }}
+{{ if .ParamExists "ipmi/configure/timezone" -}}
+            TIME_ZONE="{{.Param "ipmi/configure/timezone"}}"
+{{ end -}}
+
             test -z $DRACHOSTNAME || $racadm set iDRAC.NIC.DNSRacName $DRACHOSTNAME
             test -z $DNS_DOMAIN || $racadm set iDRAC.NIC.DNSDomainName $DNS_DOMAIN
             test -z $DNS_SERVER || $racadm set iDRAC.IPv4.DNS1 $DNS_SERVER
+            test -z $TIME_ZONE || $racadm set iDRAC.time.timezone "$TIME_ZONE"
+            test -z $NTP_SERVER1 || $racadm set idrac.NTPConfigGroup.ntp1 $NTP_SERVER1
         else
             echo "Dell system detected, but no $racadm binary present."
             echo "Please rework your ipmi configure workload to make sure the"
