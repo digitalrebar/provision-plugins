@@ -624,6 +624,10 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
 {{ end -}}
 {{ if .ParamExists "ipmi/configure/timezone" -}}
         <TIMEZONE VALUE="{{.Param "ipmi/configure/timezone"}}"/>
+{{ else -}}
+  {{ if .ParamExists "timezone" -}}
+        <TIMEZONE VALUE="{{.Param "timezone"}}"/>
+  {{ end -}}
 {{ end -}}
       </MOD_NETWORK_SETTINGS>
     </RIB_INFO>
@@ -667,6 +671,9 @@ EOF_STATIC
             NTP_SERVER1="{{ index $p 0 }}"
         {{ end }}
 {{ end }}
+{{ if .ParamExists "timezone" -}}
+            TIME_ZONE="{{.Param "timezone"}}"
+{{ end -}}
 {{ if .ParamExists "ipmi/configure/timezone" -}}
             TIME_ZONE="{{.Param "ipmi/configure/timezone"}}"
 {{ end -}}
