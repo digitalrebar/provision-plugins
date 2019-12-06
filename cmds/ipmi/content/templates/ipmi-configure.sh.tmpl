@@ -602,24 +602,58 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
         <DHCP_DOMAIN_NAME VALUE="N"/>
         <DOMAIN_NAME VALUE = "{{.Param "dns-domain"}}"/>
 {{ end -}}
-{{ if .ParamExists "ipmi/configure/dns-server" -}}
+{{ if .ParamExists "ipmi/configure/dns-servers" -}}
+        {{ $p := .Param "ipmi/configure/dns-servers" -}}
+        {{ if $p -}}
         <DHCP_DNS_SERVER VALUE="N"/>
-        <PRIM_DNS_SERVER VALUE = "{{ .Param "ipmi/configure/dns-server" }}"/>
+        <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
+        {{if lt 1 (len $p) }}
+        <SEC_DNS_SERVER value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <TER_DNS_SERVER value = "{{ index $p 2 }}"/>
+        {{ end -}}
+        {{ end -}}
 {{ else if .ParamExists "dns-servers" -}}
         {{ $p := .Param "dns-servers" -}}
         {{ if $p -}}
         <DHCP_DNS_SERVER VALUE="N"/>
         <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
+        {{if lt 1 (len $p) }}
+        <SEC_DNS_SERVER value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <TER_DNS_SERVER value = "{{ index $p 2 }}"/>
+        {{ end -}}
         {{ end -}}
 {{ end -}}
-{{ if .ParamExists "ipmi/configure/ntp-server" -}}
+{{ if .ParamExists "ipmi/configure/ntp-servers" -}}
+        {{ $p := .Param "ipmi/configure/ntp-servers" -}}
+        {{ if $p -}}
         <DHCP_SNTP_SETTINGS VALUE="N"/>
-        <SNTP_SERVER1 VALUE = "{{ .Param "ipmi/configure/ntp-server" }}"/>
+        {{if lt 0 (len $p) }}
+        <SNTP_SERVER1 value = "{{ index $p 0 }}"/>
+        {{ end -}}
+        {{if lt 1 (len $p) }}
+        <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <SNTP_SERVER3 value = "{{ index $p 2 }}"/>
+        {{ end -}}
+        {{ end -}}
 {{ else if .ParamExists "ntp-servers" -}}
         {{ $p := .Param "ntp-servers" -}}
         {{ if $p -}}
         <DHCP_SNTP_SETTINGS VALUE="N"/>
+        {{if lt 0 (len $p) }}
         <SNTP_SERVER1 value = "{{ index $p 0 }}"/>
+        {{ end -}}
+        {{if lt 1 (len $p) }}
+        <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <SNTP_SERVER3 value = "{{ index $p 2 }}"/>
+        {{ end -}}
         {{ end -}}
 {{ end -}}
 {{ if .ParamExists "ipmi/configure/timezone" -}}
@@ -655,20 +689,54 @@ EOF_STATIC
 {{ if .ParamExists "ipmi/configure/hostname" }}
             DRACHOSTNAME="{{.Param "ipmi/configure/hostname"}}"
 {{ end }}
-{{ if .ParamExists "ipmi/configure/dns-server" }}
-            DNS_SERVER="{{ .Param "ipmi/configure/dns-server" }}"
+{{ if .ParamExists "ipmi/configure/dns-servers" }}
+        {{ $p := .Param "ipmi/configure/dns-servers" }}
+        {{ if $p }}
+            DNS_SERVER1="{{ index $p 0 }}"
+        {{if lt 1 (len $p) }}
+            DNS_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+            DNS_SERVER3="{{ index $p 2 }}"
+        {{ end }}
+        {{ end }}
 {{ else if .ParamExists "dns-servers" }}
         {{ $p := .Param "dns-servers" }}
         {{ if $p }}
-            DNS_SERVER="{{ index $p 0 }}"
+            DNS_SERVER1="{{ index $p 0 }}"
+        {{if lt 1 (len $p) }}
+            DNS_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+            DNS_SERVER3="{{ index $p 2 }}"
+        {{ end }}
         {{ end }}
 {{ end }}
-{{ if .ParamExists "ipmi/configure/ntp-server" }}
-            NTP_SERVER1="{{ .Param "ipmi/configure/ntp-server" }}"
+{{ if .ParamExists "ipmi/configure/ntp-servers" }}
+        {{ $p := .Param "ipmi/configure/ntp-servers" }}
+        {{ if $p }}
+        {{if lt 0 (len $p) }}
+            NTP_SERVER1="{{ index $p 0 }}"
+        {{ end }}
+        {{if lt 1 (len $p) }}
+            NTP_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+            NTP_SERVER3="{{ index $p 2 }}"
+        {{ end }}
+        {{ end }}
 {{ else if .ParamExists "ntp-servers" }}
         {{ $p := .Param "ntp-servers" }}
         {{ if $p }}
+        {{if lt 0 (len $p) }}
             NTP_SERVER1="{{ index $p 0 }}"
+        {{ end }}
+        {{if lt 1 (len $p) }}
+            NTP_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+            NTP_SERVER3="{{ index $p 2 }}"
+        {{ end }}
         {{ end }}
 {{ end }}
 {{ if .ParamExists "timezone" -}}
@@ -680,9 +748,13 @@ EOF_STATIC
 
             test -z $DRACHOSTNAME || $racadm set iDRAC.NIC.DNSRacName $DRACHOSTNAME
             test -z $DNS_DOMAIN || $racadm set iDRAC.NIC.DNSDomainName $DNS_DOMAIN
-            test -z $DNS_SERVER || $racadm set iDRAC.IPv4.DNS1 $DNS_SERVER
+            test -z $DNS_SERVER1 || $racadm set iDRAC.IPv4.DNS1 $DNS_SERVER1
+            test -z $DNS_SERVER2 || $racadm set iDRAC.IPv4.DNS2 $DNS_SERVER2
+            test -z $DNS_SERVER3 || $racadm set iDRAC.IPv4.DNS3 $DNS_SERVER3
             test -z $TIME_ZONE || $racadm set iDRAC.time.timezone "$TIME_ZONE"
             test -z $NTP_SERVER1 || $racadm set idrac.NTPConfigGroup.ntp1 $NTP_SERVER1
+            test -z $NTP_SERVER2 || $racadm set idrac.NTPConfigGroup.ntp2 $NTP_SERVER2
+            test -z $NTP_SERVER3 || $racadm set idrac.NTPConfigGroup.ntp3 $NTP_SERVER3
         else
             echo "Dell system detected, but no $racadm binary present."
             echo "Please rework your ipmi configure workload to make sure the"
