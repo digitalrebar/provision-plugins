@@ -637,9 +637,6 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
         {{if lt 1 (len $p) }}
         <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
         {{ end -}}
-        {{if lt 2 (len $p) }}
-        <SNTP_SERVER3 value = "{{ index $p 2 }}"/>
-        {{ end -}}
         {{ end -}}
 {{ else if .ParamExists "ntp-servers" -}}
         {{ $p := .Param "ntp-servers" -}}
@@ -650,9 +647,6 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
         {{ end -}}
         {{if lt 1 (len $p) }}
         <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
-        {{ end -}}
-        {{if lt 2 (len $p) }}
-        <SNTP_SERVER3 value = "{{ index $p 2 }}"/>
         {{ end -}}
         {{ end -}}
 {{ end -}}
@@ -696,9 +690,6 @@ EOF_STATIC
         {{if lt 1 (len $p) }}
             DNS_SERVER2="{{ index $p 1 }}"
         {{ end }}
-        {{if lt 2 (len $p) }}
-            DNS_SERVER3="{{ index $p 2 }}"
-        {{ end }}
         {{ end }}
 {{ else if .ParamExists "dns-servers" }}
         {{ $p := .Param "dns-servers" }}
@@ -707,21 +698,21 @@ EOF_STATIC
         {{if lt 1 (len $p) }}
             DNS_SERVER2="{{ index $p 1 }}"
         {{ end }}
-        {{if lt 2 (len $p) }}
-            DNS_SERVER3="{{ index $p 2 }}"
-        {{ end }}
         {{ end }}
 {{ end }}
 {{ if .ParamExists "ipmi/configure/ntp-servers" }}
         {{ $p := .Param "ipmi/configure/ntp-servers" }}
         {{ if $p }}
         {{if lt 0 (len $p) }}
+            NTP_ENABLED="Enabled"
             NTP_SERVER1="{{ index $p 0 }}"
         {{ end }}
         {{if lt 1 (len $p) }}
+            NTP_ENABLED="Enabled"
             NTP_SERVER2="{{ index $p 1 }}"
         {{ end }}
         {{if lt 2 (len $p) }}
+            NTP_ENABLED="Enabled"
             NTP_SERVER3="{{ index $p 2 }}"
         {{ end }}
         {{ end }}
@@ -729,12 +720,15 @@ EOF_STATIC
         {{ $p := .Param "ntp-servers" }}
         {{ if $p }}
         {{if lt 0 (len $p) }}
+            NTP_ENABLED="Enabled"
             NTP_SERVER1="{{ index $p 0 }}"
         {{ end }}
         {{if lt 1 (len $p) }}
+            NTP_ENABLED="Enabled"
             NTP_SERVER2="{{ index $p 1 }}"
         {{ end }}
         {{if lt 2 (len $p) }}
+            NTP_ENABLED="Enabled"
             NTP_SERVER3="{{ index $p 2 }}"
         {{ end }}
         {{ end }}
@@ -750,11 +744,11 @@ EOF_STATIC
             test -z $DNS_DOMAIN || $racadm set iDRAC.NIC.DNSDomainName $DNS_DOMAIN
             test -z $DNS_SERVER1 || $racadm set iDRAC.IPv4.DNS1 $DNS_SERVER1
             test -z $DNS_SERVER2 || $racadm set iDRAC.IPv4.DNS2 $DNS_SERVER2
-            test -z $DNS_SERVER3 || $racadm set iDRAC.IPv4.DNS3 $DNS_SERVER3
             test -z $TIME_ZONE || $racadm set iDRAC.time.timezone "$TIME_ZONE"
             test -z $NTP_SERVER1 || $racadm set idrac.NTPConfigGroup.ntp1 $NTP_SERVER1
             test -z $NTP_SERVER2 || $racadm set idrac.NTPConfigGroup.ntp2 $NTP_SERVER2
             test -z $NTP_SERVER3 || $racadm set idrac.NTPConfigGroup.ntp3 $NTP_SERVER3
+            test -z $NTP_ENABLED || $racadm set idrac.NTPConfigGroup.ntpenable $NTP_ENABLED
         else
             echo "Dell system detected, but no $racadm binary present."
             echo "Please rework your ipmi configure workload to make sure the"
