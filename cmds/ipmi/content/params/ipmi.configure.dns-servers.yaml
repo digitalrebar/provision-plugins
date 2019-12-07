@@ -1,0 +1,13 @@
+---
+Name: "ipmi/configure/dns-servers"
+Description: "List of DNS Servers for the BMC to use"
+Documentation: |
+  List of DNS Servers for the BMC to use (overrides dns-servers)
+Schema:
+  type: "array"
+  items:
+    type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

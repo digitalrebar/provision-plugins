@@ -1,0 +1,13 @@
+---
+Name: "ipmi/configure/ntp-servers"
+Description: "A list of NTP Servers for the BMC to use"
+Documentation: |
+  A list of NTP Servers for the BMC to use
+Schema:
+  type: "array"
+  items:
+    type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
