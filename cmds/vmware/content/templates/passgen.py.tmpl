@@ -14,9 +14,13 @@ def gen_pass(length=10, chars=7, req_nums=2, special_chars=1,
     leading = kwargs.get("leading_char", random.choice(lowers))
     trailing = kwargs.get("trailing_char", random.choice(lowers))
     lower -= 2
+    chars -= 2
+    length -= 2
     if padding is None:
         padding = lowers
     max_char = upper + lower
+    if lower < 0:
+        raise Exception("lower must be at least two")
     if max_char > chars:
         raise Exception("chars set to {0} but upper + lower exceeds"
                         " that: {1}".format(chars, max_char))
