@@ -43,6 +43,8 @@ OptionalParams:
   - "impi/configure/port"
   - "impi/configure/username"
   - "impi/configure/password"
+  - "impi/configure/generate-random-password"
+  - "impi/configure/random-password-settings"
   - "impi/configure/userid"
 Meta:
   icon: "server"
