@@ -69,6 +69,13 @@ IPMI_CONFIGURE_PASSWORD={{.Param "ipmi/configure/password"}}
 IPMI_CONFIGURE_USERID={{.Param "ipmi/configure/userid"}}
 {{end}}
 
+{{if .Param "ipmi/configure/generate-random-password" }}
+IPMI_CONFIGURE_PASSWORD=$(
+python -c '
+{{ template "ipmi-passgen.py.tmpl" .}}
+')
+{{ end }}
+
 # Results variables
 IPMI_ENABLED=false
 IPMI_ADDRESS=""

@@ -32,7 +32,6 @@ require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/honeycombio/libhoney-go v0.0.0-20181205211707-18ceb643e3f3
 	github.com/kevinburke/go-bindata v3.13.0+incompatible
-	github.com/kr/pretty v0.1.0 // indirect
 	github.com/packethost/packngo v0.0.0-20181206143517-b36133050ae5
 	github.com/pborman/uuid v1.2.0
 	github.com/vishvananda/netlink v0.0.0-20181208180451-78a3099b7080
