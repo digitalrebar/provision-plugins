@@ -52,4 +52,4 @@ def gen_pass(length=10, chars=7, req_nums=2, special_chars=1,
 
 
 if __name__ == "__main__":
-    print(gen_pass({{.Param "ipmi/random-password-settings"}}))
+    print(gen_pass({{.Param "ipmi/configure/random-password-settings"}}))
