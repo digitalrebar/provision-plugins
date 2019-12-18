@@ -1,0 +1,12 @@
+---
+Name: esxi/ssl-certificate
+Description: A SSL Certificate for the ESXi SSL services
+Documentation: |
+  A SSL Certificate to put in place for the SSL services.
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string

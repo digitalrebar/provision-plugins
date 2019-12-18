@@ -1,0 +1,11 @@
+---
+Name: "esxi-install-certificate"
+Description: "Install SSL Certificate"
+Documentation: |
+  Install SSL Certificate
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-install-certificate

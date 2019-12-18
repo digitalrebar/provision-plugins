@@ -1,0 +1,12 @@
+---
+Name: esxi/ssl-key
+Description: A SSL Key for the ESXi SSL services
+Documentation: |
+  A SSL Key to put in place for the SSL services.
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
