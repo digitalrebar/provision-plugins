@@ -70,10 +70,16 @@ IPMI_CONFIGURE_USERID={{.Param "ipmi/configure/userid"}}
 {{end}}
 
 {{if .Param "ipmi/configure/generate-random-password" }}
-IPMI_CONFIGURE_PASSWORD=$(
+# are we using the default password, we need to regenerate it
+if [[ "$IPMI_CONFIGURE_PASSWORD" == "cr0wBar!" ]] ; then
+    IPMI_CONFIGURE_PASSWORD=$(
 python -c '
 {{ template "ipmi-passgen.py.tmpl" .}}
 ')
+    drpcli machines set $RS_UUID param ipmi/configure/password to "$IPMI_CONFIGURE_PASSWORD" >/dev/null
+else
+    echo "The configured password is already set to a non-default value.  Using it instead."
+fi
 {{ end }}
 
 # Results variables
@@ -460,7 +466,7 @@ configure_user() {
         if [[ -x /usr/sbin/hponcfg ]]; then
             fgrep '<IPMI_DCMI_OVER_LAN_ENABLED VALUE="Y"/>' < <(hponcfg -i <<EOI
 <RIBCL VERSION="2.0">
- <LOGIN USER_LOGIN="$1" PASSWORD="$2">
+ <LOGIN USER_LOGIN="aa" PASSWORD="aa">
   <RIB_INFO MODE="read">
    <GET_GLOBAL_SETTINGS />
   </RIB_INFO>
@@ -469,7 +475,7 @@ configure_user() {
 EOI
 ) || hponcfg -i <<EOI
 <RIBCL VERSION="2.0">
- <LOGIN USER_LOGIN="$1" PASSWORD="$2">
+ <LOGIN USER_LOGIN="aa" PASSWORD="bb">
   <RIB_INFO MODE="write">
    <MOD_GLOBAL_SETTINGS>
     <IPMI_DCMI_OVER_LAN_ENABLED VALUE="Yes"/>
