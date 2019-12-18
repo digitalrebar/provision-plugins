@@ -39,5 +39,6 @@ Stages:
   - esxi-activate-shells
   - esxi-activate-nested
   - esxi-install-welcome
+  - esxi-install-certificate
   - esxi-preserve-logs
   - complete

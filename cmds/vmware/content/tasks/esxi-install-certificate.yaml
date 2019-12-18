@@ -1,0 +1,48 @@
+---
+Name: "esxi-install-certificate"
+Description: "Install an SSL certificate and restart services."
+Documentation: |
+  Install an SSL certificate and restart services.
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-install-certificate.sh"
+    Contents: |
+      #!/usr/bin/env sh
+
+      {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+      cd /etc/vmware/ssl
+
+      # Save off files
+      cp rui.key rui.key.back
+      cp rui.crt rui.crt.back
+
+      RC=restart
+      # Put new files in place
+      {{ if .ParamExists "esxi/ssl-key" }}
+      cat >rui.key <<EOF
+      {{ .Param "esxi/ssl-key" }}
+      EOF
+      {{ else }}
+      echo "Missing esxi/ssl-key skipping installation"
+      RC=norestart
+      {{ end }}
+
+      {{ if .ParamExists "esxi/ssl-certificate" }}
+      cat >rui.crt <<EOF
+      {{ .Param "esxi/ssl-certificate" }}
+      EOF
+      {{ else }}
+      echo "Missing esxi/ssl-certificate skipping installation"
+      RC=norestart
+      {{ end }}
+
+      # Restart services
+      if [[ $RC == restart ]] ; then
+      /sbin/services.sh restart
+      fi
+
+      exit 0
