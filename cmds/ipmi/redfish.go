@@ -228,7 +228,7 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 			}
 
 		case "poweroff":
-			if r.system.PowerState != "On" {
+			if r.system.PowerState != "Off" {
 				fillForOff()
 				resp, cmdErr = r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
 			}
