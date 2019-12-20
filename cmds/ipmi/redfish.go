@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"io/ioutil"
 
@@ -157,6 +158,11 @@ func (r *redfish) Probe(l logger.Logger, address, username, password string) boo
 }
 
 func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, res interface{}, err *models.Error) {
+	var (
+		resp   *http.Response
+		cmdErr error
+	)
+
 	switch ma.Command {
 	case "powerstatus":
 		return true, r.system.PowerState, nil
@@ -191,16 +197,56 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 		type rsPowerAction struct {
 			ResetType string
 		}
+		av := map[string]struct{}{}
+		for _, allowed := range r.system.Actions.Reset.AllowedValues {
+			av[allowed] = struct{}{}
+		}
 		powerAction := rsPowerAction{}
+		fillForOn := func() {
+			if _, ok := av["ForceOn"]; ok {
+				powerAction.ResetType = "ForceOn"
+			} else if _, ok := av["On"]; ok {
+				powerAction.ResetType = "On"
+			} else {
+				powerAction.ResetType = "PushPowerButton"
+			}
+		}
+		fillForOff := func() {
+			if _, ok := av["ForceOff"]; ok {
+				powerAction.ResetType = "ForceOff"
+			} else if _, ok := av["Off"]; ok {
+				powerAction.ResetType = "Off"
+			} else {
+				powerAction.ResetType = "PushPowerButton"
+			}
+		}
 		switch ma.Command {
 		case "poweron":
-			powerAction.ResetType = "On"
+			if r.system.PowerState != "On" {
+				fillForOn()
+				resp, cmdErr = r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
+			}
+
 		case "poweroff":
-			powerAction.ResetType = "ForceOff"
+			if r.system.PowerState != "Off" {
+				fillForOff()
+				resp, cmdErr = r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
+			}
 		case "powercycle":
-			powerAction.ResetType = "ForceRestart"
+			if _, ok := av["PowerCycle"]; ok {
+				powerAction.ResetType = "PowerCycle"
+			} else if _, ok := av["ForceRestart"]; ok {
+				powerAction.ResetType = "ForceRestart"
+			} else {
+				if r.system.PowerState != "Off" {
+					fillForOff()
+					r.Do("POST", r.system.Actions.Reset.Target, powerAction, nil)
+					time.Sleep(2 * time.Second)
+				}
+				fillForOn()
+			}
+			resp, cmdErr = r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
 		}
-		resp, cmdErr := r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
 		sc := 500
 		if resp != nil {
 			sc = resp.StatusCode

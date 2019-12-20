@@ -9,7 +9,7 @@ require (
 	github.com/digitalocean/go-libvirt v0.0.0-20181105201604-08f982c676c6
 	github.com/digitalocean/go-netbox v0.0.0-20180319151450-29433ec527e7
 	github.com/digitalrebar/logger v0.3.0
-	github.com/digitalrebar/provision/v4 v4.2.0-beta7
+	github.com/digitalrebar/provision/v4 v4.2.0-beta8
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/limitgroup v0.0.0-20150612190941-6abd8d71ec01 // indirect
