@@ -1,0 +1,10 @@
+---
+Name: bios-baseline
+Description: "Baseline the BIOS configurations on a system and store it as the wanted configuration"
+BootEnv: sledgehammer
+Tasks:
+  - bios-set-baseline
+Meta:
+  icon: "setting"
+  color: "yellow"
+  title: "RackN Content"
