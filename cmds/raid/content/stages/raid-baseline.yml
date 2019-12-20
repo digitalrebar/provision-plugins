@@ -1,0 +1,10 @@
+---
+Name: raid-baseline
+Description: "Baseline RAID configurations on a system as target configuration"
+BootEnv: sledgehammer
+Tasks:
+  - raid-set-baseline
+Meta:
+  icon: "disk outline"
+  color: "yellow"
+  title: "RackN Content"

@@ -1,0 +1,26 @@
+---
+Name: "bios-set-baseline"
+Description: "Get current BIOS configuration for the system and store as target configuration"
+RequiredParams:
+  - bios-driver
+Prerequisites:
+  - bios-tools-install
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: "set-target-config"
+    Contents: |
+      #!/usr/bin/env bash
+      {{ template "setup.tmpl" . }}
+      if [[ {{.Param "bios-driver"}} = "lenovo" ]]; then
+          {{ if .ParamExists "lenovo-onecli-install-target" }}
+          export PATH="$PATH:{{.Param "lenovo-onecli-install-target"}}"
+          {{ else }}
+          echo "Please install the lenovo-support content package"
+          exit 1
+          {{ end }}
+      fi
+      drpcli machines remove {{.Machine.UUID}} param bios-target-configuration || :
+      drp-bioscfg -driver {{.Param "bios-driver"}} -operation export | drpcli machines set {{.Machine.UUID}} param bios-target-configuration to -
