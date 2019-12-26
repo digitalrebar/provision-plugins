@@ -1,0 +1,20 @@
+---
+Name: "esxi-rename-datastore"
+Description: "Rename the default 'datastore1' to value in 'esxi/rename-datastore' param."
+Documentation: |
+  This stage will rename the defautl ``datastore`` on the ESXi node to the value defined
+  in the ``esxi/rename-datastore`` param.
+
+  In addition, the value of ``esxi/rename-datastore`` will be assigned to the param
+  ``esxi/install-datastore`` to insure any subsequent tasks are correctly referening
+  the newly updated datastore name.
+
+  This **must** be run in the firstboot or post-install booted environment of an ESXi
+  host.  It can not run during the kickstart stage of the install.
+
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-rename-datastore

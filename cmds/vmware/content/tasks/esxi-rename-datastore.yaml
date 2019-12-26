@@ -1,0 +1,62 @@
+---
+Name: "esxi-rename-datastore"
+Description: "Rename the default datastore to a new value."
+Documentation: |
+  This task and template renames the default datastore (``datastore1``) to a new
+  value defined by the ``esxi/rename-datastore`` Param.
+
+  Note that the ``esxi/install-datastore`` Param will also be updated to the same
+  value as ``esxi/rename-datastore`` to insure subsequent references to the
+  install Param are correctly referring to the newly renamed datastore value.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-params.py"
+    Path: "/tmp/esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+  - Name: "esxi-rename-datastore.sh"
+    Contents: |
+      #!/usr/bin/env sh
+      # Rename the default datastore to value in 'esxi/rename-datastore' param.
+
+      set -e
+      {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+      NEW_DS="$(echo '{{ .ParamExpand "esxi/rename-datastore" }}' | sed 's:/vmfs/volumes/::')"
+      FULL_DS="/vmfs/volumes/$NEW_DS"
+
+      if [[ -z "$NEW_DS" ]]; then
+        echo ""
+        echo ">>> No 'esxi/rename-datastore' value set, skipping rest of task."
+        exit 0
+      fi
+
+      if [[ "$NEW_DS" != "datastore1" ]]; then
+        echo ""
+        echo ">>> Starting datastore rename task ... "
+        # make sure our default datastore exists and is mounted
+        if localcli storage filesystem list | grep " datastore1 " > /dev/null 2>&1
+        then
+          vim-cmd hostsvc/datastore/rename datastore1 "$NEW_DS"
+          echo ">>> New datastore names are set to: "
+          localcli storage filesystem list
+
+          echo ""
+          printf ">>> Setting 'esxi/install-datastore' to '$FULL_DS' ... "
+          python3 /tmp/esxi-params.py add "esxi/install-datastore" "$FULL_DS"
+          echo " done !"
+        else
+          echo ">>> Unable to find default datastore ('datastore1') to rename in mounted list."
+          echo ">>> Current datastores on this ESXi system:"
+          localcli storage filesystem list
+          exit 1
+        fi
+      else
+        echo ">>> Datastore NOT renamed since the Param set to default value ('datastore1')."
+      fi
+
+      exit 0
+
