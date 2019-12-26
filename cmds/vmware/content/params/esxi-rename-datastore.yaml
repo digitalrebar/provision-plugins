@@ -1,0 +1,22 @@
+---
+Name: esxi/rename-datastore
+Description: "Rename default datastore ('datastore1') to this value on ESXi."
+Documentation: |
+  Rename the default VMware ESXi datastore (``datastore1``) to something
+  else.  This Param is implemented by the ``esxi-rename-datastore`` Task
+  and Stage.
+
+  If this Param is set, and if the ``esxi-rename-datastore`` task is run,
+  then the ``esxi/install-datastore`` Param will be set to the same value
+  as this param to insure subsequent references to ``esxi/install-datastore``
+  are correctly used.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: ""
+Secure: false
