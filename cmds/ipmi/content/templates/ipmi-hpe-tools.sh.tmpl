@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+
+HP_SYSTEM=true
+
+vendor_add_user() {
+    if [[ -x /usr/sbin/hponcfg ]]; then
+        fgrep '<IPMI_DCMI_OVER_LAN_ENABLED VALUE="Y"/>' < <(hponcfg -i <<EOI
+<RIBCL VERSION="2.0">
+  <LOGIN USER_LOGIN="aa" PASSWORD="aa">
+    <RIB_INFO MODE="read">
+      <GET_GLOBAL_SETTINGS />
+    </RIB_INFO>
+  </LOGIN>
+</RIBCL>
+EOI
+) || hponcfg -i <<EOI
+<RIBCL VERSION="2.0">
+  <LOGIN USER_LOGIN="aa" PASSWORD="bb">
+    <RIB_INFO MODE="write">
+      <MOD_GLOBAL_SETTINGS>
+        <IPMI_DCMI_OVER_LAN_ENABLED VALUE="Yes"/>
+      </MOD_GLOBAL_SETTINGS>
+    </RIB_INFO>
+  </LOGIN>
+</RIBCL>
+EOI
+    else
+        echo "HP system detected, but no hponcfg binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-configure stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
+}
+
+vendor_set_hostname_dns() {
+    # Configure the DNS and HOSTNAME
+    if [[ -x /usr/sbin/hponcfg ]] ; then
+        hponcfg -i <<EOF_STATIC
+<RIBCL VERSION="2.1">
+  <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
+    <RIB_INFO MODE="write">
+      <MOD_NETWORK_SETTINGS>
+{{ if .ParamExists "ipmi/configure/hostname" -}}
+        <DNS_NAME VALUE = "{{.Param "ipmi/configure/hostname"}}"/>
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/domain" -}}
+        <DHCP_DOMAIN_NAME VALUE="N"/>
+        <DOMAIN_NAME VALUE = "{{.Param "ipmi/configure/domain"}}"/>
+{{ else if .ParamExists "dns-domain" -}}
+        <DHCP_DOMAIN_NAME VALUE="N"/>
+        <DOMAIN_NAME VALUE = "{{.Param "dns-domain"}}"/>
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/dns-servers" -}}
+    {{ $p := .Param "ipmi/configure/dns-servers" -}}
+    {{ if $p -}}
+        <DHCP_DNS_SERVER VALUE="N"/>
+        <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
+        {{if lt 1 (len $p) }}
+        <SEC_DNS_SERVER value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <TER_DNS_SERVER value = "{{ index $p 2 }}"/>
+        {{ end -}}
+    {{ end -}}
+{{ else if .ParamExists "dns-servers" -}}
+    {{ $p := .Param "dns-servers" -}}
+    {{ if $p -}}
+        <DHCP_DNS_SERVER VALUE="N"/>
+        <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
+        {{if lt 1 (len $p) }}
+        <SEC_DNS_SERVER value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <TER_DNS_SERVER value = "{{ index $p 2 }}"/>
+        {{ end -}}
+    {{ end -}}
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/ntp-servers" -}}
+    {{ $p := .Param "ipmi/configure/ntp-servers" -}}
+    {{ if $p -}}
+        <DHCP_SNTP_SETTINGS VALUE="N"/>
+        {{if lt 0 (len $p) }}
+        <SNTP_SERVER1 value = "{{ index $p 0 }}"/>
+        {{ end -}}
+        {{if lt 1 (len $p) }}
+        <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
+        {{ end -}}
+    {{ end -}}
+{{ else if .ParamExists "ntp-servers" -}}
+    {{ $p := .Param "ntp-servers" -}}
+    {{ if $p -}}
+        <DHCP_SNTP_SETTINGS VALUE="N"/>
+        {{if lt 0 (len $p) }}
+        <SNTP_SERVER1 value = "{{ index $p 0 }}"/>
+        {{ end -}}
+        {{if lt 1 (len $p) }}
+        <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
+        {{ end -}}
+    {{ end -}}
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/timezone" -}}
+        <TIMEZONE VALUE="{{.Param "ipmi/configure/timezone"}}"/>
+{{ else -}}
+    {{ if .ParamExists "timezone" -}}
+        <TIMEZONE VALUE="{{.Param "timezone"}}"/>
+    {{ end -}}
+{{ end -}}
+      </MOD_NETWORK_SETTINGS>
+    </RIB_INFO>
+    <USER_INFO MODE="write">
+    </USER_INFO>
+  </LOGIN>
+</RIBCL>
+EOF_STATIC
+    else
+        echo "HP system detected, but no hponcfg binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-configure stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
+}
+
+vendor_generate_csr() {
+    if [[ -x /usr/sbin/hponcfg ]] ; then
+        echo "currently generating" > jj.txt
+        COUNT=0
+        while fgrep 'currently generating' jj.txt ; do
+            if (( $COUNT > 1 )) ; then
+                echo "Waiting for ILO to finish generating CSR"
+                sleep 15
+            fi
+            if (( $COUNT > 20 )) ; then
+                echo "Failed to generate certificate..."
+                cat jj.txt
+                exit 1
+            fi
+            hponcfg -i > jj.txt <<EOF_STATIC
+<RIBCL VERSION="2.0">
+  <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
+    <RIB_INFO MODE="write">
+      <CERTIFICATE_SIGNING_REQUEST>
+        <CSR_STATE VALUE ="{{.Param "ipmi/configure/cert-province"}}"/>
+        <CSR_COUNTRY VALUE ="{{.Param "ipmi/configure/cert-country"}}"/>
+        <CSR_LOCALITY VALUE ="{{.Param "ipmi/configure/cert-locality"}}"/>
+        <CSR_ORGANIZATION VALUE ="{{.Param "ipmi/configure/cert-org"}}"/>
+        <CSR_ORGANIZATIONAL_UNIT VALUE ="{{.Param "ipmi/configure/cert-org-unit"}}"/>
+{{ if .ParamExists "ipmi/configure/hostname" -}}
+        <CSR_COMMON_NAME VALUE = "{{.Param "ipmi/configure/hostname"}}"/>
+{{ end -}}
+      </CERTIFICATE_SIGNING_REQUEST>
+    </RIB_INFO>
+  </LOGIN>
+</RIBCL>
+EOF_STATIC
+            COUNT=$((COUNT+1))
+        done
+
+        drpcli machines set $RS_UUID param ipmi/csr to "$(cat jj.txt | jq -sR .)"
+        rm -f jj.txt
+    else
+        echo "HP system detected, but no hponcfg binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-configure stage."
+        echo
+      echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
+}
+
+vendor_install_cert() {
+    if [[ -x /usr/sbin/hponcfg ]] ; then
+        hponcfg -i <<EOF_STATIC
+<RIBCL VERSION="2.1">
+  <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
+    <RIB_INFO MODE="write">
+      <IMPORT_CERTIFICATE>
+{{ .Param "ipmi/configure/certificate" }}
+      </IMPORT_CERTIFICATE>
+      <RESET_RIB/>
+    </RIB_INFO>
+  </LOGIN>
+</RIBCL>
+EOF_STATIC
+
+    else
+        echo "HP system detected, but no hponcfg binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-configure stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
+}
+

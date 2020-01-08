@@ -1,0 +1,15 @@
+
+HP_SYSTEM=false
+DELL_SYSTEM=false
+LENOVO_SYSTEM=false
+
+{{ $mfgr := (index "Manufacturer" (index "System" (index "DMI" (.Param "gohai-inventory" )))) }}
+{{ if or (eq "HPE" $mfgr) (eq "HP" $mfgr) }}
+{{ template "ipmi-hpe-tools.sh.tmpl" . }}
+{{ else if eq "Dell Inc." $mfgr }}
+{{ template "ipmi-dell-tools.sh.tmpl" . }}
+{{ else if eq "Lenovo" $mfgr }}
+{{ template "ipmi-lenovo-tools.sh.tmpl" . }}
+{{ else }}
+{{ template "ipmi-any-tools.sh.tmpl" . }}
+{{ end }}

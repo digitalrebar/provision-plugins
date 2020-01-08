@@ -1,0 +1,12 @@
+---
+Name: "ipmi/csr"
+Description: "The Certificate Signing Request for this system's BMC"
+Documentation: |
+  The Certificate Signing Request for this system's BMC
+Schema:
+  type: "string"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

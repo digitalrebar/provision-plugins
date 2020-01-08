@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Configure the IPMI subsystem
+# Install certs to the IPMI subsystem
 
 . helper
 
@@ -16,6 +16,19 @@ success() {
     echo "Success"
     exit 0
 }
+
+HP_SYSTEM=false
+DELL_SYSTEM=false
+mfgr=$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')
+if [[ $mfgr == HP ]] ; then
+  HP_SYSTEM=true
+fi
+if [[ $mfgr == HPE ]] ; then
+  HP_SYSTEM=true
+fi
+if [[ $mfgr == "Dell Inc." ]] ; then
+  DELL_SYSTEM=true
+fi
 
 # Who am I
 export RS_UUID={{.Machine.Uuid}}
@@ -125,8 +138,6 @@ lan_info_keys=(
     ["MAC Address"]="macaddr"
     ["IP Address Source"]="ipsrc"
 )
-
-{{ template "ipmi-vendor.sh.tmpl" . }}
 
 #
 # This routine will mark the parameters to skip IPMI on
@@ -453,9 +464,40 @@ configure_user() {
     [[ $ipmi_crossed_access_channels = true ]] || \
         tool channel setaccess $lan_chan $configure_id callin=on link=on ipmi=on privilege=4
     tool user enable $configure_id
-
-    vendor_add_user
-
+    if [[ $HP_SYSTEM == true ]] ; then
+        if [[ -x /usr/sbin/hponcfg ]]; then
+            fgrep '<IPMI_DCMI_OVER_LAN_ENABLED VALUE="Y"/>' < <(hponcfg -i <<EOI
+<RIBCL VERSION="2.0">
+ <LOGIN USER_LOGIN="aa" PASSWORD="aa">
+  <RIB_INFO MODE="read">
+   <GET_GLOBAL_SETTINGS />
+  </RIB_INFO>
+ </LOGIN>
+</RIBCL>
+EOI
+) || hponcfg -i <<EOI
+<RIBCL VERSION="2.0">
+ <LOGIN USER_LOGIN="aa" PASSWORD="bb">
+  <RIB_INFO MODE="write">
+   <MOD_GLOBAL_SETTINGS>
+    <IPMI_DCMI_OVER_LAN_ENABLED VALUE="Yes"/>
+   </MOD_GLOBAL_SETTINGS>
+  </RIB_INFO>
+ </LOGIN>
+</RIBCL>
+EOI
+        else
+            echo "HP system detected, but no hponcfg binary present."
+            echo "Please rework your ipmi configure workload to make sure the"
+            echo "hardware-tools-install stage is before the ipmi-configure stage."
+            echo
+            echo "This task cannot guarantee that remote access is enabled on this system without it."
+        fi
+    else
+        if [[ $ipmi_crossed_access_channels != true ]] ; then
+            tool lan set $lan_chan access on
+        fi
+    fi
     configured=true
 }
 
@@ -557,9 +599,179 @@ if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
             configured=true
         fi
     fi
-
     # Configure the DNS and HOSTNAME
-    vendor_set_hostname_dns
+    if [[ $HP_SYSTEM == true ]] ; then
+        if [[ -x /usr/sbin/hponcfg ]] ; then
+          hponcfg -i <<EOF_STATIC
+<RIBCL VERSION="2.1">
+  <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
+    <RIB_INFO MODE="write">
+      <MOD_NETWORK_SETTINGS>
+{{ if .ParamExists "ipmi/configure/hostname" -}}
+        <DNS_NAME VALUE = "{{.Param "ipmi/configure/hostname"}}"/>
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/domain" -}}
+        <DHCP_DOMAIN_NAME VALUE="N"/>
+        <DOMAIN_NAME VALUE = "{{.Param "ipmi/configure/domain"}}"/>
+{{ else if .ParamExists "dns-domain" -}}
+        <DHCP_DOMAIN_NAME VALUE="N"/>
+        <DOMAIN_NAME VALUE = "{{.Param "dns-domain"}}"/>
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/dns-servers" -}}
+        {{ $p := .Param "ipmi/configure/dns-servers" -}}
+        {{ if $p -}}
+        <DHCP_DNS_SERVER VALUE="N"/>
+        <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
+        {{if lt 1 (len $p) }}
+        <SEC_DNS_SERVER value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <TER_DNS_SERVER value = "{{ index $p 2 }}"/>
+        {{ end -}}
+        {{ end -}}
+{{ else if .ParamExists "dns-servers" -}}
+        {{ $p := .Param "dns-servers" -}}
+        {{ if $p -}}
+        <DHCP_DNS_SERVER VALUE="N"/>
+        <PRIM_DNS_SERVER value = "{{ index $p 0 }}"/>
+        {{if lt 1 (len $p) }}
+        <SEC_DNS_SERVER value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{if lt 2 (len $p) }}
+        <TER_DNS_SERVER value = "{{ index $p 2 }}"/>
+        {{ end -}}
+        {{ end -}}
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/ntp-servers" -}}
+        {{ $p := .Param "ipmi/configure/ntp-servers" -}}
+        {{ if $p -}}
+        <DHCP_SNTP_SETTINGS VALUE="N"/>
+        {{if lt 0 (len $p) }}
+        <SNTP_SERVER1 value = "{{ index $p 0 }}"/>
+        {{ end -}}
+        {{if lt 1 (len $p) }}
+        <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{ end -}}
+{{ else if .ParamExists "ntp-servers" -}}
+        {{ $p := .Param "ntp-servers" -}}
+        {{ if $p -}}
+        <DHCP_SNTP_SETTINGS VALUE="N"/>
+        {{if lt 0 (len $p) }}
+        <SNTP_SERVER1 value = "{{ index $p 0 }}"/>
+        {{ end -}}
+        {{if lt 1 (len $p) }}
+        <SNTP_SERVER2 value = "{{ index $p 1 }}"/>
+        {{ end -}}
+        {{ end -}}
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/timezone" -}}
+        <TIMEZONE VALUE="{{.Param "ipmi/configure/timezone"}}"/>
+{{ else -}}
+  {{ if .ParamExists "timezone" -}}
+        <TIMEZONE VALUE="{{.Param "timezone"}}"/>
+  {{ end -}}
+{{ end -}}
+      </MOD_NETWORK_SETTINGS>
+    </RIB_INFO>
+    <USER_INFO MODE="write">
+    </USER_INFO>
+  </LOGIN>
+</RIBCL>
+EOF_STATIC
+        else
+            echo "HP system detected, but no hponcfg binary present."
+            echo "Please rework your ipmi configure workload to make sure the"
+            echo "hardware-tools-install stage is before the ipmi-configure stage."
+            echo
+            echo "This task cannot guarantee that remote access is enabled on this system without it."
+        fi
+    fi
+    if [[ $DELL_SYSTEM == true ]] ; then
+        racadm=/opt/dell/srvadmin/bin/idracadm7
+        if which $racadm ; then
+{{ if .ParamExists "ipmi/configure/domain" }}
+            DNS_DOMAIN="{{.Param "ipmi/configure/domain"}}"
+{{ else if .ParamExists "dns-domain" }}
+            DNS_DOMAIN="{{.Param "dns-domain"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/hostname" }}
+            DRACHOSTNAME="{{.Param "ipmi/configure/hostname"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/dns-servers" }}
+        {{ $p := .Param "ipmi/configure/dns-servers" }}
+        {{ if $p }}
+            DNS_SERVER1="{{ index $p 0 }}"
+        {{if lt 1 (len $p) }}
+            DNS_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{ end }}
+{{ else if .ParamExists "dns-servers" }}
+        {{ $p := .Param "dns-servers" }}
+        {{ if $p }}
+            DNS_SERVER1="{{ index $p 0 }}"
+        {{if lt 1 (len $p) }}
+            DNS_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{ end }}
+{{ end }}
+{{ if .ParamExists "ipmi/configure/ntp-servers" }}
+        {{ $p := .Param "ipmi/configure/ntp-servers" }}
+        {{ if $p }}
+        {{if lt 0 (len $p) }}
+            NTP_ENABLED="Enabled"
+            NTP_SERVER1="{{ index $p 0 }}"
+        {{ end }}
+        {{if lt 1 (len $p) }}
+            NTP_ENABLED="Enabled"
+            NTP_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+            NTP_ENABLED="Enabled"
+            NTP_SERVER3="{{ index $p 2 }}"
+        {{ end }}
+        {{ end }}
+{{ else if .ParamExists "ntp-servers" }}
+        {{ $p := .Param "ntp-servers" }}
+        {{ if $p }}
+        {{if lt 0 (len $p) }}
+            NTP_ENABLED="Enabled"
+            NTP_SERVER1="{{ index $p 0 }}"
+        {{ end }}
+        {{if lt 1 (len $p) }}
+            NTP_ENABLED="Enabled"
+            NTP_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+            NTP_ENABLED="Enabled"
+            NTP_SERVER3="{{ index $p 2 }}"
+        {{ end }}
+        {{ end }}
+{{ end }}
+{{ if .ParamExists "timezone" -}}
+            TIME_ZONE="{{.Param "timezone"}}"
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/timezone" -}}
+            TIME_ZONE="{{.Param "ipmi/configure/timezone"}}"
+{{ end -}}
+
+            test -z $DRACHOSTNAME || $racadm set iDRAC.NIC.DNSRacName $DRACHOSTNAME
+            test -z $DNS_DOMAIN || $racadm set iDRAC.NIC.DNSDomainName $DNS_DOMAIN
+            test -z $DNS_SERVER1 || $racadm set iDRAC.IPv4.DNS1 $DNS_SERVER1
+            test -z $DNS_SERVER2 || $racadm set iDRAC.IPv4.DNS2 $DNS_SERVER2
+            test -z $TIME_ZONE || $racadm set iDRAC.time.timezone "$TIME_ZONE"
+            test -z $NTP_SERVER1 || $racadm set idrac.NTPConfigGroup.ntp1 $NTP_SERVER1
+            test -z $NTP_SERVER2 || $racadm set idrac.NTPConfigGroup.ntp2 $NTP_SERVER2
+            test -z $NTP_SERVER3 || $racadm set idrac.NTPConfigGroup.ntp3 $NTP_SERVER3
+            test -z $NTP_ENABLED || $racadm set idrac.NTPConfigGroup.ntpenable $NTP_ENABLED
+        else
+            echo "Dell system detected, but no $racadm binary present."
+            echo "Please rework your ipmi configure workload to make sure the"
+            echo "hardware-tools-install stage is before the ipmi-configure stage."
+            echo
+            echo "This task cannot guarantee that remote access is enabled on this system without it."
+        fi
+    fi
 fi
 
 if [[ $configured == true && $ipmi_hard_reset_after_config == true ]] ; then
@@ -610,14 +822,9 @@ if [[ $IPMI_IPSRC != "" ]] ; then
 fi
 
 if [[ $IPMI_GENERATE_CSR ]] ; then
-    vendor_generate_csr
+    CSR=$(generate_csr)
+    drpcli machines set $RS_UUID param ipmi/csr to "$CSR"
 fi
-
-{{ if .ParamExists "ipmi/configure/certificate" }}
-    vendor_install_cert
-{{ else }}
-    echo "ipmi/configure/certificate not defined - not installing certificate"
-{{ end }}
 
 success
 

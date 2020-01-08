@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+vendor_add_user() {
+    if [[ $ipmi_crossed_access_channels != true ]] ; then
+        tool lan set $lan_chan access on
+    fi
+}
+
+vendor_set_hostname_dns() {
+    echo "Not a direct way to set DNS and HOSTNAME - yet"
+}
+
+vendor_generate_csr() {
+    echo "Not a direct way to install the certificate for this system type"
+}
+
+vendor_install_cert() {
+    echo "Not a direct way to install the certificate for this system type"
+}
+

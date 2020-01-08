@@ -1,0 +1,13 @@
+---
+Name: "ipmi/configure/cert-org-unit"
+Description: "The OrganizationalUnit part of the CSR"
+Documentation: |
+  The OrganizationalUnit part of the CSR
+Schema:
+  type: "string"
+  default: Operations
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"

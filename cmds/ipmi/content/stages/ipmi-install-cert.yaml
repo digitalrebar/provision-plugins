@@ -1,0 +1,9 @@
+---
+Name: "ipmi-install-cert"
+Description: "A stage to install the certificate and optional key on the BMC"
+Tasks:
+  - "ipmi-install-cert-or-key"
+Meta:
+  icon: "server"
+  color: "yellow"
+  title: "RackN Content"
