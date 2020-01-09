@@ -306,27 +306,44 @@ cb_retry:
 		return out, e
 	}
 
+	var res map[string]interface{}
+	rr := p.drpClient.Req().UrlFor("machines", machine.UUID(), "params")
+	if cb.Aggregate || overrideData != nil {
+		rr = rr.Params("aggregate", "true")
+	}
+	if cb.Decode || overrideData != nil {
+		rr = rr.Params("decode", "true")
+	}
+	if derr := rr.Do(&res); derr != nil {
+		if count < cb.Retry {
+			goto cb_retry
+		}
+		err = utils.ConvertError(400, derr)
+		return
+	}
+	machine.Params = res
+
+	info, ierr := p.drpClient.Info()
+	if ierr != nil {
+		err = utils.ConvertError(400, ierr)
+		return
+	}
+
 	if overrideData == nil {
-		var res map[string]interface{}
-		rr := p.drpClient.Req().UrlFor("machines", machine.UUID(), "params")
-		if cb.Aggregate {
-			rr = rr.Params("aggregate", "true")
-		}
-		if cb.Decode {
-			rr = rr.Params("decode", "true")
-		}
-		if derr := rr.Do(&res); derr != nil {
-			if count < cb.Retry {
-				goto cb_retry
-			}
-			err = utils.ConvertError(400, derr)
-			return
-		}
-		machine.Params = res
 		for _, dk := range cb.ExcludeParams {
 			delete(machine.Params, dk)
 		}
 		overrideData = machine
+	} else {
+		s, ok := overrideData.(string)
+		if ok {
+			var rerr error
+			overrideData, rerr = Render(p.drpClient, s, machine, info)
+			if rerr != nil {
+				err = utils.ConvertError(400, rerr)
+				return
+			}
+		}
 	}
 
 	buf2, jerr := json.Marshal(overrideData)
@@ -338,9 +355,15 @@ cb_retry:
 		return
 	}
 
+	localUrl, uerr := Render(p.drpClient, cb.Url, machine, info)
+	if uerr != nil {
+		err = utils.ConvertError(400, uerr)
+		return
+	}
+
 	out += fmt.Sprintf("Attempt %s (%d)\n", action, count)
-	out += fmt.Sprintf("url: %s %s\n", cb.Url, cb.Method)
-	req, _ := http.NewRequest(cb.Method, cb.Url, bytes.NewBuffer(buf2))
+	out += fmt.Sprintf("url: %s %s\n", localUrl, cb.Method)
+	req, _ := http.NewRequest(cb.Method, localUrl, bytes.NewBuffer(buf2))
 
 	if auth != nil {
 		out += fmt.Sprintf("auth: %s\n", auth.AuthType)

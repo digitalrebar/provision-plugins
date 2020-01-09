@@ -38,4 +38,5 @@ require (
 	github.com/vishvananda/netns v0.0.0-20180720170159-13995c7128cc // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/imjoey/go-ovirt.v4 v4.0.6
+	gopkg.in/yaml.v2 v2.2.2
 )
