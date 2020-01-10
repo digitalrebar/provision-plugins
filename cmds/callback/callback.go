@@ -542,7 +542,10 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 	}
 
 	if job.State == "failed" && (ojob.State == "running" || ojob.State == "created") {
-		_, err := p.postTrigger(l, machine, nil, "jobfail")
+		data, err := p.postTrigger(l, machine, nil, "jobfail")
+		if err != nil {
+			l.Errorf("Callback job fail function failed: %v\nData: %v\n", err, data)
+		}
 		return err
 	}
 
