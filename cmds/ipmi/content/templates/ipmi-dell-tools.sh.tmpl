@@ -77,7 +77,6 @@ vendor_set_hostname_dns() {
 {{ end -}}
 
         test -z $DRACHOSTNAME || $racadm set iDRAC.NIC.DNSRacName $DRACHOSTNAME
-        test -z $DRACHOSTNAME || $racadm set iDRAC.security.commonname $DRACHOSTNAME
         test -z $DNS_SERVER2 || $racadm set iDRAC.IPv4.DNS2 $DNS_SERVER2
         test -z $TIME_ZONE || $racadm set iDRAC.time.timezone "$TIME_ZONE"
         test -z $NTP_SERVER1 || $racadm set idrac.NTPConfigGroup.ntp1 $NTP_SERVER1
@@ -96,14 +95,18 @@ vendor_set_hostname_dns() {
 vendor_generate_csr() {
     racadm=/opt/dell/srvadmin/bin/idracadm7
     if which $racadm ; then
-        $racadm set iDRAC.security.country "{{.Param "ipmi/configure/cert-country"}}"
-        $racadm set iDRAC.security.province "{{.Param "ipmi/configure/cert-province"}}"
-        $racadm set iDRAC.security.locality "{{.Param "ipmi/configure/cert-locality"}}"
-        $racadm set iDRAC.security.organization "{{.Param "ipmi/configure/cert-org"}}"
-        $racadm set iDRAC.security.organizationalunit "{{.Param "ipmi/configure/cert-org-unit"}}"
+        $racadm set iDRAC.security.CsrCountryCode "{{.Param "ipmi/configure/cert-country"}}"
+        $racadm set iDRAC.security.CsrStateName "{{.Param "ipmi/configure/cert-province"}}"
+        $racadm set iDRAC.security.CsrLocalityName "{{.Param "ipmi/configure/cert-locality"}}"
+        $racadm set iDRAC.security.CsrOrganizationName "{{.Param "ipmi/configure/cert-org"}}"
+        $racadm set iDRAC.security.CsrOrganizationUnit "{{.Param "ipmi/configure/cert-org-unit"}}"
+{{ if .ParamExists "ipmi/configure/hostname" }}
+        $racadm set iDRAC.security.CsrCommonName "{{.Param "ipmi/configure/hostname"}}"
+        $racadm set iDRAC.security.CsrEmailAddr "admin@{{.Param "ipmi/configure/hostname"}}"
+{{ end }}
 
         $racadm sslcsrgen -g -f csr.txt
-        drpcli machines set $RS_UUID param ipmi/csr to "$(csr.txt | jq -sR .)"
+        drpcli machines set $RS_UUID param ipmi/csr to "$(cat csr.txt | jq -sR .)"
         rm -f csr.txt
     else
         echo "Dell system detected, but no $racadm binary present."
@@ -118,7 +121,9 @@ vendor_install_cert() {
     racadm=/opt/dell/srvadmin/bin/idracadm7
     if which $racadm ; then
         cat sslcert.txt <<EOF
+{{ if .ParamExists "ipmi/configure/certificate" }}
 {{ .Param "ipmi/configure/certificate" }}
+{{ end }}
 EOF
 {{ if .ParamExists "ipmi/configure/key" }}
         KEYINFO="-k sslkey.txt"

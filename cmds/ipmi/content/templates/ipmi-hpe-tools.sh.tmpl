@@ -136,7 +136,7 @@ vendor_generate_csr() {
                 cat jj.txt
                 exit 1
             fi
-            hponcfg -i > jj.txt <<EOF_STATIC
+            hponcfg -i > jj.txt 2>&1 <<EOF_STATIC
 <RIBCL VERSION="2.0">
   <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
     <RIB_INFO MODE="write">
@@ -157,8 +157,10 @@ EOF_STATIC
             COUNT=$((COUNT+1))
         done
 
-        drpcli machines set $RS_UUID param ipmi/csr to "$(cat jj.txt | jq -sR .)"
-        rm -f jj.txt
+        csplit -f cert- jj.txt '%-----BEGIN CERTIFICATE REQUEST-----%' '/<\/CERTIFICATE_SIGNING_REQUEST>/' '{*}'
+
+        drpcli machines set $RS_UUID param ipmi/csr to "$(cat cert-00 | jq -sR .)"
+        rm -f jj.txt cert-*
     else
         echo "HP system detected, but no hponcfg binary present."
         echo "Please rework your ipmi configure workload to make sure the"
@@ -175,7 +177,9 @@ vendor_install_cert() {
   <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
     <RIB_INFO MODE="write">
       <IMPORT_CERTIFICATE>
+{{ if .ParamExists "ipmi/configure/certificate" }}
 {{ .Param "ipmi/configure/certificate" }}
+{{ end }}
       </IMPORT_CERTIFICATE>
       <RESET_RIB/>
     </RIB_INFO>
