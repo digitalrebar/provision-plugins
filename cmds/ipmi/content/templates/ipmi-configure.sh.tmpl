@@ -615,6 +615,9 @@ fi
 
 {{ if .ParamExists "ipmi/configure/certificate" }}
     vendor_install_cert
+{{ if .ParamExists "ipmi/configure/post-csr-task" }}
+    drpcli machines inserttask $RS_UUID "{{.Param "ipmi/configure/post-csr-task"}}" 0
+{{ end }}
 {{ else }}
     echo "ipmi/configure/certificate not defined - not installing certificate"
 {{ end }}
