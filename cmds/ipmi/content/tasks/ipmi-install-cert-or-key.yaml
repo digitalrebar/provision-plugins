@@ -1,0 +1,25 @@
+---
+Name: "ipmi-install-cert-or-key"
+Description: "A task to install certificate/key pairs on the BMC of a machine from parameters."
+Documentation: |
+  This task uses the ipmi/configure parameters to install a certificate or key or both
+  on the system BMC.
+
+  If the parameters are not preset, nothing is done.
+
+  Defaults:
+    impi/configure/certificate = unset
+    impi/configure/key = unset
+
+Templates:
+  - Name: "Install Cert/Key on BMC"
+    Path: ""
+    ID: "ipmi-install-cert-key.sh.tmpl"
+OptionalParams:
+  - "ipmi/configure/certificate"
+  - "ipmi/configure/key"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

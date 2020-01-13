@@ -1,0 +1,12 @@
+---
+Name: "ipmi/configure/generate-csr"
+Description: "During configuration the system should generate a CSR"
+Documentation: |
+  During configuration the system should generate a CSR
+Schema:
+  type: "boolean"
+  default: false
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

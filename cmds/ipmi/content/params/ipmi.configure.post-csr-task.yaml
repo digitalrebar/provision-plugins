@@ -1,0 +1,12 @@
+---
+Name: "ipmi/configure/post-csr-task"
+Description: "A task to inject after successful CSR generation"
+Documentation: |
+  A task to inject after successful CSR generation to allow for external notification
+  of signing service.
+Schema:
+  type: "string"
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"

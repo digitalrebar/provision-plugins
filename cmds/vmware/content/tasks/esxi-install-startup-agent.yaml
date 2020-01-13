@@ -40,10 +40,15 @@ Templates:
 
       if $( grep -qe "^# Start up the DRPY agent on an ESXi system." $RC )
       then
-        echo "DRPY execution in $RC already.  Nothing done."
+        echo "DRPY execution in $RC already.  Updating start script in case some things have moved."
+        RMCMD="rm -f /tmp/install-agent"
       else
-        head -n -1 $RC > /tmp/install-agent
-        cat >> /tmp/install-agent <<EOF
+        echo "DRPY execution NOT in $RC already.  Adding start script."
+        RMCMD=""
+      fi
+
+      head -n -1 $RC > /tmp/install-agent
+      cat >> /tmp/install-agent <<EOF
       mkdir -p $RD
       cat >> $RP <<INSIDEEOF
       {{template "esxi-drpy-run.py.tmpl" .}}
@@ -56,8 +61,8 @@ Templates:
       rm -f /tmp/install-agent
       exit 0
       EOF
-        cp /tmp/install-agent $RC
+      cp /tmp/install-agent $RC
+      ${RMCMD}
 
-        $(grep -qe "^# Start up the DRPY agent on an ESXi system." $RC) && echo "Startup tool ('$TOOL') installed successfully" || xiterr "Failed to install '$TOOL'"
-      fi
+      $(grep -qe "^# Start up the DRPY agent on an ESXi system." $RC) && echo "Startup tool ('$TOOL') installed successfully" || xiterr "Failed to install '$TOOL'"
       exit 0

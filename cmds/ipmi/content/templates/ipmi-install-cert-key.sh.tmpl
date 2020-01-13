@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Configure the IPMI subsystem
+
+# Include basic defaults and debugging
+{{ template "setup.tmpl" . }}
+
+# Get the vendor functions
+{{ template "ipmi-vendor.sh.tmpl" . }}
+
+{{ if .ParamExists "ipmi/configure/certificate" }}
+vendor_install_cert
+{{ else }}
+echo "ipmi/configure/certificate not defined - not installing certificate"
+{{ end }}
+
+exit 0

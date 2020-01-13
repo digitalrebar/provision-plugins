@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+
+DELL_SYSTEM=true
+
+vendor_add_user() {
+    if [[ $ipmi_crossed_access_channels != true ]] ; then
+        tool lan set $lan_chan access on
+    fi
+}
+
+vendor_set_hostname_dns() {
+    racadm=/opt/dell/srvadmin/bin/idracadm7
+    if which $racadm ; then
+{{ if .ParamExists "ipmi/configure/domain" }}
+        DNS_DOMAIN="{{.Param "ipmi/configure/domain"}}"
+{{ else if .ParamExists "dns-domain" }}
+        DNS_DOMAIN="{{.Param "dns-domain"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/hostname" }}
+        DRACHOSTNAME="{{.Param "ipmi/configure/hostname"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/dns-servers" }}
+    {{ $p := .Param "ipmi/configure/dns-servers" }}
+    {{ if $p }}
+        DNS_SERVER1="{{ index $p 0 }}"
+        {{if lt 1 (len $p) }}
+        DNS_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+    {{ end }}
+{{ else if .ParamExists "dns-servers" }}
+    {{ $p := .Param "dns-servers" }}
+    {{ if $p }}
+        DNS_SERVER1="{{ index $p 0 }}"
+        {{if lt 1 (len $p) }}
+        DNS_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ if .ParamExists "ipmi/configure/ntp-servers" }}
+    {{ $p := .Param "ipmi/configure/ntp-servers" }}
+    {{ if $p }}
+        {{if lt 0 (len $p) }}
+        NTP_ENABLED="Enabled"
+        NTP_SERVER1="{{ index $p 0 }}"
+        {{ end }}
+        {{if lt 1 (len $p) }}
+        NTP_ENABLED="Enabled"
+        NTP_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+        NTP_ENABLED="Enabled"
+        NTP_SERVER3="{{ index $p 2 }}"
+        {{ end }}
+    {{ end }}
+{{ else if .ParamExists "ntp-servers" }}
+    {{ $p := .Param "ntp-servers" }}
+    {{ if $p }}
+        {{if lt 0 (len $p) }}
+        NTP_ENABLED="Enabled"
+        NTP_SERVER1="{{ index $p 0 }}"
+        {{ end }}
+        {{if lt 1 (len $p) }}
+        NTP_ENABLED="Enabled"
+        NTP_SERVER2="{{ index $p 1 }}"
+        {{ end }}
+        {{if lt 2 (len $p) }}
+        NTP_ENABLED="Enabled"
+        NTP_SERVER3="{{ index $p 2 }}"
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{ if .ParamExists "timezone" -}}
+        TIME_ZONE="{{.Param "timezone"}}"
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/timezone" -}}
+        TIME_ZONE="{{.Param "ipmi/configure/timezone"}}"
+{{ end -}}
+
+        test -z $DRACHOSTNAME || $racadm set iDRAC.NIC.DNSRacName $DRACHOSTNAME
+        test -z $DNS_SERVER2 || $racadm set iDRAC.IPv4.DNS2 $DNS_SERVER2
+        test -z $TIME_ZONE || $racadm set iDRAC.time.timezone "$TIME_ZONE"
+        test -z $NTP_SERVER1 || $racadm set idrac.NTPConfigGroup.ntp1 $NTP_SERVER1
+        test -z $NTP_SERVER2 || $racadm set idrac.NTPConfigGroup.ntp2 $NTP_SERVER2
+        test -z $NTP_SERVER3 || $racadm set idrac.NTPConfigGroup.ntp3 $NTP_SERVER3
+        test -z $NTP_ENABLED || $racadm set idrac.NTPConfigGroup.ntpenable $NTP_ENABLED
+    else
+        echo "Dell system detected, but no $racadm binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-install-cert-or-key stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
+}
+
+vendor_generate_csr() {
+    racadm=/opt/dell/srvadmin/bin/idracadm7
+    if which $racadm ; then
+        $racadm set iDRAC.security.CsrCountryCode "{{.Param "ipmi/configure/cert-country"}}"
+        $racadm set iDRAC.security.CsrStateName "{{.Param "ipmi/configure/cert-province"}}"
+        $racadm set iDRAC.security.CsrLocalityName "{{.Param "ipmi/configure/cert-locality"}}"
+        $racadm set iDRAC.security.CsrOrganizationName "{{.Param "ipmi/configure/cert-org"}}"
+        $racadm set iDRAC.security.CsrOrganizationUnit "{{.Param "ipmi/configure/cert-org-unit"}}"
+{{ if .ParamExists "ipmi/configure/hostname" }}
+        $racadm set iDRAC.security.CsrCommonName "{{.Param "ipmi/configure/hostname"}}"
+        $racadm set iDRAC.security.CsrEmailAddr "admin@{{.Param "ipmi/configure/hostname"}}"
+{{ end }}
+
+        $racadm sslcsrgen -g -f csr.txt
+        drpcli machines set $RS_UUID param ipmi/csr to "$(cat csr.txt | jq -sR .)"
+        rm -f csr.txt
+    else
+        echo "Dell system detected, but no $racadm binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-install-cert-or-key stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
+}
+
+vendor_install_cert() {
+    racadm=/opt/dell/srvadmin/bin/idracadm7
+    if which $racadm ; then
+        cat sslcert.txt <<EOF
+{{ if .ParamExists "ipmi/configure/certificate" }}
+{{ .Param "ipmi/configure/certificate" }}
+{{ end }}
+EOF
+{{ if .ParamExists "ipmi/configure/key" }}
+        KEYINFO="-k sslkey.txt"
+        cat sslkey.txt <<KEYEOF
+{{ .Param "ipmi/configure/key" }}
+KEYEOF
+{{ end }}
+
+        $racadm sslcertupload -t 6 -f sslcert.txt $KEYINFO
+        rm -f sslcert.txt sslkey.txt
+    else
+        echo "Dell system detected, but no $racadm binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-install-cert-or-key stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
+}
+

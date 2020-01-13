@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+LENOVO_SYSTEM=true
+
+vendor_add_user() {
+    if [[ $ipmi_crossed_access_channels != true ]] ; then
+        tool lan set $lan_chan access on
+    fi
+}
+
+vendor_set_hostname_dns() {
+    echo "Not a direct way to set DNS and HOSTNAME - yet"
+}
+
+vendor_generate_csr() {
+    echo "Not a direct way to get CSR - yet"
+}
+
+vendor_install_cert() {
+    echo "Not a direct way to install cert - yet"
+}
+
