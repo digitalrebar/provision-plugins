@@ -21,7 +21,7 @@ The `define` cli method is not long running and returns.
 The `unpack` cli method is not long running and returns the results of the unpack operation.
 
 The `listen` cli method is expected to continue until stopped.  The in-bound socket used to
-provide the DRP -> Plugin API calls, Config, Stop, Action, and Publish.  
+provide the DRP -> Plugin API calls, Config, Stop, Action, and Publish.
 
 These are handled by these endpoints that are not exposed on the API port:
 
@@ -32,7 +32,7 @@ These are handled by these endpoints that are not exposed on the API port:
 
 Additionally, all requests on the DRP API port will be forwarded to the plugin if sent to:
 
-* /plugin-apis/:plugin/\* - ANY - All Data 
+* /plugin-apis/:plugin/\* - ANY - All Data
 
 Where :plugin is the name of the plugin in the plugin object space.  No translation of URL
 will occur.  It is a direct mapping of the two spaces.
@@ -65,7 +65,7 @@ Example main and imports
 
 ```
 package main
-  
+
 //go:generate sh -c "cd content ; drpcli contents bundle ../content.go"
 
 import (
@@ -169,7 +169,7 @@ full access to the system.  The last parameter is a `map[string]interface{}`.  T
 the plugin object.  The `RequiredParameters` is enforced by the DRP Endpoint.
 
 The plugin should take actions to validate that it can operate, setup additional components, initialize state, and store the
-api client session if desired.  Any error returned will be cause the plugin to fail to be created and errors required on the 
+api client session if desired.  Any error returned will be cause the plugin to fail to be created and errors required on the
 plugin object.
 
 ## Action Action
@@ -180,8 +180,8 @@ the Plugin struct passed to `InitApp` must implement the `PluginActor` interface
 
 * Action(logger.Logger, \*models.Action) (interface{}, \*models.Error)
 
-The routine receives a logger to output log information to the DRP endpoint.  The Action requested is defined by the 
-models.Action object.  This will contain an object reference, command requested, and parameters.  The routine 
+The routine receives a logger to output log information to the DRP endpoint.  The Action requested is defined by the
+models.Action object.  This will contain an object reference, command requested, and parameters.  The routine
 should return an object that will be returned to the DRP API caller as JSON or an Error object that will be sent
 to the user.  The API return code can be specified here for errors.
 
