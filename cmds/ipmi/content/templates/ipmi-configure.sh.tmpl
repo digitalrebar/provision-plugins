@@ -609,7 +609,7 @@ if [[ $IPMI_IPSRC != "" ]] ; then
     drpcli machines set $RS_UUID param ipmi/ipsrc to "$IPMI_IPSRC"
 fi
 
-if [[ $IPMI_GENERATE_CSR ]] ; then
+if [[ "$IPMI_GENERATE_CSR" != "false" ]] ; then
     vendor_generate_csr
 {{ if .ParamExists "ipmi/configure/post-csr-task" }}
     drpcli machines inserttask $RS_UUID "{{.Param "ipmi/configure/post-csr-task"}}" 0
