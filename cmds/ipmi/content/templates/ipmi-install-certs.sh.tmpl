@@ -821,7 +821,7 @@ if [[ $IPMI_IPSRC != "" ]] ; then
     drpcli machines set $RS_UUID param ipmi/ipsrc to "$IPMI_IPSRC"
 fi
 
-if [[ $IPMI_GENERATE_CSR ]] ; then
+if [[ "$IPMI_GENERATE_CSR" != "false" ]] ; then
     CSR=$(generate_csr)
     drpcli machines set $RS_UUID param ipmi/csr to "$CSR"
 fi
