@@ -44,10 +44,14 @@ Templates:
           exit 1
       fi
 
+      echo "IP Addr (ipmi/configure/address) = ${IP}"
+      echo "Gateway (ipmi/configure/gateway) = ${GW}"
+      echo "Netmask (ipmi/configure/netmask) = ${NM}"
       if check_same_subnet ${IP} ${GW} ${NM} ; then
           echo "IPMI Configure Network Validation Success"
           exit 0
       else
           echo "IPMI Configure Network Validation Failure"
+          echo "IP Address and Gateway are not in the same network."
           exit 1
       fi
