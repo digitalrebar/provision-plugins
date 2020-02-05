@@ -146,6 +146,7 @@ There are two paths for installing new ESXi versions:
           being "off-the-shelf" and not requiring additional custom content
           to support ESXi environments.
 
+.. _vmware_esxi_passwords:
 
 Managing Your ESXi Passwords
 ----------------------------
