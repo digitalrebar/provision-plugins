@@ -12,15 +12,47 @@ The callback plugin will build a web request that will be sent to the external s
 can be defined by the structure.  The callback structure is stored on the plugin in a map with
 the action name as the key for this structure.
 
+The first set of fields define what API endpoint should be contacted and its retry, timeout, and delay
+configuration.
+
   ::
-    Url - string - url to the service - This is the full path to the service.
+
+    Url - string - url to the service - This is the full path to the service.  This field is rendered.  See below.
     Method - optional string (POST) - method to use for the web request. e.g. POST, PUT
-    Username - optional string - username to access the service
-    Password - optional string - password to access the service
     Headers - optional key/value pairs - These are passed directly as Request headers.
+    Retry - int (0) - How many retries to do before failing.
+    Timeout - int (7200) - Maximum time that this callback should take for all retries in seconds.
+    Delay - int (0) - How many seconds that should be delayed between retries.
+
+
+The second set of fields define how authentication should be handled for this callback.  The authentication
+methods can be created by name and these can be referenced for this callback.  The `Auth` and `Auths` fields
+define a list of authentication methods to try to get a Bearer Authentication token.  `Auth` was a single method
+and is retained for backwards compatibility.  `Auths` allows for multiple methods to be tried in case others fail.
+The system will concatenate the two fields into a single list with `Auth` first.  Both fields are options.
+`Auth` may be left empty and only `Auths` used.
+
+  ::
+
+	Auth - string - the first auth method to use
+	Auths - list of strings - additional auth methods to try.
+
+The third set of fields define the content of the message sent for non-Get messages.  By default, the system
+will send the machine object.  The `Aggregate` and `Decode` fields will define if the `Params` field should be a
+full aggregate set and if the secure parameters should be sent decoded or not.   Additionally, `ExcludeParams` can
+be used to remove parameters from the machine object to reduce the size of the message.
+
+  ::
+
     Aggregate - boolean (false) - Include profile, stage, and global parameters for the machine object.
     Decode - boolean (false) - Should secure parameters be decoded.
-    ExcludeParams - array of strings ([]) - a list of parameters to exclude from the machine object.
+    ExcludeParams - list of strings ([]) - a list of parameters to exclude from the machine object.
+
+It is also possible to replace the complete message with an override.  Using the parameter, `callback/data-override`,
+an object can be sent instead.  This is an untype and undefined parameter.  This allows it to be defined as anything.
+If it is a non-string object, it will be JSON encoded and sent as the data field.  If the value is a `string`, the string
+will be run through a template rendering engine much like the bootenv renderer.  This allows for standard template injection.
+See the rendering section below.
 
 If the web request returns an error code larger than or equal to 400, the action returns that error.
 
@@ -31,8 +63,76 @@ is provided to use as the task for the stage.  This stage is placed in a workflo
 indicate to external services what state a machine is in.  Additional parameters can be added to
 the stage to augment the machine object that is posted to the external service.
 
-
 Additionally, the callback plugin can be used to notify a callback when the machine's current job fails.
 If the callback map contains "jobfail" as a registered callback, the callback plugin will issue
 the callback with the machine object.
 
+The callback tasks can be skipped by setting the `callback/skip` parameter to `true`.  This applies
+to the default esxi and standard callback tasks.  Custom tasks need to make sure to check that parameter
+for it to be applied.
+
+Rendering functions that are available to the URL and data templating are similar to the bootenv rendering system.
+Here is a list of the functions:
+
+  ::
+
+    Machine Fields - the fields on the Machine object are available to reference.
+    Param <parameter name> - returns the value of the Param defined by <parameter name>
+    ParamExpand <parameter name> - Returns the value of the Param after running through the renderer.
+    ParamAsYAML <parameter name> - Returns the parameter rendered as YAML.
+    ParamAsJSON <parameter name> - Returns the parameter rendered as JSON.
+    ParamExists <parameter name> - return true if the Param exists on the machine.
+    HexAddress - Returns the Hex form of the Machine.Address field
+    ShortName - Returns the first section of the Machine.Name (dot separated)
+    Path - Returns the machine's specific file path in the bootenv rendering space.
+    Url - Returns the machine's specific file path as a Fileserver URL.
+    HasProfile <profile name> - Returns true if the machine has the specified profile.
+    MacAddr <optional format> - Returns the first mac address on the machine in the format specified.  Default
+      is `raw` (conanical form).  Other forms are `pxe` - 01-<mac `-` separated> and `rpi4` is mac separated by `-`.
+    ProvisionerAddress - The IP address of the DRP Endpoint.
+    ProvisionURL - the base URL for the fileserver space on the DRP Endpoint.
+    ApiURL - the base URL for the api server space on the DRP Endpoint.
+    Info - Returns the models.Info structure for the DRP Endpoint
+    ParseURL <segment> <url> - Returns the segment part of the specified URL
+    GetAuthString <name of auth method> - Returns the string or auth token from this auth method.  This currently on
+      supports the `exec` auth method.
+
+All of these functions are referenced as `.` functions, e.g. `.ApiURL`.
+
+While the plugin defines callbacks above, authentication methods can also be specified in the `Auths` map.  The `Auths`
+map defines a set of named Auth structures.  These auth structures look like the following:
+
+  ::
+
+    AuthType - string - One of basic, json-token, or exec.
+
+For `exec` types of Auth, the following fields are used.
+
+  ::
+
+    Path - string - the path to an executable to be executed to retrieve a single string.  This string will have leading
+      and trailing space removed.  When used as a callback auth, the string will be assumed to be Bearer Auth token.  When
+      used for `GetAuthString`, the string will be inject in place as is.
+
+For `basic` types of Auth, the following fields are used.
+
+  ::
+
+    Username - string - The username to use
+    Password - string - The password to use
+
+For `json-token` type of Auth, the following fields are used.
+
+  ::
+
+    Url - string - URL of API Endpoint to request a json structure.
+    Method - string - Method for AUTH request
+    Data - string - Data to send on auth request - not templatized.
+    Query - string - QueryString to send for auth request - not templatized.
+    TokenField - string - Name of top-level field of JSON blob to get the token from.
+    DurationField - string - Name of top-level field holding an integer value that defines the duration in seconds of the token.  This is optional.
+    Retry - int (0) - Number of retries before declaring a failure.
+    Timeout - int (7200) - Timeout total time in seconds for the auth request
+    Delay - int (0) - The number of seconds to wait between retries.
+
+Upon successful, return the token will be cached for the `DurationField` time if specified.

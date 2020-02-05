@@ -1,0 +1,13 @@
+Description: Skip the callback action task.  Automatic success.
+Documentation: |
+  When set to true, the callback action will be skip in the default tasks.
+
+  The default for this parameter is false.
+Meta:
+  color: blue
+  icon: "volume up"
+  title: RackN
+Name: callback/skip
+Schema:
+  type: boolean
+  default: false

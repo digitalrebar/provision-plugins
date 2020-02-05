@@ -13,6 +13,10 @@ Schema:
     properties:
       Auth:
         type: string
+      Auths:
+        type: array
+        items:
+          type: string
       Url:
         type: string
       Method:

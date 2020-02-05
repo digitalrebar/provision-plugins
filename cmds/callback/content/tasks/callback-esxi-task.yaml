@@ -24,6 +24,10 @@ Templates:
       import os, urllib, urllib.request, socket, ssl, time
       url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}/actions/callbackDo?plugin={{.Param "callback/plugin" }}'
 
+      {{ if .Param "callback/skip" }}
+      exit(0)
+      {{ end }}
+
       print(url)
 
       # Create the json blob needed to call the action
