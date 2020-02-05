@@ -20,7 +20,12 @@ Templates:
     # Get access and who we are.
     {{template "setup.tmpl" .}}
 
-    {{if .ParamExists "callback/action" }}
+    {{ if .Param "callback/skip" }}
+    echo "Skip callback is true - skip the action"
+    exit 0
+    {{ end }}
+
+    {{ if .ParamExists "callback/action" }}
     action="{{.Param "callback/action" }}"
     echo "Generate callback - $action"
     drpcli machines runaction $RS_UUID callbackDo --plugin "{{.Param "callback/plugin" }}" callback/action "$action"
