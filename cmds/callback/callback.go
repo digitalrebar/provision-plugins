@@ -18,6 +18,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -64,6 +65,7 @@ var (
 
 type callback struct {
 	Auth          string
+	Auths         []string
 	Url           string
 	Method        string
 	Retry         int
@@ -76,7 +78,10 @@ type callback struct {
 }
 
 type auth struct {
-	AuthType string // basic, json-token
+	AuthType string // basic, json-token, exec
+
+	// Exec Path - should just return a string to use as password - it will be trimmed.
+	Path string
 
 	// Basic info
 	Username string
@@ -86,7 +91,7 @@ type auth struct {
 	Url           string // URL for auth
 	Method        string // Method for AUTH
 	Data          string // Data to send for auth
-	Query         string // QuerryString to send for auth
+	Query         string // QueryString to send for auth
 	TokenField    string // string field
 	DurationField string // int field
 	Retry         int    // Retry count
@@ -175,7 +180,7 @@ func (p *Plugin) getJsonToken(l logger.Logger, auth *auth) (string, error) {
 	et := time.Now().Add(time.Duration(dt) * time.Second)
 
 auth_retry:
-	count += 1
+	count++
 	if count > 0 && auth.Delay > 0 {
 		time.Sleep(time.Duration(auth.Delay) * time.Second)
 	}
@@ -275,6 +280,38 @@ auth_retry:
 	return out, nil
 }
 
+func getExecString(l logger.Logger, auth *auth) (string, error) {
+	out, cerr := exec.Command(auth.Path).CombinedOutput()
+	if cerr != nil {
+		e := utils.MakeError(400, fmt.Sprintf("Failed to execute: %s", auth.Path))
+		e.AddError(fmt.Errorf("out: %s", string(out)))
+		e.AddError(cerr)
+		return "", e
+	}
+	return strings.TrimSpace(string(out)), nil
+}
+
+func (p *Plugin) getExecBearer(l logger.Logger, auth *auth) (string, error) {
+	/*
+		Path          string // URL for auth
+	*/
+	out := fmt.Sprintf("getExecBearer: %s\n", auth.Path)
+	val, err := getExecString(l, auth)
+	if err != nil {
+		e := utils.MakeError(400, "Failed to get auths")
+		e.AddError(fmt.Errorf("out: %s", out))
+		e.AddError(err)
+		return "", e
+	}
+	out += fmt.Sprintf("getExecString response: %s\n", val)
+
+	tval := 3600
+	auth.bearerCache = val
+	auth.bearerCacheTimeout = 3 * tval / 4
+	auth.bearerCacheLookupTime = time.Now()
+	return out, nil
+}
+
 func (p *Plugin) postTrigger(l logger.Logger, machine *models.Machine, overrideData interface{}, action string) (answer interface{}, err *models.Error) {
 	cb, ok := p.callbacks[action]
 	if !ok {
@@ -282,9 +319,21 @@ func (p *Plugin) postTrigger(l logger.Logger, machine *models.Machine, overrideD
 		answer = fmt.Sprintf("Callback attempted, but skipped because action unknown: %s", action)
 		return
 	}
-	var auth *auth
+	var auths []*auth
 	if a, ok := p.auths[cb.Auth]; ok {
-		auth = a
+		auths = append(auths, a)
+	}
+	if cb.Auths != nil {
+		for _, aname := range cb.Auths {
+			if a, ok := p.auths[aname]; ok {
+				auths = append(auths, a)
+			}
+		}
+	}
+	var cauth *auth
+	authindex := 0
+	if len(auths) > 0 {
+		cauth = auths[authindex]
 	}
 
 	count := -1
@@ -296,7 +345,7 @@ func (p *Plugin) postTrigger(l logger.Logger, machine *models.Machine, overrideD
 
 	out := fmt.Sprintf("Doing %s callback\n", action)
 cb_retry:
-	count += 1
+	count++
 	if count > 0 && cb.Delay > 0 {
 		time.Sleep(time.Duration(cb.Delay) * time.Second)
 	}
@@ -338,7 +387,7 @@ cb_retry:
 		s, ok := overrideData.(string)
 		if ok {
 			var rerr error
-			overrideData, rerr = Render(p.drpClient, s, machine, info)
+			overrideData, rerr = Render(l, p.auths, p.drpClient, s, machine, info)
 			if rerr != nil {
 				err = utils.ConvertError(400, rerr)
 				return
@@ -355,7 +404,7 @@ cb_retry:
 		return
 	}
 
-	localUrl, uerr := Render(p.drpClient, cb.Url, machine, info)
+	localUrl, uerr := Render(l, p.auths, p.drpClient, cb.Url, machine, info)
 	if uerr != nil {
 		err = utils.ConvertError(400, uerr)
 		return
@@ -365,30 +414,59 @@ cb_retry:
 	out += fmt.Sprintf("url: %s %s\n", localUrl, cb.Method)
 	req, _ := http.NewRequest(cb.Method, localUrl, bytes.NewBuffer(buf2))
 
-	if auth != nil {
-		out += fmt.Sprintf("auth: %s\n", auth.AuthType)
-		switch auth.AuthType {
+	if cauth != nil {
+		out += fmt.Sprintf("auth: %s\n", cauth.AuthType)
+		switch cauth.AuthType {
 		case "basic":
-			req.SetBasicAuth(auth.Username, auth.Password)
+			req.SetBasicAuth(cauth.Username, cauth.Password)
 		case "json-token":
 			// JSON Token Blob / Bearer
-			if auth.bearerCache == "" ||
-				time.Now().Sub(auth.bearerCacheLookupTime) > time.Duration(auth.bearerCacheTimeout)*time.Second {
-				jout, jterr := p.getJsonToken(l, auth)
+			if cauth.bearerCache == "" ||
+				time.Now().Sub(cauth.bearerCacheLookupTime) > time.Duration(cauth.bearerCacheTimeout)*time.Second {
+				jout, jterr := p.getJsonToken(l, cauth)
 				if jterr != nil {
-					if count < cb.Retry {
+					cauth.bearerCache = ""
+					out += fmt.Sprintf("Auth[%d] failed: %v\n", authindex, jterr)
+					authindex++
+					if authindex < len(auths) {
+						cauth = auths[authindex]
+						count = -1
 						goto cb_retry
 					}
-					e := utils.MakeError(400, "Failed to get auth")
+					e := utils.MakeError(400, "Failed to get auths")
 					e.AddError(fmt.Errorf("out: %s", out))
 					e.AddError(jterr)
 					return "", e
 				}
 				out += jout
 			}
-			out += fmt.Sprintf("token: %s\n", auth.bearerCache)
-			req.Header.Set("Authentication", fmt.Sprintf("Bearer %s", auth.bearerCache))
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", auth.bearerCache))
+			out += fmt.Sprintf("token: %s\n", cauth.bearerCache)
+			req.Header.Set("Authentication", fmt.Sprintf("Bearer %s", cauth.bearerCache))
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cauth.bearerCache))
+		case "exec":
+			// Exec program to get a string that is a bearer token.
+			if cauth.bearerCache == "" ||
+				time.Now().Sub(cauth.bearerCacheLookupTime) > time.Duration(cauth.bearerCacheTimeout)*time.Second {
+				jout, jterr := p.getExecBearer(l, cauth)
+				if jterr != nil {
+					cauth.bearerCache = ""
+					out += fmt.Sprintf("Auth[%d] failed: %v\n", authindex, jterr)
+					authindex++
+					if authindex < len(auths) {
+						cauth = auths[authindex]
+						count = -1
+						goto cb_retry
+					}
+					e := utils.MakeError(400, "Failed to get auths")
+					e.AddError(fmt.Errorf("out: %s", out))
+					e.AddError(jterr)
+					return "", e
+				}
+				out += jout
+			}
+			out += fmt.Sprintf("token: %s\n", cauth.bearerCache)
+			req.Header.Set("Authentication", fmt.Sprintf("Bearer %s", cauth.bearerCache))
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cauth.bearerCache))
 		}
 	}
 
@@ -434,6 +512,15 @@ cb_retry:
 	if resp2.StatusCode >= 400 {
 		if count < cb.Retry {
 			goto cb_retry
+		}
+		if resp2.StatusCode == 401 || resp2.StatusCode == 403 {
+			// If more auths, try them.
+			authindex++
+			if authindex < len(auths) {
+				cauth = auths[authindex]
+				count = -1
+				goto cb_retry
+			}
 		}
 		err = utils.MakeError(resp2.StatusCode, fmt.Sprintf("Callback API returned %d", resp2.StatusCode))
 		err.AddError(fmt.Errorf("out: %s", out))

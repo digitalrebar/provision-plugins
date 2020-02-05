@@ -25,6 +25,9 @@ Schema:
         enum:
           - basic
           - json-token
+          - exec
+      Path:
+        type: string
       Url:
         type: string
       Method:

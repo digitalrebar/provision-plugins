@@ -9,6 +9,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	yaml "gopkg.in/yaml.v2"
@@ -26,6 +27,8 @@ type RenderData struct {
 	Machine   *rMachine // The Machine that the template is being rendered for.
 	info      *models.Info
 	drpClient *api.Client
+	l         logger.Logger
+	auths     map[string]*auth
 }
 
 // HexAddress returns Address in raw hexadecimal format, suitable for
@@ -195,7 +198,15 @@ func (r *RenderData) ParamExists(key string) bool {
 	return err == nil
 }
 
-func Render(drpClient *api.Client, data string, machine *models.Machine, info *models.Info) (string, error) {
+func (r *RenderData) GetAuthString(authName string) (string, error) {
+	auth, ok := r.auths[authName]
+	if !ok {
+		return "", fmt.Errorf("Failed to find %s in auths for plugin", authName)
+	}
+	return getExecString(r.l, auth)
+}
+
+func Render(l logger.Logger, auths map[string]*auth, drpClient *api.Client, data string, machine *models.Machine, info *models.Info) (string, error) {
 	tmpl, err := template.New("tmp").Funcs(models.DrpSafeFuncMap()).Parse(data)
 	if err != nil {
 		return "", err
@@ -208,7 +219,13 @@ func Render(drpClient *api.Client, data string, machine *models.Machine, info *m
 
 	// GREG: fix info.Address to non-loopback
 
+	if auths == nil {
+		auths = map[string]*auth{}
+	}
+
 	rd := &RenderData{
+		l:         l,
+		auths:     auths,
 		Machine:   &rMachine{Machine: machine, currMac: currMac},
 		info:      info,
 		drpClient: drpClient,
