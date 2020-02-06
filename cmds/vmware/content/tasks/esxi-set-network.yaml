@@ -58,7 +58,7 @@ Templates:
       UPLINK=$(esxcfg-vswitch --list | grep "Management Network" | head -1 | awk ' { print $NF } ')
       VSWITCH=$(esxcfg-vswitch --list | grep -v "^ " | grep "${UPLINK}" | head -1 | awk ' { print $1 } ')
       SET_MTU_VSW="esxcfg-vswitch --mtu={{ .Param "esxi/network-firstboot-mtu" }} $VSWITCH"
-      SET_MTU_VMK="esxcli --mtu={{ .Param "esxi/network-firstboot-mtu" }} --interface-name=$VMK"
+      SET_MTU_VMK="esxcli network ip interface set --mtu={{ .Param "esxi/network-firstboot-mtu" }} --interface-name=$VMK"
       {{ end -}}
 
       [[ -n "$SET_VLAN_MGMT" ]] && eval ${SET_VLAN_MGMT}
