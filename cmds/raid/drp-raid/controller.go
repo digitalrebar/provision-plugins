@@ -50,12 +50,58 @@ func (c Controllers) Less(i, j int) bool {
 // ToVolSpecs translates the current present virtual disks to a list of
 // VolSpecs that shouls be comparable to a user-provided VolSpec to determine
 // whether we need to take action.
-func (c Controllers) ToVolSpecs() VolSpecs {
+//
+// specific defines if it should return a non-disk specific format or not.
+// true means exact disk description.  false means generalize.
+func (c Controllers) ToVolSpecs(specific bool) VolSpecs {
 	res := VolSpecs{}
 	for _, controller := range c {
+		tvols := VolSpecs{}
+		raidS := false
+		jbod := false
+		encrypt := false
 		for _, v := range controller.Volumes {
-			res = append(res, v.VolSpec())
+			tv := v.VolSpec()
+			if !specific && tv.RaidLevel == "raid0" && len(tv.Disks) == 1 {
+				if tv.Encrypt {
+					encrypt = true
+				}
+				raidS = true
+				continue
+			}
+			if !specific && tv.RaidLevel == "jbod" && len(tv.Disks) == 1 {
+				jbod = true
+				continue
+			}
+			tvols = append(tvols, tv)
 		}
+		if !specific {
+			// Convert the disks to counts
+			for _, v := range tvols {
+				v.DiskCount = fmt.Sprintf("%d", len(v.Disks))
+				v.Disks = VolSpecDisks{}
+			}
+			if raidS {
+				tvol := &VolSpec{
+					Controller: controller.idx,
+					RaidLevel:  "raidS",
+					DiskCount:  "max",
+					Encrypt:    encrypt,
+				}
+				tvols = append(tvols, tvol)
+			}
+			if jbod {
+				tvol := &VolSpec{
+					Controller: controller.idx,
+					RaidLevel:  "jbod",
+					DiskCount:  "max",
+					Encrypt:    encrypt,
+				}
+				tvols = append(tvols, tvol)
+			}
+		}
+
+		res = append(res, tvols...)
 	}
 	sort.Stable(res)
 	return res

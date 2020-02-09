@@ -1,6 +1,9 @@
 package main
 
-import "sort"
+import (
+	"sort"
+	"strconv"
+)
 
 // Volume represents a RAID array
 type Volume struct {
@@ -23,7 +26,6 @@ type Volume struct {
 
 func (v *Volume) VolSpec() *VolSpec {
 	res := &VolSpec{
-		Controller: v.controller.idx,
 		VolumeID:   v.ID,
 		RaidLevel:  v.RaidLevel,
 		Name:       v.Name,
@@ -31,6 +33,11 @@ func (v *Volume) VolSpec() *VolSpec {
 		StripeSize: sizeStringer(v.StripeSize),
 		Disks:      make([]VolSpecDisk, len(v.Disks)),
 		Fake:       v.Fake,
+	}
+	if v.controller == nil {
+		res.Controller, _ = strconv.Atoi(v.ControllerID)
+	} else {
+		res.Controller = v.controller.idx
 	}
 	for i := range v.Disks {
 		res.Disks[i] = VolSpecDisk{

@@ -1,0 +1,10 @@
+---
+Name: raid-baseline-generic
+Description: Should the raid baseline be a generic volume
+Schema:
+  type: boolean
+  default: true
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"

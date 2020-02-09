@@ -30,7 +30,7 @@ type session struct {
 	errors        bool
 }
 
-func Session() *session {
+func newSession() *session {
 	return &session{in: os.Stdin, out: os.Stdout, log: log.New(os.Stderr, "", 0)}
 }
 
@@ -151,11 +151,11 @@ func (s *session) Controllers(src string) *session {
 	return s
 }
 
-func (s *session) CurrentSpecs() VolSpecs {
+func (s *session) CurrentSpecs(specific bool) VolSpecs {
 	if fake {
 		return VolSpecs{}
 	}
-	return s.controllers.ToVolSpecs()
+	return s.controllers.ToVolSpecs(specific)
 }
 
 func (s *session) WantedSpecs() *session {
@@ -213,7 +213,7 @@ func (s *session) Diff() (map[string]VolSpecs, error) {
 		return nil, fmt.Errorf("Must Compile wanted specs first")
 	}
 	rm := VolSpecs{}
-	current := s.CurrentSpecs().ByKey()
+	current := s.CurrentSpecs(true).ByKey()
 	wanted := s.compiledSpecs.ByKey()
 	same := map[string]struct{}{}
 	for k := range wanted {
@@ -259,7 +259,7 @@ func (s *session) Configure(doAppend, force bool) {
 		return
 	}
 	if doAppend {
-		s.inSpecs = append(s.CurrentSpecs(), s.inSpecs...)
+		s.inSpecs = append(s.CurrentSpecs(true), s.inSpecs...)
 	}
 	s.Compile()
 	if s.HasError() {
@@ -302,9 +302,10 @@ func (s *session) Configure(doAppend, force bool) {
 }
 
 func main() {
-	var volspecs, config, clear, force, compile, compare, addthem, encrypt bool
+	var volspecs, config, clear, force, compile, compare, addthem, encrypt, generic bool
 	var controllerFile string
 	var password, key string
+	flag.BoolVar(&generic, "generic", false, "Output volspecs in generic format")
 	flag.BoolVar(&volspecs, "volspecs", false, "Output volspecs for all currently configured RAID volumes")
 	flag.BoolVar(&config, "configure", false, "Configure volumes on raid controllers to match volspecs on stdin")
 	flag.BoolVar(&compare, "compare", false, "Compare current config with passed-in volspecs")
@@ -317,7 +318,7 @@ func main() {
 	flag.BoolVar(&addthem, "append", false, "Add new volumes to existing ones")
 	flag.StringVar(&controllerFile, "controller", "", "Controller json file for testing")
 	flag.Parse()
-	s := Session().Controllers(controllerFile)
+	s := newSession().Controllers(controllerFile)
 	s.ExitOnError()
 	if compare {
 		cmp, err := s.Compile().Diff()
@@ -333,7 +334,7 @@ func main() {
 		}
 	}
 	if volspecs {
-		s.PrettyPrint(s.CurrentSpecs())
+		s.PrettyPrint(s.CurrentSpecs(!generic))
 		os.Exit(0)
 	}
 	if clear {

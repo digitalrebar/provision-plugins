@@ -13,4 +13,7 @@ Templates:
       #!/usr/bin/env bash
       {{template "setup.tmpl" .}}
       echo "Gathering configuration:"
-      drp-raid -volspecs | drpcli machines set {{.Machine.UUID}} param raid-target-config to -
+      {{if .Param "raid-baseline-generic" }}
+      GENERIC="-generic"
+      {{end}}
+      drp-raid -volspecs $GENERIC | drpcli machines set {{.Machine.UUID}} param raid-target-config to -
