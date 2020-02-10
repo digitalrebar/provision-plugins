@@ -7,25 +7,6 @@ rackn_dir = "{{ .Param "esxi/install-datastore" }}/rackn"
 if not os.path.isdir(rackn_dir):
     os.mkdir(rackn_dir)
 
-agent_output_log = {{ if .ParamExists "esxi/drpy-agent-log" }}"{{ .Param "esxi/drpy-agent-log"}}"{{ else }}rackn_dir + "/drpy.log"{{ end }}
-
-### set up our config file from templaets
-conf_file_name = {{ if .ParamExists "esxi/drpy-agent-conf" }}"{{ .Param "esxi/drpy-agent-conf"}}"{{ else }}rackn_dir + "/drpy.conf"{{ end }}
-print('Setting drpy-agent-conf file to: ' + conf_file_name)
-# base64 encoded version of the DRPY VIB
-conf_file_content = """{{ template "drpy-agent.conf.tmpl" .}}"""
-
-if not conf_file_content:
-  sys.exit('No DRPY conf file rendered from template "drpy-agent.conf.tmpl".')
-
-try:
-   with open(conf_file_name,"w+") as f:
-        f.write(conf_file_content)
-except Exception as e:
-   print(str(e))
-
-print("Wrote configuration file '" + conf_file_name + "' for Agent.")
-
 ### set up our base64 decoded VIB file from template (this is the VIB that contains the Agent)
 vib_file_name = {{ if .ParamExists "esxi/vib-drpy-agent" }}"{{ .Param "esxi/vib-drpy-agent"}}"{{ else }}rackn_dir + "/drpy.vib"{{ end }}
 print('Setting vib-drpy-agent to: ' + vib_file_name)
