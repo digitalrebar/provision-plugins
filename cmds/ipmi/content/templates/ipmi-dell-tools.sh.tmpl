@@ -6,6 +6,16 @@ vendor_add_user() {
     if [[ $ipmi_crossed_access_channels != true ]] ; then
         tool lan set $lan_chan access on
     fi
+    racadm=/opt/dell/srvadmin/bin/idracadm7
+    if which $racadm ; then
+        $racadm config -g cfgUserAdmin -i $configure_id -o cfgUserAdminPrivilege 0x1ff
+    else
+        echo "Dell system detected, but no $racadm binary present."
+        echo "Please rework your ipmi configure workload to make sure the"
+        echo "hardware-tools-install stage is before the ipmi-install-cert-or-key stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+    fi
 }
 
 vendor_set_hostname_dns() {
