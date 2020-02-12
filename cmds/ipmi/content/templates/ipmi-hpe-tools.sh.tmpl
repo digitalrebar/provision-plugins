@@ -2,9 +2,20 @@
 
 HP_SYSTEM=true
 
+ensure_hponcfg() {
+    [[ -x /usr/sbin/hponcfg ]] && return 0
+    echo "HP system detected, but no hponcfg binary present."
+    echo "Please rework your ipmi configure workload to make sure the"
+    echo "hardware-tools-install stage is before the ipmi-configure stage."
+    echo
+    echo "This task cannot guarantee that remote access is enabled on this system without it."
+    return 1
+}
+
+
 vendor_add_user() {
-    if [[ -x /usr/sbin/hponcfg ]]; then
-        fgrep '<IPMI_DCMI_OVER_LAN_ENABLED VALUE="Y"/>' < <(hponcfg -i <<EOI
+    ensure_hponcfg || return 0
+    fgrep '<IPMI_DCMI_OVER_LAN_ENABLED VALUE="Y"/>' < <(hponcfg -i <<EOI
 <RIBCL VERSION="2.0">
   <LOGIN USER_LOGIN="aa" PASSWORD="aa">
     <RIB_INFO MODE="read">
@@ -24,19 +35,12 @@ EOI
   </LOGIN>
 </RIBCL>
 EOI
-    else
-        echo "HP system detected, but no hponcfg binary present."
-        echo "Please rework your ipmi configure workload to make sure the"
-        echo "hardware-tools-install stage is before the ipmi-configure stage."
-        echo
-        echo "This task cannot guarantee that remote access is enabled on this system without it."
-    fi
 }
 
 vendor_set_hostname_dns() {
+    ensure_hponcfg || return 0
     # Configure the DNS and HOSTNAME
-    if [[ -x /usr/sbin/hponcfg ]] ; then
-        hponcfg -i <<EOF_STATIC
+    hponcfg -i <<EOF_STATIC
 <RIBCL VERSION="2.1">
   <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
     <RIB_INFO MODE="write">
@@ -113,30 +117,23 @@ vendor_set_hostname_dns() {
   </LOGIN>
 </RIBCL>
 EOF_STATIC
-    else
-        echo "HP system detected, but no hponcfg binary present."
-        echo "Please rework your ipmi configure workload to make sure the"
-        echo "hardware-tools-install stage is before the ipmi-configure stage."
-        echo
-        echo "This task cannot guarantee that remote access is enabled on this system without it."
-    fi
 }
 
 vendor_generate_csr() {
-    if [[ -x /usr/sbin/hponcfg ]] ; then
-        echo "currently generating" > jj.txt
-        COUNT=0
-        while fgrep 'currently generating' jj.txt ; do
-            if (( $COUNT > 1 )) ; then
-                echo "Waiting for ILO to finish generating CSR"
-                sleep 15
-            fi
-            if (( $COUNT > 20 )) ; then
-                echo "Failed to generate certificate..."
-                cat jj.txt
-                exit 1
-            fi
-            hponcfg -i > jj.txt 2>&1 <<EOF_STATIC
+    ensure_hponcfg || return 0
+    echo "currently generating" > jj.txt
+    COUNT=0
+    while fgrep 'currently generating' jj.txt ; do
+        if (( $COUNT > 1 )) ; then
+            echo "Waiting for ILO to finish generating CSR"
+            sleep 15
+        fi
+        if (( $COUNT > 20 )) ; then
+            echo "Failed to generate certificate..."
+            cat jj.txt
+            exit 1
+        fi
+        hponcfg -i > jj.txt 2>&1 <<EOF_STATIC
 <RIBCL VERSION="2.0">
   <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
     <RIB_INFO MODE="write">
@@ -154,25 +151,16 @@ vendor_generate_csr() {
   </LOGIN>
 </RIBCL>
 EOF_STATIC
-            COUNT=$((COUNT+1))
-        done
-
-        csplit -f cert- jj.txt '%-----BEGIN CERTIFICATE REQUEST-----%' '/<\/CERTIFICATE_SIGNING_REQUEST>/' '{*}'
-
-        drpcli machines set $RS_UUID param ipmi/csr to "$(cat cert-00 | jq -sR .)"
-        rm -f jj.txt cert-*
-    else
-        echo "HP system detected, but no hponcfg binary present."
-        echo "Please rework your ipmi configure workload to make sure the"
-        echo "hardware-tools-install stage is before the ipmi-configure stage."
-        echo
-      echo "This task cannot guarantee that remote access is enabled on this system without it."
-    fi
+        COUNT=$((COUNT+1))
+    done
+    csplit -f cert- jj.txt '%-----BEGIN CERTIFICATE REQUEST-----%' '/<\/CERTIFICATE_SIGNING_REQUEST>/' '{*}'
+    drpcli machines set $RS_UUID param ipmi/csr to "$(cat cert-00 | jq -sR .)"
+    rm -f jj.txt cert-*
 }
 
 vendor_install_cert() {
-    if [[ -x /usr/sbin/hponcfg ]] ; then
-        hponcfg -i <<EOF_STATIC
+    ensure_hponcfg || return 0
+    hponcfg -i <<EOF_STATIC
 <RIBCL VERSION="2.1">
   <LOGIN USER_LOGIN="Administrator" PASSWORD="password">
     <RIB_INFO MODE="write">
@@ -186,13 +174,5 @@ vendor_install_cert() {
   </LOGIN>
 </RIBCL>
 EOF_STATIC
-
-    else
-        echo "HP system detected, but no hponcfg binary present."
-        echo "Please rework your ipmi configure workload to make sure the"
-        echo "hardware-tools-install stage is before the ipmi-configure stage."
-        echo
-        echo "This task cannot guarantee that remote access is enabled on this system without it."
-    fi
 }
 
