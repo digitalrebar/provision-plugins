@@ -470,8 +470,9 @@ ipmi_user_configured() {
     drpcli machines runaction "$RS_UUID" powerstatus ipmi/username "$1" ipmi/password "$2" &>/dev/null || false
 }
 
+{{ if (.Param "ipmi/configure/user") -}}
 # Do the config actions - configure user
-if [[ $IPMI_CONFIGURE_USER == true ]] && ! ipmi_user_configured "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD"; then
+if ! ipmi_user_configured "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD"; then
     echo "Configure USER account $IPMI_CONFIGURE_USERNAME"
     configure_user "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD" $IPMI_CONFIGURE_USERID
     if [[ $IPMI_SERVICE_USER != true ]]; then
@@ -479,88 +480,95 @@ if [[ $IPMI_CONFIGURE_USER == true ]] && ! ipmi_user_configured "$IPMI_CONFIGURE
         drpcli machines set $RS_UUID param ipmi/password to "$IPMI_CONFIGURE_PASSWORD"
     fi
 fi
-
-if [[ $IPMI_SERVICE_USER = true ]] && ! ipmi_user_configured dr-provision "$IPMI_PASSWORD"; then
+{{ else }}
+echo "ipmi/configure/user not set, skipping user creation"
+{{- end }}
+{{ if (.Param "ipmi/service-user") -}}
+if ! ipmi_user_configured dr-provision "$IPMI_PASSWORD"; then
     echo "Creating service account for dr-provision"
     auto_password="dR$(random_password)0!"
     configure_user dr-provision "$auto_password"
     drpcli machines set $RS_UUID param ipmi/username to dr-provision
     drpcli machines set $RS_UUID param ipmi/password to "$auto_password"
 fi
+{{ else }}
+echo "ipmi/service-user not set, skupping service user creation"
+{{- end }}
 
+{{ if (.Param "ipmi/configure/network") -}}
 # Do the config actions - configure network
-if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
-    echo "Configure Network"
+echo "Configure Network"
 
-    # First is this a dell system.  If so, set shared or dedicated.
-    if [[ $ipmi_dell_dedicated_nic == true && $IPMI_CONFIGURE_PORT != "" ]] ; then
-        if [[ $(tool delloem lan get) != $IPMI_CONFIGURE_PORT ]]; then
-            echo "Setting DELL iDrac port to $IPMI_CONFIGURE_PORT mode"
-            tool delloem lan set $IPMI_CONFIGURE_PORT
-            configured=true
-        fi
+# First is this a dell system.  If so, set shared or dedicated.
+if [[ $ipmi_dell_dedicated_nic == true && $IPMI_CONFIGURE_PORT != "" ]] ; then
+    if [[ $(tool delloem lan get) != $IPMI_CONFIGURE_PORT ]]; then
+        echo "Setting DELL iDrac port to $IPMI_CONFIGURE_PORT mode"
+        tool delloem lan set $IPMI_CONFIGURE_PORT
+        configured=true
     fi
+fi
 
-    if [[ $IPMI_CONFIGURE_RESERVE_IP == true && $IPMI_CONFIGURE_ADDRESS != "" ]] ; then
-        # Need to reserve an IP.
-        MACADDR=${lan_info["macaddr"]}
-        if [[ $(drpcli reservations show $IPMI_CONFIGURE_ADDRESS |jq -r '.Token' ) != $MACADDR ]]; then
-            data="{ \"Strategy\": \"MAC\", \"Addr\": \"$IPMI_CONFIGURE_ADDRESS\", \"Token\": \"$MACADDR\" }"
-            drpcli reservations create "$data"
-
-            echo "Reserving (specified) $IPMI_CONFIGURE_ADDRESS for ${lan_info["macaddr"]}"
-        fi
-    elif [[ $IPMI_CONFIGURE_RESERVE_IP == true && $IPMI_CONFIGURE_IP_MODE == "static" ]] ; then
-
-        echo "This mode is not currently supported!!!"
-        IPMI_CONFIGURE_FAIL=true
-        disable_ipmi
-
-        # We are told to pick an address from something some how.
-        IPMI_CONFIGURE_ADDRESS="FILL IN SOMETHING HERE ONE DAY"
-        MACADDR=${lan_info["macaddr"]}
+if [[ $IPMI_CONFIGURE_RESERVE_IP == true && $IPMI_CONFIGURE_ADDRESS != "" ]] ; then
+    # Need to reserve an IP.
+    MACADDR=${lan_info["macaddr"]}
+    if [[ $(drpcli reservations show $IPMI_CONFIGURE_ADDRESS |jq -r '.Token' ) != $MACADDR ]]; then
         data="{ \"Strategy\": \"MAC\", \"Addr\": \"$IPMI_CONFIGURE_ADDRESS\", \"Token\": \"$MACADDR\" }"
         drpcli reservations create "$data"
-        echo "Reserving (static) $IPMI_CONFIGURE_ADDRESS for ${lan_info["macaddr"]}"
+        echo "Reserving (specified) $IPMI_CONFIGURE_ADDRESS for ${lan_info["macaddr"]}"
     fi
+elif [[ $IPMI_CONFIGURE_RESERVE_IP == true && $IPMI_CONFIGURE_IP_MODE == "static" ]] ; then
 
+    echo "This mode is not currently supported!!!"
+    IPMI_CONFIGURE_FAIL=true
+    disable_ipmi
 
-    if [[ $IPMI_CONFIGURE_IP_MODE == dhcp ]] ; then
-        if [[ ${lan_info["ipsrc"]} != "DHCP Address" ]] ; then
-            tool lan set $lan_chan ipsrc dhcp
-            configured=true
-        fi
-    elif [[ $IPMI_CONFIGURE_IP_MODE == "static" ]] ; then
-        if [[ $IPMI_CONFIGURE_ADDRESS == "" || $IPMI_CONFIGURE_NETMASK == "" ]] ; then
-            echo "Address and Mask must be specified to configure IPMI IP address"
-            IPMI_CONFIGURE_FAIL=true
-            disable_ipmi
-        fi
-
-        if [[ ${lan_info["ipsrc"]} != "Static Address" ]] ; then
-            tool lan set $lan_chan ipsrc static
-            configured=true
-        fi
-
-        if [[ ${lan_info["ipaddr"]} != $IPMI_CONFIGURE_ADDRESS ]] ; then
-            tool lan set $lan_chan ipaddr $IPMI_CONFIGURE_ADDRESS
-            configured=true
-        fi
-
-        if [[ ${lan_info["netmask"]} != $IPMI_CONFIGURE_NETMASK ]] ; then
-            tool lan set $lan_chan netmask $IPMI_CONFIGURE_NETMASK
-            configured=true
-        fi
-
-        if [[ ${lan_info["defgw ipaddr"]} != $IPMI_CONFIGURE_GATEWAY && $IPMI_CONFIGURE_GATEWAY != "" ]] ; then
-            tool lan set $lan_chan defgw ipaddr $IPMI_CONFIGURE_GATEWAY
-            configured=true
-        fi
-    fi
-
-    # Configure the DNS and HOSTNAME
-    vendor_set_hostname_dns
+    # We are told to pick an address from something some how.
+    IPMI_CONFIGURE_ADDRESS="FILL IN SOMETHING HERE ONE DAY"
+    MACADDR=${lan_info["macaddr"]}
+    data="{ \"Strategy\": \"MAC\", \"Addr\": \"$IPMI_CONFIGURE_ADDRESS\", \"Token\": \"$MACADDR\" }"
+    drpcli reservations create "$data"
+    echo "Reserving (static) $IPMI_CONFIGURE_ADDRESS for ${lan_info["macaddr"]}"
 fi
+
+
+if [[ $IPMI_CONFIGURE_IP_MODE == dhcp ]] ; then
+    if [[ ${lan_info["ipsrc"]} != "DHCP Address" ]] ; then
+        tool lan set $lan_chan ipsrc dhcp
+        configured=true
+    fi
+elif [[ $IPMI_CONFIGURE_IP_MODE == "static" ]] ; then
+    if [[ $IPMI_CONFIGURE_ADDRESS == "" || $IPMI_CONFIGURE_NETMASK == "" ]] ; then
+        echo "Address and Mask must be specified to configure IPMI IP address"
+        IPMI_CONFIGURE_FAIL=true
+        disable_ipmi
+    fi
+
+    if [[ ${lan_info["ipsrc"]} != "Static Address" ]] ; then
+        tool lan set $lan_chan ipsrc static
+        configured=true
+    fi
+
+    if [[ ${lan_info["ipaddr"]} != $IPMI_CONFIGURE_ADDRESS ]] ; then
+        tool lan set $lan_chan ipaddr $IPMI_CONFIGURE_ADDRESS
+        configured=true
+    fi
+     if [[ ${lan_info["netmask"]} != $IPMI_CONFIGURE_NETMASK ]] ; then
+        tool lan set $lan_chan netmask $IPMI_CONFIGURE_NETMASK
+        configured=true
+    fi
+    if [[ ${lan_info["defgw ipaddr"]} != $IPMI_CONFIGURE_GATEWAY && $IPMI_CONFIGURE_GATEWAY != "" ]] ; then
+        tool lan set $lan_chan defgw ipaddr $IPMI_CONFIGURE_GATEWAY
+        configured=true
+    fi
+fi
+{{ else }}
+echo "ipmi/configure/network is not true, skipping network configuation"
+{{- end }}
+
+# Configure the DNS and HOSTNAME
+# This is independent of the rest of the network config, as it does not affect
+# basic connectifity to the BMC.
+vendor_set_hostname_dns
 
 if [[ $configured == true && $ipmi_hard_reset_after_config == true ]] ; then
     echo "BMC requires hard reset after config!!"
@@ -584,17 +592,17 @@ IPMI_IPSRC=${lan_info["ipsrc"]}
 drpcli machines set $RS_UUID param ipmi/enabled to true
 if [[ $IPMI_ADDRESS != "" ]] ; then
     drpcli machines set $RS_UUID param ipmi/address to "$IPMI_ADDRESS"
-    if [[ $IPMI_CONFIGURE_NETWORK == true ]] ; then
-        # We weren't told the IP, but DHCP, bind it.
-        if [[ $IPMI_CONFIGURE_RESERVE_IP == true && $IPMI_CONFIGURE_ADDRESS == "" ]] ; then
-            MACADDR=${lan_info["macaddr"]}
-            if [[ $(drpcli reservations show $IPMI_ADDRESS |jq -r '.Token') != $MACADDR ]]; then
-                echo "Reserving (dhcp) $IPMI_ADDRESS for ${lan_info["macaddr"]}"
-                data="{ \"Strategy\": \"MAC\", \"Addr\": \"$IPMI_ADDRESS\", \"Token\": \"$MACADDR\" }"
-                drpcli reservations create "$data"
-            fi
+{{- if (.Param "ipmi/configure/network") }}
+    # We weren't told the IP, but DHCP, bind it.
+    if [[ $IPMI_CONFIGURE_RESERVE_IP == true && $IPMI_CONFIGURE_ADDRESS == "" ]] ; then
+        MACADDR=${lan_info["macaddr"]}
+        if [[ $(drpcli reservations show $IPMI_ADDRESS |jq -r '.Token') != $MACADDR ]]; then
+            echo "Reserving (dhcp) $IPMI_ADDRESS for ${lan_info["macaddr"]}"
+            data="{ \"Strategy\": \"MAC\", \"Addr\": \"$IPMI_ADDRESS\", \"Token\": \"$MACADDR\" }"
+            drpcli reservations create "$data"
         fi
     fi
+{{- end }}
 fi
 if [[ $IPMI_NETMASK != "" ]] ; then
     drpcli machines set $RS_UUID param ipmi/netmask to "$IPMI_NETMASK"
