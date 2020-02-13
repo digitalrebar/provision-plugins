@@ -6,32 +6,34 @@
 #     * Firewall VIB has been installed and activated for API port
 #       access to the DRP Endpoint.
 #     * DRPY VIB has been installed successfully on the system
-#     * Config file has been rendered for use by DRPY
 #
 #  Above should be met by the 'esxi-drpy-vib-render.py.tmpl' template
 ###
 
 import sys, os, datetime, re
 
-# see if we golang template rendered ourself - else defaults (usually for testing)
-apiurl='{{.ApiURL}}'
 agent = "/opt/rackn/drpy/agent"
 
-if re.search(r'.ApiURL', apiurl):
-  rackn_dir = "/vmfs/volumes/datastore1/rackn"
-  agent_output_log = rackn_dir + "/drpy.log"
-  conf_file = rackn_dir + "/drpy.conf"
-else:
-  rackn_dir = '{{ .Param "esxi/install-datastore" }}/rackn'
-  agent_output_log = '{{ if .ParamExists "esxi/drpy-agent-log" }}{{ .Param "esxi/drpy-agent-log"}}{{ end }}'
-  if not str(agent_output_log):
-    agent_output_log = rackn_dir + "/drpy.log"
-  conf_file = '{{ if .ParamExists "esxi/drpy-agent-conf" }}{{ .Param "esxi/drpy-agent-conf"}}{{ end }}'
-  if not str(conf_file):
-    conf_file = rackn_dir + "/drpy.conf"
+rackn_dir = "/opt/rackn/drpy"
+agent_output_log = rackn_dir + "/drpy.log"
+conf_file = rackn_dir + "/drpy.conf"
 
 if not os.path.isdir(rackn_dir):
   os.mkdir(rackn_dir)
+
+### set up our config file from templates
+print('Setting drpy-agent-conf file to: ' + conf_file)
+conf_file_content = """{{ template "drpy-agent.conf.tmpl" .}}"""
+if not conf_file_content:
+  sys.exit('No DRPY conf file rendered from template "drpy-agent.conf.tmpl".')
+
+try:
+  with open(conf_file,"w+") as f:
+    f.write(conf_file_content)
+except Exception as e:
+  print(str(e))
+
+print("Wrote configuration file '" + conf_file + "' for Agent.")
 
 if not conf_file:
   sys.exit('No DRPY conf file found on system ("' + conf_file + '".')
