@@ -92,7 +92,7 @@ Templates:
                   unzip -j -o $archive 'Linux/MegaCli-8.07.14-1.noarch.rpm'
                   rpm2cpio MegaCli-8.07.14-1.noarch.rpm |(cd /; cpio -idmv);;
               perccli)
-                  tar -zxvf $archive 'perccli_7.3-007.0318_linux/Linux/perccli_7.3-007.0318.0000.0000-1.noarch.rpm'
+                  tar -zxvf $archive 'perccli_7.3-007.0318_linux/Linux/perccli-007.0318.0000.0000-1.noarch.rpm'
                   rpm2cpio perccli_7.3-007.0318_linux/Linux/perccli-007.0318.0000.0000-1.noarch.rpm |(cd /; cpio -idmv);;
               ssacli)
                   rpm2cpio $archive |(cd /; cpio -idmv);;
