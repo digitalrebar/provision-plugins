@@ -249,7 +249,7 @@ func (v VolSpecDisks) Remove(o VolSpecDisks) VolSpecDisks {
 // disks sharing the same physical disks.
 type VolSpec struct {
 	// RaidLevel is the type of RAID to create.  It can be any of the known RAID levels.
-	RaidLevel string
+	RaidLevel string `json:",omitempty"`
 	// Size is the desired size of the RAID level.  It can be one of:
 	//
 	//  * "min", Make a RAID volume out of the smallest disks available
@@ -261,42 +261,42 @@ type VolSpec struct {
 	//    have drp-raid pick the smallest disks
 	//
 	//  If Size is the empty string, we will assume you want the max size.
-	Size string
+	Size string `json:",omitempty"`
 	// StripeSize is the size of an individual data stripe in the RAID
 	// array.  It must be a power of two, and defaults to 64KB
-	StripeSize string
+	StripeSize string `json:",omitempty"`
 	// Name is the desired name of the RAID volume. If omitted, a
 	// unique-ish name will be created.
-	Name string
+	Name string `json:",omitempty"`
 	// VolumeID is the ID of the volume that was created using this VolSpec.
 	// It is only meaningful when reporting on existing volumes.
-	VolumeID string
+	VolumeID string `json:",omitempty"`
 	// Bootable should be set of you want this virtual disk to be the
 	// one that the RAID controller boots to by default.  This only
 	// handlles the RAID controller aspects of making a disk bootable,
 	// it deliberately does not try to handle BIOS boot sequence issues.
-	Bootable bool
+	Bootable bool `json:",omitempty"`
 	// Type is the type of disk that should be used to build the
 	// array from.  It can be one of "disk", "ssd", "disk,ssd", or
 	// "ssd,disk".  If it is unset, "disk,ssd" will be used.  The
 	// final array will only be built with disks of the same type.
-	Type string
+	Type string `json:",omitempty"`
 	// Protocol is the low-level protocol that the disks should use to
 	// talk to the RAID controller.  It can be one of "sata", "sas",
 	// "nvme", "sata,sas", "sas,sata", "nvme,sas,sata". If unset, it
 	// will default to "nvme,sas,sata" The final array will only be
 	// built with disks using the same protocol.
-	Protocol string
+	Protocol string `json:",omitempty"`
 	// Controller is the index of the controller that this VolSpec
 	// should be placed on.  drp-raid orders controllers in ascending
 	// order of their PCI address.  Since this value defaults to 0,
 	// VolSpecs will be placed on the first controller unless otherwise
 	// specified.
-	Controller int
+	Controller int `json:",omitempty"`
 	// Disks is the list of VolSpecDisks to be used to build the RAID volume.
 	// Only the Enclosure and Slot fields need to be filled out.
 	// Either this must be set or DiskCount must be non-zero.
-	Disks VolSpecDisks
+	Disks VolSpecDisks `json:",omitempty"`
 	// DiskCount is the number of disks you want to use to create the volume.
 	// It can be one of:
 	//
@@ -309,17 +309,17 @@ type VolSpec struct {
 	// * A non-zero integer specifying the number of disks to use
 	//
 	// * An empty string, in which case Disks must be populated.
-	DiskCount string
+	DiskCount string `json:",omitempty"`
 	// Encrypt indicates if the disk should be encrypted.  For some
 	// controllers, this is done after the volume is created.  For
 	// others, it just happens as part of making the controller encrypt.
-	Encrypt    bool
+	Encrypt    bool `json:",omitempty"`
 	diskCount  int
 	controller *Controller
 	compiled   bool
 	index      int // Index in the created volumes.
 	// Used to indicate this is a drp-raid created volume because of Passthru or other case.
-	Fake bool
+	Fake bool `json:",omitempty"`
 }
 
 func (v *VolSpec) Key() string {
