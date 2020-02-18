@@ -52,7 +52,7 @@ Templates:
       {{end}}
       {{end}}
       SOURCES['storcli7']='https://docs.broadcom.com/docs/007.0205.0000.0000_Unified_StorCLI.zip'
-      SOURCES['storcli6']='https://docs.broadcom.com/docs/1.23.02_StorCLI.zip'
+      SOURCES['storcli6']='https://docs.broadcom.com/docs/1.23.02_StorCLI'
       SOURCES['megacli']='https://docs.broadcom.com/docs/12351587'
       SOURCES['perccli']='https://downloads.dell.com/FOLDER04830419M/1/perccli_7.3-007.0318_linux.tar.gz'
       SOURCES['ssacli']='https://downloads.linux.hpe.com/sdr/repo/mcp/centos/7/x86_64/11.21/ssacli-3.30-14.0.x86_64.rpm'
