@@ -41,11 +41,13 @@ Templates:
       ARCHIVES['megacli']='8.07.14_MegaCLI.zip'
       ARCHIVES['perccli']='perccli_7.3-007.0318_linux.tar.gz'
       ARCHIVES['ssacli']='ssacli-3.30-14.0.x86_64.rpm'
+      ARCHIVES['mvcli']='mvcli_5.0.13.1103_A05.zip'
       URLS['storcli7']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['storcli7']}"
       URLS['storcli6']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['storcli6']}"
       URLS['megacli']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['megacli']}"
       URLS['ssacli']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['ssacli']}"
       URLS['perccli']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['perccli']}"
+      URLS['mvcli']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['mvcli']}"
       {{if .ParamExists "raid-archive-urls" }}
       {{range $key, $url := .Param "raid-archive-urls"}}
       URLS['{{$key}}']="{{$url}}"
@@ -56,12 +58,14 @@ Templates:
       SOURCES['megacli']='https://docs.broadcom.com/docs/12351587'
       SOURCES['perccli']='https://downloads.dell.com/FOLDER04830419M/1/perccli_7.3-007.0318_linux.tar.gz'
       SOURCES['ssacli']='https://downloads.linux.hpe.com/sdr/repo/mcp/centos/7/x86_64/11.21/ssacli-3.30-14.0.x86_64.rpm'
+      SOURCES['mvcli']='https://dl.dell.com/FOLDER05540516M/1/mvcli_5.0.13.1103_A05.zip'
       # TARGETS should remain relatively unchanged.
       TARGETS['storcli7']='/opt/MegaRAID/storcli7/storcli64'
       TARGETS['storcli6']='/opt/MegaRAID/storcli6/storcli64'
       TARGETS['megacli']='/opt/MegaRAID/MegaCli/MegaCli64'
       TARGETS['perccli']='/opt/MegaRAID/perccli/perccli64'
       TARGETS['ssacli']='/opt/smartstorageadmin/ssacli/bin/ssacli'
+      TARGETS['mvcli']='/usr/local/bin/mvcli'
       for k in "${!TARGETS[@]}"; do
           # The utility is already installed, nothing to do here.
           [[ -x ${TARGETS[$k]} ]] && {
@@ -96,6 +100,11 @@ Templates:
                   rpm2cpio perccli_7.3-007.0318_linux/Linux/perccli-007.0318.0000.0000-1.noarch.rpm |(cd /; cpio -idmv);;
               ssacli)
                   rpm2cpio $archive |(cd /; cpio -idmv);;
+              mvcli)
+                  unzip -o $archive
+                  cd x64/cli
+                  chmod +x *
+                  ./install.sh;;
               *)
                   echo "Unknown archive type $k"
                   false;;

@@ -13,6 +13,7 @@ Documentation: |-
   storcli6: "https://myserver/storcli6.zip"
   megacli: "https://myserver/megacli.zip"
   perccli: "https://myserver/perccli.zip"
+  mvcli: "https://myserver/mvcli.zip"
 
 Meta:
   icon: "disk outline"
