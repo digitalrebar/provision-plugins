@@ -37,6 +37,9 @@ func (pd *PhysicalDisk) Less(other *PhysicalDisk) bool {
 }
 
 func (pd *PhysicalDisk) Name() string {
+	if pd.Enclosure == "" {
+		return fmt.Sprintf("%d", pd.Slot)
+	}
 	return fmt.Sprintf("%s:%d", pd.Enclosure, pd.Slot)
 }
 
