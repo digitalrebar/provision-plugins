@@ -124,6 +124,7 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 
 	case "tower-job-status":
 		answer, err = p.towerJobStatus(ma.Model, ma.Params)
+
 	default:
 		err = &models.Error{Code: 404,
 			Model:    "plugin",
