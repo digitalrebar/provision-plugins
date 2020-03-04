@@ -50,7 +50,7 @@ Templates:
     exit 1
     {{end}}
 
-    STATUS=$(drpcli machines runaction $RS_UUID tower/job-status | jq -r .)
+    STATUS=$(drpcli machines runaction $RS_UUID tower-job-status | jq -r .)
     if [[ "$STATUS" == "NoJob" ]] ; then
         echo "Calling to invoke an ansible tower job template"
         echo drpcli machines runaction $RS_UUID tower-invoke
@@ -90,8 +90,11 @@ Templates:
 
         sleep 1
         COUNT=$((COUNT+1))
-        STATUS=$(drpcli machines runaction $RS_UUID tower/job-status | jq -r .)
+        STATUS=$(drpcli machines runaction $RS_UUID tower-job-status | jq -r .)
     done
+
+
+
 
     #  Timed out - clean up job-id
     drpcli machines remove $RS_UUID param tower/job-id || true
@@ -101,7 +104,7 @@ Templates:
   Meta:
     OS: "windows"
   Contents: |-
-    $status = cmd /c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower/job-status '2>&1' | Out-String
+    $status = cmd /c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower-job-status '2>&1' | Out-String
     $status = $status.Trim()
     $status = $status.Trim('"')
     if ($status -eq "NoJob") {
@@ -146,7 +149,7 @@ Templates:
         Write-Host "Sleeping $count out of $timeout ..."
         sleep 1
         $count++
-        $status = cmd /c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower/job-status '2>&1' | Out-String
+        $status = cmd /c \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} tower-job-status '2>&1' | Out-String
         $status = $status.Trim()
         $status = $status.Trim('"')
         Write Host "Job Status returned $status $lastExitCode"
