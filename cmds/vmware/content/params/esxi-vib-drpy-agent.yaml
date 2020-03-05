@@ -5,13 +5,12 @@ Documentation: |
   The ESXi RackN Agent (runner) is "DRPY" is a VIB file.  This Param
   defines where this VIB will be written to on the local system.
 
-  Setting this value will completely override the in-built default
+  Setting this value will completely override the default
   location which is:
 
-    * ``_esxi/install-datastore_/rackn/drpy.vib``
+    * `Determined during install time by locating the VMFS or VFFS and using /vmfs/volumes/UUID/rackn/drpy.vib`
 
-  This is not defined with a default value as we use the above Param
-  (_esxi/install-datastore_) as a base for the path.
+  This is not defined with a default value and should normally not be used.
 
 Meta:
   color: blue

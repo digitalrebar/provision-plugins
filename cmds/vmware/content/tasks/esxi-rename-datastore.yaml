@@ -5,9 +5,6 @@ Documentation: |
   This task and template renames the default datastore (``datastore1``) to a new
   value defined by the ``esxi/rename-datastore`` Param.
 
-  Note that the ``esxi/install-datastore`` Param will also be updated to the same
-  value as ``esxi/rename-datastore`` to insure subsequent references to the
-  install Param are correctly referring to the newly renamed datastore value.
 
 Meta:
   icon: "cloud"
@@ -45,8 +42,6 @@ Templates:
           localcli storage filesystem list
 
           echo ""
-          printf ">>> Setting 'esxi/install-datastore' to '$FULL_DS' ... "
-          python3 /tmp/esxi-params.py add "esxi/install-datastore" "$FULL_DS"
           echo " done !"
         else
           echo ">>> Unable to find default datastore ('datastore1') to rename in mounted list."
