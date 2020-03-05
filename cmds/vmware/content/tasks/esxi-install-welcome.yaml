@@ -14,10 +14,39 @@ Templates:
       # python3 version
       # required to run in %pre --interpreter=python (esxi firewall rules)
 
-      import os, urllib, urllib.request, socket, ssl, json, time
+      import os
+      import urllib
+      import urllib.request
+      import socket
+      import ssl
+      import json
+      import time
+      import subprocess
+
       url = '{{.ApiURL}}/api/v3/info'
 
-      ds = "{{ .Param "esxi/install-datastore" }}"
+      outobj = subprocess.run(
+          "localcli --formatter json storage filesystem list",
+          stdout=subprocess.PIPE,
+          stderr=subprocess.PIPE,
+          universal_newlines=True,
+          shell=True,
+      )
+      file_list = json.loads(outobj.stdout)
+      vmfs_list = []
+      for vmfs in file_list:
+          if vmfs["Type"] == "VFFS":
+              vmfs_list.append(vmfs)
+          elif "VMFS" in vmfs["Type"]:
+              vmfs_list.append(vmfs)
+      if len(vmfs_list) > 1:
+          # sort the list based on size so that the 0th item
+          # can always be used.
+          vmfs_list.sort(key=lambda vmfs: vmfs["Size"])
+      if len(vmfs_list) < 1:
+          print("No usable disk found. Exiting.")
+          raise SystemError
+      ds = vmfs_list[0]["Mount Point"]
 
       req = urllib.request.Request(url, method='GET')
       req.add_header('Content-Type', 'application/json')
@@ -59,7 +88,8 @@ Templates:
 
       # we have to get the version in the kickstart/install stage because if
       # switch networks on firstboot - we may not have access to the DRP endpoint
-      _v="{{ .Param "esxi/install-datastore" }}/rackn/rackn-drp-version.txt"
+      UUID_DS_PATH=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['TYPE'].lower()];print(y[0]['Mount Point'])")
+      _v="$UUID_DS_PATH/rackn/rackn-drp-version.txt"
       DRP_VERSION=$([[ -r "$_v" ]] && ( cat "$_v" | head -1 ) || echo "N/A")
       DRP_BOOTENV="{{.Machine.BootEnv}}"
       DRP_DATE="$(date)"

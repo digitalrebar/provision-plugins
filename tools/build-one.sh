@@ -8,6 +8,9 @@ exepath="$PWD/bin/$(go version | awk '{ print $4 }')"
 export PATH="$exepath:$PATH"
 exename="${1##*/}"
 [[ $GOOS = "windows" ]] && exename="${exename}.exe"
+[[ -x $exepath/go-bindata ]] || go build -o "$exepath/go-bindata" github.com/kevinburke/go-bindata/go-bindata
+export PATH="$PWD/tools/build:$PATH"
+
 mkdir -p "$binpath"
 export GO111MODULE=on
 export CGO_ENABLED=0

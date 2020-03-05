@@ -65,8 +65,8 @@ Templates:
       MIRROR="{{$mirror}}"
       echo "Patch Mirror location set to: $MIRROR"
 
-      {{ $patchDS := .Param "esxi/install-datastore" }}
-      PATCH_DS="{{$patchDS}}/rackn/patches"
+      UUID_DS_PATH=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['TYPE'].lower()];print(y[0]['Mount Point'])")
+      PATCH_DS="$UUID_DS_PATH/rackn/patches"
       [[ ! -d "$PATCH_DS" ]] && mkdir -p "$PATCH_DS"
 
       {{ $rebooted := false }}
