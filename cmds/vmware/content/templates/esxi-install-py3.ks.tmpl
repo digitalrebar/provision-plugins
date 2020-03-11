@@ -48,20 +48,25 @@ reboot --noeject
 {{ if .ParamExists "esxi/disk-install-override" }}{{ template "esxi-disk-install-override.tmpl" .}}{{ end }}
 
 %post --interpreter=python
+script_env = "post"
 {{ template "esxi-render-firewall-vib.py.tmpl" .}}
 
 %post --interpreter=python
+script_env = "post"
 {{ template "esxi-drpy-vib-render.py.tmpl" .}}
 
 %firstboot --interpreter=python
+script_env = "fb"
 {{ template "esxi-render-firewall-vib.py.tmpl" .}}
 
 %firstboot --interpreter=python
+script_env = "fb"
 {{ template "esxi-drpy-vib-render.py.tmpl" .}}
 
 {{ template "esxi-ks-custom-sections.tmpl" .}}
 
 %post --interpreter=python
+script_env = "post"
 {{ template "esxi-drpy-run.py.tmpl" .}}
 
 %firstboot --interpreter=busybox
@@ -81,7 +86,8 @@ chmod +x $RP
 /bin/nohup $RP &
 exit 0
 EOF
-cp /tmp/install-agent $RC
+mv -f /tmp/install-agent $RC
+chmod +x $RC
 
 %firstboot --interpreter=busybox
 {{ if eq (.Param "esxi/drp-port-disable") true -}}

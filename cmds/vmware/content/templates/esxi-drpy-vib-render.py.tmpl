@@ -1,31 +1,46 @@
-#!/usr/bin/env python3
 # Install the DRPY VIB and Conf file on the system - but do not start it
 
-import base64, sys, os
+import base64
+import json
+import os
+import subprocess
+import sys
+import time
+{{ template "esxi-vib-common.py.tmpl" .}}
 
-rackn_dir = "{{ .Param "esxi/install-datastore" }}/rackn"
-if not os.path.isdir(rackn_dir):
-    os.mkdir(rackn_dir)
+logfile_name = "drpy_vib-{}-{}.log".format(
+    time.strftime("%Y%m%d-%H%M%S"),
+    script_env
+)
 
+init_logging("{}/{}".format(rackn_dir, logfile_name))
 ### set up our base64 decoded VIB file from template (this is the VIB that contains the Agent)
 vib_file_name = {{ if .ParamExists "esxi/vib-drpy-agent" }}"{{ .Param "esxi/vib-drpy-agent"}}"{{ else }}rackn_dir + "/drpy.vib"{{ end }}
-print('Setting vib-drpy-agent to: ' + vib_file_name)
+logging.debug('Setting vib-drpy-agent to: ' + vib_file_name)
 vib_file_content = """{{ template "DRP-Agent.vib.base64.tmpl" .}}"""
 
 if not vib_file_content:
-  sys.exit('No base64 encoded data found in template "drpy-agent-vib.base64.tmpl".')
+  logging.error('No base64 encoded data found in template "drpy-agent-vib.base64.tmpl".')
+  raise SystemError
 
 try:
    vib_file_content=base64.b64decode(vib_file_content)
    with open(vib_file_name,"wb") as f:
         f.write(vib_file_content)
 except Exception as e:
-   print(str(e))
+    logging.exception("Failed to write drpy vib content to disk.", e)
+    raise SystemError
 
-print("Wrote base64 decoded Agent VIB to '" + vib_file_name + "' file to be installed.")
+logging.debug("Wrote base64 decoded Agent VIB to '" + vib_file_name + "' file to be installed.")
 
-print("Installing DRPY Agent VIB and starting Agent up ...")
-os.system("localcli software vib install -v " + vib_file_name  + " -f")
-print("Agent VIB install information:")
-os.system("localcli software vib get --vibname DRP-Agent")
-
+logging.debug("Installing DRPY Agent VIB and starting Agent up ...")
+vib_status = install_vib(vib_file_name)
+logging.debug("Agent VIB install information:")
+rehash = subprocess.run(
+    "localcli software vib get --vibname DRP-Agent",
+    stderr=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    shell=True,
+    universal_newlines=True,
+)
+logging.debug("Installed Vib Info: {}".format(rehash.stdout))

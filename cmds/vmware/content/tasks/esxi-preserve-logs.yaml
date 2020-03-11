@@ -13,17 +13,14 @@ Templates:
       #!/usr/bin/env sh
       {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
       # Generate a new scratch directory for this host on a Datastore
-      scratchdirectory={{ .Param "esxi/install-datastore" }}/locker
+      DS=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['TYPE'].lower()];print(y[0]['Mount Point'])")
+      scratchdirectory=$DS/locker
       # Create the scratch directory
       mkdir -p $scratchdirectory
       # Change the advanced configuration option
       vim-cmd hostsvc/advopt/update ScratchConfig.ConfiguredScratchLocation string $scratchdirectory
-
       # saves a copy of the install logs to permanent storage from /scratch
-
       echo "$(date)" >  /tmp/esxi-preserve-logs-template-run-stamp
-
-      DS={{ .Param "esxi/install-datastore" }}
       LOG_DIR="${DS}/install-logs/"
 
       mkdir -p $LOG_DIR \
