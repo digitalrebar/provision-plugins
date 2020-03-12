@@ -16,6 +16,8 @@ var allDrivers = []Driver{
 	&MegaCli{"storcli7", "/opt/MegaRAID/storcli7/storcli", 25, nil},
 	&MegaCli{"storcli6", "/opt/MegaRAID/storcli6/storcli", 50, nil},
 	&MegaCli{"megacli", "/opt/MegaRAID/MegaCli/MegaCli64", 75, nil},
+	&PercCli{"perccli", "/opt/MegaRAID/perccli/perccli64", 10, nil},
+	&MVCli{"mvcli", "/usr/local/bin/mvcli", 85, nil},
 }
 
 var fake = false
