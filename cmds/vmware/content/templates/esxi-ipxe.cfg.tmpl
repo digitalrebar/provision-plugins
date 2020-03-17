@@ -20,7 +20,7 @@ echo ========================================================
 iseq ${platform} efi && goto efi || goto noefi
 :efi
 echo ">> Chain EFI bootx64.efi"
-chain {{ if .ParamExists "esxi/http-mirror" }}{{ template "esxi-get-http-mirror.tmpl" .}}/efi/boot/bootx64.efi {{ .BootParams }}{{ else }}{{ .Env.PathFor "http" "efi/boot/bootx64.efi" }} {{ .BootParams }}{{ end }}
+chain {{ .Env.PathFor "http" "efi/boot/bootx64.efi" }} {{ .BootParams }}
 :noefi
 echo ">> Chain to esxi.0 and set non-EFI boot option '210:string'"
 set 210:string /{{.Env.PathFor "tftp" ""}}/

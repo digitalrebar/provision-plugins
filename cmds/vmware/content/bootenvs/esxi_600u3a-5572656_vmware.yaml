@@ -3,7 +3,6 @@ Name: esxi_600u3a-5572656_vmware-install
 Description: Install BootEnv for ESXi 600u3a-5572656 for vmware
 Documentation: |
   Provides VMware BootEnv for ESXi 600u3a-5572656 for vmware
-
   For more details, and to download ISO see:
 
     - https://my.vmware.com/web/vmware/details?productId=491&downloadGroup=ESXI60U3A
@@ -30,6 +29,8 @@ RequiredParams: []
 Kernel: ../../chain.c32
 BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
 Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - ID: esxi-chain-pxelinux.tmpl
     Name: pxelinux
@@ -57,4 +58,4 @@ Templates:
     Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
   - ID: esxi_600u3a-5572656_vmware.boot.cfg.tmpl
     Name: boot-uefi.cfg
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

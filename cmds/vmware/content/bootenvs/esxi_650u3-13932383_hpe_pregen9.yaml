@@ -3,7 +3,6 @@ Name: esxi_650u3-13932383_hpe_pregen9-install
 Description: Install BootEnv for ESXi 650u3-13932383 for hpe (pregen9)
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-13932383 for hpe (pregen9)
-
   For more details, and to download ISO see:
 
     - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-HPE&productId=614
@@ -30,6 +29,8 @@ RequiredParams: []
 Kernel: ../../chain.c32
 BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
 Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - ID: esxi-chain-pxelinux.tmpl
     Name: pxelinux
@@ -57,4 +58,4 @@ Templates:
     Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
   - ID: esxi_650u3-13932383_hpe_pregen9.boot.cfg.tmpl
     Name: boot-uefi.cfg
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

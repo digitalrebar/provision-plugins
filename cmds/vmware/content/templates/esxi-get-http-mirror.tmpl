@@ -1,4 +1,0 @@
-{{ if .ParamExists "esxi/http-mirror" -}}
-{{ trimSuffix "/" (.Param "esxi/http-mirror") -}}/{{.Env.PathFor "tftp" ""}}{{ else -}}
-{{ trimSuffix "/" (.Env.PathFor "http" "/") -}}
-{{ end -}}

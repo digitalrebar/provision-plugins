@@ -17,6 +17,8 @@ OptionalParams:
   - provisioner-default-password-hash
 BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
 Kernel: ../../chain.c32
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - ID: esxi-chain-pxelinux.tmpl
     Name: pxelinux
@@ -44,4 +46,4 @@ Templates:
     Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
   - ID: esxi-dellemc-esxi-6.5u2-10719125a07.boot.cfg.tmpl
     Name: boot-uefi.cfg
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'
