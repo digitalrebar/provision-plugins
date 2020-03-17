@@ -118,17 +118,6 @@ echo ">>> Requesting install of BootEnv: '$BOOTENV'"
 BOOT_INSTALL="${BOOTENV}-install"
 if ( drpcli bootenvs exists $BOOT_INSTALL > /dev/null 2>&1 || true )
 then
-{{if .ParamExists "esxi/http-mirror" }}
-  # we could do better - expand mirror/bootenv path to see if 'install' dir exists
-  echo "Param 'esxi/http-mirror' is set - not testing if remote exploded ISO contents exists :("
-  echo "Assuming mirror has ISO contents at:  {{ .Param "esxi/http-mirror" }}/$BOOTENV/install"
-{{ else }}
-#TODO: if Token scope allows "drpcli bootenvs show ... " then we can
-#      make our safety check on the ISO - but for now, it's not allowed
-#  ISO=$(drpcli bootenvs show $BOOT_INSTALL | jq -r '.OS.IsoFile')
-#  drpcli isos exists "$ISO" > /dev/null 2>&1 || true
-#  (( $? )) && xiterr 1 "ISO '$ISO' not installed on DRP Endpoint"
-{{ end }}
   HIDE_OUTPUT=' > /dev/null'
   [[ $RS_DEBUG_ENABLE ]] && HIDE_OUTPUT=""
   eval drpcli machines set {{.Machine.UUID}} param "esxi/selected-vendor" to ${VENDOR}${HIDE_OUTPUT}

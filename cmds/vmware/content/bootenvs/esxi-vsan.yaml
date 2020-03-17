@@ -22,6 +22,8 @@ OptionalParams:
   - provisioner-default-password-hash
 BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
 Kernel: ../../chain.c32
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - ID: esxi-chain-pxelinux.tmpl
     Name: pxelinux
