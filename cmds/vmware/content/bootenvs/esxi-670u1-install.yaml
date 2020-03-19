@@ -27,6 +27,8 @@ OptionalParams:
   - provisioner-default-password-hash
 ReadOnly: false
 RequiredParams: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - Contents: ""
     ID: esxi-chain-pxelinux.tmpl
@@ -72,4 +74,4 @@ Templates:
     ID: esxi-670u1.boot.cfg.tmpl
     Meta: null
     Name: boot-uefi.cfg
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

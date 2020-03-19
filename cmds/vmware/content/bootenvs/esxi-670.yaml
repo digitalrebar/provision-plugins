@@ -20,6 +20,8 @@ OS:
   Version: "6.7.0"
   IsoFile: "VMware-VMvisor-Installer-6.7.0-8169922.x86_64.iso"
   IsoSha256: "884ead30532f4a5c2152e4ac450839a0062aba3ae859b5fa5e233ce4275c8cb6"
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Kernel: "../../chain.c32"
 BootParams: "-c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg"
 OptionalParams:
@@ -51,4 +53,5 @@ Templates:
     Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
   - ID: "esxi-670.boot.cfg.tmpl"
     Name: "boot-uefi.cfg"
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'
+

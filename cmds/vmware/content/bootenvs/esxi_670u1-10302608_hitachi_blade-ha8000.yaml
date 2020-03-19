@@ -1,12 +1,9 @@
 ---
-Name: esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10-install
-Description: (DEPRECATED) Install BootEnv for esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10
+Name: esxi_670u1-10302608_hitachi_blade-ha8000-install
+Description: Install BootEnv for ESXi 670u1-10302608 for hitachi (blade-ha8000)
 Documentation: |
-  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documenation.
-               https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html#vmware-vsphere-tools
-
-  Provides custom VMware BootEnv for Hitachi BladeSymphony and HA8000 specific hardware
-  and drivers.  For more details, and Download ISO see:
+  Provides VMware BootEnv for ESXi 670u1-10302608 for hitachi (blade-ha8000)
+  For more details, and to download ISO see:
 
     - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-HITACHI&productId=742
 
@@ -32,6 +29,8 @@ RequiredParams: []
 Kernel: ../../chain.c32
 BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
 Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - ID: esxi-chain-pxelinux.tmpl
     Name: pxelinux
@@ -59,4 +58,4 @@ Templates:
     Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
   - ID: esxi_670u1-10302608_hitachi_blade-ha8000.boot.cfg.tmpl
     Name: boot-uefi.cfg
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

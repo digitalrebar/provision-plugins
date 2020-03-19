@@ -1,7 +1,7 @@
 bootstate=0
 title=Loading ESXi installer for esxi-dellemc-esxi-6.5u2-10719125a07 (DEPRECATED - see RackN doc for more info)
 timeout=2
-prefix={{ template "esxi-get-http-mirror.tmpl" . }}
+prefix={{ trimSuffix "/" (.Env.PathFor "tftp" "/") }}
 kernel=tboot.b00
 kernelopt=ks={{.Machine.Url}}/compute.ks{{if .ParamExists "kernel-options"}} {{.Param "kernel-options"}}{{end}}{{if .ParamExists "esxi/serial-console"}} {{.Param "esxi/serial-console"}}{{end}}
 build=

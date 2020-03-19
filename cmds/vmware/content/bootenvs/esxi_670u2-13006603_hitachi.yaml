@@ -3,7 +3,6 @@ Name: esxi_670u2-13006603_hitachi-install
 Description: Install BootEnv for ESXi 670u2-13006603 for hitachi
 Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13006603 for hitachi
-
   For more details, and to download ISO see:
 
     - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HITACHI&productId=742
@@ -30,6 +29,8 @@ RequiredParams: []
 Kernel: ../../chain.c32
 BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
 Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - ID: esxi-chain-pxelinux.tmpl
     Name: pxelinux
@@ -57,4 +58,4 @@ Templates:
     Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
   - ID: esxi_670u2-13006603_hitachi.boot.cfg.tmpl
     Name: boot-uefi.cfg
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'
