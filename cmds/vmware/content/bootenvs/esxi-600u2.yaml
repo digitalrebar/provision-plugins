@@ -2,7 +2,7 @@
 Name: "esxi-600u2-install"
 Description: "(DEPRECATED) Install BootEnv for ESXi 6.0.0u2"
 Documentation: |
-  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documenation.
+  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documentation.
                https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html#vmware-vsphere-tools
 
   Provides VMware BootEnv for ESXi 6.0.0u2.  For more details, and Download ISO

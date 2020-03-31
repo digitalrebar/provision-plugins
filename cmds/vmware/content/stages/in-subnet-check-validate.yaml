@@ -8,9 +8,9 @@ Documentation: |
 
   Requires that the following Params are accessible to the validate script:
 
-    * esxi/network-firstboot-ipaddr
-    * esxi/network-firstboot-gateway
-    * esxi/network-firstboot-netmask
+    * ``esxi/network-firstboot-ipaddr``
+    * ``esxi/network-firstboot-gateway``
+    * ``esxi/network-firstboot-netmask``
 
   This stage will also run the Task ``in-subnet-check-render`` to make the
   python script (``in-subnet-check.py``) available for use.
