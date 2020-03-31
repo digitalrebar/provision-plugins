@@ -22,8 +22,10 @@ Documentation: |
 
   The default settings are as follows:
 
-    length=10, chars=7, req_nums=2, special_chars=1,
-    special_char_list=None, upper=2, lower=5, padding=None
+  ::
+
+      length=10, chars=7, req_nums=2, special_chars=1,
+      special_char_list=None, upper=2, lower=5, padding=None
 
   It is necessary that the leading and trailing character is a lowercase letter,
   due to internal processing.  By default the ``passgen-settings`` processing

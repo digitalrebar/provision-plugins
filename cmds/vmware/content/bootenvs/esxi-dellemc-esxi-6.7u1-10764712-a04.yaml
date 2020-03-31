@@ -2,7 +2,7 @@
 Name: esxi-dellemc-esxi-6.7u1-10764712-a04-install
 Description: (DEPRECATED) Install BootEnv for ESXi 6.7.0update1
 Documentation: |
-  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documenation.
+  DEPRECATED:  Use the new "vmware-esxi-selector" workflow, for more details see RackN Documentation.
                https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html#vmware-vsphere-tools
 
   Provides custom VMware BootEnv for Dell specific hardware and drivers.
