@@ -2,7 +2,7 @@
 Name: esxi/drp-port-disable
 Description: Set the ESXi firewall to disable outbound access to DRP API service.
 Documentation: |
-  For installtion of ESXi to succeed, the Machine being installed must be able
+  For installation of ESXi to succeed, the Machine being installed must be able
   to reach the DRP API service port.  This allows for some Python hackery to
   notify DRP to set the Machine to boot local disk, and other actions.
 
