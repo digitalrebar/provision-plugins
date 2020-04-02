@@ -38,6 +38,23 @@ Documentation: |
       - esxi_670u2-13644319_nec_standard
       - esxi_670u2-13981272-A02_dell
       - esxi_670u2-13981272_lenovo
+      - esxi_670u3-13981272-A03_dell
+      - esxi_670u3-14320388_cisco
+      - esxi_670u3-14320388_fujitsu
+      - esxi_670u3-14320388_hpe
+      - esxi_670u3-14320388_lenovo
+      - esxi_670u3-14320388_nec_r120h-t120h-r110j
+      - esxi_670u3-14320388_nec_standard
+      - esxi_670u3-14320388_vmware
+      - esxi_670u3-15160138_lenovo
+      - esxi_670u3b-15160138_vmware
+      - esxi_700-15843807_dell
+      - esxi_700-15843807_hpe
+      - esxi_700-15843807_vmware
+
+    NOTICE:  The following BootEnvs have been removed from the vmware plugin and are no
+    longer supported:
+
       - (*) esxi-550u3b
       - (*) esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000
       - (*) esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10
@@ -57,9 +74,6 @@ Documentation: |
       - (*) esxi-lenovo_esxi6.7u1-10302608_201810
       - (*) esxi-vmware-esxi-6.7.0-10302608-custom-cisco
 
-  .. note:: (*) Backwards compatible version for v2.8.0 and older - do not use.  Please use the updated
-            non-deprecated version names.  In a VERY NEAR future release of the VMware plugin, these
-            versions WILL BE REMOVED.
 
   If nothing is specified, the default value will be selected in the
   `default` field of the Param.
@@ -102,25 +116,19 @@ Schema:
     - esxi_670u2-13644319_nec_standard
     - esxi_670u2-13981272-A02_dell
     - esxi_670u2-13981272_lenovo
-    - esxi-550u3b
-    - esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000
-    - esxi-6.7.0-update1-10302608-custom-hitachi_1200_HA8000VGen10
-    - esxi-6.7.1-10302608-nec-6.702
-    - esxi-6.7.1-10302608-nec-gen-6.7
-    - esxi-600u2
-    - esxi-600u3a
-    - esxi-650a
-    - esxi-650u2
-    - esxi-670
-    - esxi-670u1
-    - esxi-670u2
-    - esxi-dellemc-esxi-6.5u2-10719125a07
-    - esxi-dellemc-esxi-6.7u1-10764712-a04
-    - esxi-fujitsu-vmvisor-installer-6.7-10
-    - esxi-hpe-esxi-6.7.0-update1-iso-gen9p
-    - esxi-lenovo_esxi6.7u1-10302608_201810
-    - esxi-vmware-esxi-6.7.0-10302608-custom-cisco
-
+    - esxi_670u3-13981272-A03_dell
+    - esxi_670u3-14320388_cisco
+    - esxi_670u3-14320388_fujitsu
+    - esxi_670u3-14320388_hpe
+    - esxi_670u3-14320388_lenovo
+    - esxi_670u3-14320388_nec_r120h-t120h-r110j
+    - esxi_670u3-14320388_nec_standard
+    - esxi_670u3-14320388_vmware
+    - esxi_670u3-15160138_lenovo
+    - esxi_670u3b-15160138_vmware
+    - esxi_700-15843807_dell
+    - esxi_700-15843807_hpe
+    - esxi_700-15843807_vmware
 Meta:
   color: "blue"
   icon: "ship"
