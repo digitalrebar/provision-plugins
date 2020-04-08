@@ -15,7 +15,7 @@ OS:
   IsoSha256: 75c87516cbf4e696d2e3f142cc5818ba66c53f42c7abb1b4deb54007860d1f0a
 OptionalParams:
   - provisioner-default-password-hash
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Kernel: ../../chain.c32
 Loaders:
   amd64-uefi: efi/boot/bootx64.efi
@@ -43,7 +43,7 @@ Templates:
     Path: '{{.Machine.Path}}/compute.ks'
   - ID: esxi-dellemc-esxi-6.5u2-10719125a07.boot.cfg.tmpl
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: esxi-dellemc-esxi-6.5u2-10719125a07.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

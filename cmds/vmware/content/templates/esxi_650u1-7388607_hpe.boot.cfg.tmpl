@@ -1,7 +1,7 @@
 bootstate=0
 title=Loading ESXi installer for esxi_650u1-7388607_hpe
 timeout=2
-prefix={{ trimSuffix "/" (.Env.PathFor "tftp" "/") }}
+prefix=/{{ trimSuffix "/" (.Env.PathFor "tftp" "/") }}
 kernel=tboot.b00
 kernelopt=ks={{.Machine.Url}}/compute.ks{{if .ParamExists "kernel-options"}} {{.Param "kernel-options"}}{{end}}{{if .ParamExists "esxi/serial-console"}} {{.Param "esxi/serial-console"}}{{end}}
 build=

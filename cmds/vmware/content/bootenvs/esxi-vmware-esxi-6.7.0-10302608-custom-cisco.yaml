@@ -23,7 +23,7 @@ OS:
   IsoSha256: d5062f690fad28234a76662d03aa274929f422ea8bdd7e8edeb528f703e3eccd
 OptionalParams:
   - provisioner-default-password-hash
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Kernel: ../../mboot.c32
 Loaders:
   amd64-uefi: efi/boot/bootx64.efi
@@ -51,7 +51,7 @@ Templates:
     Path: '{{.Machine.Path}}/compute.ks'
   - ID: esxi-vmware-esxi-6.7.0-10302608-custom-cisco.boot.cfg.tmpl
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: esxi-vmware-esxi-6.7.0-10302608-custom-cisco.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

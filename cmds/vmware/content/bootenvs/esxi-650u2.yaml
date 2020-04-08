@@ -22,7 +22,7 @@ OS:
   IsoFile: "VMware-VMvisor-Installer-6.5.0.update02-8294253.x86_64.iso"
   IsoSha256: "94b8a1602d442160914140245172cac84b81906ebfc0fd42531c13cb17fe3d7d"
 Kernel: "../../chain.c32"
-BootParams: "-c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg"
+BootParams: "-c {{.Machine.Path}}/boot.cfg"
 OptionalParams:
   - "provisioner-default-password-hash"
 Loaders:
@@ -51,7 +51,7 @@ Templates:
     Path: "{{.Machine.Path}}/compute.ks"
   - ID: "esxi-650u2.boot.cfg.tmpl"
     Name: "boot.cfg"
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: "esxi-650u2.boot.cfg.tmpl"
     Name: "boot-uefi.cfg"
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'
