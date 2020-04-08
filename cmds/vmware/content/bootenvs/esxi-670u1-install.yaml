@@ -1,6 +1,6 @@
 ---
 Name: esxi-670u1-install
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Description: (DEPRECATED) Install BootEnv for ESXi 6.7.0update1
 Documentation: |
   Provides VMware BootEnv for ESXi 6.7.0update1.  For more details, and Download ISO see:
@@ -69,7 +69,7 @@ Templates:
     ID: esxi-670u1.boot.cfg.tmpl
     Meta: null
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - Contents: ""
     ID: esxi-670u1.boot.cfg.tmpl
     Meta: null

@@ -23,7 +23,7 @@ OS:
   IsoSha256: 068d70a54d856119af064a8217e0fb1d2ac26e08cc209ad0c4e27ff86cd12718
 OptionalParams:
   - provisioner-default-password-hash
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Kernel: ../../chain.c32
 Loaders:
   amd64-uefi: efi/boot/bootx64.efi
@@ -51,7 +51,7 @@ Templates:
     Path: '{{.Machine.Path}}/compute.ks'
   - ID: esxi-fujitsu-vmvisor-installer-6.7-10.boot.cfg.tmpl
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: esxi-fujitsu-vmvisor-installer-6.7-10.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

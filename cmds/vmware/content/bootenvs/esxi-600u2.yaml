@@ -24,7 +24,7 @@ OS:
 OptionalParams:
   - "provisioner-default-password-hash"
 Kernel: "../../chain.c32"
-BootParams: "-c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg"
+BootParams: "-c {{.Machine.Path}}/boot.cfg"
 Loaders:
   amd64-uefi: efi/boot/bootx64.efi
 Templates:
@@ -51,7 +51,7 @@ Templates:
     Path: "{{.Machine.Path}}/compute.ks"
   - ID: "esxi-600u2.boot.cfg.tmpl"
     Name: "boot.cfg"
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: "esxi-600u2.boot.cfg.tmpl"
     Name: "boot-uefi.cfg"
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

@@ -22,7 +22,7 @@ OS:
   IsoSha256: 6a1270f723699fde196c06a932c7bdc3cd5e764c0d7261372a7870fed5313ab6
 OptionalParams:
   - provisioner-default-password-hash
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Kernel: ../../mboot.c32
 Loaders:
   amd64-uefi: efi/boot/bootx64.efi
@@ -50,7 +50,7 @@ Templates:
     Path: '{{.Machine.Path}}/compute.ks'
   - ID: esxi-550u3b.boot.cfg.tmpl
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: esxi-550u3b.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

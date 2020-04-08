@@ -23,7 +23,7 @@ OS:
   IsoSha256: a26536c5b3064553d6142784cdb1a17ed29b39b4d68cbf31636363052cf7cdc5
 OptionalParams:
   - provisioner-default-password-hash
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Kernel: ../../chain.c32
 Loaders:
   amd64-uefi: efi/boot/bootx64.efi
@@ -51,7 +51,7 @@ Templates:
     Path: '{{.Machine.Path}}/compute.ks'
   - ID: esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000.boot.cfg.tmpl
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: esxi-6.7.0-update1-10302608-custom-hitachi_0200_Blade_HA8000.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'
