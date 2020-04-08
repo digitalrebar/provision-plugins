@@ -1,7 +1,7 @@
 bootstate=0
 title=Loading ESXi installer for esxi-6.7.1-10302608-nec-gen-6.7 (DEPRECATED - see RackN doc for more info)
 timeout=2
-prefix={{ trimSuffix "/" (.Env.PathFor "tftp" "/") }}
+prefix=/{{ trimSuffix "/" (.Env.PathFor "tftp" "/") }}
 kernel=b.b00
 kernelopt=ks={{.Machine.Url}}/compute.ks{{if .ParamExists "kernel-options"}} {{.Param "kernel-options"}}{{end}}{{if .ParamExists "esxi/serial-console"}} {{.Param "esxi/serial-console"}}{{end}}
 build=

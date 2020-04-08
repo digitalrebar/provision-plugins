@@ -23,7 +23,7 @@ OS:
   IsoSha256: 1b39904356b5c4cf14b9ed8b30cba39011a95b23a140d30ad79e666cb19d3f53
 OptionalParams:
   - provisioner-default-password-hash
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Kernel: ../../chain.c32
 Loaders:
   amd64-uefi: efi/boot/bootx64.efi
@@ -51,7 +51,7 @@ Templates:
     Path: '{{.Machine.Path}}/compute.ks'
   - ID: esxi-hpe-esxi-6.7.0-update1-iso-gen9p.boot.cfg.tmpl
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: esxi-hpe-esxi-6.7.0-update1-iso-gen9p.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

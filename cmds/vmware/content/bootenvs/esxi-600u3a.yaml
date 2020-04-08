@@ -22,7 +22,7 @@ OS:
   IsoFile: "VMware-VMvisor-Installer-201706001-5572656.x86_64.iso"
   IsoSha256: "c3aec5dd00d47548089918075c84edb8e8c5017cbec901c6abf8a815d5149aac"
 Kernel: "../../chain.c32"
-BootParams: "-c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg"
+BootParams: "-c {{.Machine.Path}}/boot.cfg"
 OptionalParams:
   - "provisioner-default-password-hash"
 Loaders:
@@ -51,7 +51,7 @@ Templates:
     Path: "{{.Machine.Path}}/compute.ks"
   - ID: "esxi-600u3a.boot.cfg.tmpl"
     Name: "boot.cfg"
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: "esxi-600u3a.boot.cfg.tmpl"
     Name: "boot-uefi.cfg"
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

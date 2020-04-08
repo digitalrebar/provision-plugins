@@ -19,9 +19,8 @@ echo ========================================================
 
 iseq ${platform} efi && goto efi || goto noefi
 :efi
-echo ">> Chain EFI bootx64.efi"
-chain {{ .Env.PathFor "http" "efi/boot/bootx64.efi" }} {{ .BootParams }}
+kernel {{ .Env.PathFor "http" "efi/boot/bootx64.efi" }} {{ .BootParams }} BOOTIF=01-${netX/mac:hexhyp}
+boot
 :noefi
-echo ">> Chain to esxi.0 and set non-EFI boot option '210:string'"
-set 210:string /{{.Env.PathFor "tftp" ""}}/
-chain esxi.0
+kernel {{ .Env.PathFor "tftp" "mboot.c32"}} {{ .BootParams }} BOOTIF=01-${netX/mac:hexhyp}
+boot
