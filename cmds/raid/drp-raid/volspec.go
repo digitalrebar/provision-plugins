@@ -253,7 +253,7 @@ func (v VolSpecDisks) ValidateSizeVariance() VolSpecDisks {
 	size := v[0].Size
 	variance := size / 10
 	for _, disk := range v[1:] {
-		if disk.Size < size+variance || disk.Size > size-variance {
+		if disk.Size < size+variance && disk.Size > size-variance {
 			continue
 		}
 		res = append(res, disk)
