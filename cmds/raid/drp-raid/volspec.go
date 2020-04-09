@@ -243,6 +243,24 @@ func (v VolSpecDisks) Remove(o VolSpecDisks) VolSpecDisks {
 	return res
 }
 
+// Returns all the disks that are too much smaller or too much bigger than
+// the first disk in the VolSpecDisks
+func (v VolSpecDisks) ValidateSizeVariance() VolSpecDisks {
+	res := VolSpecDisks{}
+	if len(v) < 2 {
+		return res
+	}
+	size := v[0].Size
+	variance := size / 10
+	for _, disk := range v[1:] {
+		if disk.Size < size+variance && disk.Size > size-variance {
+			continue
+		}
+		res = append(res, disk)
+	}
+	return res
+}
+
 // VolSpec contains information on how to create a volume.  Right now,
 // we only can create volumes that use entire physical disks -- we do
 // not allow disk configurations that wind up with multiple virtual
@@ -313,11 +331,14 @@ type VolSpec struct {
 	// Encrypt indicates if the disk should be encrypted.  For some
 	// controllers, this is done after the volume is created.  For
 	// others, it just happens as part of making the controller encrypt.
-	Encrypt    bool `json:",omitempty"`
-	diskCount  int
-	controller *Controller
-	compiled   bool
-	index      int // Index in the created volumes.
+	Encrypt bool `json:",omitempty"`
+	// AllowMixedSizes allows a RAID volume to be created that has individual disk sizes that
+	// vary by more than 10% across all disks in the volume.
+	AllowMixedSizes bool `json:",omitempty"`
+	diskCount       int
+	controller      *Controller
+	compiled        bool
+	index           int // Index in the created volumes.
 	// Used to indicate this is a drp-raid created volume because of Passthru or other case.
 	Fake bool `json:",omitempty"`
 }
@@ -600,6 +621,12 @@ func (v *VolSpec) compileAuto(s *session, disks VolSpecDisks) (VolSpecDisks, err
 		}
 	}
 	if err == nil && len(res) > 0 {
+		if !v.AllowMixedSizes {
+			outOfSpec := res.ValidateSizeVariance()
+			if len(outOfSpec) > 0 {
+				err = fmt.Errorf("Chosen disks include %d disks that vary in size by more than 10 percent", len(outOfSpec))
+			}
+		}
 		s.log.Printf("%d candidates of type %s speaking protocol %s chosen", len(res), dt, pt)
 	}
 	return res, err
