@@ -243,6 +243,8 @@ func (v VolSpecDisks) Remove(o VolSpecDisks) VolSpecDisks {
 	return res
 }
 
+// Returns all the disks that are too much smaller or too much bigger than
+// the first disk in the VolSpecDisks
 func (v VolSpecDisks) ValidateSizeVariance() VolSpecDisks {
 	res := VolSpecDisks{}
 	if len(v) < 2 {
@@ -250,11 +252,11 @@ func (v VolSpecDisks) ValidateSizeVariance() VolSpecDisks {
 	}
 	size := v[0].Size
 	variance := size / 10
-	for i := range v[1:] {
-		if v[i].Size < size+variance || v[i].Size > size-variance {
+	for _, disk := range v[1:] {
+		if disk.Size < size+variance || disk.Size > size-variance {
 			continue
 		}
-		res = append(res, v[i])
+		res = append(res, disk)
 	}
 	return res
 }
