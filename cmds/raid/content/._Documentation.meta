@@ -85,6 +85,8 @@ you are using.  A list of volume specifications looks like this json:
       "Protocol": "string",
       "Controller": 0,
       "DiskCount": "string",
+      "Encrypt": boolean,
+      "AllowMixedSizes": boolean,
       "Disks": [
         {
         	"Size": 0,
@@ -194,6 +196,14 @@ Each field in a volume specification is defined as follows:
 * Bootable: A boolean value indicating whether this volume should be
   the default one the RAID controller will use when booting the
   system.  Defaults to false, and Bootable support is currently not implemented.
+
+* Encrypt: Whether the volume should be transparently encrypted by the RAID controller.
+  This requires controller-specific setup.
+
+* AllowMixedSizes: Whether we will create a volume that spans physical disks of
+  wildly mixed sizes. By default, we will fail if we pick disks underlying a
+  volume that vary in size by more than 10%.
+
 
 
 Example Transcript
