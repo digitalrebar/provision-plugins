@@ -28,8 +28,10 @@ OptionalParams:
   - provisioner-default-password-hash
 RequiredParams: []
 Kernel: ../../chain.c32
-BootParams: -c {{.ProvisionerURL}}/{{.Machine.Path}}/boot.cfg
+BootParams: -c {{.Machine.Path}}/boot.cfg
 Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
 Templates:
   - ID: esxi-chain-pxelinux.tmpl
     Name: pxelinux
@@ -54,7 +56,7 @@ Templates:
     Path: '{{.Machine.Path}}/compute.ks'
   - ID: esxi_670u1-10302608_lenovo.boot.cfg.tmpl
     Name: boot.cfg
-    Path: '{{.Env.PathFor "tftp" ""}}/{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Machine.Path}}/boot.cfg'
   - ID: esxi_670u1-10302608_lenovo.boot.cfg.tmpl
     Name: boot-uefi.cfg
-    Path: '{{.Machine.Path}}/boot.cfg'
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

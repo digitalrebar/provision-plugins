@@ -7,9 +7,7 @@ Documentation: |
   and Stage.
 
   If this Param is set, and if the ``esxi-rename-datastore`` task is run,
-  then the ``esxi/install-datastore`` Param will be set to the same value
-  as this param to insure subsequent references to ``esxi/install-datastore``
-  are correctly used.
+  then the datastore will be renamed to this value.
 
 Meta:
   color: blue

@@ -69,19 +69,19 @@ Schema:
   default:
     generic:
       mfg: generic
-      bootenv: esxi_670u2-13006603_vmware
+      bootenv: esxi_670u3b-15160138_vmware
     vmware:
       mfg: vmware
-      bootenv: esxi_670u2-13006603_vmware
+      bootenv: esxi_670u3b-15160138_vmware
     cisco:
       mfg: cisco
-      bootenv: esxi_670u2-13006603_cisco
+      bootenv: esxi_670u3-14320388_cisco
     dell:
       mfg: dell
-      bootenv: esxi_670u2-13981272-A02_dell
+      bootenv: esxi_670u3-13981272-A03_dell
     fujitsu:
       mfg: fujitsu
-      bootenv: esxi_670u2-13473784_fujitsu
+      bootenv: esxi_670u3-14320388_fujitsu
     hitachi:
       mfg: hitachi
       bootenv: esxi_670u1-10302608_hitachi_blade-ha8000
@@ -92,15 +92,15 @@ Schema:
       model: ha8000v-gen10
     hpe:
       mfg: hpe
-      bootenv: esxi_670u2-13006603_hpe
+      bootenv: esxi_670u3-14320388_hpe
     lenovo:
       mfg: lenovo
-      bootenv: esxi_670u2-13981272_lenovo
+      bootenv: esxi_670u3-15160138_lenovo
     nec:
       mfg: nec
-      bootenv: esxi_670u2-13644319_nec_standard
+      bootenv: esxi_670u3-14320388_nec_standard
       model: standard
     nec:
       mfg: nec
-      bootenv: esxi_670u2-13644319_nec_r120h-t120h-r110j
+      bootenv: esxi_670u3-14320388_nec_r120h-t120h-r110j
       model: r120h-t120h-r110j

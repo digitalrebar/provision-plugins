@@ -1,0 +1,63 @@
+import logging, os
+
+
+def init_logging(filename):
+    """
+    Initialize the logging to make it easier
+    to find out whats going on in the installer.
+
+    :param filename:
+    :return:
+    """
+    logging.basicConfig(
+        filename=filename,
+        level=logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
+
+
+def install_vib(vib_file):
+    """
+
+    :param vib_file:
+    :return:
+    """
+    try:
+        vib_status = subprocess.run(
+            "localcli --formatter json software vib install -v {} -f".format(
+                vib_file
+            ),
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            shell=True,
+            universal_newlines=True,
+        )
+    except Exception as e:
+        vib_status = e
+    return vib_status
+
+
+outobj = subprocess.run(
+    "localcli --formatter json storage filesystem list",
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    universal_newlines=True,
+    shell=True,
+)
+file_list = json.loads(outobj.stdout)
+vmfs_list = []
+for vmfs in file_list:
+    if vmfs["Type"] == "VFFS":
+        vmfs_list.append(vmfs)
+    elif "VMFS" in vmfs["Type"]:
+        vmfs_list.append(vmfs)
+if len(vmfs_list) > 1:
+    # sort the list based on size so that the 0th item
+    # can always be used.
+    vmfs_list.sort(key=lambda vmfs: vmfs["Size"])
+if len(vmfs_list) < 1:
+    logging.error("No usable disk found. Exiting.")
+    raise SystemError
+rackn_dir = "{}/rackn".format(vmfs_list[0]["Mount Point"])
+if not os.path.isdir(rackn_dir):
+    os.mkdir(rackn_dir)

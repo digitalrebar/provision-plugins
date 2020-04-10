@@ -9,11 +9,14 @@ Documentation: |
   By default that location will be on the first found (install) disk
   and default to:
 
-    * /vmfs/volumes/datastore1
+    * /vmfs/volumes/SOME_UUID
 
   It's important to note that this location will contain all copies
   of the Weasel kickstart install logs, artifacts that RackN needs
   for installation/reference, and the scratch partition.
+
+  This param is no longer used and only left in place for compatibility purposes with legacy
+  profiles, and will be removed in a future release.
 
 Meta:
   color: blue

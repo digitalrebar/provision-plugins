@@ -1,26 +1,44 @@
-#!/usr/bin/env python3
 # Render the base64 encoded Param as a file on the system
 
-import base64, sys, os, time
+import base64
+import json
+import os
+import subprocess
+import sys
+import time
+{{ template "esxi-vib-common.py.tmpl" .}}
 
-rackn_dir ="{{ .Param "esxi/install-datastore" }}/rackn"
-if not os.path.isdir(rackn_dir):
-    os.mkdir(rackn_dir)
+logfile_name = "firewall_vib-{}-{}.log".format(
+    time.strftime("%Y%m%d-%H%M%S"),
+    script_env
+)
+
+init_logging("{}/{}".format(rackn_dir, logfile_name))
 
 vib_file_output = {{ if .ParamExists "esxi/vib-drpy-firewall" }}"{{ .Param "esxi/vib-drpy-firewall"}}"{{ else }}rackn_dir + "/firewall.vib"{{ end }}
 vib_file_content = """{{ template "DRP-Firewall-Rule.vib.base64.tmpl" .}}"""
 if not vib_file_content:
-  sys.exit('No base64 encoded data found in tmplate "esxi-vib-fw.base64.tmpl".')
-
+    logging.error('No base64 encoded data found in tmplate "esxi-vib-fw.base64.tmpl".')
+    raise SystemError
 try:
    vib_file_content=base64.b64decode(vib_file_content)
    with open(vib_file_output,"wb") as f:
         f.write(vib_file_content)
 except Exception as e:
-   print(str(e))
+    logging.exception("Unable to write firewall vib to file.", e)
+    raise SystemError
 
-print("Installing VIB and enabling rule ...")
-os.system("localcli software vib install -v " + vib_file_output  + " -f")
-os.system("localcli network firewall refresh")
+logging.debug("Installing firewall VIB and enabling rule ...")
+vib_status = install_vib(vib_file_output)
+logging.debug("Refreshing firewall.")
+fw_refrsh = subprocess.run(
+    "localcli network firewall refresh",
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    shell=True,
+    universal_newlines=True,
+)
+logging.debug("Firewall Refresh Status: {}".format(fw_refrsh))
+logging.shutdown()
 time.sleep( {{ .Param "esxi/python-sleep" }} )
 

@@ -36,9 +36,9 @@ Basic Usage
 For basic usage, and to obtain the latest VMware generic ISO BootEnv
 installation, simply use the ``esxi-install`` workflow.
 
-..note:: The 'esxi-install' workflow must be run in the Sledgehammer (Discovery) image environment to transition the Machine to the appropriate ESXi bootenv installation.
+.. note:: The 'esxi-install' workflow must be run in the Sledgehammer (Discovery) image environment to transition the Machine to the appropriate ESXi bootenv installation.
 
-..note:: The first stage of the workflow is 'prep-install' which WILL WIPE the disks in preparation of the installation.
+.. note:: The first stage of the workflow is 'prep-install' which WILL WIPE the disks in preparation of the installation.
 
 This workflow uses the following Params:
 
@@ -289,7 +289,7 @@ ESXi Agent/Runner Information
 VMware ESXi environments are for the most part "closed appliances", and
 compiling third party tools for these environments is not an easy process.
 Consequently, the Golang based compiled Agent/Runner (``drpcli``) can not
-be cross compiled to run in the ESXi operationg environment.  RackN does
+be cross compiled to run in the ESXi operating environment.  RackN does
 build and maintain a Python3 capable Agent/Runner to support Workflow
 operations in the ESXi install environment (Weasel kickstart) and as a
 post-installed Agent for executing Workflow in installed systems.
@@ -532,7 +532,7 @@ DNS, Search Domains, NTP Settings
 =================================
 
 To customize network configurations for DNS and NTP settings, please see
-the `drp-community-content`` Params:
+the ``drp-community-content`` Params:
 
   - ``dns-servers``
   - ``ntp-servers``
@@ -545,7 +545,7 @@ steps:
 
 1. Create a new Template with your NTP configuration.
 
-2. (optional) You can use the existing ``ntp-servers` Param similarly to
+2. (optional) You can use the existing ``ntp-servers`` Param similarly to
    the RackN supplied content, by reviewing the following example.
 
   ::
