@@ -1,11 +1,11 @@
 ---
-Name: esxi_670u2-13006603_hitachi-install
-Description: Install BootEnv for ESXi 670u2-13006603 for hitachi
+Name: esxi_700-15843807_vmware-install
+Description: Install BootEnv for ESXi 700-15843807 for vmware
 Documentation: |
-  Provides VMware BootEnv for ESXi 670u2-13006603 for hitachi
+  Provides VMware BootEnv for ESXi 700-15843807 for vmware
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HITACHI&productId=742
+    - https://my.vmware.com/group/vmware/details?downloadGroup=ESXI700&productId=974
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,12 +16,12 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware_ESXi_6.7.0_Update2_13006603_hitachi_1300_HA8KVGen10_RV3K.iso
-  IsoSha256: a64e94c33e3817e6ebf0bb403c373ddba6fd521ceaf78be13a31251820842698
+  IsoFile: VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso
+  IsoSha256: cf3c8324ede983f4148df9ea161d9d6fccf40105aed204f5f59c1c5bd3377517
   IsoUrl: ""
-  Name: esxi_670u2-13006603_hitachi
+  Name: esxi_700-15843807_vmware
   SupportedArchitectures: {}
-  Version: 670u2
+  Version: 700
 OnlyUnknown: false
 OptionalParams:
   - provisioner-default-password-hash
@@ -47,9 +47,9 @@ Templates:
   - ID: esxi-install-py3.ks.tmpl
     Name: compute.ks
     Path: '{{.Machine.Path}}/compute.ks'
-  - ID: esxi_670u2-13006603_hitachi.boot.cfg.tmpl
+  - ID: esxi_700-15843807_vmware.boot.cfg.tmpl
     Name: boot.cfg
     Path: '{{.Machine.Path}}/boot.cfg'
-  - ID: esxi_670u2-13006603_hitachi.boot.cfg.tmpl
+  - ID: esxi_700-15843807_vmware.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

@@ -6,12 +6,12 @@ Documentation: |
   BootEnv (eg a custom bootenv you inject), then you can use this param
   to specify a BootEnv to load.
 
-  The value of this Param *MUST MATCH* the BootEnv name exactly, without
+  The value of this Param **MUST MATCH** the BootEnv name exactly, without
   the trailing ``-install`` component.
 
-  Example 1:  `esxi_670u2-13006603_vmware`
+  Example 1:  ``esxi_700-15843807_vmware``
 
-  Example 2:  `esxi_670u1-10302608_hitachi_ha8000v-gen10`
+  Example 2:  ``esxi_670u1-10302608_hitachi_ha8000v-gen10``
 
 Meta:
   color: blue
