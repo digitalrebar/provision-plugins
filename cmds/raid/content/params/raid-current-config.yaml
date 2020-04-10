@@ -1,0 +1,11 @@
+---
+Name: raid-current-config
+Description: The current configuration of the raid subsystem.
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  type: array
+  items:
+    type: object

@@ -31,6 +31,10 @@ Templates:
       fi
       if [[ "$password" == "unset" ]] ; then
           password=$( date +%s | sha256sum | base64 | head -c 12 | sed "s/$/-$(( $RANDOM % 10 ))aZ/g" )
+          # record the password in case HP needs to rebuild something.
+          {{ if .Param "raid-encryption-password-save" }}
+          drpcli machines set $RS_UUID param raid-encryption-password to "$password" >/dev/null
+          {{ end }}
       fi
 
       drp-raid -encrypt -password "$password" -key "$mstrkey"
