@@ -1,0 +1,11 @@
+---
+Name: raid-available-utilities
+Description: The current tools available for raid operations
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  type: array
+  items:
+    type: string
