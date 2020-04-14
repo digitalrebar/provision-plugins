@@ -88,7 +88,7 @@ Templates:
 
       # we have to get the version in the kickstart/install stage because if
       # switch networks on firstboot - we may not have access to the DRP endpoint
-      UUID_DS_PATH=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['TYPE'].lower()];print(y[0]['Mount Point'])")
+      UUID_DS_PATH=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['Type'].lower()];print(y[0]['Mount Point'])")
       _v="$UUID_DS_PATH/rackn/rackn-drp-version.txt"
       DRP_VERSION=$([[ -r "$_v" ]] && ( cat "$_v" | head -1 ) || echo "N/A")
       DRP_BOOTENV="{{.Machine.BootEnv}}"
