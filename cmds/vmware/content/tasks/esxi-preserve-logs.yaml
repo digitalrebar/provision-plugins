@@ -13,7 +13,7 @@ Templates:
       #!/usr/bin/env sh
       {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
       # Generate a new scratch directory for this host on a Datastore
-      DS=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['TYPE'].lower()];print(y[0]['Mount Point'])")
+      DS=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['Type'].lower()];print(y[0]['Mount Point'])")
       scratchdirectory=$DS/locker
       # Create the scratch directory
       mkdir -p $scratchdirectory
