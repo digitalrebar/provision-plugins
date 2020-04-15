@@ -207,8 +207,10 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 				powerAction.ResetType = "ForceOn"
 			} else if _, ok := av["On"]; ok {
 				powerAction.ResetType = "On"
-			} else {
+			} else if _, ok := av["PushPowerButton"]; ok {
 				powerAction.ResetType = "PushPowerButton"
+			} else {
+				powerAction.ResetType = "ForceRestart"
 			}
 		}
 		fillForOff := func() {
@@ -216,8 +218,10 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 				powerAction.ResetType = "ForceOff"
 			} else if _, ok := av["Off"]; ok {
 				powerAction.ResetType = "Off"
-			} else {
+			} else if _, ok := av["PushPowerButton"]; ok {
 				powerAction.ResetType = "PushPowerButton"
+			} else{
+				powerAction.ResetType = "ForceRestart"
 			}
 		}
 		switch ma.Command {
