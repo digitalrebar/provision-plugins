@@ -650,3 +650,30 @@ Error Message:
 .. note:: Unfortunately, the scratch partition can't be located within the Weasel installer,
           so this error message will always be present.
 
+
+Error Opening tools.t00
+=======================
+
+Error Message:
+
+  ::
+
+    Error (see log for more info):
+    cannot open file
+    [Errno 2] No such file or directory: '/tardisks/tools/t00'
+
+*Explanation*
+
+  VMware vSphere 7.x ISO disks now require all modules specified in the manifest to be loaded.
+  This means if the ``esxi/skip-tools`` is set to ``true``, that module (``tools.t00``) will
+  not be served to the Weasel install environment.
+
+  You must set:
+
+  ``esxi/skip-tools``: false
+
+  To insure that ``tools.t00`` modules is properly loaded.  You can no longer skip loading this
+  module.
+
+
+
