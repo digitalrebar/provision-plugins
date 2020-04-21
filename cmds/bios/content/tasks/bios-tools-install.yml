@@ -1,6 +1,14 @@
 ---
 Name: "bios-tools-install"
 Description: "Install vendor tools needed to manage BIOS settings"
+Documentation: |
+  This task is responsible for installing the apprpriate vendor tooling
+  on a system and setting ``bios-driver`` appropriately.  It is a prerequisite
+  to all the other tasks provided by the ``bios`` plugin, and will be automatically
+  added to the system task list as needed.
+
+  Depending on the systems you anticipate managing, you may also need to install the
+  ``dell-support``, ``hpe-support``, and ``lenovo-support`` content bundles.
 Meta:
   icon: "setting"
   color: "blue"

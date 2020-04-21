@@ -1,6 +1,12 @@
 ---
 Name: bios-target-configuration
-Description: The desired BIOS configuration for a system as a set of key:value pairs
+Description: The desired BIOS configuration for a system as a set of key:value pairs.
+Documentation: |
+  The desired target configuration that the ``bios-configure`` task should try to apply
+  to the system.  Valid settings for this field vary depending on system manufacturer,
+  model, BIOS and firmware revision, and even on the current system settings.  You can use
+  the ``bios-set-baseline`` task to populate this param with the current BIOS settings
+  from a machine in a form that can be edited for reuse on other compatible machines.
 Meta:
   icon: "setting"
   color: "blue"

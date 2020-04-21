@@ -1,6 +1,10 @@
 ---
 Name: "bios-set-baseline"
 Description: "Get current BIOS configuration for the system and store as target configuration"
+Documentation: |
+  This task gets the current BIOS configuration for the system and places it in the
+  ``bios-target-configuration`` parameter on the system.  It is intended to be used
+  to gather baseline and golden master BIOS configurations to be applied to other systems.
 RequiredParams:
   - bios-driver
 Prerequisites:

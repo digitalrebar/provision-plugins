@@ -1,6 +1,10 @@
 ---
 Name: bios-baseline
-Description: "Baseline the BIOS configurations on a system and store it as the wanted configuration"
+Description: "Extracts the current BIOS configuration from the system and saves it to bios-target-configuration"
+Documentation: |
+  This stage extracts the current BIOS configuration from a target system and saves
+  it to the ``bios-target-configuration`` parameter on that system.  You can then use
+  modify and use that configuration on other similar systems.
 BootEnv: sledgehammer
 Tasks:
   - bios-set-baseline
