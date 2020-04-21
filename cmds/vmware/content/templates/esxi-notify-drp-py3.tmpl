@@ -1,5 +1,6 @@
 # python3 version
 # required to run in %pre --interpreter=python
+# NOTE: this has been replaced with the DRPY Agent in ESXi
 
 # Updating the machine in dr-provision has to be done as part of the %pre
 # so that the esxi firewall does not eat our requests.
@@ -8,7 +9,6 @@
 import os, urllib, urllib.request, socket, ssl, time
 url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}'
 
-# There is no DRP Runner for ESXi, so we don't have post-OS install control.
 # Force the machine to empty workflow, none stage, and the local bootenv.
 patch = b'''
 [

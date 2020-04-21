@@ -3,8 +3,8 @@ Name: "vmware-esxi-clear-patch-index"
 Description: "A task to reset the patch index so that patches can be applied"
 Documentation: |
   A task to reset the patch index so that patches can be applied.  This is useful
-  to ensure that the sledgehammer pre-phase of esxi install makes sure that
-  patches can be applied in the install phse.
+  to ensure that the sledgehammer pre-phase of ESXi install makes sure that
+  patches can be applied in the install phase.
 
 Meta:
   color: "blue"

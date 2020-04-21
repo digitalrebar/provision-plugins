@@ -5,7 +5,6 @@ Documentation: |
   This task and template renames the default datastore (``datastore1``) to a new
   value defined by the ``esxi/rename-datastore`` Param.
 
-
 Meta:
   icon: "cloud"
   color: "yellow"

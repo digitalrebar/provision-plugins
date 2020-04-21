@@ -2,7 +2,7 @@
 Name: "esxi-activate-nesting"
 Description: "Activate Nesting ESXi in ESXi"
 Documentation: |
-  This task activates the activates nesting ESXi in ESXi"
+  This task activates ESXi nested in other hypervisors (eg ESXi).
 Meta:
   icon: "cloud"
   color: "yellow"

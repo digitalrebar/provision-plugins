@@ -2,7 +2,17 @@
 Name: "esxi-set-ntp"
 Description: "Set the NTP system in ESXi"
 Documentation: |
-  Set the NTP system in ESXi.
+  Set the NTP system in ESXi based the following params, evaulated
+  in the order:
+
+    * ``ntp-servers``
+
+  This task will also appropriately modify the ESXi Firewall rulesets
+  to allow access to the NTP servers based on the ``ntpClient`` ruleset.
+
+  Full customization of the ``ntp.conf`` file can override the generated
+  config files from this task by using the ``esxi/ntp-conf`` param.
+
 Meta:
   icon: "cloud"
   color: "yellow"

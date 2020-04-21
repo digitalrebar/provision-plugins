@@ -2,7 +2,12 @@
 Name: "esxi-set-dns"
 Description: "Setup DNS components in ESXi"
 Documentation: |
-  Setup DNS components in ESXi.
+  Setup DNS components in ESXi, using the params:
+
+    * ``dns-servers``
+    * ``dns-domain``
+    * ``dns-search-domains``
+
 Meta:
   icon: "cloud"
   color: "yellow"

@@ -2,7 +2,13 @@
 Name: "esxi-set-hostname"
 Description: "Set hostname in ESXi"
 Documentation: |
-  Set hostname in ESXi.
+  Set hostname in ESXi based on the values of the params, evaluated
+  in the following order:
+
+    * ``esxi/network-firstboot-hostname``
+    * ``hostname``
+    * currently defined ``.Machine.Name``
+
 Meta:
   icon: "cloud"
   color: "yellow"

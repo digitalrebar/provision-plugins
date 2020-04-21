@@ -1,6 +1,11 @@
 ---
 Name: "in-subnet-check-render"
 Description: "Render the in-subnet-check.py to local ESXi for use."
+Documentation: |
+  Renders a Python and Shell version of the ``in-subnet-check`` tool
+  to the local ESXi instance.  The file permissions are then set as
+  executable for subsequent use of the scripts.
+
 Meta:
   icon: "money"
   color: "grey"

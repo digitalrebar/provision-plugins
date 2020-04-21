@@ -1,5 +1,6 @@
 # python2 version
 # required to run in %pre --interpreter=python
+# There is no DRP Runner for ESXi system with only Python 2
 
 # Updating the machine in dr-provision has to be done as part of the %pre
 # so that the esxi firewall does not eat our requests.
@@ -10,7 +11,6 @@ url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}'
 
 opener = urllib2.build_opener(urllib2.HTTPSHandler(context=ssl.SSLContext(ssl.PROTOCOL_SSLv23)))
 
-# There is no DRP Runner for ESXi, so we don't have post-OS install control.
 # Force the machine to empty workflow, none stage, and the local bootenv.
 patch = '''
 [

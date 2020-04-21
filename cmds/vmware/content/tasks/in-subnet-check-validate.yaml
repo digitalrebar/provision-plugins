@@ -1,6 +1,13 @@
 ---
 Name: "in-subnet-check-validate"
 Description: "Validate the IP and GW in same subnet for ESXi firstboot network"
+Documentation: |
+  Validates that the defined ESXi network parameters for the IP
+  Address, Gateway, and Netmask are all in the same subnet.
+
+  Requires the ``in-subnet-check-render`` task to have been run prior
+  to this task execution.
+
 Meta:
   icon: "money"
   color: "grey"
