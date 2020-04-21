@@ -196,7 +196,7 @@ waste your time trying to sort it out.
       structure from the OLD versions to NOT BE COMPATIBLE with the new.
   2.  Your "exploded" BootEnvs on disk or in your ``esxi/http-mirror``
       location needs to change.  If you are not using the http mirror
-      method, you can simply delete the ``tftpboot/esxi-*` directories
+      method, you can simply delete the ``tftpboot/esxi-*`` directories
       relating to your existing ISOs, then restart the DRP service.
   3.  Insure your original ISOs still exist in the ``tftpboot/isos/``
       directory, for them to be re-exploded to the new BootEnv names.
@@ -308,8 +308,7 @@ install tracking purposes, you must also set the ``esxi/skip-notify`` Param
 value to ``true``.
 
 To install the ESXi Agent/Runner, you must also install the Firewall-VIB
-module, or arrange to disable the ESXi built-in firewall system.  Please
-see the ``esxi-install-agent` Stage.
+module, or arrange to disable the ESXi built-in firewall system.
 
 Adding Custom Kickstart Sections
 ++++++++++++++++++++++++++++++++
@@ -384,7 +383,7 @@ Example Param definition:
 .. note:: None of the above reference templates exist in this plugin.  You must create them as appropriate for your use cases.
 
 You may also create templates that carry kickstart command directives,
-to customize the main body of the kickstart.  Use the ``esxi/ks-custom-kickstart`
+to customize the main body of the kickstart.  Use the ``esxi/ks-custom-kickstart``
 param to specify the additional templates with kickstart directives to
 inject.  These will be placed after the ``esxi-network-ks.tmpl``, but before
 any of the ``%pre``, ``%post``, and/or ``%firstboot`` ections are injected.
@@ -556,7 +555,7 @@ steps:
     server {{ $ntp }} iburst
     {{end -}}
 
-3. Set the ``esxi-ntp-conf` Param with the name of your NTP template you
+3. Set the ``esxi-ntp-conf`` Param with the name of your NTP template you
    created above.
 
 Licensing ESXI During Install
