@@ -1,6 +1,11 @@
 ---
 Name: raid-current-config
-Description: The current configuration of the raid subsystem.
+Description: The current configuration of the RAID subsystem.
+Documentation: |
+  This is generally untyped dump of the configuration of the RAID subsystem.
+
+  Each controller type provides different slightly different information based upon
+  its capabilities.
 Meta:
   icon: "disk outline"
   color: "blue"

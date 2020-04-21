@@ -1,6 +1,14 @@
 ---
 Name: raid-clear-config
 Description: Whether to clear current RAID volume configuration before configuration
+Documentation: |
+  When configuring the RAID subsystem, this parameter defines if the configuration
+  should be cleared before applying volume specifications.
+
+  Setting the value to true will cause the configuration to be cleared.
+
+  The default is false.
+
 Schema:
   type: boolean
   default: false

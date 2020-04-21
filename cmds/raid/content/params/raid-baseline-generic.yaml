@@ -1,6 +1,13 @@
 ---
 Name: raid-baseline-generic
 Description: Should the raid baseline be a generic volume
+Documentation: |
+  When running the `raid-baseline` task, the system will use
+  this variable to determine if the generate volume specification
+  should be generic or have specific disk references.
+
+  The default is generic.  The turn off set the value to false.
+
 Schema:
   type: boolean
   default: true

@@ -1,6 +1,9 @@
 ---
 Name: raid-inventory
 Description: Inventory current RAID volumes on the system
+Documentation: |
+  This task records the current RAID configuration on the machine's object
+  in the `raid-current-config` parameter.
 Prerequisites:
   - raid-tools-install
 Meta:

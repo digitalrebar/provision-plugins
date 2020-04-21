@@ -1,6 +1,9 @@
 ---
 Name: raid-baseline
 Description: "Baseline RAID configurations on a system as target configuration"
+Documentaiton: |
+  This stages provides the tasks needed to snaptshot the current configuration as a working
+  `raid-target-configuration` parameter.
 BootEnv: sledgehammer
 Tasks:
   - raid-set-baseline

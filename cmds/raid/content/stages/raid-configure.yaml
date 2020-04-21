@@ -1,6 +1,10 @@
 ---
 Name: raid-configure
 Description: "Update hardware RAID configurations on a system"
+Documentation: |
+  This stages installs the tools need to configuration the hardware RAID
+  subsystem and then configures the system based upon the `raid-target-configuration`
+  parameter.
 BootEnv: sledgehammer
 Tasks:
   - raid-tools-install

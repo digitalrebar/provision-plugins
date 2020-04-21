@@ -1,5 +1,39 @@
+
+The raid plugin provides two pieces to the system.
+
+
+* A content pack with stages, tasks, and parameters
+* A go-binary that can run in sledgehammer to take actions
+
+These two pieces together work to configure and manage the hardware raid subsystem of a
+physical machine.
+
+Operational Information
+-----------------------
+
+The raid plugin provides a set of operational and example stages for configuring the
+hardware raid subsystem.
+
+Provided Stages:
+
+* `raid-inventory` - Provides an inventory of the raid subsystem
+* `raid-enable-encryption` - Configures controller level encryption
+* `raid-configure` - Configures the volumes on the raid system
+* `raid-reset` - Resets the *skip* parameters to allow for reconfiguration
+* `raid-baseline` - Snapshots the current configuration into a usable `raid-target-configuration` parameter
+* `raid-example` - Historical stage that got split into `raid-configure` and `raid-inventory`
+
+The stages make sure that the appropriate raid tools are installed.
+
+The system uses two toggle parameters to make sure that once configured the
+RAID configuration is not altered.  `raid-skip-config` and `raid-skip-encryption`
+parameters to ensure that the RAID subsystem does NOT get altered once configured.
+To enable reconfiguration, clear these parameters from the machine's object or
+use the `raid-reset` stage or task in your workflow.
+
+
 Digital Rebar RAID Configuration Tool
-=====================================
+-------------------------------------
 
 The Digital Rebar RAID configuration tool (also known as drp-raid) is
 designed to be an automated wrapper around lower-level RAID
@@ -7,12 +41,16 @@ configuration tools.  It is designed to work with the RAID workload in
 the Sledgehammer environment.
 
 Usage
------
+=====
+
+By default, `drp-raid` will attempt to operate on all controllers
+present in the system.  If a specific controller is desired,
+the controller should be specified in the configuration structures.
 
 drp-raid can perform a few common tasks:
 
 Report Current Configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++++
 
 `drp-raid` with no arguments reports on the current state of all the
 RAID controllers it knows about, including the state of all physical
@@ -20,22 +58,30 @@ drives and volumes.  This report is output in the form of a JSON array
 of controllers.
 
 Clear All Configuration
-^^^^^^^^^^^^^^^^^^^^^^^
++++++++++++++++++++++++
 
-`drp-raid-clear` will clear all configuration on all RAID controllers
+`drp-raid -clear` will clear all configuration on all RAID controllers
 attached to the system, including any foreign configuration.
 
-Show Current Volume Specifications
-^^^^^^^^^^^^^^^^^^^^^^^
+The `-force` flag can be used to set the disks to a GOOD
+state once the configuration has been wiped.
 
-`drp-raid-volspecs` shows the current list of volumes on all RAID
+Show Current Volume Specifications
+++++++++++++++++++++++++++++++++++
+
+`drp-raid -volspecs` shows the current list of volumes on all RAID
 controllers in the system in a form that can be fed into `drp-raid
 -configure` to recreate the volumes as they are.
 
-Compile Volume Specifications Into Final Format
-^^^^^^^^^^^^^^^^^^^^^^^
+Additionally, the `-generic` flag can be given to the command to
+create volspecs that are less disk specific in format.  The normal
+mode generates a disk entry for each disk in the volume.  The
+generic mode will generate counts instead of specific drives.
 
-`drp-raid-compile` takes a list of volume specifications on stdin,
+Compile Volume Specifications Into Final Format
++++++++++++++++++++++++++++++++++++++++++++++++
+
+`drp-raid -compile` takes a list of volume specifications on stdin,
 compiles them to a format suitable for the current system (including
 resolving what drives to use and what the approximate final size of
 each given volume will be), and outputs that list on stdout.  It
@@ -43,36 +89,53 @@ assumes that the RAID controllers are unconfigured, and it will change
 the current RAID configuration.
 
 Configure Volumes on Raid Controllers
-^^^^^^^^^^^^^^^^^^^^^^^
++++++++++++++++++++++++++++++++++++++
 
-`drp-raid-configure` takes a list of volume specifications on stdin,
+`drp-raid -configure` takes a list of volume specifications on stdin,
 compiles them, and then attempts to create any needed volumes on the
 RAID controllers.  Existing volumes will not be modified or deleted.
 
-Add Volumes to Raid Controllers
-^^^^^^^^^^^^^^^^^^^^^^^
+The `-force` flag can be used to set the disks to a GOOD
+state prior to adding the drive to its volume.
 
-`drp-raid-append` attemps to add the list of volume specifications
+Add Volumes to Raid Controllers
++++++++++++++++++++++++++++++++
+
+`drp-raid -append` attemps to add the list of volume specifications
 from stdin to the preexisting volumes.  Unlike configure, you do not
 need to pass in volume specifications for existing volumes.
 
+Encrypt Raid Controllers
+++++++++++++++++++++++++
+
+`drp-raid -encrypt` attemps to configure the global encryption settings
+for the specified raid controller. This requires additional parameters:
+
+* -key - the base key for the system.
+* -password - the base password for the system.
+
+The content tasks use parameters to fill these in automatically.
+
 Supported RAID Controllers
-^^^^^^^^^^^^^^^^^^^^^^^
+++++++++++++++++++++++++++
 
 drp-raid supports all RAID controllers supported by current MegaCLI
 and StorCLI tooling for Avago-based RAID controllers, along with all
-HP SmartArray controllers that are manageable by ssacli.  Support for
+HP SmartArray controllers that are manageable by ssacli.  Additional
+controllers supported by the PercCLI and MVCli tool chains.  Support for
 other tools and RAID controller types can be added as part of a
 consulting or support engagement, depending in your license terms.
 
+
 Volume Specifications
----------------------
+=====================
 
 Volume specifications (volspecs for short) are what drp-raid uses to
 configure RAID volumes, no matter what RAID toolset or controller type
 you are using.  A list of volume specifications looks like this json:
 
   ::
+
     [
       {
       "RaidLevel": "string",
@@ -210,6 +273,7 @@ Example Transcript
 ------------------
 
   ::
+
     [root@df8-bc-12-41-c4-72 ~]# ./drp-raid -clear
     [root@df8-bc-12-41-c4-72 ~]# ./drp-raid
     [

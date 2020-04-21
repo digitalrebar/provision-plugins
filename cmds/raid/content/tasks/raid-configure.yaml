@@ -1,6 +1,19 @@
 ---
 Name: raid-configure
 Description: Configure wanted RAID volumes on the system
+Documentation: |
+  The main task to configure the RAID subsystem.
+
+  If the `raid-skip-config` parameter is set to true, the
+  whole task will be skipped.
+
+  If the `raid-clear-config` parameter is set to true, the
+  configuration will be cleared before the configuration is
+  applied.
+
+  The `raid-target-configuration` parameter is used to define the
+  desired RAID configuration.
+
 Prerequisites:
   - raid-tools-install
 Meta:

@@ -1,6 +1,9 @@
 ---
 Name: raid-reset
 Description: "Reset the raid flags to reconfigure the Raid subsystem"
+Documentation: |
+  This stage resets the skip configuration parameters to enable the RAID
+  subsystem to be reconfigured.
 Tasks:
   - raid-reset
 Meta:

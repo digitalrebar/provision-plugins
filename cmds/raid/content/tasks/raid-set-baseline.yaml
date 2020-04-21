@@ -1,6 +1,13 @@
 ---
 Name: raid-set-baseline
 Description: Inventory current RAID volumes on the system as set them as target configuration
+Documentation: |
+  The `raid-set-baseline` task will use the current configuration and generate a new
+  `raid-target-config` for this machine.  This can be used to configure the system consistently
+  in the future or applied to other similar systems.
+
+  The `raid-baseline-generic` flag determines if the generated configuration has specific
+  disk references or generic disk counts.
 Prerequisites:
   - raid-tools-install
 Meta:

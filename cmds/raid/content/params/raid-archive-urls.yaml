@@ -6,14 +6,17 @@ Documentation: |-
   of the tool install archives.  This should be used to override DRP serving these
   files.
 
-  For Example,
+  The following example could be used to set the value in a profile.
 
-  --
-  storcli7: "https://myserver/storcli7.zip"
-  storcli6: "https://myserver/storcli6.zip"
-  megacli: "https://myserver/megacli.zip"
-  perccli: "https://myserver/perccli.zip"
-  mvcli: "https://myserver/mvcli.zip"
+  ::
+
+    {
+      "storcli7": "https://myserver/storcli7.zip",
+      "storcli6": "https://myserver/storcli6.zip",
+      "megacli": "https://myserver/megacli.zip",
+      "perccli": "https://myserver/perccli.zip",
+      "mvcli": "https://myserver/mvcli.zip"
+    }
 
 Meta:
   icon: "disk outline"
