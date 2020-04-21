@@ -14,7 +14,7 @@ Documentation: |
 
   In many cases, the provisioning network may or may not be a VLAN tagged
   network, which may very likely be different from the final installed
-  ESXi production use case network configuration.  On ``firstboot`, you
+  ESXi production use case network configuration.  On ``firstboot``, you
   can specify values separately from the installation phases to support
   network transitions from install to production use.
 
