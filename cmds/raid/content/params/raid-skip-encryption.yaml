@@ -1,6 +1,15 @@
 ---
 Name: raid-skip-encryption
 Description: Whether to skip RAID encryption configuration
+Documentation: |
+  The `raid-skip-encryption` flag, when true, will cause the
+  configuration encryption taks to be skipped.
+
+  This allows the system to know when encryption has been configured
+  and should be skipped to keep disks in a functioning state.
+
+  The `raid-reset` stage will clear this flag to allow for reconfiguration.
+
 Schema:
   type: boolean
   default: false

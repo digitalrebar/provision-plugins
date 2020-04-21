@@ -1,6 +1,22 @@
 ---
 Name: raid-enable-encryption
 Description: Turn on Raid Controller encryption
+Documentation: |
+  This task configures controller-level encryption if available.
+
+  If the `raid-skip-encryption` parameter is true, this task will
+  be entirely skipped.
+
+  The system will generate a key and password if they are unset.
+  To specify the key and password, use the `raid-encryption-key`
+  and `raid-encryption-password` parameters.
+
+  Optionally, the `raid-encryption-password-save` flag can be used to
+  save the randomly generated password if not specified.  The password
+  will be stored on the machine in `raid-encryption-password`.
+
+  The `raid-encryption-key` is the machine's serial number if not specified.
+
 Prerequisites:
   - raid-tools-install
 OptionalParams:

@@ -1,6 +1,10 @@
 ---
 Name: raid-example
 Description: "Discover and update hardware RAID configurations on a system"
+Documentation: |
+  THIS STAGE IS DEPRECATED.
+
+  This stage has been replaced by `raid-configure`.
 BootEnv: sledgehammer
 Tasks:
   - raid-tools-install

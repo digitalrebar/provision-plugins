@@ -1,6 +1,12 @@
 ---
 Name: raid-available-utilities
 Description: The current tools available for raid operations
+Documentation: |
+  These are the tools installed on the system that are available for
+  configuration operations.
+
+  The `raid-install-tools` task will attempt to install all tools
+  it can find.  This list reflects the available tools.
 Meta:
   icon: "disk outline"
   color: "blue"

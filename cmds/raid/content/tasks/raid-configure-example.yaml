@@ -1,6 +1,10 @@
 ---
 Name: raid-configure-example
 Description: Configure wanted RAID volumes on the system
+Documentation: |
+  Deprecated Task to configure the RAID Subsystem.
+
+  This is replaced by `raid-configure`.
 Prerequisites:
   - raid-tools-install
 Meta:

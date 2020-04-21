@@ -1,6 +1,10 @@
 ---
 Name: raid-reset
 Description: Reset Raid Skip Flags
+Documentation: |
+  The `raid-reset` tasks clears the skip configuration parameters from the
+  machine object.  These are the `raid-skip-config` and the `raid-skip-encryption`
+  parameters.
 OptionalParams:
   - raid-skip-encryption
   - raid-skip-config

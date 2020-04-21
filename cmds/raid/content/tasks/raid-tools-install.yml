@@ -1,6 +1,23 @@
 ---
 Name: "raid-tools-install"
 Description: "Install vendor tools needed to manage RAID controllers"
+Documentation: |
+  The `raid-tools-install` task pulls the tools from DRP unless specified by
+  the `raid-archive-urls` parameter.
+
+  The default tools all attempted to be installed for widest coverage.
+
+  The tools are not prebuilt into sledgehammer for licensing reaasons.
+
+  These tools can be found at and named in the files/raid directory of DRP:
+
+  * storcli7 - https://docs.broadcom.com/docs/007.0205.0000.0000_Unified_StorCLI.zip - 007.0205.0000.0000_Unified_StorCLI.zip
+  * storcli6- https://docs.broadcom.com/docs/1.23.02_StorCLI - 1.23.02_StorCLI.zip
+  * megacli - https://docs.broadcom.com/docs/12351587 - 8.07.14_MegaCLI.zip
+  * perccli - https://downloads.dell.com/FOLDER04830419M/1/perccli_7.3-007.0318_linux.tar.gz - perccli_7.3-007.0318_linux.tar.gz
+  * ssacli - https://downloads.linux.hpe.com/sdr/repo/mcp/centos/7/x86_64/11.21/ssacli-3.30-14.0.x86_64.rpm - ssacli-3.30-14.0.x86_64.rpm
+  * mvcli - https://dl.dell.com/FOLDER05540516M/1/mvcli_5.0.13.1103_A05.zip - mvcli_5.0.13.1103_A05.zip
+
 Meta:
   icon: "disk outline"
   color: "blue"

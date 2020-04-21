@@ -1,6 +1,9 @@
 ---
 Name: raid-inventory
 Description: "Discover RAID configurations on a system"
+Documentation: |
+  This stage installs the tools needed to inventory the RAID subsystem
+  and records the current state of the controllers.
 BootEnv: sledgehammer
 Tasks:
   - raid-inventory

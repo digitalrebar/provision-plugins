@@ -1,6 +1,111 @@
 ---
 Name: raid-target-config
 Description: The desired RAID configuration for a system as a list of virtual disks to build.
+Documentation: |
+  Each field in a volume specification is defined as follows:
+
+  * Controller: an integer that specifies which discovered controller
+    the RAID volume should be created on.  drp-raid orders controllers
+    based on PCI address.  This value defaults to 0, indicating that the
+    volume will be built on the first discovered controller.
+
+  * RaidLevel: A string value that specifies what level of RAID to
+    build.  RaidLevel must be present in all volspecs, and it has no
+    default.  Valid RaidLevels are:
+
+    * "jbod": All disks in this volspec should be turned into JBOD
+          volumes.  If a given RAID controller does not support jbod mode, a
+          single-disk RAID0 will be created for each disk instead.
+    * "concat": The disks should be concatenated.
+    * "raid0": Make a RAID0 with the chosen disks.
+    * "raid1": Make a RAID1 with the chosen disks.
+    * "raid5": Make a RAID5 with the chosen disks.
+    * "raid6": Make a RAID6 with the chosen disks.
+    * "raid00": Make a RAID00 with the chosen disks.
+    * "raid10": Make a RAID10 with the chosen disks.
+    * "raid1e": Make a RAID1e with the chosen disks.
+    * "raid50": make a RAID50 with the chosen disks.
+    * "raid60": make a RAID60 with the chosen disks.
+    * "raidS": Works like jbod, but makes raid0 volumes.
+
+    Not all RAID controllers will support the above RAID levels, and
+    with the exception of jbod if a RAID level is not supported then
+    volume creation will fail.
+
+  * Disks: A list of physical disk specifiers that indicate which
+    physical disks should be used to create the volume.  When creating a
+    volume by specifying individual disks, you are responsible for
+    making sure that the choice of disks is sane for the desired
+    controller.  If Disks is specified, then DiskCount is ignored and
+    drp-raid will not perform more than minimal sanity checking on the
+    disks provided.  Each entry in the Disks list must contain the
+    following fields:
+
+    * "Enclosure": a string that identifies which enclosure the disk is in.
+    * "Slot": a number that identifies which slot in the Enclosure the desired
+        physical disk is in.
+
+  * DiskCount: The number of disks that should be used to build the
+    desired volume.  DiskCount can be one of the following:
+
+    * "min", which indicates that the smallest number of disks that can
+        be used for the requested RaidLevel whould be used.
+    * "max", which indicates that the largest number of disks with the
+        same Type and Protocol should be used.
+    * A positive integer.
+
+    If DiskCount is unspecified and Disks is also unspecified, DiskCount
+    will default to "min".
+
+  * Size: A string value that indicates what the desired total useable
+    size of the RAID array should be.  When you let drp-raid decide what
+    physical disks to pick for volume creation, it will pick the
+    smallest disks that can be used to satisfy the volume creation
+    request.  Size can be one of the following values:
+
+    * "min", which will pick the smallest disks that meet the rest of
+        the constraints in the volspec.
+    * "max", which will pick the largest disks that meet the rest of the
+        constraints in the volspec.
+    * A string containing a human-readable size (100 MB, 1 TB, 5 PB).
+
+    If Size is unspecified or left blank, it will default to "max".
+
+  * Type: A comma-seperated list of disk types that should be tried in
+    order when creating a volume.  Currently, individual items can be
+    "disk" for rotational disks, and "ssd" for solid-state disks.  If
+    unspecified, "disk,ssd" will be used.  All physical disks in a
+    created volume will be of the same type, and it is perrmitted to
+    have a list with one entry.
+
+  * Protocol: A comma-seperated list of low-level protocols that should
+    be tried in order when creating a volume.  Currently, individual
+    items can be "sata" for disks that communicate using the SATA
+    protocol, and "sas" for disks that communicate using the SAS
+    protocol.  All physical disks in a created volume will communicate
+    using the same protocol, and it is perrmitted to have a list with
+    one entry.
+
+  * StripeSize: A string containing the human-readable size of each
+    individual stripe in the RAID array. It is generally a power of two
+    less than or equal to 1 MB.  If unspecified, it defaults to "64 KB".
+
+  * Name: The desired name of the volume, if the RAID controller
+    supports naming volumes.  Naming a volume is currently unsupported.
+
+  * VolumeID: The controller-specific ID of the created volume.
+
+  * Bootable: A boolean value indicating whether this volume should be
+    the default one the RAID controller will use when booting the
+    system.  Defaults to false, and Bootable support is currently not implemented.
+
+  * Encrypt: Whether the volume should be transparently encrypted by the RAID controller.
+    This requires controller-specific setup.
+
+  * AllowMixedSizes: Whether we will create a volume that spans physical disks of
+    wildly mixed sizes. By default, we will fail if we pick disks underlying a
+    volume that vary in size by more than 10%.
+
 Meta:
   icon: "disk outline"
   color: "blue"

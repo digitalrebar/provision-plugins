@@ -1,6 +1,15 @@
 ---
 Name: raid-skip-config
 Description: Whether to skip RAID volume configuration
+Documentation: |
+  This flag indicates if the configuration of the RAID subsystem should
+  be skipped.  This flag is used to make sure that once a configuration
+  run is complete, a future run will not wipe out the configuration.
+
+  When true, the system will not configure the RAID system.  The `raid-configure`
+  task will be skipped.
+
+  The `raid-reset` task will clear this to enable reconfiguration.
 Schema:
   type: boolean
   default: false

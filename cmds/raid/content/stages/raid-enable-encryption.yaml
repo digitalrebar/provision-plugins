@@ -1,6 +1,10 @@
 ---
 Name: raid-enable-encryption
 Description: "Turn on RAID Encryption"
+Documentation: |
+  This stages installs the tools need to configuration the hardware RAID
+  subsystem and then configures the controller-level encryption based upon
+  the current parameter settings.
 BootEnv: sledgehammer
 Tasks:
   - raid-enable-encryption
