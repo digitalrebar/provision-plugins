@@ -3,14 +3,14 @@ Name: esxi/disk-install-options
 Description: "Sets the kickstart directive for the 'install' command."
 Documentation: |
   This Param lets the operator define any customizations to the
-  ``install ...` directive in the kickstart.  If not specified,
+  ``install ...`` directive in the kickstart.  If not specified,
   the default behavior is to set the directive as follows:
 
     ::
 
       install --firstdisk --overwritevmfs
 
-  Setting this value will override the "``--firstdisk --overwritevmfs``"
+  Setting this value will override the ``--firstdisk --overwritevmfs``
   values with whatever the operator specifies.  For options and  details,
   see the VMware documentation:
 
