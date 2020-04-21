@@ -1,6 +1,11 @@
 ---
 Name: bios-last-attempted-configuration
 Description: The last BIOS configuration the BIOS tools tried to set.
+Documentation: |
+  This parameter keeps track of the last BIOS settings that the BIOS configuration
+  tools tried to set.  The ``bios-configure`` task uses it to keep from entering
+  an infinite loop of trying to set the same settings by failing with an informative
+  error instead.
 Meta:
   icon: "setting"
   color: "blue"

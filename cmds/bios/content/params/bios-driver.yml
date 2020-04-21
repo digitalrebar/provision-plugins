@@ -1,6 +1,16 @@
 ---
 Name: bios-driver
 Description: "Driver that drp-bioscfg should use for working with BIOS settings"
+Documentation: |
+  This parameter lets the bioscfg command know what tooling it should use
+  to get and set BIOS configuration values on a machine.  The current options are :
+
+  * ``dell`` which will use ``racadm`` to get and set BIOS settings via ``racadm get``.
+  * ``hp`` which will use ``conrep`` to get and set BIOS settings.
+  * ``lenovo`` which will use ``onecli`` to get and set BIOS via ``onecli config``.
+  * ``none`` which does nothing.
+
+  Support for other BIOS configuration tooling is welcome.
 Schema:
   type: string
   enum:

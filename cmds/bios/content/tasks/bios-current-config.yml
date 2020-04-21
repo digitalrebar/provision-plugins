@@ -1,6 +1,16 @@
 ---
 Name: "bios-current-config"
 Description: "Get current BIOS configuration for the system"
+Documentation: |
+  This task populates the ``bios-current-configuration`` parameter on the machine
+  it runs on with a dump on the current configuration settings.  Depending on
+  what the underlying ``bios-driver`` supports, this may include various read-only
+  settings, additional documentation on each setting, and allowable types and ranges
+  that values can take.  As such, the format of the ``bios-current-configuration`` parameter
+  is deliberatly left undefined.
+
+  This task is not required for correct operation of the system -- it is present for informational
+  purposes only.
 RequiredParams:
   - bios-driver
 Prerequisites:

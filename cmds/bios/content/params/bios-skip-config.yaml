@@ -1,6 +1,9 @@
 ---
 Name: bios-skip-config
 Description: "Bios system should skip configuration if true"
+Documentation: |
+  If this parameter is true, then all BIOS config tasks will succeed without
+  doing anything.
 Schema:
   type: boolean
   default: false

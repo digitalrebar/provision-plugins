@@ -1,0 +1,10 @@
+
+The bios plugin allows you to get and set BIOS configuration parameters on server systems
+from the following manufacturers:
+
+* Dell, which requires the ``dell-support`` content bundle.
+* HPE, which requires the ``hpe-support`` content bundle.
+* Lenovo, which requires the ``lenovo-support`` content bundle.
+
+In all cases, bios configuration management is implemented as a set of tasks
+designed to be run in the Sledgehammer boot environment.  

@@ -1,6 +1,23 @@
 ---
 Name: "bios-configure"
 Description: "Configure BIOS settings on a system"
+Documentation: |
+  This task is responsible for setting BIOS settings on a machine.
+  The ``bios-target-configuration`` parameter on the machine must be populated
+  with a sane set of settings for the machine, and the ``bios-driver`` parameter
+  must be set to one appropriate to the system.  This task takes several steps:
+
+  #. If the ``bios-skip-config`` param is true, the task exits succesfully.
+  #. The task compares the current settings to the ones from ``bios-target-configuration``
+     If the values that need to be changed are the same as the ones listed in
+     ``bios-last-attempted-configuration``, then the task prints out an error
+     message indicating that the bios configuration process cannot make
+     progress and exits with failure.
+  #. The ``bios-last-attempted-configuration`` param is set to the settings
+     from ``bios-target-configuration`` that need to be changed.
+  #. The settings from ``bios-target-configuration`` are applied to the machine,
+     and the task indicates success, failure, or a need to reboot depending on what
+     the underlying tooling returns.
 RequiredParams:
   - bios-target-configuration
   - bios-driver

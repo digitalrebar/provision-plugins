@@ -1,6 +1,10 @@
 ---
 Name: bios-configure
 Description: "Discover and update BIOS configurations on a system"
+Documentation: |
+  This stage inventories the current BIOS configuration with the
+  `` bios-current-config`` task, then attempts to set the BIOS
+  configuration using the ``bios-configure`` task.
 BootEnv: sledgehammer
 Tasks:
   - bios-current-config
