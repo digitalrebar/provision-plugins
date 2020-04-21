@@ -1,6 +1,9 @@
 ---
 Name: "validation-machine-name-dns-to-ip"
 Description: "Using the Machine.Name  validate that the esxi/firstboot-ipaddr is what DNS returns."
+Documentation: |
+  Validates that the machines IP address exists in DNS records.
+
 Meta:
   icon: "money"
   color: "grey"

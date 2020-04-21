@@ -2,13 +2,16 @@
 # this template uses an "override strategy" to find a specific
 # disk based on the selected strategy for the ESXi install
 #
-# supported strategies:
+# supported strategies (double check code functions below for accuracy):
 #
 #     find_first_naa    - finds first device that matches the pattern
 #                         /vmfs/devices/disks/naa.*
 #     first_disk        - mainly used to test code path to return the
 #                         existing default behavior to set install disk
 #                         to '--firstdisk'
+#     find_first_dellboss_vd
+#                       - Dell SATA controller RAID volume is iterated
+#                         as a "DELLBOSS" device name
 
 {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
 set -e

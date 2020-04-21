@@ -5,7 +5,8 @@
 # Accept the VMware End User License Agreement
 vmaccepteula
 
-# Set the root password for the DCUI and Tech Support Mode
+# Set the root password for the DCUI and Tech Support Mode - If not
+# specified, default to "RocketSkates"
 rootpw --iscrypted {{if .ParamExists "provisioner-default-password-hash"}}{{ .Param "provisioner-default-password-hash" }}{{else}}$6$rebar$HBaBj/uDmsQMEw4Si6eja9Yba3rhB73Na36hbrp9KxDHm6s5veeWyXlsUkoxRACtP47978iiidziRdsYUC7gC/{{end}}
 
 # ESXi license to apply to the system

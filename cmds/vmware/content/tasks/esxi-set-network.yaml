@@ -2,7 +2,9 @@
 Name: "esxi-set-network"
 Description: "Set the network components of ESXi"
 Documentation: |
-  Set the network components of ESXi
+  Configure the ESXi network based on the various param values
+  defined with names ``esxi/network-*``.
+
 Meta:
   icon: "cloud"
   color: "yellow"

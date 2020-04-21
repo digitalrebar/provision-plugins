@@ -1,5 +1,5 @@
 VMware vSphere Tools
-~~~~~~~~~~~~~~~~~~~~
+--------------------
 
 A collection of tools for managing VMware vSphere ESXi nodes via Digital
 Rebar Provision (DRP) workflows and content.  This plugin provides content
@@ -13,7 +13,7 @@ doing deep configuration of the ESXi node.
 
 
 Overview of Usage
------------------
+=================
 
 Starting in the VMware plugin version 2.9.0 and newer, there is a much
 simplified Workflow use pattern.  Previously, there were several
@@ -31,7 +31,7 @@ a Map.
 
 
 Basic Usage
-===========
++++++++++++
 
 For basic usage, and to obtain the latest VMware generic ISO BootEnv
 installation, simply use the ``esxi-install`` workflow.
@@ -63,7 +63,7 @@ Please review below documentation for additional details on the above pieces.
 
 
 Advanced Usage
-==============
+++++++++++++++
 
 Setting the ``vmware/esxi-version`` Param to ``select-vendor`` will enable
 automatic selection of the ISO based on the Vendor and Model (if appropriate)
@@ -79,7 +79,7 @@ directly on the Machine as a Param, or via Profiles that are added to the
 machine (including ``global``, if appropriate).
 
 Patching ESXi Systems at Install Time
-=====================================
++++++++++++++++++++++++++++++++++++++
 
 The RackN VMware plugin also supports applying a patch version to the base install
 ISO at installation time.  The patching system relies on two separate sets of
@@ -107,7 +107,7 @@ steps to acquire patches:
   * send a gentle note to VMware to modernize their download process
 
 Adding Custom BootEnvs (VMware ESXi versions)
-=============================================
++++++++++++++++++++++++++++++++++++++++++++++
 
 At RackN, we try to keep up with the latest set of VMware ESXi versions, but
 the reality is ... we won't succeed.  As such, you may need to inject new
@@ -149,7 +149,7 @@ There are two paths for installing new ESXi versions:
 .. _vmware_esxi_passwords:
 
 Managing Your ESXi Passwords
-----------------------------
+============================
 
 There are a few options you have for setting/defining the password(s) that
 are set on your installed ESXi instance.
@@ -181,7 +181,7 @@ Please see the per-Param documentation below for more details on the above metho
 
 
 NOTES ON UPGRADING To v2.9.0 Plugin
------------------------------------
+===================================
 
 The new version selector features are being released in the plugin version
 v2.9.0.  If you have used the previous v2.8.0 or older versions, you will
@@ -210,7 +210,7 @@ ESXi, gain incredibly powerful auto-magic deployments based on hardware vendor,
 and simplify and standardize the naming structure of the BootEnvs.
 
 DEPRECATED BOOTENVS
-===================
++++++++++++++++++++
 
 To support a successful upgrade from the v2.8.0 to v2.9.0 vmware plugin, the
 old BootEnv names must be mainatined.  If they are referenced via Workflow
@@ -284,7 +284,7 @@ mappings between the names.
           installation.
 
 ESXi Agent/Runner Information
------------------------------
+=============================
 
 VMware ESXi environments are for the most part "closed appliances", and
 compiling third party tools for these environments is not an easy process.
@@ -312,7 +312,7 @@ module, or arrange to disable the ESXi built-in firewall system.  Please
 see the ``esxi-install-agent` Stage.
 
 Adding Custom Kickstart Sections
-================================
+++++++++++++++++++++++++++++++++
 
 Digital Rebar Provision provides on-the-fly customization of the built Kickstart
 through the use of injecting Templates in to the core Kickstart file, and also
@@ -429,7 +429,7 @@ The above examples will generate a kickstart that looks similar to below:
     <my-pre-busybox-chunk2.ks.tmpl>
 
 Network Configuration Options
------------------------------
+=============================
 
 The VMware plugin from RackN supports managing relatively complex network
 scenarious around your VMware ESXi infrastructure.  There are three places
@@ -469,7 +469,7 @@ Some sample scenarios and how you need to configure for those use cases
 are listed below.
 
 Simple DHCP Only Setup
-======================
+++++++++++++++++++++++
 
 If you are trying to simply obtain a DHCP configuration at boot time,
 and preserve that IP through the install and frist boot of the installed
@@ -477,7 +477,7 @@ OS, you do not need to do anything.  The default behavior will be to
 obtain DHCP and preserve it through the install.
 
 DHCP on PXE; Configure Manual IP (kickstart and installed OS)
-=============================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 If you intend to acquire an IP address during initial PXE boot of the
 Machine, but then transition to a Static (manually) configured network
@@ -489,7 +489,7 @@ installed network config, use the following steps:
 3. Follow the documentation for that Param.
 
 DHCP ON PXE; Retain for Kickstart; Installed OS Different
-=========================================================
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 If your provisioning network is defined by the PXE DHCP network configuration,
 but you wish to transfer the installed OS (on first boot), to a new
@@ -500,7 +500,7 @@ network configuration, use the following setps:
 3. Follow the documentation for that Param.
 
 VLAN Tagged Interfaces
-======================
+++++++++++++++++++++++
 
 VLAN tagged frames can be set at any of the three primary stages of the
 provisioning process outlined above.  Set the appropriate options for
@@ -515,7 +515,7 @@ Kickstart Network and/or Firstboot Network VLAN tagged
   stage.
 
 Packet MTU Size
-===============
++++++++++++++++
 
 Custom MTU (maximum transmission unit) frame sizes for packets can be set.  This
 is for the Management Network (eg "vmnic0"/"vmk0") MTU setting.  To set the MTU
@@ -529,7 +529,7 @@ size, set the following Param to your specified value:
 
 
 DNS, Search Domains, NTP Settings
-=================================
++++++++++++++++++++++++++++++++++
 
 To customize network configurations for DNS and NTP settings, please see
 the ``drp-community-content`` Params:
@@ -560,7 +560,7 @@ steps:
    created above.
 
 Licensing ESXI During Install
------------------------------
+=============================
 
 Use the ``esxi/license`` Parameter to set a License to be used during installation
 to enable licensed use of ESXi.
@@ -571,7 +571,7 @@ content and how to use them.**
 
 
 Various Error Messages You May See
-----------------------------------
+==================================
 
 If you are regularly installing ESXi systems and observing the installation from the
 systems console (keyboard, video, mouse, etc.), you may observe a few error messages
@@ -579,7 +579,7 @@ that the Weasel installer kicks out.  These are considered "normal" and are docu
 here just in case you go looking for them.
 
 Deleting vmk0 Management Interface
-==================================
+++++++++++++++++++++++++++++++++++
 
 Error Message:
 
@@ -594,7 +594,7 @@ Error Message:
   should be able to safely ignore this error.
 
 Validation Disabled
-===================
++++++++++++++++++++
 
 Error Message:
 
@@ -620,7 +620,7 @@ Error Message:
     * https://docs.vmware.com/en/VMware-vSphere/6.7/com.vmware.esxi.install.doc/GUID-0410FAFA-A007-4BD5-A0CC-B1D7303853A3.html
 
 Scratch Partition Location
-==========================
+++++++++++++++++++++++++++
 
 Error Message:
 

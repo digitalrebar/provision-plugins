@@ -1,6 +1,8 @@
 #!/bin/sh
 # enable ESXi firewall service outbound port for 'dr-provision' access
 
+### NOTE: this has been replaced by the DRPY VIB Firewall Rule handling
+
 {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
 
 date > /tmp/drp-esxi-firewall-timestamp
