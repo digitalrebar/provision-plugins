@@ -1,5 +1,5 @@
 embed.go
 content.go
-embedded/
+embedded/*.vib
 vmware
 content/templates/*.vib.base64.tmpl
