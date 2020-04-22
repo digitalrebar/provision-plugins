@@ -1,6 +1,8 @@
 ---
 Name: "image-deploy"
 Description: "Deploy an image within sledgehammer"
+Documentation: |
+  Deploy an image within sledgehammer
 BootEnv: "sledgehammer"
 Tasks:
   - "erase-hard-disks-for-os-install"

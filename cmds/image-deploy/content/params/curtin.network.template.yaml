@@ -1,6 +1,8 @@
 ---
 Name: "curtin/network/template"
 Description: "Template to include for networking"
+Documentation: |
+  Template to include for networking
 Schema:
   type: "string"
 Meta:

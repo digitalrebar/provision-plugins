@@ -1,6 +1,8 @@
 ---
 Name: "curtin-deploy"
 Description: "A task to install an image through curtin."
+Documentation: |
+  A task to install an image through curtin.
 OptionalParams:
 - "image-deploy/windows-license-key"
 - "curtin/partitions"
