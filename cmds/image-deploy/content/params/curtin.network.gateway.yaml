@@ -1,6 +1,8 @@
 ---
 Name: "curtin/network/gateway"
 Description: "The gateway address for the network."
+Documentation: |
+  The gateway address for the network.
 Schema:
   type: "string"
 Meta:

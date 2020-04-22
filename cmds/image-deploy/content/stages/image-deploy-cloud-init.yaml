@@ -1,6 +1,9 @@
 ---
 # This stage moves to complete once the phone sets the stage to complete.
 Name: "image-deploy-cloud-init"
+Description: "Stage to handle serving a cloud-init file"
+Documentation: |
+  Stage to handle serving a cloud-init file
 BootEnv: "local"
 OptionalParams:
   - "cloud-init/user-data"

@@ -7,8 +7,8 @@ Documentation: |
   OS at a high level.
 
   Valid values are:
-    - linux
-    - windows
+  * linux
+  * windows
 Schema:
   type: "string"
   enum:

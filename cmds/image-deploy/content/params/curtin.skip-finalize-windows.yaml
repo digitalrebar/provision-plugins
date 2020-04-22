@@ -1,6 +1,8 @@
 ---
 Name: "curtin/skip-finalize-windows"
 Description: "Should the windows finalizer bail"
+Documentation: |
+  Should the windows finalizer bail
 Schema:
   default: false
   type: "boolean"

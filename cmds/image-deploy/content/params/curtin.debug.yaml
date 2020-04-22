@@ -1,6 +1,8 @@
 ---
 Name: "curtin/debug"
 Description: "Enable debug for curtin installs"
+Documentation: |
+  Enable debug for curtin installs
 Schema:
   default: false
   type: "boolean"

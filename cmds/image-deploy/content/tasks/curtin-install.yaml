@@ -1,6 +1,8 @@
 ---
 Name: "curtin-install"
 Description: "A task to install curtin."
+Documentation: |
+  A task to install curtin.
 Templates:
 - ID: "curtin-tools-install.sh.tmpl"
   Name: "Install curtin"

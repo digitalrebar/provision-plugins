@@ -1,6 +1,8 @@
 ---
 Name: "image-deploy/skip-network-configure"
 Description: "Whether to skip basic network configuration.  Should be set to true if your image already has a working network interface configuration."
+Documentation: |
+  Whether to skip basic network configuration.  Should be set to true if your image already has a working network interface configuration.
 Schema:
   type: boolean
   default: false
