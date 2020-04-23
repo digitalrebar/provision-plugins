@@ -120,7 +120,8 @@ There are two paths for installing new ESXi versions:
 
   1.  Creating a new content pack with all of the trimmings - there is a shell
       script named ``esxi-make-content-pack.sh`` that should exist in your
-      ``tftpboot`` directory.  It builds full content packs of VMware ISOs.
+      ``tftpboot`` directory under the ``files/plugin_providers/vmware/scripts``
+      subdirectory.  It builds full content packs of VMware ISOs.
       See the script of usage, or contact your RackN support team for more
       details.  NOTE NOTE NOTE: usage of this tool does NOT ALLOW for the
       advanced Param based workflows described above - however, the content
