@@ -1,0 +1,17 @@
+---
+Name: esxi/skip-update-address
+Description: "Skip updating the Machine's Address field"
+Documentation: |
+  This Param lets the operator skip the update of the Machine's
+  Address prior to setting up the network in esxi.
+
+  It uses the `esxi/network-firstboot-ipaddr` parameter to
+  fill in the Machine's Address field.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+Schema:
+  type: boolean
+  default: true
