@@ -2,6 +2,17 @@
 
 LENOVO_SYSTEM=true
 
+onecli=/opt/OneCli/OneCli
+ensure_onecli() {
+  which $onecli &>/dev/null && return 0
+  echo "Lenovo system detected, but no $onecli binary present."
+  echo "Please rework your ipmi configure workload to make sure the"
+  echo "hardware-tools-install stage is before the ipmi-install-cert-or-key stage."
+  echo
+  echo "This task cannot guarantee that remote access is enabled on this system without it."
+  return 1
+}
+
 vendor_add_user() {
     if [[ $ipmi_crossed_access_channels != true ]] ; then
         tool lan set $lan_chan access on
@@ -9,14 +20,157 @@ vendor_add_user() {
 }
 
 vendor_set_hostname_dns() {
-    echo "Not a direct way to set DNS and HOSTNAME - yet"
+    ensure_onecli || return 0
+{{ if .ParamExists "ipmi/configure/domain" }}
+    DNS_DOMAIN="{{.Param "ipmi/configure/domain"}}"
+{{ else if .ParamExists "dns-domain" }}
+    DNS_DOMAIN="{{.Param "dns-domain"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/hostname" }}
+    IMMHOSTNAME="{{.Param "ipmi/configure/hostname"}}"
+{{ end }}
+{{ if .ParamExists "ipmi/configure/dns-servers" }}
+    {{ $p := .Param "ipmi/configure/dns-servers" }}
+    {{ if $p }}
+    DNS_ENABLED="Enabled"
+    DNS_SERVER1="{{ index $p 0 }}"
+    {{if lt 1 (len $p) }}
+  DNS_ENABLED="Enabled"
+  DNS_SERVER2="{{ index $p 1 }}"
+    {{ end }}
+    {{ end }}
+{{ else if .ParamExists "dns-servers" }}
+    {{ $p := .Param "dns-servers" }}
+    {{ if $p }}
+    DNS_SERVER1="{{ index $p 0 }}"
+      {{if lt 1 (len $p) }}
+    DNS_SERVER2="{{ index $p 1 }}"
+      {{ end }}
+    {{ end }}
+{{ end }}
+{{ if .ParamExists "ipmi/configure/ntp-servers" }}
+    {{ $p := .Param "ipmi/configure/ntp-servers" }}
+    {{ if $p }}
+      {{if lt 0 (len $p) }}
+    NTP_ENABLED="Enabled"
+    NTP_SERVER1="{{ index $p 0 }}"
+      {{ end }}
+      {{if lt 1 (len $p) }}
+    NTP_ENABLED="Enabled"
+    NTP_SERVER2="{{ index $p 1 }}"
+      {{ end }}
+      {{if lt 2 (len $p) }}
+    NTP_ENABLED="Enabled"
+    NTP_SERVER3="{{ index $p 2 }}"
+      {{ end }}
+  {{ end }}
+{{ else if .ParamExists "ntp-servers" }}
+    {{ $p := .Param "ntp-servers" }}
+    {{ if $p }}
+      {{if lt 0 (len $p) }}
+    NTP_ENABLED="Enabled"
+    NTP_SERVER1="{{ index $p 0 }}"
+      {{ end }}
+      {{if lt 1 (len $p) }}
+    NTP_ENABLED="Enabled"
+    NTP_SERVER2="{{ index $p 1 }}"
+      {{ end }}
+      {{if lt 2 (len $p) }}
+    NTP_ENABLED="Enabled"
+    NTP_SERVER3="{{ index $p 2 }}"
+      {{ end }}
+    {{ end }}
+{{ end }}
+{{ if .ParamExists "timezone" -}}
+    TIME_ZONE="{{.Param "timezone"}}"
+{{ end -}}
+{{ if .ParamExists "ipmi/configure/timezone" -}}
+    TIME_ZONE="{{.Param "ipmi/configure/timezone"}}"
+{{ end -}}
+
+    test -z $IMMHOSTNAME || $onecli config set IMM.HostName1 $IMMHOSTNAME
+    test -z $DNS_DOMAIN || $onecli config set IMM.Custom_Domain $DNS_DOMAIN
+    test -z $DNS_ENABLED || $onecli config set IMM.DNS_Enable $DNS_ENABLED
+    test -z $DNS_ENABLED || $onecli config set IMM.DNSPreference "IPv4"
+    test -z $DNS_SERVER1 || $onecli config set IMM.DNSSettings_ServerIp1 $DNS_SERVER1
+    test -z $DNS_SERVER2 || $onecli config set IMM.DNSSettings_ServerIp2 $DNS_SERVER2
+
+    test -z $TIME_ZONE || $onecli config set IMM.TimeZone "$TIME_ZONE"
+    test -z $NTP_SERVER1 || $onecli config set IMM.NTPHost1 $NTP_SERVER1
+    test -z $NTP_SERVER2 || $onecli config set IMM.NTPHost2 $NTP_SERVER2
+    test -z $NTP_SERVER3 || $onecli config set IMM.NTPHost3 $NTP_SERVER3
+    test -z $NTP_ENABLED || $onecli config set IMM.NTPAutoSynchronization $NTP_ENABLED
 }
 
+# Notes are here: https://toolscenter.lenovofiles.com/help/index.jsp?topic=%2Ftoolsctr_cli_lenovo%2Fonecli_r_show_command.html
 vendor_generate_csr() {
-    echo "Not a direct way to get CSR - yet"
+  ensure_onecli || return 0
+
+  cat > /tmp/template.xml <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<config version="2.1">
+  <new_key_and_cert_sign_req_info>
+    <item type="Required">
+      <vectorID>0001</vectorID>
+      <name>countryName</name>
+      <value minlen="2" maxlen="2">XX</value>
+      <value minlen="2" maxlen="2">{{.Param "ipmi/configure/cert-country"}}</value>
+  </item>
+    <item type="Required">
+      <vectorID>0001</vectorID>
+      <name>stateOrProvinceName</name>
+      <value minlen="1" maxlen="30">{{.Param "ipmi/configure/cert-province"}}</value>
+    </item>
+    <item type="Required">
+      <vectorID>0001</vectorID>
+      <name>localityName</name>
+      <value minlen="1" maxlen="50">{{.Param "ipmi/configure/cert-locality"}}</value>
+    </item>
+    <item type="Required">
+      <vectorID>0001</vectorID>
+      <name>organizationName</name>
+      <value minlen="1" maxlen="60">{{.Param "ipmi/configure/cert-org"}}</value>
+    </item>
+    <item type="Optional">
+      <vectorID>0001</vectorID>
+      <name>emailAddress</name>
+      <value minlen="1" maxlen="60">admin@{{.Param "ipmi/configure/hostname"}}</value>
+    </item>
+    <item type="Required">
+      <vectorID>0001</vectorID>
+      <name>commonName</name>
+      <value minlen="1" maxlen="60">{{.Param "ipmi/configure/hostname"}}</value>
+    </item>
+    <item type="Optional">
+      <vectorID>0001</vectorID>
+      <name>Name</name>
+      <value minlen="1" maxlen="60">XXXX</value>
+    </item>
+    <item type="Optional">
+      <vectorID>0001</vectorID>
+      <name>organizationalUnitName</name>
+      <value minlen="0" maxlen="60">{{.Param "ipmi/configure/cert-org-unit"}}</value>
+    </item>
+  </new_key_and_cert_sign_req_info>
+</config>
+EOF
+
+  $onecli config generate IMM.SSL_HTTPS_SERVER_CSR --file template.xml
+  rm -f template.xml
+
+  $onecli config export IMM.SSL_HTTPS_SERVER_CSR --file csr.txt
+  drpcli machines set $RS_UUID param ipmi/csr to "$(cat csr.txt | jq -sR .)"
+  rm -f csr.txt
 }
 
 vendor_install_cert() {
-    echo "Not a direct way to install cert - yet"
-}
+  ensure_onecli || return 0
+  cat sslcert.txt <<EOF
+  {{ if .ParamExists "ipmi/configure/certificate" }}
+  {{ .Param "ipmi/configure/certificate" }}
+  {{ end }}
+  EOF
 
+  $onecli config import IMM.SSL_HTTPS_SERVER_CERT --file sslcert.txt
+  rm -f sslcert.txt
+}
