@@ -1,169 +1,250 @@
 package main
 
 import (
-	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"net/http"
 	"time"
 
-	"io/ioutil"
+	"github.com/stmcginnis/gofish/common"
 
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision/v4/models"
+	"github.com/stmcginnis/gofish"
+	rf "github.com/stmcginnis/gofish/redfish"
 )
 
-type rfSystem struct {
-	Odata
-	Actions struct {
-		Reset struct {
-			AllowedValues []string `json:"ResetType@Redfish.AllowableValues"`
-			Target        string   `json:"target"`
-		} `json:"#ComputerSystem.Reset"`
-	} `json:",omitempty"`
-	AssetTag    string `json:",omitempty"`
-	Bios        Odata
-	BiosVersion string `json:".omitempty"`
-	Boot        struct {
-		BootOptions                  Odata    `json:",omitempty"`
-		BootOrder                    []string `json:",omitempty"`
-		BootSourceOverrideEnabled    string   `json:",omitempty"`
-		BootSourceOverrideMode       string   `json:",omitempty"`
-		BootSourceOverrideTarget     string   `json:",omitempty"`
-		UefiTargetBootSourceOverride string   `json:",omitempty"`
-	}
-	IndicatorLED string `json:",omitempty"`
-	Manufacturer string `json:",omitempty"`
-	Model        string `json:",omitempty"`
-	PowerState   string `json:",omitempty"`
-	SKU          string `json:",omitempty"`
-	SerialNumber string `json:",omitempty"`
-	SystemType   string `json:",omitempty"`
-	UUID         string `json:",omitempty"`
-}
-
 type redfish struct {
-	client                  *http.Client
+	client                  *gofish.APIClient
+	system                  *rf.ComputerSystem
 	url, username, password string
-	system                  *rfSystem
-}
-
-type Odata struct {
-	OdataId   string `json:"@odata.id,omitempty"`
-	OdataCtx  string `json:"@odata.context,omitempty"`
-	OdataType string `json:"@odata.type,omitempty""`
-}
-
-type rfServiceRoot struct {
-	Odata
-	AccountService Odata
-	Chassis        Odata
-	EventService   Odata
-	Id             string
-	JsonSchemas    Odata
-	Oem            interface{}
-	RedfishVersion string
-	Registries     Odata
-	ServiceVersion string
-	SessionService Odata
-	Systems        Odata
-}
-
-type rfCollection struct {
-	Odata
-	Members      []Odata
-	MembersCount int
 }
 
 func (r *redfish) Name() string { return "redfish" }
 
-func (r *redfish) Do(method, path string, body, result interface{}) (*http.Response, error) {
-	defer r.client.CloseIdleConnections()
-	var bodyBuf io.Reader
-	if body != nil {
-		bb := &bytes.Buffer{}
-		enc := json.NewEncoder(bb)
-		if err := enc.Encode(body); err != nil {
-			log.Printf("Body encode error of %#v: %v", body, err)
-			return nil, err
-		}
-		bodyBuf = bb
-	}
-	req, err := http.NewRequest(method, r.url+path, bodyBuf)
-	if err != nil {
-		log.Printf("Error creating HTTP request: %v", err)
-		return nil, err
-	}
-	req.SetBasicAuth(r.username, r.password)
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
-	//ro, _ := httputil.DumpRequestOut(req, true)
-	resp, err := r.client.Do(req)
-	if err != nil {
-		log.Printf("Error running request: %v\n%#q", err)
-		return resp, err
-	}
-	if resp.Body != nil {
-		defer resp.Body.Close()
-	}
-	if resp.StatusCode >= 400 {
-		buf, _ := ioutil.ReadAll(resp.Body)
-		log.Printf("Redfish call %s %s failed: %d %s", req.Method, req.URL.String(), resp.StatusCode, string(buf))
-		return resp, fmt.Errorf("Redfish call %s %s failed: %d %s", req.Method, req.URL.String(), resp.StatusCode, string(buf))
-	}
-	if result != nil {
-		dec := json.NewDecoder(resp.Body)
-		return resp, dec.Decode(&result)
-	}
-	return resp, nil
-}
-
 func (r *redfish) Probe(l logger.Logger, address, username, password string) bool {
-	r.client = &http.Client{
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-		},
+	r.username = username
+	r.password = password
+	// Create a new instance of gofish client, ignoring self-signed certs
+	config := gofish.ClientConfig{
+		Endpoint: fmt.Sprintf("https://%s", address),
+		Username: r.username,
+		Password: r.password,
+		Insecure: true,
 	}
-	r.url = "https://" + address
-	r.username, r.password = username, password
-	svc := &rfServiceRoot{}
-	_, err := r.Do("GET", "/redfish/v1", nil, svc)
+	r.url = config.Endpoint
+	var err error
+	r.client, err = gofish.Connect(config)
 	if err != nil {
-		log.Printf("%v", err)
-		l.Debugf("%v", err)
+		l.Errorf("Unable to get connect to redfish: %v", err)
 		return false
 	}
-	systems := &rfCollection{}
-	_, err = r.Do("GET", svc.Systems.OdataId, nil, systems)
+
+	svc := r.client.Service
+
+	systems, err := svc.Systems()
 	if err != nil {
 		l.Errorf("Unable to get systems information from redfish")
+		r.client.Logout()
 		return false
 	}
-	if len(systems.Members) == 0 {
+
+	if len(systems) == 0 {
 		l.Infof("No systems defined")
+		r.client.Logout()
 		return false
 	}
+
 	// a dirty hack for now
-	r.system = &rfSystem{}
-	_, err = r.Do("GET", systems.Members[0].OdataId, nil, r.system)
-	if err != nil {
-		log.Printf("Unable to get systems information from redfish")
-		l.Errorf("Unable to get systems information from redfish")
-		return false
-	}
+	r.system = systems[0]
 	return true
 }
 
 func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, res interface{}, err *models.Error) {
-	var (
-		resp   *http.Response
-		cmdErr error
-	)
+	var cmdErr error
+	// Close session when done
+	defer r.client.Logout()
 
 	switch ma.Command {
+	case "getBoot":
+		p := r.system.Boot
+		return true, p, nil
+	case "getSecureBoot":
+		p, e := r.system.SecureBoot()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish secure boot error: %v", e)
+			return
+		}
+		if p == nil {
+			p = &rf.SecureBoot{}
+			p.SecureBootEnable = false
+		}
+		p.Client = nil
+		return true, p, nil
+	case "getEthernetInterfaces":
+		p, e := r.system.EthernetInterfaces()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish ethernet interfaces error: %v", e)
+			return
+		}
+		for _, pp := range p {
+			pp.Client = nil
+		}
+		return true, p, nil
+	case "getNetworkInterfaces":
+		p, e := r.system.NetworkInterfaces()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish network interfaces error: %v", e)
+			return
+		}
+		for _, pp := range p {
+			pp.Client = nil
+		}
+		return true, p, nil
+	case "getProcessor":
+		p, e := r.system.Processors()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish processor error: %v", e)
+			return
+		}
+		for _, pp := range p {
+			pp.Client = nil
+		}
+		return true, p, nil
+	case "getSimpleStorage":
+		s, e := r.system.SimpleStorages()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish simple storage error: %v", e)
+			return
+		}
+		for _, ss := range s {
+			ss.Client = nil
+		}
+		return true, s, nil
+	case "getStorage":
+		s, e := r.system.Storage()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish storage error: %v", e)
+			return
+		}
+		for _, ss := range s {
+			ss.Client = nil
+		}
+		return true, s, nil
+	case "getMemory":
+		m, e := r.system.Memory()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish memory error: %v", e)
+			return
+		}
+		for _, mm := range m {
+			mm.Client = nil
+		}
+		return true, m, nil
+	case "getInfo":
+		r.system.Client = nil
+		return true, r.system, nil
+	case "status":
+
+		var ret struct {
+			Status              common.Health
+			ProcessorStatus     common.Health
+			MemoryStatus        common.Health
+			EthernetStatus      common.Health
+			StorageStatus       common.Health
+			SimpleStorageStatus common.Health
+		}
+
+		ret.Status = r.system.Status.Health
+		ret.ProcessorStatus = r.system.ProcessorSummary.Status.Health
+		ret.MemoryStatus = r.system.MemorySummary.Status.Health
+
+		eh := common.OKHealth
+		ee, err := r.system.EthernetInterfaces()
+		if err == nil {
+			for _, e := range ee {
+				if e.Status.Health != "" && e.Status.Health != common.OKHealth {
+					eh = e.Status.Health
+					break
+				}
+			}
+		} else {
+			eh = common.CriticalHealth
+		}
+		ret.EthernetStatus = eh
+
+		sh := common.OKHealth
+		ss, err := r.system.Storage()
+		if err == nil {
+			for _, s := range ss {
+				if s.Status.Health != "" && s.Status.Health != common.OKHealth {
+					sh = s.Status.Health
+					break
+				}
+			}
+		} else {
+			sh = common.CriticalHealth
+		}
+		ret.StorageStatus = sh
+
+		ssh := common.OKHealth
+		sss, err := r.system.SimpleStorages()
+		if err == nil {
+			for _, s := range sss {
+				if s.Status.Health != "" && s.Status.Health != common.OKHealth {
+					ssh = s.Status.Health
+					break
+				}
+			}
+		} else {
+			ssh = common.CriticalHealth
+		}
+		ret.SimpleStorageStatus = ssh
+
+		r.system.Links
+
+		return true, ret, nil
 	case "powerstatus":
 		return true, r.system.PowerState, nil
 	case "identify":
@@ -178,7 +259,7 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 		} else if vv, ok := val.(int); ok && vv > 0 {
 			ident.IndicatorLED = "Blinking"
 		}
-		resp, cmdErr := r.Do("PATCH", r.system.OdataId, ident, &res)
+		resp, cmdErr := r.client.Patch(r.system.ODataID, ident)
 		if cmdErr != nil {
 			err = &models.Error{
 				Model: "plugin",
@@ -187,70 +268,78 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 				Code:  resp.StatusCode,
 			}
 			err.Errorf("Redfish error: %v", cmdErr)
+		} else {
+			dec := json.NewDecoder(resp.Body)
+			e := dec.Decode(&res)
+			if e != nil {
+				err = &models.Error{
+					Model: "plugin",
+					Key:   "ipmi",
+					Type:  "rpc",
+					Code:  400,
+				}
+				err.Errorf("Redfish json error: %v", e)
+			}
 		}
 	case "poweron", "poweroff", "powercycle":
-		if r.system.Actions.Reset.Target == "" {
-			// No power actions available
-			return false, nil, nil
-		}
 		supported = true
-		type rsPowerAction struct {
-			ResetType string
-		}
-		av := map[string]struct{}{}
-		for _, allowed := range r.system.Actions.Reset.AllowedValues {
+		av := map[rf.ResetType]struct{}{}
+		for _, allowed := range r.system.SupportedResetTypes {
 			av[allowed] = struct{}{}
 		}
-		powerAction := rsPowerAction{}
+		powerAction := rf.ForceOnResetType
 		fillForOn := func() {
-			if _, ok := av["ForceOn"]; ok {
-				powerAction.ResetType = "ForceOn"
-			} else if _, ok := av["On"]; ok {
-				powerAction.ResetType = "On"
+			if _, ok := av[rf.ForceOnResetType]; ok {
+				powerAction = rf.ForceOnResetType
+			} else if _, ok := av[rf.OnResetType]; ok {
+				powerAction = rf.OnResetType
+			} else if _, ok := av[rf.PushPowerButtonResetType]; ok {
+				powerAction = rf.PushPowerButtonResetType
 			} else {
-				powerAction.ResetType = "PushPowerButton"
+				powerAction = rf.ForceRestartResetType
 			}
 		}
 		fillForOff := func() {
-			if _, ok := av["ForceOff"]; ok {
-				powerAction.ResetType = "ForceOff"
+			if _, ok := av[rf.ForceOffResetType]; ok {
+				powerAction = rf.ForceOffResetType
 			} else if _, ok := av["Off"]; ok {
-				powerAction.ResetType = "Off"
+				powerAction = "Off"
+			} else if _, ok := av[rf.GracefulShutdownResetType]; ok {
+				powerAction = rf.GracefulShutdownResetType
+			} else if _, ok := av[rf.PushPowerButtonResetType]; ok {
+				powerAction = rf.PushPowerButtonResetType
 			} else {
-				powerAction.ResetType = "PushPowerButton"
+				powerAction = rf.ForceRestartResetType
 			}
 		}
 		switch ma.Command {
 		case "poweron":
 			if r.system.PowerState != "On" {
 				fillForOn()
-				resp, cmdErr = r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
+				cmdErr = r.system.Reset(powerAction)
 			}
 
 		case "poweroff":
 			if r.system.PowerState != "Off" {
 				fillForOff()
-				resp, cmdErr = r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
+				cmdErr = r.system.Reset(powerAction)
 			}
 		case "powercycle":
-			if _, ok := av["PowerCycle"]; ok {
-				powerAction.ResetType = "PowerCycle"
-			} else if _, ok := av["ForceRestart"]; ok {
-				powerAction.ResetType = "ForceRestart"
+			if _, ok := av[rf.PowerCycleResetType]; ok {
+				powerAction = rf.PowerCycleResetType
+			} else if _, ok := av[rf.ForceRestartResetType]; ok {
+				powerAction = rf.ForceRestartResetType
 			} else {
 				if r.system.PowerState != "Off" {
 					fillForOff()
-					r.Do("POST", r.system.Actions.Reset.Target, powerAction, nil)
+					r.system.Reset(powerAction)
 					time.Sleep(2 * time.Second)
 				}
 				fillForOn()
 			}
-			resp, cmdErr = r.Do("POST", r.system.Actions.Reset.Target, powerAction, &res)
+			cmdErr = r.system.Reset(powerAction)
 		}
-		sc := 500
-		if resp != nil {
-			sc = resp.StatusCode
-		}
+		sc := 400
 		if cmdErr != nil {
 			err = &models.Error{
 				Model: "plugin",
@@ -260,6 +349,7 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 			}
 			err.Errorf("Redfish error: %v", cmdErr)
 		}
+		res = "{}"
 	case "nextbootpxe", "nextbootdisk", "forcebootpxe", "forcebootdisk":
 		supported = true
 		type rsBootUpdate struct {
@@ -283,15 +373,27 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 			bootUpdate.Boot.BootSourceOverrideEnabled = "Continuous"
 			bootUpdate.Boot.BootSourceOverrideTarget = "Hdd"
 		}
-		resp, cmdErr := r.Do("PATCH", r.system.OdataId, bootUpdate, &res)
+		resp, cmdErr := r.client.Patch(r.system.ODataID, bootUpdate)
 		if cmdErr != nil {
 			err = &models.Error{
 				Model: "plugin",
 				Key:   "ipmi",
 				Type:  "rpc",
-				Code:  resp.StatusCode,
+				Code:  400,
 			}
 			err.Errorf("Redfish error: %v", cmdErr)
+		} else {
+			dec := json.NewDecoder(resp.Body)
+			e := dec.Decode(&res)
+			if e != nil {
+				err = &models.Error{
+					Model: "plugin",
+					Key:   "ipmi",
+					Type:  "rpc",
+					Code:  400,
+				}
+				err.Errorf("Redfish json error: %v", e)
+			}
 		}
 	}
 	return
