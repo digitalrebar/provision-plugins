@@ -242,8 +242,6 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 		}
 		ret.SimpleStorageStatus = ssh
 
-		r.system.Links
-
 		return true, ret, nil
 	case "powerstatus":
 		return true, r.system.PowerState, nil
