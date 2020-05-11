@@ -129,6 +129,15 @@ var (
 					"ipmi/mode",
 				},
 			},
+			models.AvailableAction{Command: "getBios",
+				Model: "machines",
+				RequiredParams: []string{
+					"ipmi/username",
+					"ipmi/password",
+					"ipmi/address",
+					"ipmi/mode",
+				},
+			},
 			models.AvailableAction{Command: "getMemory",
 				Model: "machines",
 				RequiredParams: []string{
