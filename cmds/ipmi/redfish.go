@@ -182,6 +182,20 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 			mm.Client = nil
 		}
 		return true, m, nil
+	case "getBios":
+		m, e := r.system.Bios()
+		if e != nil {
+			err = &models.Error{
+				Model: "plugin",
+				Key:   "ipmi",
+				Type:  "rpc",
+				Code:  400,
+			}
+			err.Errorf("Redfish bios error: %v", e)
+			return
+		}
+		m.Client = nil
+		return true, m, nil
 	case "getInfo":
 		r.system.Client = nil
 		return true, r.system, nil
