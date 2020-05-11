@@ -23,7 +23,9 @@ configuration.
     Retry - int (0) - How many retries to do before failing.
     Timeout - int (7200) - Maximum time that this callback should take for all retries in seconds.
     Delay - int (0) - How many seconds that should be delayed between retries.
-
+    NoBody - bool(false) - Should the body not be sent on the request
+    JsonResponse - bool(false) - Should the response be converted to a JSON blob.  When true, this is always used.
+    StringResponse - bool(false) - Should the response be a JSON string of the raw reponse body
 
 The second set of fields define how authentication should be handled for this callback.  The authentication
 methods can be created by name and these can be referenced for this callback.  The `Auth` and `Auths` fields
@@ -323,11 +325,15 @@ or need.
 
 By default the DRP Callback plugin is designed to return a Base64 encoded blob (for historical
 reasons).  If you need to view/interpret the results of the return data, you will need to do
-a Base64 decode operation.  See below for an example.
+a Base64 decode operation.  See below for an example.  This can also be altered by callback
+configuration options.  ``JsonResponse`` set to ``true`` will return a json blob.
+``StringResponse`` set to ``true`` will return a JSON string of the raw response body.
 
 Additionally, the Callback plugin will also provide a **full** Machine Object as part of the *Body* of
 the request; even for ``GET`` type requests.  If you wish to strip or modify the *Body*, you can do
 so at the time of the ``callbackDo`` action with the use of the ``callback/data-override`` setting.
+This can be altered by the ``NoBody`` flag on the callback configuration.  This will ignore all
+body options and send no body.
 
 In our example use case, it's not relevant to post the Machine Object to the Postman-Echo service, so
 we should strip it out of the request.  The below example will use a command line pipline to perform
