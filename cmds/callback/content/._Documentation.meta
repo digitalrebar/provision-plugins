@@ -136,3 +136,243 @@ For `json-token` type of Auth, the following fields are used.
     Delay - int (0) - The number of seconds to wait between retries.
 
 Upon successful, return the token will be cached for the `DurationField` time if specified.
+
+Overriding Body Sent to the RESTfull API Endpoint
+-------------------------------------------------
+
+By default the Callback plugin is designed to send a full Machine Object as part of the *Body*
+of the RESTfull request (including ``GET`` type requests).  In many cases, the operator may
+not want the full Machine Object, a partial subset of the Machine Object, or no Machine Object
+sent at all.  In these cases, the use of the ``callback/data-override`` action setting can
+be used to shape what is provided in the *Body* of the request.
+
+An example of using the Data Override capability:
+
+  ::
+
+      # overrides the Body to an empty JSON blob
+
+      drpcli machines runaction Name:mach-07 callbackDo callback/action postman-get-test callback/data-override "{}"
+
+In some cases, you may only wish to submit the Machine Object fields, without any of the Params,
+as they often can have extremely large data structures (eg ``bios-current-configuration``,
+``gohai-inventory``, etc.).  To override the object in the Body with just the Params
+stripped, use of ``jq`` (or a similar JSON transformation tool), as follows would minimize the
+*Body* provided:
+
+  ::
+
+      # strip the Params from the Machine Object
+      data=$(drpcli machines show Name:mach-07 | jq 'del(.Params)' )
+
+      # set the data-override to this slimmed down object
+      drpcli machines runaction Name:mach-07 callbackDo callback/action postman-get-test \
+        callback/data-override "$(cat data | jq -sR .)"
+
+Similarly - you can set  the value of our ``$data`` variable above to any combination of
+JSON data needed for your use case.  This includes manipulation of the Machine Object, or
+completely replacing it with other data.
+
+
+Example Usage: Postman-Echo
+---------------------------
+
+The callback plugin is designed to provide generic access to RESTful services.  Here is an example
+usage of the Callback plugin.
+
+.. note:: This example uses the publicly accessible *Postman-Echo* service.  This service is not
+          very stable, and it appears to be globally rate-limited.  This means that if you are
+          testing the configuration and usage, you may have to run the ``callbackDo`` *action*
+          several times before you get a valid response.
+
+This example usage scenario will utilize a simple RESTful ``GET`` request to the Postman-Echo
+service, at the URL:
+
+  * https://postman-echo.com/
+
+We will pass in two fictional Query String Params ("``foo1``" and "``foo2``").  The Digital Rebar
+Platform (DRP) Callback plugin has a few default behaviors that we will have to override to shape
+the return response the way we might expect to see it.
+
+Here is a sample of what the equivalent ``curl`` call would be that this example is based on:
+
+  ::
+
+    curl --silent --request GET "https://postman-echo.com/get?foo1=bar1&foo2=bar2" | jq '.'
+
+Making the Callback call, the following changes to the default behaviors will be made in this
+example:
+
+  * we will override the default ``Body``, which typically is a full Machine Object
+  * the Callback plugin returns a base64 encoded blob (for historical reasons), we will need to decode this
+
+
+Install the Plugin Provider
+===========================
+
+You must first install the ``Callback`` *Plugin Provider* via the Web Portal, or via the command line.
+To install via the Web Portal, visit the *Catalog* menu time, type "``callback``" in the search field,
+then select the most recent stable version and click install.
+
+For installation via the command line, simply do:
+
+  ::
+
+    # installs most recent Stable version of Callback
+
+    drpcli catalog item install callback
+
+Once you have the *Plugin Provider* installed, you will then instantiate a *Plugin* with the appropriate
+configuration (by setting Params on the Plugin) for the RESTful service you wish to interact with.  See
+the following sections for these details.
+
+
+Create the *Plugin* Configuration
+=================================
+
+The *Plugin* instantiated from the *Plugin Provider* is configured to interact with the various
+RESTful services by setting values to the various Params used to configure it.  The *Plugin*
+is added in the Web Portal via the *Plugins* menu options.  This example will focus on use of the
+CLI (``drpcli``) to create the configurations along with instantiating the *Plugin*.
+
+Save the following JSON structure as a local file, in this example we will use the filename
+``callback-postman-echo-get.json``.
+
+  ::
+
+    {
+      "Name": "callback-postman-echo",
+      "Description": "Tests RESTful APIs against Postman-Echo service.",
+      "Provider": "callback",
+      "Meta": {
+        "color": "orange",
+        "icon": "bullhorn",
+        "title": "Postman-Echo"
+      },
+      "Params": {
+        "callback/callbacks": {
+          "postman-get-test": {
+            "Method": "GET",
+            "Retries": 3,
+            "Headers": {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            "Timeout": 60,
+            "Url": "https://postman-echo.com/get?foo1=bar1&foo2=bar2"
+          }
+        }
+      }
+    }
+
+Once you have your *Plugin* configuration JSON file ready, you will create the Plugin with
+the following syntax:
+
+  ::
+
+    drpcli plugins create callback-postman-echo-get.json
+
+Please observe the return JSON data structure to verify the results.  Specifically, check
+the ``Errors`` field for any validation/configuration failures.
+
+If you are updating your configuration and reloading new settings, you will need to either
+``destroy`` the *Plugin* first, and then do a new ``create``, or you can use the ``update``
+method, as follows (Note you must specify the defined plugin ``Name`` for the ``update``):
+
+  ::
+
+    # example update usage
+
+    drpcli plugins update callback-postman-echo callback-postman-echo-get.json
+
+
+    # example destroy/create usage
+
+    drpcli plugins destroy callback-postman-echo
+    drpcli plugins create callback-postman-echo-get.json
+
+
+Using the Postman-Echo Example
+==============================
+
+Plugin actions are similar to Machine actions; they must be executed in the context of a Machine
+that has a valid Runner (Agent) running.  Below is an example of how to use the Callback action.
+This is an example which an operator might wrap in a Stage/Task/Template to be used as part of
+Workflow constructs to interact with RESTfull infrastructure services, or with any RESTfull API
+endpoint.
+
+You can test the operation of the *Plugin* actions via the CLI, but remember you must have a Machine
+that is running the Agent (Runner).  Example usage of our above "``postman-echo-test``" action:
+
+  ::
+
+    ###
+    #  WARNING - this is probably not quite right, see below descriptions and information.
+    #            Change the Name: to reflect machine name, or the Machines UUID (if in
+    #            content template, use '{{ .Machine.UUID }}')
+    ###
+
+    drpcli machines runaction Name:mach-07 callbackDo callback/action postman-get-test
+
+Below are some explanations and reasons why the above command is probably not what you want
+or need.
+
+.. note:: As of *Plugin Provider** v4.3.0 version of the Callback plugin, there are new options available
+          to change these behaviors as part of the configuration of the Plugin itself.  Please consult
+          the documentation for these values.
+
+By default the DRP Callback plugin is designed to return a Base64 encoded blob (for historical
+reasons).  If you need to view/interpret the results of the return data, you will need to do
+a Base64 decode operation.  See below for an example.
+
+Additionally, the Callback plugin will also provide a **full** Machine Object as part of the *Body* of
+the request; even for ``GET`` type requests.  If you wish to strip or modify the *Body*, you can do
+so at the time of the ``callbackDo`` action with the use of the ``callback/data-override`` setting.
+
+In our example use case, it's not relevant to post the Machine Object to the Postman-Echo service, so
+we should strip it out of the request.  The below example will use a command line pipline to perform
+the following transforms on our request:
+
+  * Set the *Body* to an empty JSON string ("``{}``") - stripping the Machine Ojbect from being sent
+  * Pass the return result from Postman-Echo to base64 decode it (note the object is wrapped in double quotes, which we have to strip first)
+  * Finally, JSON pretty-print the output via the ``jq`` command
+
+  ::
+
+    # below should be one single command line - change the Name: to reflect machine
+    # name, or the Machines UUID (if in content template, use '{{ .Machine.UUID }}')
+
+    drpcli machines runaction Name:mach-07 callbackDo callback/action postman-get-test \
+      callback/data-override "{}" | sed 's/"//g' | base64 -d - | jq '.'
+
+.. note:: Do not attempt to set the ``callback/data-override`` value in the *Plugin* configuraiton,
+          it is only valid as part of the action call.
+
+The returned results should look similar to the following:
+
+  ::
+
+    {
+      "args": {
+        "foo1": "bar1",
+        "foo2": "bar2"
+      },
+      "headers": {
+        "x-forwarded-proto": "https",
+        "x-forwarded-port": "443",
+        "host": "postman-echo.com",
+        "x-amzn-trace-id": "Root=1-5eb99202-6b5f0f7779cfb8d84b476aba",
+        "content-length": "2",
+        "user-agent": "Go-http-client/1.1",
+        "accept": "application/json",
+        "content-type": "application/json",
+        "accept-encoding": "gzip"
+      },
+      "url": "https://postman-echo.com/get?foo1=bar1&foo2=bar2"
+    }
+
+.. note::  WARNING - the Postman-Echo service regularly rate-limits requests (globally).  If you receive an output of
+           ``Error:``, wait a moment, and try again.  Sometimes you may need to try several times before getting a response.
+
+The above ``callbackDo`` action now matches our returned JSON data structure we would get back from our example
+``curl`` call listed above.
