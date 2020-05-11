@@ -27,6 +27,12 @@ Schema:
           type: string
       Aggregate:
         type: boolean
+      NoBody:
+        type: boolean
+      JsonResponse:
+        type: boolean
+      StringResponse:
+        type: boolean
       Decode:
         type: boolean
       ExcludeParams:

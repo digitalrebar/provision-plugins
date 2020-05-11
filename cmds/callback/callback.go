@@ -64,17 +64,20 @@ var (
 )
 
 type callback struct {
-	Auth          string
-	Auths         []string
-	Url           string
-	Method        string
-	Retry         int
-	Timeout       int
-	Delay         int
-	Headers       map[string]string
-	Aggregate     bool
-	Decode        bool
-	ExcludeParams []string
+	Auth           string
+	Auths          []string
+	Url            string
+	Method         string
+	Retry          int
+	Timeout        int
+	Delay          int
+	NoBody         bool
+	JsonResponse   bool
+	StringResponse bool
+	Headers        map[string]string
+	Aggregate      bool
+	Decode         bool
+	ExcludeParams  []string
 }
 
 type auth struct {
@@ -412,7 +415,12 @@ cb_retry:
 
 	out += fmt.Sprintf("Attempt %s (%d)\n", action, count)
 	out += fmt.Sprintf("url: %s %s\n", localUrl, cb.Method)
-	req, _ := http.NewRequest(cb.Method, localUrl, bytes.NewBuffer(buf2))
+	var req *http.Request
+	if cb.NoBody {
+		req, _ = http.NewRequest(cb.Method, localUrl, nil)
+	} else {
+		req, _ = http.NewRequest(cb.Method, localUrl, bytes.NewBuffer(buf2))
+	}
 
 	if cauth != nil {
 		out += fmt.Sprintf("auth: %s\n", cauth.AuthType)
@@ -525,7 +533,16 @@ cb_retry:
 		err = utils.MakeError(resp2.StatusCode, fmt.Sprintf("Callback API returned %d", resp2.StatusCode))
 		err.AddError(fmt.Errorf("out: %s", out))
 	} else {
-		answer = body
+		if cb.JsonResponse {
+			if jerr := json.Unmarshal(body, &answer); jerr != nil {
+				err = utils.MakeError(400, "Callback JSON parse")
+				err.AddError(fmt.Errorf("body: %s", string(body)))
+			}
+		} else if cb.StringResponse {
+			answer = string(body)
+		} else {
+			answer = body
+		}
 	}
 
 	return
