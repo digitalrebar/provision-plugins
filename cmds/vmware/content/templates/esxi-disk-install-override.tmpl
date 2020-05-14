@@ -46,6 +46,18 @@ find_first_dellboss_vd() {
   ls -1 /vmfs/devices/disks/* > /tmp/disks
 }
 
+# on some systems (eg Lenovo SR640) - the SATA controller RAID volume
+# is iterated as a ThinkSystem_M.2_VD device name - however, the device name
+# also contains a unique identifier string that is not accessible
+# in Sledgehammer with any command lines
+find_first_thinksystem_vd() {
+  DISK="$(ls -1 /vmfs/devices/disks/*ATA*ThinkSystem*_VD* | head -1)"
+  SET_DISK="--disk=$DISK"
+
+  # debug dump of the devices found in %pre stage
+  ls -1 /vmfs/devices/disks/* > /tmp/disks
+}
+
 # if any custom strategy functions are specified, inject them here
 {{ template "esxi-disk-install-override-custom.tmpl" .}}
 
