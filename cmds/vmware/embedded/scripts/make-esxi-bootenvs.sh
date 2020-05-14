@@ -624,8 +624,8 @@ kernel=$KERNEL
 kernelopt=ks={{.Machine.Url}}/compute.ks{{if .ParamExists "kernel-options"}} {{.Param "kernel-options"}}{{end}}{{if .ParamExists "esxi/serial-console"}} {{.Param "esxi/serial-console"}}{{end}}
 build=
 updated=0
-{{ if eq (.Param "esxi/set-norts") true }}norts=1{{ end -}}
-{{ if .ParamExists "esxi/boot-cfg-extra-options" }}{{ .Param "esxi/boot-cfg-extra-options" }}{{ end -}}
+{{ if eq (.Param "esxi/set-norts") true }}norts=1{{ end }}
+{{ if .ParamExists "esxi/boot-cfg-extra-options" }}{{ .Param "esxi/boot-cfg-extra-options" }}{{ end }}
 modules=$MODULES
 BOOT
 
