@@ -2,7 +2,7 @@
 Name: "image-deploy/skip-initramfs"
 Description: "Whether to skip the construction of all initramfs images through dracut"
 Doccumentation: |
-  Whether to skip the construction of all initramfs images through dracut
+  Whether to skip the construction of all initramfs images through dracut.
 Schema:
   type: boolean
   default: false

@@ -2,7 +2,7 @@
 Name: "curtin/debug"
 Description: "Enable debug for curtin installs"
 Documentation: |
-  Enable debug for curtin installs
+  Enable enhanced debug output for curtin deployed installs via the ``image-deploy`` plugin.
 Schema:
   default: false
   type: "boolean"

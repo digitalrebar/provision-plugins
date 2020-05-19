@@ -1,8 +1,11 @@
 ---
 Name: "curtin/network/gateway"
-Description: "The gateway address for the network."
+Description: "The default gateway address for the network."
 Documentation: |
-  The gateway address for the network.
+  The default gateway address for the network.
+
+    * example:  ``10.10.10.1``
+
 Schema:
   type: "string"
 Meta:

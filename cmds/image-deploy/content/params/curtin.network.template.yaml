@@ -2,7 +2,9 @@
 Name: "curtin/network/template"
 Description: "Template to include for networking"
 Documentation: |
-  Template to include for networking
+  A Digital Rebar Platform Template to include in to the ``cloud-config``
+  data to define the network configuration of the machine.
+
 Schema:
   type: "string"
 Meta:

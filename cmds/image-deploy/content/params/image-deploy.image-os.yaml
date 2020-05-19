@@ -7,8 +7,12 @@ Documentation: |
   OS at a high level.
 
   Valid values are:
-  * linux
-  * windows
+
+    * linux
+    * windows
+
+  .. note: The type ``basic`` has been deprecated and is no longer supported.
+
 Schema:
   type: "string"
   enum:
