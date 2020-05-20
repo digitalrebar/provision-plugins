@@ -104,7 +104,7 @@ elif [[ $OSTYPE == windows ]] || [[ $OSTYPE == basic ]] ; then
     # Allow for an unattended xml to be added.
     mkdir -p "/tmp/drpcli/$(dirname "{{.Param "image-deploy/windows-unattend-path"}}")"
     cat > "/tmp/drpcli/{{.Param "image-deploy/windows-unattend-path"}}" <<EOF
-    {{.CallTemplate (.Param "image-deploy/windows-unattend-template") . }}
+{{.CallTemplate (.Param "image-deploy/windows-unattend-template") . }}
 EOF
     {{end}}
 
