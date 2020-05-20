@@ -2,7 +2,11 @@
 Name: "image-deploy/skip-grub2-configure"
 Description: "Whether to skip trying to reconfigure grub.  Should be set to true if you are using a raw image"
 Documentation: |
-  Whether to skip trying to reconfigure grub.  Should be set to true if you are using a raw image
+  Whether to skip trying to reconfigure grub.
+
+  If you are deploying a ``raw`` image type, you **MUST** set this value to ``true`` as the raw
+  image already (should) contain a valid boot loader installed.
+
 Schema:
   type: boolean
   default: false

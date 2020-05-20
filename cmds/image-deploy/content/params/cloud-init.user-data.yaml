@@ -3,9 +3,25 @@ Name: "cloud-init/user-data"
 Description: "The cloud init data to send machine after first boot."
 Documentation: |
   This is the data to return to the node on cloud init calls.
+
+  This Param should contain either the ``cloud-config`` YAML *user-data* or
+  a BASH script.  You must pass content as a multi-line string, and it should
+  conform to ``cloud-init`` correct syntax and formats.  Reference cloud-config
+  examples:
+
+    * https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+
+  Note that several capabilities covered in ``cloud-config`` examples may be
+  available directly in the ``image-deploy`` plugin via other Params configurations.
+
+  Digital Rebar Platform provides the ``user-data`` and ``metadata`` as a local
+  set of files, written in to the deployed image.  This is typically written in to
+  the ``/curtin`` directory, where ``cloud-init`` will consume them.
+
 Schema:
   type: "string"
 Meta:
   icon: "map"
   color: "blue"
+  render: "raw"
   title: "RackN Content"

@@ -2,7 +2,13 @@
 Name: "curtin/network/nameservers"
 Description: "A list of nameservers to use."
 Documentation: |
-  A list of nameservers to use.
+  A list of nameservers to use, in array format.
+
+  Example:
+    ::
+
+      [ "1.1.1.1", "1.0.0.1", "8.8.8.8" ]
+
 Schema:
   type: "array"
   items:

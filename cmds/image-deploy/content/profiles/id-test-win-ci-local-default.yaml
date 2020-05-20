@@ -1,0 +1,11 @@
+---
+Meta:
+  color: green
+  icon: bug
+Name: id-test-win-ci-local-default
+Params:
+  image-deploy/admin-password: R0cektSk8ts
+  image-deploy/admin-username: vagrant
+  image-deploy/image-file: files/images/win2019.raw.gz
+  image-deploy/image-os: windows
+  image-deploy/image-type: dd-gz

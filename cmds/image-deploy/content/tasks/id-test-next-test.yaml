@@ -1,0 +1,49 @@
+---
+Name: "id-test-next-test"
+Description: "A task to pick the next test"
+Documentation: |
+  A task to pick the next test.
+RequiredParams:
+- "id-test-tests"
+Templates:
+- Name: "id-test-next-test.sh"
+  Contents: |
+    #!/bin/bash
+
+    {{ template "setup.tmpl" . }}
+
+
+    idx=$(drpcli machines get $RS_UUID param id-test-index)
+    data="[
+    {{range $i, $k := .Param "id-test-tests"}}
+    {{ if gt $i 0 }},{{end}}
+    \"{{$k}}\"
+    {{end}}
+    ]"
+
+    idx=$(($idx + 1))
+    newprof=$(echo "$data" | jq -r ".[$idx]" )
+
+    if [[ $newprof == null ]] ; then
+        echo "Tests finished"
+        exit 0
+    fi
+
+    echo "Starting test $idx"
+    drpcli machines show $RS_UUID --slim "Params,Meta" | \
+          jq 'del(.Profiles[] | select(.|test("id-test-")))' | \
+          drpcli machines update $RS_UUID - >/dev/null
+    drpcli machines addprofile $RS_UUID $newprof >/dev/null
+    drpcli machines set $RS_UUID param id-test-index to "$idx"
+
+
+    drpcli machines workflow $RS_UUID "discover-base"
+    drpcli machines workflow $RS_UUID "id-test-image-deploy"
+
+    exit 0
+
+Meta:
+  icon: "bug"
+  color: "green"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

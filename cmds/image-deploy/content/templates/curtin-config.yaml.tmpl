@@ -26,7 +26,7 @@ sources:
     type: "{{$file.format}}"
 {{end}}
 
-{{if eq (.Param "image-deploy/image-os") "linux"}}
+{{if eq (.Param "image-deploy/image-os-subtype") "ubuntu"}}
 kernel:
   package: linux-generic
 {{end}}
@@ -34,11 +34,6 @@ kernel:
 {{if .ParamExists "image-deploy/windows-license-key"}}
 license_key: {{.Param "image-deploy/windows-license-key"}}
 {{end}}
-
-debconf_selections:
-  maas: |
-    cloud-init cloud-init/maas-metadata-url string {{.Machine.Url}}/
-    cloud-init cloud-init/maas-metadata-credentials string oauth_token_key=&oauth_consumer_key=&oauth_token_secret=
 
 {{if .ParamExists "curtin/network/template"}}
 {{.CallTemplate (.Param "curtin/network/template") .}}

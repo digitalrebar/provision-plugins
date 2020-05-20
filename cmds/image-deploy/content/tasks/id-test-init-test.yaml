@@ -1,0 +1,46 @@
+---
+Name: "id-test-init-test"
+Description: "A task to pick the init test"
+Documentation: |
+  A task to pick the init test.
+RequiredParams:
+- "id-test-tests"
+Templates:
+- Name: "id-test-init-test.sh"
+  Contents: |
+    #!/bin/bash
+
+    {{ template "setup.tmpl" . }}
+
+    {{ if .ParamExists "greg-net-system" }}
+    # Greg needs a second interface for inet access.  We really need to get our networking story straight.
+    ip r delete default
+    dhclient --no-pid enp0s8
+    {{ end }}
+
+    idx=$(drpcli machines get $RS_UUID param id-test-index)
+    if [[ $idx != null ]] ; then
+        echo "Tests running: $idx"
+        exit 0
+    fi
+
+    data="[
+    {{range $i, $k := .Param "id-test-tests"}}
+    {{ if gt $i 0 }},{{end}}
+    \"{{$k}}\"
+    {{end}}
+    ]"
+    newprof=$(echo "$data" | jq -r '.[0]' )
+
+    echo "Initialize test"
+    drpcli machines show $RS_UUID --slim "Params,Meta" | \
+          jq 'del(.Profiles[] | select(.|test("id-test-")))' | \
+          drpcli machines update $RS_UUID - >/dev/null
+    drpcli machines addprofile $RS_UUID $newprof >/dev/null
+    drpcli machines set $RS_UUID param id-test-index to "0"
+
+Meta:
+  icon: "bug"
+  color: "green"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"
