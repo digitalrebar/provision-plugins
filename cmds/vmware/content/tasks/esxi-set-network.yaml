@@ -25,6 +25,7 @@ Templates:
       exit(0)
       {{ end }}
 
+      {{ if .ParamExists "esxi/network-firstboot-ipaddr" }}
       # There is no DRP Runner for ESXi, so we don't have post-OS install control.
       # Force the machine to empty workflow, none stage, and the local bootenv.
       patch = b'''
@@ -36,6 +37,10 @@ Templates:
       req.add_header('Content-Type', 'application/json')
       req.add_header('Authorization','Bearer {{.GenerateInfiniteToken}}')
       urllib.request.urlopen(req,context=ssl.SSLContext(ssl.PROTOCOL_SSLv23))
+      {{ else }}
+      # Nothing to do.
+      exit(0)
+      {{ end }}
   - Name: "esxi-set-network.sh"
     Contents: |
       #!/usr/bin/env sh
