@@ -2,7 +2,9 @@
 Name: "image-deploy/image-url"
 Description: "The image url for image-deploy to use."
 Documentation: |
-  The url for the image for image-deploy to install.
+  The URL location for the image for image-deploy is to install.  This must be a
+  URL that is accessible from the Machine being deployed at the time of deployment.
+
 Schema:
   type: string
 Meta:

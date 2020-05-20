@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# XXX: one day put license file and network.json in place
+
+target=$(mount | grep /target | grep tmp | grep fuse | awk '{ print $3 }')
+
+# Find the cloudbase config file
+BASEDIR="Cloudbase-Init"
+if [[ ! -e "$target/$BASEDIR" ]] ; then
+    BASEDIR="Program Files/Cloudbase Solutions/Cloudbase-Init"
+fi
+if [[ ! -e "$target/$BASEDIR" ]] ; then
+    BASEDIR="Program Files (x86)/Cloudbase Solutions/Cloudbase-Init"
+fi
+if [[ ! -e "$target/$BASEDIR" ]] ; then
+    echo "Can't find $target cloudbase directories"
+    exit 1
+fi
+
+if [[ -e "$target/$BASEDIR/conf/cloudbase-init.conf" ]] ; then
+    sed -ibak -e "s/metadata_services=\(.*\)/metadata_services=\1,cloudbaseinit.metadata.services.rackn.FileService/g" "$target/$BASEDIR/conf/cloudbase-init.conf"
+    cat "$target/$BASEDIR/conf/cloudbase-init.conf"
+fi
+
+# Only change the above
+#if [[ -e "$target/$BASEDIR/conf/cloudbase-init-unattend.conf" ]] ; then
+#    sed -ibak -e "s/metadata_services=.*/metadata_services=cloudbaseinit.metadata.services.rackn.FileService/g" "$target/$BASEDIR/conf/cloudbase-init-unattend.conf"
+#    cat "$target/$BASEDIR/conf/cloudbase-init-unattend.conf"
+#fi
+
+exit 0
+

@@ -1,0 +1,27 @@
+---
+Name: "id-test-tests"
+Description: "A list of profiles to test through."
+Documentation: |
+  A list of profiles to test through.
+Schema:
+  type: "array"
+  items:
+    type: "string"
+  default:
+    - "id-test-centos-ci-local-default"
+    - "id-test-centos-ci-local-custom"
+    - "id-test-centos-ci-remote"
+    - "id-test-win-ci-local-default"
+    - "id-test-win-ci-local-custom"
+    - "id-test-win-ci-remote"
+    - "id-test-ubuntu-ci-local-default"
+    - "id-test-ubuntu-ci-local-custom"
+    - "id-test-ubuntu-ci-remote"
+# These will not start a runner.
+#    - id-test-centos-no-ci
+#    - id-test-ubuntu-no-ci
+#    - id-test-win-no-ci
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

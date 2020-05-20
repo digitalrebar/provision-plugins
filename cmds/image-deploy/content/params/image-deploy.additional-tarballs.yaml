@@ -2,7 +2,43 @@
 Name: "image-deploy/additional-tarballs"
 Description: "A list of additional tarballs to untar in the image"
 Documentation: |
-  A list of additional tarballs to install into the image.
+  A list of additional tarballs to install into the image during deployment
+  time.  This Param is an array of objects that define what tarballs to inject
+  in to the final deployed image.  This can be used to add configuration data,
+  content, scripts, etc. inside the deployed system.
+
+  You can control the order in which multiple tarball files will be unrolled
+  by setting the ``index`` value in a numerical order.
+
+  Example:
+
+    * This example serves the ``my-tarball.tar`` file from the DRP HTTP Files space;
+      which will then be un-tarred in the target Machine filesystem.
+
+    ::
+
+      [
+        {
+          "drpserved": true,
+          "format": "tar",
+          "index": 1,
+          "uri": "files/my-tarball.tar"
+        }
+      ]
+
+  The values are defined as follows:
+
+    * ``drpserved``: will automatically fill in the full HTTP URI path to the DRP Files server if set
+      to ``true``.  Do not specify a leading forward slash (`/`).  If ``false``, specify a full HTTP
+      URI to the tarball file artifact.
+    * ``format``: a Curtin file format type (eg ``tar``, or ``tgz``).  See Sources in note below.
+    * ``uri``: the URI of the resources, either a full HTTP URI path if ``drpserved`` is ``false``,
+      or a relative URI path with no leading forward slash, on the DRP HTTP Files server.
+    * ``index``: a unique numerical value to define the order in which the tarballs should be unrolled,
+      as files in subsequent tarballs may potentially overwrite files in earlier tarballs.
+
+  .. note:: *Sources* definition for Curtin configs is documented at: https://curtin.readthedocs.io/en/latest/topics/config.html#sources
+
 Schema:
   default: []
   type: array

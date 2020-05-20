@@ -2,7 +2,9 @@
 Name: "image-deploy/windows-unattend-path"
 Description: "The path to the unattend.xml file"
 Documentation: |
-  The path to the unattend.xml file.
+  The path to the Windows ``unattend.xml`` file.  The default value
+  is ``Windows/Panther/unattend.xml``.
+
 Schema:
   default: Windows/Panther/unattend.xml
   type: string

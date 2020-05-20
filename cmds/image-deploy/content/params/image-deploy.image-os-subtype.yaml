@@ -5,6 +5,7 @@ Documentation: |
   While image-deploy/image-os defines the overall OS type.
   This variable can be used to define the sub-type.
   e.g. ubuntu, debian, centos, rhel, redhat ...
+
 Schema:
   type: "string"
   default: ""

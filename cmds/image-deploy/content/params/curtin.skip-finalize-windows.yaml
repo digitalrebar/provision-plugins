@@ -1,6 +1,10 @@
 ---
 Name: "curtin/skip-finalize-windows"
 Description: "Should the windows finalizer bail"
+Documentation: |
+  Skip running the Windows finalize tasks.  Default value is ``false`` (the
+  finalize tasks SHOULD run).
+
 Schema:
   default: false
   type: "boolean"

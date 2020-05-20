@@ -1,0 +1,13 @@
+---
+Meta:
+  color: green
+  icon: bug
+Name: id-test-centos-ci-remote
+Params:
+  image-deploy/admin-password: R0cektSk8ts
+  image-deploy/admin-username: vagrant
+  image-deploy/image-file: files/images/centos-tarball-20190822-193832-d61b71fc99.tgz
+  image-deploy/image-os: linux
+  image-deploy/image-os-subtype: centos
+  image-deploy/image-type: tgz
+  image-deploy/cloud-init-base-url: "{{.Machine.Url}}/"

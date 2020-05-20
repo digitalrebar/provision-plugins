@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Clean up past styles
+systemctl stop drpcli
+systemctl stop drpcli-init
+systemctl disable drpcli
+systemctl disable drpcli-init
+rm -rf /etc/systemd/system/drpcli*
+systemctl daemon-reload
+
+export RS_ENDPOINT="{{.ApiURL}}"
+export RS_UUID="{{.Machine.UUID}}"
+export RS_TOKEN="{{.GenerateInfiniteToken}}"
+
+/usr/local/bin/drpcli agent install
+/usr/local/bin/drpcli agent start
+

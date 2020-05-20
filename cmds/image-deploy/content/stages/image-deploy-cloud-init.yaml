@@ -2,6 +2,8 @@
 # This stage moves to complete once the phone sets the stage to complete.
 Name: "image-deploy-cloud-init"
 BootEnv: "local"
+Tasks:
+  - "cloud-init-wait"
 OptionalParams:
   - "cloud-init/user-data"
   - "cloud-init/x509-certs"
@@ -9,14 +11,14 @@ OptionalParams:
 Templates:
   - Contents: |
       {{if .ParamExists "cloud-init/user-data"}}{{.Param "cloud-init/user-data"}}{{end}}
-    Name: "cloud-init-user-data"
+    Name: "cloud-init-user-data-maas"
     Path: "{{.Machine.Path}}/2012-03-01/user-data"
   - Contents: |
       {{if .ParamExists "cloud-init/x509-certs"}}{{.Param "cloud-init/x509-certs"}}{{end}}
-    Name: "cloud-init-x509-certs"
+    Name: "cloud-init-x509-certs-maas"
     Path: "{{.Machine.Path}}/2012-03-01/meta-data/x509"
   - Contents: "{{.Machine.UUID}}"
-    Name: "cloud-init-instance-id"
+    Name: "cloud-init-instance-id-maas"
     Path: "{{.Machine.Path}}/2012-03-01/meta-data/instance-id"
   - Contents: |
       {{if .ParamExists "access-keys"}}
@@ -24,11 +26,36 @@ Templates:
       {{$key}}
       {{end}}
       {{end}}
-    Name: "cloud-init-public-keys"
+    Name: "cloud-init-public-keys-maas"
     Path: "{{.Machine.Path}}/2012-03-01/meta-data/public-keys"
   - Contents: "{{.Machine.Name}}"
-    Name: "cloud-init-local-hostname"
+    Name: "cloud-init-local-hostname-maas"
     Path: "{{.Machine.Path}}/2012-03-01/meta-data/local-hostname"
+  - Contents: |
+      {{if .ParamExists "cloud-init/user-data"}}{{.Param "cloud-init/user-data"}}{{else}}#cloud-config
+      runcmd:
+      {{if eq (.Param "image-deploy/image-os") "windows"}}
+      - /curtin/drpcli-install.bat
+      {{else}}
+      - /curtin/drpcli-install.sh
+      {{end}}
+      {{end}}
+    Name: "cloud-init-user-data"
+    Path: "{{.Machine.Path}}/user-data"
+  - Contents: |
+      instance-id: {{.Machine.UUID}}
+      local-hostname: {{.Machine.Name}}
+      {{if .ParamExists "cloud-init/x509-certs"}}
+      x509: {{.Param "cloud-init/x509-certs"}}
+      {{end}}
+      public-keys:
+      {{if .ParamExists "access-keys"}}
+      {{range $key := .Param "access-keys"}}
+      - {{$key}}
+      {{end}}
+      {{end}}
+    Name: "cloud-init-meta-data"
+    Path: "{{.Machine.Path}}/meta-data"
 Meta:
   icon: "map"
   color: "yellow"

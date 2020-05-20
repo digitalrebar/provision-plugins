@@ -1,0 +1,12 @@
+Meta:
+  color: green
+  icon: bug
+Name: id-test-image-deploy
+ReadOnly: false
+Stages:
+- discover
+- id-test-init-test
+- image-deploy
+- image-deploy-cloud-init
+- id-test-next-test
+- complete

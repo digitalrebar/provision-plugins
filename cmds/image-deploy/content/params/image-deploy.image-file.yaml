@@ -5,16 +5,28 @@ Documentation: |
   The file image for image-deploy to install.  This will have the Provisioner's
   URL prepended to the filename.
 
-  You may use the drpcli isos upload command to place an image into the system.
-  If this method is used, please prepend 'isos/' to your filename.  You should
-  not have any other directories in the filename.
+  You may use the ``drpcli isos upload ...`` command to place an image into the system.
+  If this method is used, please prepend 'isos/' to your filename.  You **MUST NOT**
+  have any other directories in the filename; they must reside in the base ``isos/`` directory.
 
-  You may use the drpcli files upload command to place an image into the system.
-  If this method is used, prepend 'files/' to your filename. You may use
+    * example: ``isos/centos-7.tgz``
+
+  You may use the ``drpcli files upload ...`` command to place an image into the system.
+  If this method is used, prepend 'files/' to your filename. You **MAY** use
   additional directories in the filename.
+
+    * example:  ``files/images/windows/windows-server-2019.raw.gz``
 
   You may also just place the image file under the DRP tftpboot directory.
   If this method is used, use the path relative to the tftpboot directory.
+
+    * example: ``my_dir/some_stuff/ubuntu.tgz``
+
+  In the above example, this *might* resolve to the following path on the Digital Rebar Platform
+  filesystem, based on a default "production" install type:
+
+    * ``/var/lib/dr-provision/tftpboot/my_dir/some_stuff/``
+
 Schema:
   type: string
 Meta:
