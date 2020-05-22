@@ -1,0 +1,11 @@
+---
+Name: "esxi-remove-vmware-bootorder"
+Description: "Stage to remove VMWare ESXi from boot order"
+Documentation: |
+  This task will remove VMware ESXi from the machine's bootorder in UEFI mode.
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-remove-vmware-bootorder

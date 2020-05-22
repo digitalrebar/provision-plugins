@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+# clear the vmware esxi entry from the bootorder.
+
+{{ if .Param "esxi/skip-remove-bootorder" }}
+echo "Skip remove bootorder"
+exit 0
+{{ else }}
+  {{ if eq (.Param "detected-bios-mode") "uefi" }}
+echo "Removing VMWare ESXi from boot order if present"
+VMWareIdx=$(/usr/lib/vmware/uefi/bin/bootorder | grep "VMware ESXi" | awk -F: '{ print $1 }'  | sed "s/Boot//")
+if [[ "$VMWareIdx" != "" ]] ; then
+    echo "/usr/lib/vmware/uefi/bin/bootorder -r $VMWareIdx"
+    /usr/lib/vmware/uefi/bin/bootorder -r $VMWareIdx
+else
+    echo "Nothing to remove"
+    exit 0
+fi
+  {{ else }}
+echo "System not in UEFI Mode - skipping"
+exit 0
+  {{ end }}
+{{ end }}
+
