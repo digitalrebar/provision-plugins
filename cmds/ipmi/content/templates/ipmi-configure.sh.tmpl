@@ -470,31 +470,6 @@ ipmi_user_configured() {
     drpcli machines runaction "$RS_UUID" powerstatus ipmi/username "$1" ipmi/password "$2" &>/dev/null || false
 }
 
-{{ if (.Param "ipmi/configure/user") -}}
-# Do the config actions - configure user
-if ! ipmi_user_configured "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD"; then
-    echo "Configure USER account $IPMI_CONFIGURE_USERNAME"
-    configure_user "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD" $IPMI_CONFIGURE_USERID
-    if [[ $IPMI_SERVICE_USER != true ]]; then
-        drpcli machines set $RS_UUID param ipmi/username to "$IPMI_CONFIGURE_USERNAME"
-        drpcli machines set $RS_UUID param ipmi/password to "$IPMI_CONFIGURE_PASSWORD"
-    fi
-fi
-{{ else }}
-echo "ipmi/configure/user not set, skipping user creation"
-{{- end }}
-{{ if (.Param "ipmi/service-user") -}}
-if ! ipmi_user_configured dr-provision "$IPMI_PASSWORD"; then
-    echo "Creating service account for dr-provision"
-    auto_password="dR$(random_password)0!"
-    configure_user dr-provision "$auto_password"
-    drpcli machines set $RS_UUID param ipmi/username to dr-provision
-    drpcli machines set $RS_UUID param ipmi/password to "$auto_password"
-fi
-{{ else }}
-echo "ipmi/service-user not set, skupping service user creation"
-{{- end }}
-
 {{ if (.Param "ipmi/configure/network") -}}
 # Do the config actions - configure network
 echo "Configure Network"
@@ -551,6 +526,7 @@ elif [[ $IPMI_CONFIGURE_IP_MODE == "static" ]] ; then
     if [[ ${lan_info["ipaddr"]} != $IPMI_CONFIGURE_ADDRESS ]] ; then
         tool lan set $lan_chan ipaddr $IPMI_CONFIGURE_ADDRESS
         configured=true
+        drpcli machines set $RS_UUID param ipmi/address to "$IPMI_CONFIGURE_ADDRESS"
     fi
      if [[ ${lan_info["netmask"]} != $IPMI_CONFIGURE_NETMASK ]] ; then
         tool lan set $lan_chan netmask $IPMI_CONFIGURE_NETMASK
@@ -563,6 +539,31 @@ elif [[ $IPMI_CONFIGURE_IP_MODE == "static" ]] ; then
 fi
 {{ else }}
 echo "ipmi/configure/network is not true, skipping network configuation"
+{{- end }}
+
+{{ if (.Param "ipmi/configure/user") -}}
+# Do the config actions - configure user
+if ! ipmi_user_configured "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD"; then
+    echo "Configure USER account $IPMI_CONFIGURE_USERNAME"
+    configure_user "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD" $IPMI_CONFIGURE_USERID
+    if [[ $IPMI_SERVICE_USER != true ]]; then
+        drpcli machines set $RS_UUID param ipmi/username to "$IPMI_CONFIGURE_USERNAME"
+        drpcli machines set $RS_UUID param ipmi/password to "$IPMI_CONFIGURE_PASSWORD"
+    fi
+fi
+{{ else }}
+echo "ipmi/configure/user not set, skipping user creation"
+{{- end }}
+{{ if (.Param "ipmi/service-user") -}}
+if ! ipmi_user_configured dr-provision "$IPMI_PASSWORD"; then
+    echo "Creating service account for dr-provision"
+    auto_password="dR$(random_password)0!"
+    configure_user dr-provision "$auto_password"
+    drpcli machines set $RS_UUID param ipmi/username to dr-provision
+    drpcli machines set $RS_UUID param ipmi/password to "$auto_password"
+fi
+{{ else }}
+echo "ipmi/service-user not set, skupping service user creation"
 {{- end }}
 
 # Configure the DNS and HOSTNAME
