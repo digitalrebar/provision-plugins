@@ -1,0 +1,14 @@
+---
+Name: esxi/skip-remove-bootorder
+Description: "Skip updating removing VMWare ESXi from boot order"
+Documentation: |
+  This Param lets the operator skip the removal of VMWare ESXi from
+  the machine's boot order.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+Schema:
+  type: boolean
+  default: false

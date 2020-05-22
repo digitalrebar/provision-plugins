@@ -1,0 +1,21 @@
+---
+Name: "esxi-remove-vmware-bootorder"
+Description: "Remove VMware from the bootorder if UEFI"
+Documentation: |
+  This task will attempt to remove "VMWare ESXi" from the bootorder
+  if it is present and the system is in UEFU boot mode.
+
+  This will return to the pre-install bootorder.
+
+  This may be skipped by setting ``esxi/skip-remove-bootorder`` parameter
+  to ``true``.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-remove-vmware-bootorder"
+    ID: "esxi-remove-vmware-bootorder.sh.tmpl"
+    Contents: ""
+    Path: ""
