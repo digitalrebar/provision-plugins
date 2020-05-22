@@ -521,6 +521,7 @@ elif [[ $IPMI_CONFIGURE_IP_MODE == "static" ]] ; then
     if [[ ${lan_info["ipsrc"]} != "Static Address" ]] ; then
         tool lan set $lan_chan ipsrc static
         configured=true
+        lan_info
     fi
 
     if [[ ${lan_info["ipaddr"]} != $IPMI_CONFIGURE_ADDRESS ]] ; then
@@ -563,7 +564,7 @@ if ! ipmi_user_configured dr-provision "$IPMI_PASSWORD"; then
     drpcli machines set $RS_UUID param ipmi/password to "$auto_password"
 fi
 {{ else }}
-echo "ipmi/service-user not set, skupping service user creation"
+echo "ipmi/service-user not set, skipping service user creation"
 {{- end }}
 
 # Configure the DNS and HOSTNAME
