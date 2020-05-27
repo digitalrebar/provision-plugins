@@ -1,0 +1,24 @@
+---
+Name: "esxi/add-drpy-agent"
+Description: "Add the Digital Rebar Python Agent to a VMware ESXi system at install time."
+Documentation: |
+  Dynamically add the Digital Rebar Python Agent (runner) to the ESXi install
+  modules list in the ``boot.cfg`` template.
+
+  Setting this value will define the install location used during the vSphere ESXi
+  installation.  It must be a valid path that resolves relative to ``prefix`` as
+  defined in the ``boot.cfg`` template, or a fully qualified HTTP path.
+
+  Examples:
+
+    * ``../../files/vmware/drpy.v00``
+    * ``http://10.10.10.10:8091/files/vmware/drpy.v00``
+
+Meta:
+  color: "blue"
+  icon: "hashtag"
+  title: "RackN Content"
+Secure: false
+Schema:
+  type: "string"
+  default: ""
