@@ -1,0 +1,36 @@
+---
+Name: "esxi/boot-cfg-extra-modules"
+Description: "Add custom modules to the boot.cfg template"
+Documentation: |
+  Dynamically add additional modules in to the ESXi installed list of modules.
+  This is an Array of modules.  The ``boot.cfg`` supports a relative path to
+  the module from the ``boot.cfg`` specified location defined by the ``prefix``.
+  For Digital Rebar, this means a path of ``../../files/ ... `` would refer
+  to the standard *Files* served artifacts.
+
+  A full HTTP path may be specified to the location of the modules.
+
+    ::
+
+      # YAML example
+      - "https://files.example.com/path/module.v00"
+      - "../../files/modules/driver.v00"
+
+      # JSON example
+      [
+        "https://files.example.com/path/module.v00",
+        "../../files/modules/driver.v00"
+      ]
+
+  .. note:: If the module does not exists or can't be found, the ESXi install will fail.
+
+Meta:
+  color: "blue"
+  icon: "hashtag"
+  title: "RackN Content"
+Secure: false
+Schema:
+  type: "array"
+  default: []
+  items:
+    type: "string"

@@ -3,28 +3,21 @@
 
 ###
 #  This tool creates a Digital Rebar Provision bootenv and matching boot.cfg
-#  template for a given set of VMware ESXi ISO files.  It does not attempt to
-#  read the ISO meta information as that data is hugely inconsistent from
-#  vendor to vendor.  This tool relies on the use of a simple map of data to
-#  set the meta data information necessary for the bootenv.
-#
+#  template for a given set of VMware ESXi ISO files.  In addition, if requested,
+#  full content pack (workflows and stages) and metadata will also be created.
+
+#  By default this tool will use the built-in (or external file with) ISO_MAP[]
+#  metadata information.  If the operator specifies the '-g' (generated) flag,
+#  then the ISO filename will be used and minimal metadta and bootenv information
+#  will be created.
+
 #  YES - IT SUCKS TO BUILD THE ISO_MAP FOR THIS TOOL - but we value consistency
 #  of named objects over ease of adding new bootenvs.  To create a standalone
 #  content pack from a single ISO file, use the 'make-esxi-content-pack.sh'
-#  script.
+#  script.  Unfortunately - it is NOT possible to obtain consistent metadata
+#  from the ISO filename or the ISO meta content information.  Thank you vendors.
 #
 #   USAGE: run with the '-u' flag to see  full usage instructions
-#
-#  OUTPUT: The specified 'output_directory' will contain one bootenv
-#          (in 'bootenvs' dir) for each ISO found in the 'input_directory',
-#          which also has matched a value in the ISO_MAP,
-#          and one boot.cfg template file (in 'templates' dir).
-#
-#          If no ISO is listed in the data map, then it will be
-#          skipped.
-#
-#          Multiple "input_directories" (comma separated, no spaces) can
-#          be specified to find ISO images in.
 ###
 
 export PS4='${BASH_SOURCE}@${LINENO}(${FUNCNAME[0]}): '
@@ -35,11 +28,12 @@ declare -A ISO_MAP               # Associative map of ISO names and meta data
                                  # this can be overriden from an environment
                                  # var of the same name
 declare -A ISO_NAMES             # Space separated list of found ISO images
+declare -A MISSING_ISOS          # lists ISOs requested but not found
 declare ISO                      # ISO name with local path part
 declare ISO_MNT                  # location ISO will be mouinted to
 declare ISO_NAME                 # Singular ISO to operate on
 declare ISO_SHA                  # Calculated sha256 sum of $ISO
-declare ESXI_VER                 # Version meta tag for the ESXi version
+declare ESXI_VER=0               # Version meta tag for the ESXi version
 declare ESXI_SUBVER              # Sub-Version meta tag for the ESXi version
 declare VENDOR                   # metadata field for Vendor information
 declare MODEL                    # metadata field for Model information
@@ -48,10 +42,13 @@ declare TITLE                    # the built up Title of the bootenv
 declare IN_DIR                   # director(ies) that will be searched for ISOs
 declare OUT_DIR                  # where output data will be written to
 declare -i dbg=0                 # debug output off by default
+declare CONTENT=""               # create full content pack from ISOs
+declare GENERATE=""              # generate Name/metadata from ISO file name
+declare DO_BUNDLE=""             # attempt to do a 'drpcli contents bundle ...'
+declare DO_UPLOAD=""             # attempt to do a 'drpcli contents upload ...'
 declare MODE="bsdtar"            # use 'bsdtar' to extract info out of ISO files
 declare BSDTAR                   # the binary location, OS independent
 declare EXT_MAP                  # external file that contains ISO_MAP values
-declare MARKER="__MARKER__"      # cosmetic marker in ISO_MAP to be ignored
 declare -a SPECIFIC_TARGETS      # override and only process listed specific images
                                  # comma separated list, no spaces
 declare TMP_DIR                  # specifies alternate tmp directory
@@ -162,49 +159,118 @@ ISO_MAP=(
   [VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso]="700|15843807|vmware|none|https://my.vmware.com/group/vmware/details?downloadGroup=ESXI700&productId=974"
   [VMware-VMvisor-Installer-7.0.0-15843807.x86_64-DellEMC_Customized-A00.iso]="700|15843807|dell|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI70GA-DELLEMC&productId=974"
   [VMware_ESXi_7.0.0_15843807_HPE_700.0.0.10.5.0.108_April2020.iso]="700|15843807|hpe|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI70-HPE&productId=974"
-  # 6.7.0u3b versions
 )
 
 ###
 #  Output our usage statement
 ###
 function usage() {
+  _scr=$(basename $0)
+  _pad=$(printf "%${#_scr}s" " ")
   cat <<END_USAGE
-USAGE:  $0 [ -d ] [ -m ] -i input_dir(s) [ -o output_dir ] [-a array_file ] [ -s specific_isos ] [ -t tmp_dir ]
-   OR:  $0 [ -d ] [ -p | -u ]
+USAGE:  $_scr [ -d ] [ -gcmBU ] -i input_dir(s) [ -o output_dir ] [-a array_file ]
+        $_pad [ -s specific_isos ] [ -t tmp_dir ]
+   OR:  $_scr [ -d ] [ -gcm ] -s specific_isos [ -o output_dir ] [-a array_file ]
+        $_pad [ -t tmp_dir ]
+   OR:  $_scr [ -d ] [ -p | -u | -x ]
 
+        -g               Generate the meta data information from the name of the
+                         ISO, not from the metadata map information (ISO_MAP[])
+        -c               Create full Content Pack in the '-o output_dir' which
+                         includes workflows, stages, etc. (default is to only
+                         create bootenvs and boot.cfg templates)
+        -B               attempt to do a 'drpcli contents bundle ...' operation
+                         (requires '-c', and RS_ENDPOINT, RS_KEY or similar)
+        -U               attempt to do a 'drpcli contents upload ...' operation
+                         (requires '-c', and RS_ENDPOINT, RS_KEY or similar)
+        -m               Use the ISO Mount method instead of use of default 'bsdtar'
+                         to extract values and boot.cfg settins from the ISO
         -i input_dir(s)  (required) Set the input director(ies) to scan for ISO files,
                          specify multiple directories separated by commas, no spaces
         -o output_dir    Set the specified directory to output content to
         -a array_file    File with ISO_MAP associative array to use, to override
                          the values provided in this script
         -s specific_isos List of specific ISO file names to process - overriding
-                         the ISO_MAP and found isos in the "input_dir(s)" - comma
+                         the ISO_MAP and found isos in the 'input_dir(s)' - comma
                          separated with no spaces
         -t tmp_dir       override where the temporary files will be written to
-        -m               Use the ISO Mount method instead of use of default 'bsdtar'
-                         to extract values and boot.cfg settins from the ISO
         -p               Print the meta data map that will be used to match ISOs
-        -u               Output this usage statement
+        -u               Output the short usage statement
+        -x               Output the eXtended long usage statement (Notes and Examples)
         -d               Turn on output debugging
 
-NOTES:  * an ISO file MUST be found in the input_director(ies), and an ISO_MAP
-          set of mata data must also be found
+END_USAGE
+
+  [[ -z "$XTND" ]] && printf ">>> For eXtended help output with Notes and Examples, use '-x'. <<<\n\n"
+
+  if [[ "$XTND" ]]
+  then
+    cat <<XTND_USAGE
+
+NOTES:  * an ISO file MUST be found in the input_director(ies), or directly specified
+          via the '-s specific_isos' flag
+        * if '-s specific_isos' AND '-i input_director(ies)' are both specified, then
+          the '-s specific_isos' filters the ISOs found in the input directories.
+        * Names and metadata will be generated from the ISO_MAP metadata in
+          the script or from external '-a array_file' UNLESS you specify the
+          '-g' flag which will generate Name and metadata information from
+          the ISO filename
         * ISO file name SHOULD match exactly what the vendor named the ISO file,
           otherwise, operators may be confused which ISO to match to the bootenv
-        * 'input_dir' is required
+        * one of '-i input_dir' or '-s specific_isos' is required
         * if no 'output_dir' specified, one will be generated in /tmp for you
         * default mode is to use 'bsdtar' to extract files from ISO
-        * mount mode can be used if 'bsdtar' is not available
+        * '-m' mount mode can be used if 'bsdtar' is not available
         * this tool should run equally well on MacOS X and Linux distros
+          (are you on Windows? too bad ... ha ha ha!)
         * '-p' (print meta data map) will not honor the '-s specific_isos' setting,
-          and will instaead print all ISOs listed in the ISO_MAP array
+          and will instead print all ISOs listed in the ISO_MAP array
         * if '-a array_file' is used - you must define the ISO_MAP key/value
-          pairs:
+          pairs the external array_file, as:
+            ISO_MAP=([key1]=value1 [key2]=value2)
+          see script example for full usage of ISO_MAP[] array
+        * if '-g' (generate) is used, '-a array_file' will be ignored
+        * if either '-B' or '-U' specified, '-c' must also be specified,
+          requires 'drpcli' binary can access the DRP Endpoint via the standard
+          CLI mechanisms (.rsclirc, RS_ENDPOINT, RS_KEY, RS_USERNAME, RS_PASSWORD, etc.)
 
-          ISO_MAP=([key1]=value1 [key2]=value2)
-END_USAGE
+EXAMPLES:
+
+  * Emulates the removed 'make-esxi-content-packs.sh' script - creates a full
+    "mini-content" pack with bootenvs, templates, stages, workflows, etc:
+
+        $_scr -c -g -s foo-1.iso,bar-2.iso
+
+    Optionally add '-B' and '-U' to Bundle/Upload (respectively) to a DRP endpoint.
+
+  * Generate just bootenv and boot.cfg content pieces using the ISO_MAP array,
+    for all ISOs found in "./isos" directory:
+
+        $_scr -i ./isos
+
+    This is what RackN uses to build bootenvs and boot.cfg templates that are
+    released in the 'vmware' plugin.
+
+  * Using the builtin ISO_MAP[] array, find ISO filies in iso-dir1/ and iso-dir2/ dirs,
+    but only build content for the '-s' specified ISO targets listed.  Turn on debug
+    mode to provide more output.  Write output to '/tmp/content' directory.
+
+        $_scr -d -i ./iso-dir1,./iso-dir2 -o /tmp/content -s foo-1.iso,bar-2.iso
+
+XTND_USAGE
+  fi # end extended usage output statement
+
 } # end usage()
+
+# because, once again - thank you Mac OS X ...
+# BASH portable replacement for "readlink -f"
+function get_realpath() {
+    [[ ! -r "$1" ]] && xiterr 1 "file/dir '$1' does not exist"
+    [[ -d "$1" ]] && { cd $1; echo $PWD; return 0; }
+    [[ -n "$no_symlinks" ]] && local pwdp='pwd -P' || local pwdp='pwd'
+    echo "$( cd "$( echo "${1%/*}" )" 2>/dev/null; $pwdp )"/"${1##*/}"
+    return 0
+}
 
 ###
 #  In bsdtar mode check that we can find binary and verify it's a good version ( > v4.x )
@@ -272,7 +338,7 @@ function cleanup() {
 } # end cleanup()
 
 ###
-#  Determine filename baed on lower/uppercase file name variations.
+#  Determine filename based on lower/uppercase file name variations.
 #
 #  thank you macOS for making this difficult with upper case names
 #  in ISO images, and no mount option to change case
@@ -311,11 +377,16 @@ function check_files_bsdtar() {
 ###
 function process_options() {
   local _print_map=0
-  while getopts ":udi:o:a:s:t:pm" opt
+  while getopts ":uxdcBUgi:o:a:s:t:mp" opt
   do
     case "${opt}" in
       u)  usage; exit 0              ;;
+      x)  XTND="true"; usage; exit 0 ;;
       d)  dbg=1                      ;;
+      c)  CONTENT="true"             ;;
+      B)  DO_BUNDLE="true"           ;;
+      U)  DO_UPLOAD="true"           ;;
+      g)  GENERATE="true"            ;;
       i)  IN_DIR=$OPTARG             ;;
       o)  OUT_DIR=$OPTARG            ;;
       a)  EXT_MAP=$OPTARG            ;;
@@ -331,8 +402,9 @@ function process_options() {
     esac
   done
 
-  if [[ $EXT_MAP ]]; then
-    EXT_MAP="$(readlink -f "$EXT_MAP")"
+  if [[ -n "$EXT_MAP" && "$GENERATE" == "false" ]]
+  then
+    EXT_MAP="$(get_realpath "$EXT_MAP")"
     [[ -r $EXT_MAP ]] || xiterr 1 "Unable to read external map file ('$EXT_MAP') for ISO_MAP values."
     source "$EXT_MAP"
     echo "**********************************************************************"
@@ -341,18 +413,44 @@ function process_options() {
     echo "**********************************************************************"
     echo ""
   fi
-  if [[ ! $SPECIFIC_TARGETS ]]; then
+
+  if [[ ! $SPECIFIC_TARGETS ]]
+  then
     SPECIFIC_TARGETS=("${!ISO_MAP[@]}")
   fi
 
   # print map info and exit if that's what was requested
   (( $_print_map )) && { print_map_info; exit 0; }
 
-  [[ $OUT_DIR ]] || OUT_DIR="$(mktemp -d /tmp/esxi-bootenv-$$.XXXXXXXX)" || mkdir -p "$OUT_DIR"
-  OUT_DIR=$(readlink -f "$OUT_DIR")
+  [[ "$OUT_DIR" ]] && mkdir -p "$OUT_DIR" || OUT_DIR="$(mktemp -d /tmp/esxi-bootenv-$$.XXXXXXXX)"
+  OUT_DIR=$(get_realpath "$OUT_DIR")
 
   [[ -d ${OUT_DIR}/bootenvs ]] || mkdir -p "${OUT_DIR}/bootenvs" || xiterr 1 "bootenvs dir exists already ($OUT_DIR/bootenvs)"
   [[ -d ${OUT_DIR}/templates ]] || mkdir -p "${OUT_DIR}/templates" || xiterr 1 "template dir exists already ($OUT_DIR/templates)"
+
+  if [[ "$CONTENT" ]]
+  then
+    [[ -d ${OUT_DIR}/workflows ]] || mkdir -p "${OUT_DIR}/workflows" || xiterr 1 "workflows dir exists already ($OUT_DIR/workflows)"
+    [[ -d ${OUT_DIR}/stages ]] || mkdir -p "${OUT_DIR}/stages" || xiterr 1 "template dir exists already ($OUT_DIR/stages)"
+  fi
+
+  [[ "$DO_BUNDLE" ]] && WHAT="Bundle" || true
+  [[ "$DO_UPLOAD" ]] && WHAT="$WHAT Upload" || true
+  # validate our options around Content, Bundle, and Upload
+  if [[ "$CONTENT" ]]
+  then
+    if [[ "$DO_BUNDLE" || "$DO_UPLOAD" ]]
+    then
+      echo "Requesting content operations for: $WHAT"
+    else
+      echo "Requesting content pack creation, but no Bundle or Upload operations."
+    fi
+  else
+    if [[ "$DO_BUNDLE" || "$DO_UPLOAD" ]]
+    then
+      xiterr 1 "$WHAT operation(s) requested, but no content create specified."
+    fi
+  fi
 
   # because BASH 5.x FORKS this up - we need to have else true
   [[ $TMP_DIR ]] && mkdir -p "$TMP_DIR" || true
@@ -408,14 +506,30 @@ function mount_iso() {
 ###
 function get_iso_names() {
   local _full _check _iso
-   _check=$(echo "$IN_DIR" | tr ',' ' ')
-  for D in $_check; do
-    _full="$(readlink -f $D)"
-    DIRS+="$_full "
-  done
-  while read -r _iso; do
-    ISO_NAMES["${_iso##*/}"]="${_iso%/*}"
-  done < <(find $DIRS -type f -name "*\.iso" 2> /dev/null)
+
+  # if we have specified input directories, process them
+  if [[ -n "$IN_DIR" ]]
+  then
+    _check=$(echo "$IN_DIR" | tr ',' ' ')
+    for D in $_check
+    do
+      _full="$(get_realpath $D)"
+      DIRS+="$_full "
+    done
+
+    while read -r _iso
+    do
+      ISO_NAMES["${_iso##*/}"]="${_iso%/*}"
+    done < <(find $DIRS -type f -name "*\.iso" 2> /dev/null)
+
+  # otherwise, we must have individual ISOs in '-s ... '
+  else
+    echo "No '-i input_dir' specified, trying to process '-s specific_targets'"
+    for _iso in ${SPECIFIC_TARGETS[@]}
+    do
+      ISO_NAMES["${_iso##*/}"]="${_iso%/*}"
+    done
+  fi
 
   [[ ${#ISO_NAMES} = 0 ]] || xiterr 1 "No iso files found in input dir(s):  $DIRS"
 
@@ -437,9 +551,6 @@ function print_map_info() {
   echo ""
   [[ $IN_DIR ]] || KEYS="$(print_map_keys)" || KEYS="${!ISO_NAMES[*]}"
   for ISO_NAME in $KEYS; do
-      # skip our cosmetic markers
-      [[ $ISO_NAME = $MARKER ]] && continue
-
       get_iso_meta
       print_iso_meta
       echo ""
@@ -468,20 +579,33 @@ function get_iso_meta() {
 ###
 function print_iso_meta() {
   # assume we've already gotten our ISO meta info - fix this in the future
+
+  [[ -z "PRINT_LIMITED" && -z "$GENERATE" ]] && echo "Limited metadata in 'generate' mode ('-g')."
+  PRINT_LIMITED="true"
+
   printf "   ISO Name :: %s\n" "$ISO_NAME"
-  printf "   ESXI Ver :: %s\n" "$ESXI_VER"
-  printf "ESXI SubVer :: %s\n" "$ESXI_SUBVER"
-  printf "     Vendor :: %s\n" "$VENDOR"
-  printf "      Model :: %s\n" "$MODEL"
-  printf "    ISO URL :: %s\n" "$ISO_URL"
+  if [[ -z "$GENERATE" ]]
+  then
+    printf "   ESXI Ver :: %s\n" "$ESXI_VER"
+    printf "ESXI SubVer :: %s\n" "$ESXI_SUBVER"
+    printf "     Vendor :: %s\n" "$VENDOR"
+    printf "      Model :: %s\n" "$MODEL"
+    printf "    ISO URL :: %s\n" "$ISO_URL"
+  fi
 }
 
 ###
 #  Build our structured TITLE to use in then bootenv name
 ###
 function build_title() {
-  [[ $MODEL = none ]] && MOD="" || MOD="_$MODEL"
-  TITLE="esxi_${ESXI_VER}-${ESXI_SUBVER}_${VENDOR}${MOD}"
+
+  if [[ "$GENERATE" ]]
+  then
+    TITLE="esxi-$(echo $ISO_NAME | sed 's/\.iso//g')"
+  else
+    [[ $MODEL = none ]] && MOD="" || MOD="_$MODEL"
+    TITLE="esxi_${ESXI_VER}-${ESXI_SUBVER}_${VENDOR}${MOD}"
+  fi
 }
 
 ###
@@ -490,9 +614,9 @@ function build_title() {
 function get_iso_sha() {
   # thank you ... macOS
   case $(uname -s) in
-    Darwin) ( which shasum > /dev/null ) && SHA="shasum -a 256" ;;
-    Linux) ( which sha256sum > /dev/null ) && SHA="sha256sum"   ;;
-    *) xiterr 1 "Unsupported system type '$(uname -s)'"         ;;
+    Darwin) ( which shasum    > /dev/null ) && SHA="shasum -a 256" ;;
+    Linux)  ( which sha256sum > /dev/null ) && SHA="sha256sum"     ;;
+    *) xiterr 1 "Unsupported system type '$(uname -s)'"            ;;
   esac
 
   [[ $ISO ]] || xiterr 1 "expect an ISO image path location for ARGv1"
@@ -505,9 +629,15 @@ function get_iso_sha() {
 #  Build our bootenv yaml file for a given ISO that has matched
 ###
 function build_bootenv() {
-
-  [[ $MODEL = none ]] && MOD="" || MOD=" ($MODEL)"
-  DESC="ESXi ${ESXI_VER}-${ESXI_SUBVER} for ${VENDOR}${MOD}"
+  if [[ "$GENERATE" ]]
+  then
+    DESC="${TITLE}"
+    ISO_URL="unknown (no download location metadata was provided at build time)"
+    ESXI_VER=0
+  else
+    [[ $MODEL = none ]] && MOD="" || MOD=" ($MODEL)"
+    DESC="ESXi ${ESXI_VER}-${ESXI_SUBVER} for ${VENDOR}${MOD}"
+  fi
 
   if [[ $MODE = isomount ]]; then
     check_files_iso_mount "$ISO_MNT/mboot.c32" "$ISO_MNT/boot.cfg"
@@ -519,7 +649,7 @@ function build_bootenv() {
   cat <<BENV > $BE_YAML
 ---
 Name: $TITLE-install
-Description: Install BootEnv for ESXi ${ESXI_VER}-${ESXI_SUBVER} for ${VENDOR}${MOD}
+Description: Install BootEnv for ESXi $DESC
 Documentation: |
   Provides VMware BootEnv for $DESC
   For more details, and to download ISO see:
@@ -593,13 +723,16 @@ function get_bootcfg_info() {
 
   [[ -r $BOOTCFG ]] || xiterr 1 "Unable to read boot.cfg ('$BOOTCFG')"
 
-  KERNEL="$(grep '^kernel=' "$BOOTCFG" | cut -d "=" -f2 | sed 's:/::g')"
+  # get original defined Kernel value
+  KERNEL="$(grep '^kernel=' "$BOOTCFG" | cut -d "=" -f2 | sed 's|/||g')"
   # strip prepended slashes so the "prefix:" redirects work correctly
-  MODULES="$(grep '^modules=' "$BOOTCFG" | sed -e 's:^modules=::' -e 's:/::g')"
+  MODULES="$(grep '^modules=' "$BOOTCFG" | sed -e 's|^modules=||' -e 's|/||g')"
   # inject freeform modules after "s.v00", but before many other driver modules
-#  MODULES=$(echo "$MODULES" | sed 's| --- s.v00| --- s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}|')
+  MODULES=$(echo "$MODULES" | sed 's|\( --- s.v00\)|\1{{ range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}|')
   # inject golang template to enable/disable installing tools modules
-  MODULES="$(echo "$MODULES" | sed 's| --- tools.t00|{{ if eq (.Param \"esxi/skip-tools\") false -}} --- tools.t00{{end}}|')"
+  MODULES="$(echo "$MODULES" | sed 's| --- tools.t00|{{ if eq (.Param \"esxi/skip-tools\") false }} --- tools.t00{{end}}|')"
+  # inject template for adding DRPY agent at install time
+  MODULES="$(echo "$MODULES" | sed 's|\(procfs.b00 --- \)|\1{{ if (.Param \"esxi/add-drpy-agent\") }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}|')"
 
   # because BASH 5.x FORKS this up - we need to have else true
   [[ $MODE = bsdtar && -d $BOOTCFGDIR ]] && rm -rf "$BOOTCFGDIR" || true
@@ -626,10 +759,72 @@ build=
 updated=0
 {{ if eq (.Param "esxi/set-norts") true }}norts=1{{ end }}
 {{ if .ParamExists "esxi/boot-cfg-extra-options" }}{{ .Param "esxi/boot-cfg-extra-options" }}{{ end }}
-modules=$MODULES
+modules=${MODULES}
 BOOT
 
 } # end build_bootcfg()
+
+# build stages content in addition to bootenvs and templates
+function build_stage() {
+  S_YAML="${OUT_DIR}/stages/$TITLE.yaml"
+  cat <<STAGE > $S_YAML
+---
+Name: $TITLE-install
+BootEnv: $TITLE-install
+Description: "Stage for custom ESXi $TITLE"
+ReadOnly: true
+Reboot: false
+Meta:
+  color: yellow
+  icon: download
+  title: RackN Content
+OptionalParams: []
+Profiles: []
+RequiredParams: []
+Tasks: []
+Templates: []
+STAGE
+}
+
+# build workflows content in addition to bootenvs and templates
+function build_workflow() {
+  W_YAML="${OUT_DIR}/workflows/$TITLE-install.yaml"
+  cat <<WF > $W_YAML
+---
+Name: $TITLE-install
+Description: "Install custom ESXi $TITLE"
+Documentation: ""
+Meta:
+  color: yellow
+  icon: shuffle
+  title: RackN Content
+ReadOnly: true
+Stages:
+  - $TITLE-install
+  - finish-install
+  - complete
+WF
+}
+
+# Build our content meta info files
+function build_meta() {
+  echo "Building meta data files for content bundle ... "
+  printf "RackN, Inc." > ${OUT_DIR}/._Author.meta
+  printf "https://github.com/digitalrebar/provision-plugins/tree/v4/cmds/vmware" > ${OUT_DIR}/._CodeSource.meta
+  printf "blue" > ${OUT_DIR}/._Color.meta
+  printf "archive" > ${OUT_DIR}/._Icon.meta
+  printf "RackN" > ${OUT_DIR}/._Copyright.meta
+  printf "Generated VMware ESXi Content - $STAMP" > ${OUT_DIR}/._Description.meta
+  printf "Generated ESXi Content - $STAMP" > ${OUT_DIR}/._DisplayName.meta
+  printf "https://provision.readthedocs.io/en/latest/doc/content-packages/vmware.html" > ${OUT_DIR}/._DocUrl.meta
+  printf "RackN" > ${OUT_DIR}/._License.meta
+  printf "vmware-generated-$STAMP" > ${OUT_DIR}/._Name.meta
+  printf "1000" > ${OUT_DIR}/._Order.meta
+  printf "sane-exit-codes" > ${OUT_DIR}/._RequiredFeatures.meta
+  printf "RackN" > ${OUT_DIR}/._Source.meta
+  printf "enterprise,rackn,esxi,vmware" > ${OUT_DIR}/._Tags.meta
+  printf "$STAMP" > ${OUT_DIR}/._Version.meta
+}
 
 # simple exit helper function for short conditional command lines
 function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
@@ -640,7 +835,7 @@ trap 'got_trap $LASTNO $LINENO $BASH_COMMAND' ERR SIGINT SIGTERM SIGQUIT
 
 # process our command line flags, we also set the ISO_MAP in this function
 process_options $*
-[[ $MODE = bsdtar ]] && check_bsdtar
+[[ $MODE = bsdtar ]] && check_bsdtar || true
 get_iso_names
 if (( $dbg )); then
     echo ""
@@ -650,35 +845,86 @@ if (( $dbg )); then
     echo ""
 fi
 echo ""
-declare -A missing_isos missing_map_targets
+
+STAMP=$(date +v%Y.%m.%d-%H%M%S)
 
 # "ISO" var used through out functions
-for ISO_NAME in "${SPECIFIC_TARGETS[@]}"; do
+[[ "$CONTENT" ]] && printf "$STAMP\nGenerated content for the following vSphere ESXi components.\n" >> ${OUT_DIR}/._Documentation.meta || true
+
+for ISO_NAME in "${SPECIFIC_TARGETS[@]}"
+do
   DIR_NAME="${ISO_NAMES[$ISO_NAME]}"
-    if [[ ! $DIR_NAME ]]; then
-      missing_isos["$ISO_NAME"]=true
-      continue
-    fi
-    if [[ ! ${ISO_MAP[$ISO_NAME]} ]]; then
-        missing_map_targets["$ISO_NAME"]=true
-        continue
-    fi
-    ISO="$DIR_NAME/$ISO_NAME"
-    echo ">>> Building ISO content for: $ISO"
-    get_iso_meta
-    print_iso_meta
-    get_iso_sha
-    build_title
-    [[ $MODE = isomount ]] && mount_iso
-    build_bootenv
-    build_bootcfg
-    [[ $MODE = isomount ]] && { "${UNMOUNT[@]}" > /dev/null; }
-    echo "  COMPLETED :: $ISO"
-    echo ""
+
+  if [[ ! $DIR_NAME ]]; then
+    MISSING_ISOS["$ISO_NAME"]=true
+    continue
+  fi
+  if [[ ! ${ISO_MAP[$ISO_NAME]} ]]; then
+    MISSING_ISOS["$ISO_NAME"]=true
+    continue
+  fi
+
+  ISO="$DIR_NAME/$ISO_NAME"
+  echo ">>> Building ISO content for: $ISO"
+  [[ -z "$GENERATE" ]] && get_iso_meta || true
+  print_iso_meta
+  get_iso_sha
+  build_title
+  [[ $MODE = isomount ]] && mount_iso || true
+  build_bootenv
+  build_bootcfg
+  [[ "$CONTENT" ]] && build_stage || true
+  [[ "$CONTENT" ]] && build_workflow || true
+  [[ "$CONTENT" ]] && printf "\nTITLE: $TITLE\nISO_NAME: $ISO_NAME.\n" >> ${OUT_DIR}/._Documentation.meta || true
+  [[ $MODE = isomount ]] && { "${UNMOUNT[@]}" > /dev/null; } || true
+  echo "  COMPLETED :: $ISO"
+  echo ""
 done
-for ISO_NAME in "${!missing_isos[@]}"; do
+
+[[ "$CONTENT" ]] && build_meta
+
+if [[ -n "$GENERATED" ]]
+then
+  for ISO_NAME in "${!MISSING_ISOS[@]}"; do
     echo "Failed to handle vmware $ISO_NAME: could not find ISO file"
-done
-for ISO_NAME in "${!missing_isos[@]}"; do
+  done
+  for ISO_NAME in "${!MISSING_ISOS[@]}"; do
     echo "Failed to handle vmware $ISO_NAME: no entry in ISO_MAP"
-done
+  done
+fi
+
+cd $OUT_DIR
+BUNDLE="$OUT_DIR/vmware-$TITLE.yaml"
+DRPCLI=$(which drpcli) || true
+if [[ "$DO_BUNDLE" ]]
+then
+  if [[ -n "$DRPCLI" ]]
+  then
+    echo "Running 'drpcli' bundle operation ... "
+    drpcli contents bundle $BUNDLE
+    [[ ! -r "$BUNDLE" ]] && xiterr 1 "Unable to read bundle file '$BUNDLE'"
+  else
+    echo "No 'drpcli' binary found in PATH ('$PATH')"
+    echo "Not running 'drpcli contents bundle...' operation."
+  fi
+fi
+
+if [[ "$DO_UPLOAD" ]]
+then
+  if [[ -n "$DRPCLI" ]]
+  then
+    [[ ! -r "$BUNDLE" ]] && xiterr 1 "Unable to read bundle file '$BUNDLE'"
+    echo "Running 'drpcli' upload operation ... "
+    drpcli contents upload $BUNDLE
+    echo ""
+    echo "WARNING:  If you are doing iterative runs of this script, you must remove"
+    echo "          previous content packs that were uploaded - each content pack gets"
+    echo "          a unique name to allow multiple content pack creations."
+    echo ""
+    echo "          TO REMOVE:  drpcli contents destroy vmware-generated-$STAMP"
+    echo ""
+  else
+    echo "No 'drpcli' binary found in PATH ('$PATH')"
+    echo "Not running 'drpcli contents upload...' operation."
+  fi
+fi
