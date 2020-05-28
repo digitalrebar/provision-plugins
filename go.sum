@@ -190,6 +190,10 @@ github.com/spf13/cobra v0.0.4-0.20180722215644-7c4570c3ebeb h1:l8xMeTl9t6JKC/dA1
 github.com/spf13/cobra v0.0.4-0.20180722215644-7c4570c3ebeb/go.mod h1:1l0Ry5zgKvJasoi3XT1TypsSe7PqH0Sj9dhYf7v3XqQ=
 github.com/spf13/pflag v1.0.3 h1:zPAT6CGy6wXeQ7NtTnaTerfKOsV6V6F8agHXFiazDkg=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
+github.com/stmcginnis/gofish v0.4.0 h1:Tr3wPS4jDXUVMxTIrmPDCyE++CJx8AG/5vFmn5MW8qs=
+github.com/stmcginnis/gofish v0.4.0/go.mod h1:t0RUeoOLznx9vExQOeLZUrjU0u3yy0wL4iVMQviUl+k=
+github.com/stmcginnis/gofish v0.4.1-0.20200422114932-ce37e50e6886 h1:I00fL9VN0qCgIQnhG9JnFG+epDZViNCpYZDIwNnsuu4=
+github.com/stmcginnis/gofish v0.4.1-0.20200422114932-ce37e50e6886/go.mod h1:t0RUeoOLznx9vExQOeLZUrjU0u3yy0wL4iVMQviUl+k=
 github.com/stretchr/objx v0.1.0 h1:4G4v2dO3VZwixGIRoQ5Lfboy6nUhCyYzaqnIAPPhYs4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
