@@ -1,0 +1,15 @@
+---
+Name: "ipmi/skip-status-validation"
+Description: "Skip status validation"
+Documentation: |
+  This parameter indicates if the *ipmi-status-validation* task is enabled.
+
+  This parameter defaults to true until we can get better info about how
+  useful it is.
+Schema:
+  type: "boolean"
+  default: true
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"

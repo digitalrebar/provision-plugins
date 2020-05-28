@@ -1,0 +1,32 @@
+---
+Name: "ipmi-status-validation"
+Description: Validate the status of the system through redfish
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"
+RequiredParams:
+  - "ipmi/skip-status-validation"
+Templates:
+  - Name: "validate-redfish-status.sh"
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{ template "setup.tmpl" . }}
+      {{ template "validation-lib.tmpl" . }}
+
+      {{ if .Param "ipmi/skip-status-validation" }}
+      echo "Skip status validation"
+      exit 0
+      {{ end }}
+
+      STATUS=$(drpcli machines runaction $RS_UUID status ipmi/mode redfish | jq -r .Status)
+      echo "Machine status is $STATUS"
+
+      if [[ "$STATUS" != "OK" && "$STATUS" != "" ]] ;
+      then
+        echo "STATUS is not OK: $STATUS"
+        exit 1
+      fi
+      exit 0
