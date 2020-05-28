@@ -35,16 +35,22 @@ vendor_set_hostname_dns() {
     DNS_ENABLED="Enabled"
     DNS_SERVER1="{{ index $p 0 }}"
     {{if lt 1 (len $p) }}
-  DNS_ENABLED="Enabled"
-  DNS_SERVER2="{{ index $p 1 }}"
+    DNS_ENABLED="Enabled"
+    DNS_SERVER2="{{ index $p 1 }}"
     {{ end }}
     {{ end }}
 {{ else if .ParamExists "dns-servers" }}
     {{ $p := .Param "dns-servers" }}
     {{ if $p }}
+    DNS_ENABLED="Enabled"
     DNS_SERVER1="{{ index $p 0 }}"
       {{if lt 1 (len $p) }}
+    DNS_ENABLED="Enabled"
     DNS_SERVER2="{{ index $p 1 }}"
+      {{ end }}
+      {{if lt 2 (len $p) }}
+    DNS_ENABLED="Enabled"
+    DNS_SERVER3="{{ index $p 2 }}"
       {{ end }}
     {{ end }}
 {{ end }}
@@ -92,8 +98,9 @@ vendor_set_hostname_dns() {
     test -z $DNS_DOMAIN || $onecli config set IMM.Custom_Domain $DNS_DOMAIN
     test -z $DNS_ENABLED || $onecli config set IMM.DNS_Enable $DNS_ENABLED
     test -z $DNS_ENABLED || $onecli config set IMM.DNSPreference "IPv4"
-    test -z $DNS_SERVER1 || $onecli config set IMM.DNSSettings_ServerIp1 $DNS_SERVER1
-    test -z $DNS_SERVER2 || $onecli config set IMM.DNSSettings_ServerIp2 $DNS_SERVER2
+    test -z $DNS_SERVER1 || $onecli config set IMM.DNS_IP_Address1 $DNS_SERVER1
+    test -z $DNS_SERVER2 || $onecli config set IMM.DNS_IP_Address2 $DNS_SERVER2
+    test -z $DNS_SERVER3 || $onecli config set IMM.DNS_IP_Address3 $DNS_SERVER3
 
     test -z $TIME_ZONE || $onecli config set IMM.TimeZone "$TIME_ZONE"
     test -z $NTP_SERVER1 || $onecli config set IMM.NTPHost1 $NTP_SERVER1
@@ -169,7 +176,7 @@ vendor_install_cert() {
   {{ if .ParamExists "ipmi/configure/certificate" }}
   {{ .Param "ipmi/configure/certificate" }}
   {{ end }}
-  EOF
+EOF
 
   $onecli config import IMM.SSL_HTTPS_SERVER_CERT --file sslcert.txt
   rm -f sslcert.txt
