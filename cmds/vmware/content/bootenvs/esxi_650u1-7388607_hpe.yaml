@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u1-7388607_hpe-install
-Description: Install BootEnv for ESXi ESXi 650u1-7388607 for hpe
+Description: Install BootEnv for ESXi 650u1-7388607 for hpe
 Documentation: |
   Provides VMware BootEnv for ESXi 650u1-7388607 for hpe
   For more details, and to download ISO see:

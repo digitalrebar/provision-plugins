@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-13932383_hitachi_blade-ha8000-install
-Description: Install BootEnv for ESXi ESXi 650u3-13932383 for hitachi (blade-ha8000)
+Description: Install BootEnv for ESXi 650u3-13932383 for hitachi (blade-ha8000)
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-13932383 for hitachi (blade-ha8000)
   For more details, and to download ISO see:

@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-14320405_hpe-install
-Description: Install BootEnv for ESXi ESXi 650u3-14320405 for hpe
+Description: Install BootEnv for ESXi 650u3-14320405 for hpe
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-14320405 for hpe
   For more details, and to download ISO see:

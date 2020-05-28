@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u1-110302608_lenovo-install
-Description: Install BootEnv for ESXi ESXi 670u1-110302608 for lenovo
+Description: Install BootEnv for ESXi 670u1-110302608 for lenovo
 Documentation: |
   Provides VMware BootEnv for ESXi 670u1-110302608 for lenovo
   For more details, and to download ISO see:

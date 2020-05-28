@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u2-13006603_hitachi-install
-Description: Install BootEnv for ESXi ESXi 670u2-13006603 for hitachi
+Description: Install BootEnv for ESXi 670u2-13006603 for hitachi
 Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13006603 for hitachi
   For more details, and to download ISO see:

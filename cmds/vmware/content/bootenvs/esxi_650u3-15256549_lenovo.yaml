@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-15256549_lenovo-install
-Description: Install BootEnv for ESXi ESXi 650u3-15256549 for lenovo
+Description: Install BootEnv for ESXi 650u3-15256549 for lenovo
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-15256549 for lenovo
   For more details, and to download ISO see:

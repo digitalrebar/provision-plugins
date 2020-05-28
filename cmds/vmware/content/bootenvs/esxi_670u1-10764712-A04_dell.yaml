@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u1-10764712-A04_dell-install
-Description: Install BootEnv for ESXi ESXi 670u1-10764712-A04 for dell
+Description: Install BootEnv for ESXi 670u1-10764712-A04 for dell
 Documentation: |
   Provides VMware BootEnv for ESXi 670u1-10764712-A04 for dell
   For more details, and to download ISO see:

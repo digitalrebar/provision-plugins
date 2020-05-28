@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u2-13644319_nec_standard-install
-Description: Install BootEnv for ESXi ESXi 670u2-13644319 for nec (standard)
+Description: Install BootEnv for ESXi 670u2-13644319 for nec (standard)
 Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13644319 for nec (standard)
   For more details, and to download ISO see:

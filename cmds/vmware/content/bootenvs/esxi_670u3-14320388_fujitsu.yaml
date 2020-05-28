@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u3-14320388_fujitsu-install
-Description: Install BootEnv for ESXi ESXi 670u3-14320388 for fujitsu
+Description: Install BootEnv for ESXi 670u3-14320388 for fujitsu
 Documentation: |
   Provides VMware BootEnv for ESXi 670u3-14320388 for fujitsu
   For more details, and to download ISO see:

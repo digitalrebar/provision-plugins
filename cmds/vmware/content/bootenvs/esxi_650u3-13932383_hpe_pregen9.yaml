@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-13932383_hpe_pregen9-install
-Description: Install BootEnv for ESXi ESXi 650u3-13932383 for hpe (pregen9)
+Description: Install BootEnv for ESXi 650u3-13932383 for hpe (pregen9)
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-13932383 for hpe (pregen9)
   For more details, and to download ISO see:

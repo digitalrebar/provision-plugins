@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u2-13981272-A02_dell-install
-Description: Install BootEnv for ESXi ESXi 670u2-13981272-A02 for dell
+Description: Install BootEnv for ESXi 670u2-13981272-A02 for dell
 Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13981272-A02 for dell
   For more details, and to download ISO see:

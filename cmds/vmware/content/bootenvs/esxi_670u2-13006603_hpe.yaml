@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u2-13006603_hpe-install
-Description: Install BootEnv for ESXi ESXi 670u2-13006603 for hpe
+Description: Install BootEnv for ESXi 670u2-13006603 for hpe
 Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13006603 for hpe
   For more details, and to download ISO see:

@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-13932383-v431_fujitsu-install
-Description: Install BootEnv for ESXi ESXi 650u3-13932383-v431 for fujitsu
+Description: Install BootEnv for ESXi 650u3-13932383-v431 for fujitsu
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-13932383-v431 for fujitsu
   For more details, and to download ISO see:
