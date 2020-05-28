@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u2-13473784_fujitsu-install
-Description: Install BootEnv for ESXi 670u2-13473784 for fujitsu
+Description: Install BootEnv for ESXi ESXi 670u2-13473784 for fujitsu
 Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13473784 for fujitsu
   For more details, and to download ISO see:

@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-14293459_vmware_rollup-install
-Description: Install BootEnv for ESXi 650u3-14293459 for vmware (rollup)
+Description: Install BootEnv for ESXi ESXi 650u3-14293459 for vmware (rollup)
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-14293459 for vmware (rollup)
   For more details, and to download ISO see:

@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-13932383_cisco-install
-Description: Install BootEnv for ESXi 650u3-13932383 for cisco
+Description: Install BootEnv for ESXi ESXi 650u3-13932383 for cisco
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-13932383 for cisco
   For more details, and to download ISO see:

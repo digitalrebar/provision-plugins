@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u3-14320388_nec_standard-install
-Description: Install BootEnv for ESXi 670u3-14320388 for nec (standard)
+Description: Install BootEnv for ESXi ESXi 670u3-14320388 for nec (standard)
 Documentation: |
   Provides VMware BootEnv for ESXi 670u3-14320388 for nec (standard)
   For more details, and to download ISO see:

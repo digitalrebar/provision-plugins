@@ -1,6 +1,6 @@
 ---
 Name: esxi_670u1-10302608_nec_r120h-t120h-r110j-install
-Description: Install BootEnv for ESXi 670u1-10302608 for nec (r120h-t120h-r110j)
+Description: Install BootEnv for ESXi ESXi 670u1-10302608 for nec (r120h-t120h-r110j)
 Documentation: |
   Provides VMware BootEnv for ESXi 670u1-10302608 for nec (r120h-t120h-r110j)
   For more details, and to download ISO see:

@@ -1,6 +1,6 @@
 ---
 Name: esxi_700-15843807_dell-install
-Description: Install BootEnv for ESXi 700-15843807 for dell
+Description: Install BootEnv for ESXi ESXi 700-15843807 for dell
 Documentation: |
   Provides VMware BootEnv for ESXi 700-15843807 for dell
   For more details, and to download ISO see:

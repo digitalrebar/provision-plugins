@@ -5,7 +5,7 @@ Documentation: |
   Dynamically add additional modules in to the ESXi installed list of modules.
   This is an Array of modules.  The ``boot.cfg`` supports a relative path to
   the module from the ``boot.cfg`` specified location defined by the ``prefix``.
-  For Digital Rebar, this means a path of ``../../files/ ... `` would refer
+  For Digital Rebar, this means a path of ``../../files/`` would refer
   to the standard *Files* served artifacts.
 
   A full HTTP path may be specified to the location of the modules.

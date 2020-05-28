@@ -1,12 +1,11 @@
 ---
 Name: esxi_650u3-14320405_lenovo-install
-Description: Install BootEnv for ESXi 650u3-14320405 for lenovo
+Description: Install BootEnv for ESXi ESXi 650u3-14320405 for lenovo
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-14320405 for lenovo
-
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-LENOVO&productId=614
+    - https://vmware.lenovo.com/content/custom_iso/6.5/6.5u3/VMware-ESXi-6.5.0.update03-15256549-LNV-20200407.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -45,12 +44,6 @@ Templates:
   - ID: esxi-ipxe.cfg.tmpl
     Name: ipxe-mac
     Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
-  - ID: esxi-pxelinux.tmpl
-    Name: pxelinux-chain-mac
-    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
-  - ID: esxi-pxelinux.tmpl
-    Name: pxelinux-chain
-    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
   - ID: esxi-install-py3.ks.tmpl
     Name: compute.ks
     Path: '{{.Machine.Path}}/compute.ks'

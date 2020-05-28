@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u2-8294253-A00_dell-install
-Description: Install BootEnv for ESXi 650u2-8294253-A00 for dell
+Description: Install BootEnv for ESXi ESXi 650u2-8294253-A00 for dell
 Documentation: |
   Provides VMware BootEnv for ESXi 650u2-8294253-A00 for dell
   For more details, and to download ISO see:

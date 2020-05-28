@@ -1,6 +1,6 @@
 ---
 Name: esxi_600u2-3620759_vmware-install
-Description: Install BootEnv for ESXi 600u2-3620759 for vmware
+Description: Install BootEnv for ESXi ESXi 600u2-3620759 for vmware
 Documentation: |
   Provides VMware BootEnv for ESXi 600u2-3620759 for vmware
   For more details, and to download ISO see:

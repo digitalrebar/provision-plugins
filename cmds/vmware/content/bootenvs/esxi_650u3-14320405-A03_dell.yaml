@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-14320405-A03_dell-install
-Description: Install BootEnv for ESXi 650u3-14320405-A03 for dell
+Description: Install BootEnv for ESXi ESXi 650u3-14320405-A03 for dell
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-14320405-A03 for dell
   For more details, and to download ISO see:

@@ -1,6 +1,6 @@
 ---
 Name: esxi_650u3-13932383_hitachi_ha8000v-gen10-install
-Description: Install BootEnv for ESXi 650u3-13932383 for hitachi (ha8000v-gen10)
+Description: Install BootEnv for ESXi ESXi 650u3-13932383 for hitachi (ha8000v-gen10)
 Documentation: |
   Provides VMware BootEnv for ESXi 650u3-13932383 for hitachi (ha8000v-gen10)
   For more details, and to download ISO see:

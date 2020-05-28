@@ -117,7 +117,8 @@ ISO_MAP=(
   [VMware-VMvisor-Installer-6.5.0.update03-13932383.x86_64-DellEMC_Customized-A01.iso]="650u3|13932383-A01|dell|none|https://www.dell.com/support/home/ph/en/phdhs1/drivers/driversdetails?driverid=pcdkd"
   [VMware-VMvisor-Installer-6.5.0.update03-13932383.x86_64.iso]="650u3|13932383|vmware|none|https://my.vmware.com/group/vmware/details?downloadGroup=ESXI65U3&productId=614"
   [VMware-VMvisor-Installer-6.5.0.update03-14320405.x86_64-DellEMC_Customized-A03.iso]="650u3|14320405-A03|dell|none|https://www.dell.com/support/home/ph/en/phdhs1/drivers/driversdetails?driverid=twtv6"
-  [VMware_ESXi_6.5.0.update03_15177306_LNV_20191216.iso]="650u3|15177306|lenovo|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-LENOVO&productId=614"
+  [VMware_ESXi_6.5.0.update03_14320405_LNV_20190920.iso]="650u3|14320405|lenovo|none|https://vmware.lenovo.com/content/custom_iso/6.5/6.5u3/VMware-ESXi-6.5.0.update03-15256549-LNV-20200407.iso"
+  [VMware-ESXi-6.5.0.update03-15256549-LNV-20200407.iso]="650u3|15256549|lenovo|none|https://vmware.lenovo.com/content/custom_iso/6.5/6.5u3/VMware-ESXi-6.5.0.update03-15256549-LNV-20200407.iso"
   [VMware_ESXi_6.5.0_13932383_Custom_Cisco_6.5.3.1.iso]="650u3|13932383|cisco|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-CISCO&productId=614"
   [VMware_ESXi_6.5.0_Update3_13932383_hitachi_0400_Blade_HA8000.iso]="650u3|13932383|hitachi|blade-ha8000|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-HITACHI&productId=614"
   [VMware_ESXi_6.5.0_Update3_13932383_hitachi_1400_HA8000VGen10.iso]="650u3|13932383|hitachi|ha8000v-gen10|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-HITACHI&productId=614"
@@ -130,6 +131,7 @@ ISO_MAP=(
   [VMware-ESXi-6.7.0-Update1-11675023-HPE-Gen9plus-670.U1.10.4.0.19-Apr2019.iso]="670u1|11675023|hpe|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-HPE&productId=742"
   [VMware-VMvisor-Installer-6.7.0.update01-10302608.x86_64.iso]="670u1|10302608|vmware|none|https://my.vmware.com/web/vmware/details?productId=742&downloadGroup=ESXI67U1"
   [VMware-VMvisor-Installer-6.7.0.update01-10764712.x86_64-DellEMC_Customized-A04.iso]="670u1|10764712-A04|dell|none|https://www.dell.com/support/home/us/en/19/drivers/driversdetails?driverid=6g5t3"
+  [VMware-ESXi-6.7.0.update01-10302608-LNV-20181010.iso]="670u1|110302608|lenovo|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-LENOVO&productId=742"
   [VMware_ESXi_6.7.0.update01_11675023_LNV_20190205.iso]="670u1|11675023|lenovo|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-LENOVO&productId=742"
   [VMware_ESXi_6.7.0_10302608_Custom_Cisco_6.7.1.2.iso]="670u1|10302608|cisco|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-CISCO&productId=742"
   [VMware_ESXi_6.7.0_Update1_10302608_hitachi_0200_Blade_HA8000.iso]="670u1|10302608|hitachi|blade-ha8000|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-HITACHI&productId=742"
@@ -140,6 +142,7 @@ ISO_MAP=(
   [VMware-ESXi-6.7.0-13473784-Fujitsu-v470-1.iso]="670u2|13473784|fujitsu|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-FUJITSU&productId=742"
   [VMware-ESXi-6.7.0-Update2-13006603-HPE-Gen9plus-670.U2.10.4.1.8-Apr2019.iso]="670u2|13006603|hpe|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HPE&productId=742"
   [VMware-VMvisor-Installer-6.7.0.update02-13006603.x86_64.iso]="670u2|13006603|vmware|none|https://my.vmware.com/group/vmware/details?downloadGroup=ESXI67U2&productId=742"
+  [VMware-VMvisor-Installer-6.7.0.update02-13981272.x86_64-DellEMC_Customized-A02.iso]="670u2|13981272-A02|dell|none|https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=p92h9"
   [VMware-VMvisor-Installer-6.7.0.update02-13981272.x86_64-DellEMC_Customized-A03.iso]="670u2|13981272-A03|dell|none|https://my.vmware.com/web/vmware/details?downloadGroup=OEM-ESXI67U2-DELLEMC&productId=742"
   [VMware_ESXi_6.7.0.update02_13981272_LNV_20190630.iso]="670u2|13981272|lenovo|none|https://my.vmware.com/web/vmware/details?downloadGroup=OEM-ESXI67U2-LENOVO&productId=742"
   [VMware_ESXi_6.7.0_13006603_Custom_Cisco_6.7.2.1.iso]="670u2|13006603|cisco|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-CISCO&productId=742"
@@ -151,7 +154,8 @@ ISO_MAP=(
   [VMware-ESXi-6.7.0-Update3-14320388-HPE-Gen9plus-670.U3.10.4.5.19-Aug2019.iso]="670u3|14320388|hpe|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U3-HPE&productId=742"
   [VMware-VMvisor-Installer-6.7.0.update02-13981272.x86_64-DellEMC_Customized-A03.iso]="670u3|13981272-A03|dell|none|https://my.vmware.com/web/vmware/details?downloadGroup=OEM-ESXI67U3-DELLEMC&productId=742"
   [VMware-VMvisor-Installer-6.7.0.update03-14320388.x86_64.iso]="670u3|14320388|vmware|none|https://my.vmware.com/group/vmware/details?downloadGroup=ESXI67U3&productId=742"
-  [VMware_ESXi_6.7.0.update03_15160138_LNV_20191216.iso]="670u3|15160138|lenovo|none|https://my.vmware.com/web/vmware/details?downloadGroup=OEM-ESXI67U3-LENOVO&productId=742"
+  [VMware_ESXi_6.7.0.update03_15160138_LNV_20200405.iso]="670u3|15160138-20200405|lenovo|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U3-LENOVO&productId=742"
+  [VMware_ESXi_6.7.0.update03_15160138_LNV_20200407.iso]="670u3|15160138-20200407|lenovo|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U3-LENOVO&productId=742"
   [VMware_ESXi_6.7.0_14320388_Custom_Cisco_6.7.3.1.iso]="670u3|14320388|cisco|none|https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U3-CISCO&productId=742"
   # 6.7.0u3b versions
   [VMware-VMvisor-Installer-201912001-15160138.x86_64.iso]="670u3b|15160138|vmware|none|https://my.vmware.com/group/vmware/details?downloadGroup=ESXI67U3B&productId=742"
@@ -732,7 +736,7 @@ function get_bootcfg_info() {
   # inject golang template to enable/disable installing tools modules
   MODULES="$(echo "$MODULES" | sed 's| --- tools.t00|{{ if eq (.Param \"esxi/skip-tools\") false }} --- tools.t00{{end}}|')"
   # inject template for adding DRPY agent at install time
-  MODULES="$(echo "$MODULES" | sed 's|\(procfs.b00 --- \)|\1{{ if (.Param \"esxi/add-drpy-agent\") }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}|')"
+  MODULES="$(echo "$MODULES" | sed 's|\(sb.v00 --- \)|\1{{ if (.Param \"esxi/add-drpy-agent\") }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}|')"
 
   # because BASH 5.x FORKS this up - we need to have else true
   [[ $MODE = bsdtar && -d $BOOTCFGDIR ]] && rm -rf "$BOOTCFGDIR" || true
