@@ -106,6 +106,9 @@ steps to acquire patches:
   * you'll get a table of results - cross reference the correct Build ID - and click on the "Download" button they provide
   * send a gentle note to VMware to modernize their download process
 
+
+.. _vmware_custom_bootenvs:
+
 Adding Custom BootEnvs (VMware ESXi versions)
 +++++++++++++++++++++++++++++++++++++++++++++
 
@@ -116,36 +119,61 @@ ESXi version needs.  This content pack supports adding in new BootEnvs (VMware
 ESXi versions), and using the above set of Params and Workflow control to
 deploy them to your machines.
 
-There are two paths for installing new ESXi versions:
+Additionally, custom created vSphere ESXi ISOs can be converted to Digital
+Rebar content packs with this process.
 
-  1.  Creating a new content pack with all of the trimmings - there is a shell
-      script named ``esxi-make-content-pack.sh`` that should exist in your
-      ``tftpboot`` directory under the ``files/plugin_providers/vmware/scripts``
-      subdirectory.  It builds full content packs of VMware ISOs.
-      See the script of usage, or contact your RackN support team for more
-      details.  NOTE NOTE NOTE: usage of this tool does NOT ALLOW for the
-      advanced Param based workflows described above - however, the content
-      pack will be completely separated from the RackN distributed plugin.
+There is a script that is distributed with the ``vmware`` plugin named
+``make-esxi.sh``.  This script combines the previous two scripts capabilities
+in to a single tool.  The previous scripts were ``make-esxi-bootenvs.sh`` and
+``make-esxi-content-pack.sh``.
 
-  2.  Injecting just the minimal ``bootenv`` and ESXi specific ``boot.cfg``
-      content pieces.  In your ``tftpboot`` directory there should be a
-      shell script named ``make-esxi-bootenvs.sh``.  This script builds a
-      RackN BootEnv and subsequent ``boot.cfg`` template needed, following
-      our naming structure.  This method is fully supported for extending
-      the VMware plugin to add additional BootEnv (VMware ESXi Versions)
-      to the system.
+.. note:: See the ref:`vmware_esxi_v430_upgrade` notes for details on dealing with this transition
 
-.. note:: Both of the above referenced scripts are only available in Digital
-          Rebar Provision v3.13.7 or v3.14.0 and newer.  If you need these
-          scripts outside of those environments, contact your RackN support
-          team, as they can be made available.
+The script is designed to allow you to specify what ISO images to create
+either a standalone *mini content pack* from, or to just generate appropriate
+``bootenvs`` and a ``boot.cfg`` template to match it.  The *mini content pack*
+approach is designed to work in conjunction with the ``vmware`` plugin, not to
+replace it.  In *content pack* mode, appropriate ``workflows`` and ``stages``
+will also be generated in addtion to the ``bootenvs`` and ``boot.cfg`` templates.
 
-.. note:: IF YOU NEED VERSIONS WE HAVE NOT ADDED ... please contact RackN,
-          we would like to keep this content plugin as up to date as possible
-          with our customer requirements.  We will continue to add new
+RackN uses this same scrip to generate the ``vmware`` *plugin_provider* content
+pieces (``bootenvs`` and ``boot.cfg`` templates).
+
+Part of the process includes generating appropriate meta data information about
+the ``bootenv`` and ISO version information.  Unfortunately, because the ISO file
+names and internal ISO meta data information is wildly inconsistent, it's impossible
+to dynamically generate structured and useful data.
+
+As a consequence, there is an internal array map (named ``ISO_MAP[]``) which contains
+all generated *bootenv* meta data details.  This is a currated list that is amended
+as RackN adds more ISOs to the support list for the ``vmware`` *plugin_provider*.
+
+If you are just testing one-off or a small handful of ISOs for installation, it may
+not be necessary to worry about this.  Just use the '``-g``' (Generated) mode of
+the script, and minimal meta data will be built.  If you wish to maintain a more
+comprehensive content pack for longer term use with currated ``bootenvs``, we
+highly recommend you generate an appropriate ``ISO_MAP`` set of values.  The ``ISO_MAP``
+can be contained in a separate reference file independent of the script.
+
+There are two *Usage* related flags to the script for additional information and
+details on how to use it.  Please see those output details for more usage,
+notes, and examples.
+
+  ::
+
+    # the two usage flags to the make-esxi.sh script
+    cd /var/lib/dr-provision/tftpboot/files/plugin_providers/vmware
+    ./make-esxi -u         # switch argument Usage
+    ./make-esxi -x         # eXtended usage output, includes notes and examples
+
+
+.. note:: IF YOU NEED ISO VERSIONS WE HAVE NOT ADDED ... please contact RackN,
+          we would like to keep the ``vmware`` plugin as up to date as possible
+          for our customer requirements.  We will continue to add new
           versions as we can.  You will receive the benefit of this content
           being "off-the-shelf" and not requiring additional custom content
           to support ESXi environments.
+
 
 .. _vmware_esxi_passwords:
 
@@ -180,6 +208,45 @@ automated systems.
 
 Please see the per-Param documentation below for more details on the above methods.
 
+
+.. _vmware_esxi_v430_upgrade:
+
+NOTES ON UPGRADING To v4.3.0 Plugin
+===================================
+
+In the v4.3.0 *plugin_provider* the previous two (or three!) scripts:
+
+  * ``make-esxi-bootenv.sh``
+  * ``make-esxi-bootenvs.sh``
+  * ``make-esxi-content-pack.sh``
+
+Have been consolidated in to a single script named ``make-esxi.sh``.  The Plugin Provider
+update process **does not** remove these scripts on update.  We highly recommend that
+you remove the old versions of the above listed scripts to prevent future confusion.
+
+You will need to manually remove the old versions of the scripts.  Log in to the shell
+of your DRP Endpoint, and perform the following tasks.
+
+  ::
+
+    # remove old script versions - assume "default production" install location
+    cd /var/lib/dr-provision/tftpboot       # adjust to your 'tftpboot' directory location
+    FILES="files/plugin_providers/vmware/scripts/make-esxi-bootenvs.sh
+           files/plugin_providers/vmware/scripts/make-esxi-content-pack.sh
+           make-esxi-bootenv.sh make-esxi-bootenvs.sh make-esxi-content-pack.sh"
+
+    for F in $FILES; do [[ -r "$F" ]] && rm -i $F || echo "Skipping - '$F' file found"; done
+
+
+Additionally, you may wish to symbolically link the new replacement script to
+a system PATH location, as follows:
+
+  ::
+
+    ln -s /var/lib/dr-provision/tftpboot/files/plugin_providers/vmware/scripts/make-esxi.sh /usr/local/bin/
+
+
+.. _vmware_esxi_v290_upgrade:
 
 NOTES ON UPGRADING To v2.9.0 Plugin
 ===================================

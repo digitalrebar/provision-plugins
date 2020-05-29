@@ -3,10 +3,9 @@ Name: esxi_670u2-13981272-A02_dell-install
 Description: Install BootEnv for ESXi 670u2-13981272-A02 for dell
 Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13981272-A02 for dell
-
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/web/vmware/details?downloadGroup=OEM-ESXI67U2-DELLEMC&productId=742
+    - https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=p92h9
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -45,12 +44,6 @@ Templates:
   - ID: esxi-ipxe.cfg.tmpl
     Name: ipxe-mac
     Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
-  - ID: esxi-pxelinux.tmpl
-    Name: pxelinux-chain-mac
-    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}'
-  - ID: esxi-pxelinux.tmpl
-    Name: pxelinux-chain
-    Path: '{{.Env.PathFor "tftp" ""}}/pxelinux.cfg/{{.Machine.HexAddress}}'
   - ID: esxi-install-py3.ks.tmpl
     Name: compute.ks
     Path: '{{.Machine.Path}}/compute.ks'
