@@ -63,7 +63,7 @@ EOFCFG
     mkdir -p /tmp/drpcli{{$ci_file}}
     cat > /tmp/drpcli{{$ci_file}}meta-data <<EOFMETA
 instance-id: {{.Machine.UUID}}
-local-hostane: {{.Machine.Name}}
+local-hostname: {{.Machine.Name}}
 {{if .ParamExists "cloud-init/x509-certs"}}
 x509: {{.Param "cloud-init/x509-certs"}}
 {{end}}
