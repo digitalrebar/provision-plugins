@@ -115,11 +115,36 @@ fi
 
 echo ">>> Requesting install of BootEnv: '$BOOTENV'"
 
+# test media Install URL is available
+check_media(){
+  INST="{{.ProvisionerURL}}/$BOOTENV/install"
+  if ( curl -fsSL ${INST} > /dev/null 2>&1  )
+  then
+    echo "BootEnv install media is available via '$INST'" ${HIDE_OUTPUT}
+  else
+    echo ">>> Unable to find BootEnv install media at '$INST'."
+    echo ">>> Did you upload the BootEnv ISO or set the mirror correctly?"
+    exit 1
+  fi
+}
+
 BOOT_INSTALL="${BOOTENV}-install"
 if ( drpcli bootenvs exists $BOOT_INSTALL > /dev/null 2>&1 || true )
 then
   HIDE_OUTPUT=' > /dev/null'
   [[ $RS_DEBUG_ENABLE ]] && HIDE_OUTPUT=""
+
+  # test that our ISO exists and has been exploded - or the mirror content is available
+  ISO=$(drpcli bootenvs show $BOOT_INSTALL | jq -r '.OS.IsoFile')
+  if [[ -n "$ISO" && $(drpcli isos exists $ISO 2> /dev/null ) ]]
+  then
+    echo "ISO media for BootEnv '$BOOTENV' exists." ${HIDE_OUTPUT}
+  else
+    echo ">>> NOTICE:  No ISO media for BootEnv '$BOOTENV' found via DRP Endpoint."
+  fi
+
+  check_media
+
   eval drpcli machines set {{.Machine.UUID}} param "esxi/selected-vendor" to ${VENDOR}${HIDE_OUTPUT}
   echo "Successfully set machine param 'esxi/selected-vendor' to '${VENDOR}'"
   eval drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:${BOOT_INSTALL}${HIDE_OUTPUT}
