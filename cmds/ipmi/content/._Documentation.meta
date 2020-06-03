@@ -10,13 +10,13 @@ will fail to load/configure if missing.
 
 The following actions have become a loose API across all IPMI plugins.
 
-* poweron
-* poweroff
-* powercycle
-* nextbootpxe
-* nextbootdisk
-* identify - not implemented by all
-* powerstatus - not implemented by all
+* ``poweron``
+* ``poweroff``
+* ``powercycle``
+* ``nextbootpxe``
+* ``nextbootdisk``
+* ``identify`` - not implemented by all
+* ``powerstatus`` - not implemented by all
 
 Each of these will be described more below.  The actions trigger through the normal API conventions
 for machine actions.  API access is through the */api/v3/machines/UUID/actions/ACTION* POST endpoint.
@@ -128,6 +128,15 @@ Parameters:
 * *ipmi/username* - The username to initiate BMC actions
 * *ipmi/password* - The password to initiate BMC actions
 
+Optionally, the network Port to connect to can be defined if the specific ``ipmi/mode``
+driver type has been configured to use non-standard Port numbers for the given protocol.
+For example, if the IPMI protocol has been relocated from default UDP port 623 to 1623,
+use the appropriate optional Param setting below.  The options are as follows:
+
+* (optional) *ipmi/port-ipmitool* - sets the network Port for the IPMI protocol
+* (optional) *ipmi/port-racadm* - sets the network Port for the iDRAC RACADM commands
+* (optional) *ipmi/port-redfish* - sets the network Port for the Redfish API service
+
 The configuration parts of the *ipmi-configure* stage will set all three if enabled.  Without
 configuration enabled, the *ipmi/address* field will be populated regardless if the
 *ipmi-configure* stage is applied.  This enables discovery of BMC addresses for existing or
@@ -182,3 +191,15 @@ identify
 This will issue *chassis identify number* and return the results as a string.  The number
 is specified by the *ipmi/identify-duration* parameter and defaults to 60 (seconds).
 
+
+Potential Errors
+================
+
+In configuring various *ipmi/mode* types, you may receive errors when Actions are performed.
+Some of those errors may include the following, along with potential reasons for the
+error condition.
+
+* ``(404) plugin: ipmi out: Error: Unable to establish IPMI v2 / RMCP+ session``
+
+  Typically this error may be encountered, the IPMI protocol mode has not been enabled
+  on the Baseboard Management Controller (BMC; Dell iDRAC, HPE iLO, etc.).

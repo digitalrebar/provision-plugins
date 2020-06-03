@@ -354,13 +354,13 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 	switch ma.Params["ipmi/mode"].(string) {
 	case "ipmitool":
 		ipmiDriver = &ipmi{}
-		port = ma.Params["ipmi/port-ipmitool"].(int)
+		port = int(ma.Params["ipmi/port-ipmitool"].(float64) + 0.5)
 	case "racadmn", "racadm":
 		ipmiDriver = &racadm{}
-		port = ma.Params["ipmi/port-racadm"].(int)
+		port = int(ma.Params["ipmi/port-racadm"].(float64) + 0.5)
 	case "redfish":
 		ipmiDriver = &redfish{}
-		port = ma.Params["ipmi/port-redfish"].(int)
+		port = int(ma.Params["ipmi/port-redfish"].(float64) + 0.5)
 	default:
 		err = &models.Error{Code: 404,
 			Model:    "plugin",

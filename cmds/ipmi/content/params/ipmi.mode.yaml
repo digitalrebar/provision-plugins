@@ -13,6 +13,9 @@ Documentation: |
 
   * racadmn is a typo that is propagated currently
 
+  .. note:: For a given *mode* of operation, you must insure that protocol is enabled and
+            supported on the platform you are attempting to execute *Actions* on.
+
 Schema:
   type: "string"
   enum:

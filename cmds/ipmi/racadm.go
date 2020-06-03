@@ -82,6 +82,7 @@ func (r *racadm) Action(l logger.Logger, ma *models.Action) (supported bool, res
 				Key:   "ipmi",
 			}
 			err.Errorf("Racadm error: %v", cmdErr)
+			err.Errorf("ipmi out: %s", string(out))
 			return
 		}
 		res = string(out)
