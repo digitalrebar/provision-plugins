@@ -1,0 +1,23 @@
+---
+Name: "ipmi/port-racadm"
+Description: "Network Port for the iDRAC RACADM commands."
+Documentation: |
+  This parameter is used by the IPMI Plugin to access the BMC.
+
+  This parameter can be set to define the Port on which the iDRAC
+  RACADM commands should be issued to.  The default value set is
+  ``0`` which means to not pass any additional Port values through
+  to the command.
+
+  The iDRAC RACADM commands are normally issued on port ``443``.
+
+Schema:
+  type: "integer"
+  minimum: 0
+  maximum: 65535
+  default: 0
+
+Meta:
+  icon: "bullseye"
+  color: "blue"
+  title: "RackN Content"

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os/exec"
 
@@ -10,20 +11,26 @@ import (
 
 type racadm struct {
 	username, password, address string
+	port                        int
 }
 
 func (r *racadm) Name() string { return "racadm" }
 
 func (r *racadm) run(cmd ...string) ([]byte, error) {
-	args := []string{"-r", r.address, "-u", r.username, "-p", r.password}
+	addr := r.address
+	if r.port != 0 {
+		addr = fmt.Sprintf("%s:%d", addr, r.port)
+	}
+	args := []string{"-r", addr, "-u", r.username, "-p", r.password}
 	args = append(args, cmd...)
 	return exec.Command("racadm", args...).CombinedOutput()
 }
 
-func (r *racadm) Probe(l logger.Logger, address, username, password string) bool {
+func (r *racadm) Probe(l logger.Logger, address string, port int, username, password string) bool {
 	r.address = address
 	r.username = username
 	r.password = password
+	r.port = port
 	res, err := exec.Command("racadm", "version").CombinedOutput()
 	if len(res) > 0 && err == nil {
 		return true

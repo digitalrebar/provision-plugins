@@ -21,12 +21,16 @@ type redfish struct {
 
 func (r *redfish) Name() string { return "redfish" }
 
-func (r *redfish) Probe(l logger.Logger, address, username, password string) bool {
+func (r *redfish) Probe(l logger.Logger, address string, port int, username, password string) bool {
 	r.username = username
 	r.password = password
+	p := ""
+	if port != 0 {
+		p = fmt.Sprintf(":%s", port)
+	}
 	// Create a new instance of gofish client, ignoring self-signed certs
 	config := gofish.ClientConfig{
-		Endpoint: fmt.Sprintf("https://%s", address),
+		Endpoint: fmt.Sprintf("https://%s%s", address, p),
 		Username: r.username,
 		Password: r.password,
 		Insecure: true,

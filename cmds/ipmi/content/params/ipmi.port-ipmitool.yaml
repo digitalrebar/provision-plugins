@@ -1,0 +1,24 @@
+---
+Name: "ipmi/port-ipmitool"
+Description: "Network Port for the IPMI interface."
+Documentation: |
+  This parameter is used by the IPMI Plugin to access the BMC.
+
+  This parameter can be set to define the Port on which the IPMI
+  controller is listening.  The default value is ``0``, which means
+  no port number will be passed through to the tooling.
+
+  The default port used by the IPMI protocol is ``623``.  If the IPMI
+  protocol services are relocated to a different port number, then
+  this value needs to be updated.
+
+Schema:
+  type: "integer"
+  minimum: 0
+  maximum: 65535
+  default: 0
+
+Meta:
+  icon: "bullseye"
+  color: "blue"
+  title: "RackN Content"
