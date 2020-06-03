@@ -26,7 +26,7 @@ func (r *redfish) Probe(l logger.Logger, address string, port int, username, pas
 	r.password = password
 	p := ""
 	if port != 0 {
-		p = fmt.Sprintf(":%s", port)
+		p = fmt.Sprintf(":%d", port)
 	}
 	// Create a new instance of gofish client, ignoring self-signed certs
 	config := gofish.ClientConfig{
