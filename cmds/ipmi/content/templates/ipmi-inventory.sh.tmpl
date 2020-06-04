@@ -37,34 +37,12 @@ IPMI_LAN_CHECK_END=$IPMI_FORCE_LAN_CHAN
 declare -A quirk_data
 declare -A mc_info
 declare -A lan_info
-declare -A mc_info_keys
-declare -A lan_info_keys
 lan_chan=0
 
 quirklist=()
 quirkid="UNKNOWN"
 
-mc_info_keys=(
-    ["Device ID"]="device_id"
-    ["Device Revision"]="device_rev"
-    ["Firmware Revision"]="firmware_rev"
-    ["IPMI Version"]="version"
-    ["Manufacturer ID"]="mfgr_id"
-    ["Manufacturer Name"]="mfgr_name"
-    ["Product ID"]="product_id"
-    ["Product Name"]="product_name"
-    ["Device Available"]="available"
-    ["Provides Device SDRs"]="provides_device_sdrs"
-    ["Additional Device Support"]="additional_devs"
-)
-
-lan_info_keys=(
-    ["IP Address"]="ipaddr"
-    ["Subnet Mask"]="netmask"
-    ["Default Gateway IP"]="defgw ipaddr"
-    ["MAC Address"]="macaddr"
-    ["IP Address Source"]="ipsrc"
-)
+{{ template "ipmi-info-keys.sh.tmpl" . }}
 
 #
 # This routine will mark the parameters to skip IPMI on

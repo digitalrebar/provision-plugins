@@ -1,0 +1,42 @@
+# IPMI MC and LAN shell arrays for reuse in other templates.
+# begin of ipmi-info-keys.sh.tmpl
+
+# check that we aren't assigned values already
+_ipmi_check_mc()  { [[ ${#mc_info_keys[@]} < 1  ]] && return 0 || return 1; }
+_ipmi_check_lan() { [[ ${#lan_info_keys[@]} < 1 ]] && return 0 || return 1; }
+
+# declare and assign values to our MC keys array
+_ipmi_assign_mc() {
+  declare -A mc_info_keys
+  mc_info_keys=(
+    ["Device ID"]="device_id"
+    ["Device Revision"]="device_rev"
+    ["Firmware Revision"]="firmware_rev"
+    ["IPMI Version"]="version"
+    ["Manufacturer ID"]="mfgr_id"
+    ["Manufacturer Name"]="mfgr_name"
+    ["Product ID"]="product_id"
+    ["Product Name"]="product_name"
+    ["Device Available"]="available"
+    ["Provides Device SDRs"]="provides_device_sdrs"
+    ["Additional Device Support"]="additional_devs"
+  )
+}
+
+# declare and assign values to our LAN keys array
+_ipmi_assign_lan(){
+  declare -A lan_info_keys
+  lan_info_keys=(
+    ["IP Address"]="ipaddr"
+    ["Subnet Mask"]="netmask"
+    ["Default Gateway IP"]="defgw ipaddr"
+    ["MAC Address"]="macaddr"
+    ["IP Address Source"]="ipsrc"
+  )
+}
+
+# check if exists already, otherwise assign array values
+_ipmi_check_mc  && _ipmi_assign_mc  || true
+_ipmi_check_lan && _ipmi_assign_lan || true
+
+# end of ipmi-info-keys.sh.tmpl
