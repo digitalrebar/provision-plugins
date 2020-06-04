@@ -34,8 +34,8 @@ github.com/digitalocean/go-smbios v0.0.0-20180907143718-390a4f403a8e h1:vUmf0yez
 github.com/digitalocean/go-smbios v0.0.0-20180907143718-390a4f403a8e/go.mod h1:YTIHhz/QFSYnu/EhlF2SpU2Uk+32abacUYA5ZPljz1A=
 github.com/digitalrebar/logger v0.3.0 h1:7/XP3BQiWfl1Lqmm7tvkvdwjPilDUUPC/iWbeWO9G6g=
 github.com/digitalrebar/logger v0.3.0/go.mod h1:zH2t4FBhzVxZJTg+eaPzNCRL50nlcRLxWurfTsl5jWE=
-github.com/digitalrebar/provision/v4 v4.3.0-beta10 h1:9lqKuGZBhGsoWPk4+keN7U/k6m+S6L2n5yCSjxEF+nk=
-github.com/digitalrebar/provision/v4 v4.3.0-beta10/go.mod h1:o76vw43XAjKVMYSmM2D3ph+q/LaxaATjeF9u8QE5n1s=
+github.com/digitalrebar/provision/v4 v4.3.0 h1:t+0A3SgLjgatlwFNpfgI4uLikVwoPrlWMIbdkQja8Ik=
+github.com/digitalrebar/provision/v4 v4.3.0/go.mod h1:o76vw43XAjKVMYSmM2D3ph+q/LaxaATjeF9u8QE5n1s=
 github.com/digitalrebar/tftp v2.1.0+incompatible h1:CzBcnsUaMtdLSOf3dSycinnfpajAAro7l8oo/ILyzOI=
 github.com/digitalrebar/tftp v2.1.0+incompatible/go.mod h1:k1tcsyQwHE72oTU5sfXPJdOCHFiZUt3M2BdYdHsfw6c=
 github.com/digitalrebar/tftp/v3 v3.0.0 h1:Ft2i3s2gCZ795rISs9vlcy3YSqfd6mtodxGoUcPSrhs=
@@ -194,8 +194,6 @@ github.com/spf13/cobra v0.0.4-0.20180722215644-7c4570c3ebeb h1:l8xMeTl9t6JKC/dA1
 github.com/spf13/cobra v0.0.4-0.20180722215644-7c4570c3ebeb/go.mod h1:1l0Ry5zgKvJasoi3XT1TypsSe7PqH0Sj9dhYf7v3XqQ=
 github.com/spf13/pflag v1.0.3 h1:zPAT6CGy6wXeQ7NtTnaTerfKOsV6V6F8agHXFiazDkg=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
-github.com/stmcginnis/gofish v0.4.0 h1:Tr3wPS4jDXUVMxTIrmPDCyE++CJx8AG/5vFmn5MW8qs=
-github.com/stmcginnis/gofish v0.4.0/go.mod h1:t0RUeoOLznx9vExQOeLZUrjU0u3yy0wL4iVMQviUl+k=
 github.com/stmcginnis/gofish v0.4.1-0.20200422114932-ce37e50e6886 h1:I00fL9VN0qCgIQnhG9JnFG+epDZViNCpYZDIwNnsuu4=
 github.com/stmcginnis/gofish v0.4.1-0.20200422114932-ce37e50e6886/go.mod h1:t0RUeoOLznx9vExQOeLZUrjU0u3yy0wL4iVMQviUl+k=
 github.com/stretchr/objx v0.1.0 h1:4G4v2dO3VZwixGIRoQ5Lfboy6nUhCyYzaqnIAPPhYs4=
