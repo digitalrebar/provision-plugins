@@ -10,6 +10,7 @@ import (
 
 type ipmi struct {
 	username, password, address string
+	port                        int
 }
 
 func (i *ipmi) Name() string {
@@ -18,12 +19,16 @@ func (i *ipmi) Name() string {
 
 func (i *ipmi) run(cmd ...string) ([]byte, error) {
 	args := []string{"-H", i.address, "-U", i.username, "-P", i.password, "-I", "lanplus"}
+	if i.port != 0 {
+		args = append(args, "-p", strconv.Itoa(i.port))
+	}
 	args = append(args, cmd...)
 	return exec.Command("ipmitool", args...).CombinedOutput()
 }
 
-func (i *ipmi) Probe(l logger.Logger, address, username, password string) bool {
+func (i *ipmi) Probe(l logger.Logger, address string, port int, username, password string) bool {
 	i.address = address
+	i.port = port
 	i.username = username
 	i.password = password
 	res, err := exec.Command("ipmitool", "-V").CombinedOutput()
@@ -101,6 +106,7 @@ func (i *ipmi) Action(l logger.Logger, ma *models.Action) (supported bool, res i
 				Key:   "ipmi",
 			}
 			err.Errorf("ipmi error: %v", cmdErr)
+			err.Errorf("ipmi out: %s", string(out))
 			return
 		}
 		res = string(out)

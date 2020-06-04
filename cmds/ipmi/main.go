@@ -33,6 +33,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "poweroff",
 				Model: "machines",
@@ -42,6 +47,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "powercycle",
 				Model: "machines",
@@ -50,6 +60,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "nextbootpxe",
@@ -61,6 +76,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "nextbootdisk",
 				Model: "machines",
@@ -70,6 +90,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "forcebootpxe",
@@ -81,6 +106,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "forcebootdisk",
 				Model: "machines",
@@ -91,6 +121,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "identify",
 				Model: "machines",
@@ -100,7 +135,12 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
-				OptionalParams: []string{"ipmi/identify-duration"},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+					"ipmi/identify-duration",
+				},
 			},
 			models.AvailableAction{Command: "powerstatus",
 				Model: "machines",
@@ -109,6 +149,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "status",
@@ -119,6 +164,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "getInfo",
 				Model: "machines",
@@ -127,6 +177,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "getBios",
@@ -137,6 +192,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "getMemory",
 				Model: "machines",
@@ -145,6 +205,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "getStorage",
@@ -155,6 +220,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "getSimpleStorage",
 				Model: "machines",
@@ -163,6 +233,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "getProcessor",
@@ -173,6 +248,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "getNetworkInterfaces",
 				Model: "machines",
@@ -181,6 +261,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "getEthernetInterfaces",
@@ -191,6 +276,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 			models.AvailableAction{Command: "getSecureBoot",
 				Model: "machines",
@@ -199,6 +289,11 @@ var (
 					"ipmi/password",
 					"ipmi/address",
 					"ipmi/mode",
+				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
 				},
 			},
 			models.AvailableAction{Command: "getBoot",
@@ -209,6 +304,11 @@ var (
 					"ipmi/address",
 					"ipmi/mode",
 				},
+				OptionalParams: []string{
+					"ipmi/port-ipmitool",
+					"ipmi/port-racadm",
+					"ipmi/port-redfish",
+				},
 			},
 		},
 		Content: contentYamlString,
@@ -217,7 +317,7 @@ var (
 
 type driver interface {
 	Name() string
-	Probe(l logger.Logger, address, username, password string) bool
+	Probe(l logger.Logger, address string, port int, username, password string) bool
 	Action(l logger.Logger, ma *models.Action) (supported bool, res interface{}, err *models.Error)
 }
 
@@ -249,14 +349,18 @@ func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]
 
 func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{}, err *models.Error) {
 	var ipmiDriver driver
+	port := 0
 
 	switch ma.Params["ipmi/mode"].(string) {
 	case "ipmitool":
 		ipmiDriver = &ipmi{}
+		port = int(ma.Params["ipmi/port-ipmitool"].(float64) + 0.5)
 	case "racadmn", "racadm":
 		ipmiDriver = &racadm{}
+		port = int(ma.Params["ipmi/port-racadm"].(float64) + 0.5)
 	case "redfish":
 		ipmiDriver = &redfish{}
+		port = int(ma.Params["ipmi/port-redfish"].(float64) + 0.5)
 	default:
 		err = &models.Error{Code: 404,
 			Model:    "plugin",
@@ -268,6 +372,7 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 	}
 	if !ipmiDriver.Probe(l,
 		ma.Params["ipmi/address"].(string),
+		port,
 		ma.Params["ipmi/username"].(string),
 		ma.Params["ipmi/password"].(string)) {
 		err = &models.Error{

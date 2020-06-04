@@ -1,0 +1,21 @@
+---
+Name: "ipmi/port-redfish"
+Description: "Network Port for the Redfish protocol interface."
+Documentation: |
+  This parameter is used by the IPMI Plugin to access the BMC.
+
+  This parameter can be set to define the Port on which the Redfish
+  protocol.  The default value is set to ``0`` which means do not
+  specify an alternate port, use the default value.  The default port
+  value is ``443``.
+
+Schema:
+  type: "integer"
+  minimum: 0
+  maximum: 65535
+  default: 0
+
+Meta:
+  icon: "bullseye"
+  color: "blue"
+  title: "RackN Content"
