@@ -1,13 +1,15 @@
 # IPMI MC and LAN shell arrays for reuse in other templates.
 # begin of ipmi-info-keys.sh.tmpl
 
-# check that we aren't assigned values already
+declare -A mc_info_keys
+declare -A lan_info_keys
+
+  # check that we aren't assigned values already
 _ipmi_check_mc()  { [[ ${#mc_info_keys[@]} < 1  ]] && return 0 || return 1; }
 _ipmi_check_lan() { [[ ${#lan_info_keys[@]} < 1 ]] && return 0 || return 1; }
 
 # declare and assign values to our MC keys array
 _ipmi_assign_mc() {
-  declare -A mc_info_keys
   mc_info_keys=(
     ["Device ID"]="device_id"
     ["Device Revision"]="device_rev"
@@ -25,7 +27,6 @@ _ipmi_assign_mc() {
 
 # declare and assign values to our LAN keys array
 _ipmi_assign_lan(){
-  declare -A lan_info_keys
   lan_info_keys=(
     ["IP Address"]="ipaddr"
     ["Subnet Mask"]="netmask"
