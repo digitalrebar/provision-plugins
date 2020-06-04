@@ -41,3 +41,4 @@ cmds/callback/callback
 cmds/raid/drp-raid/drp-raid
 cmds/rack/rack
 rel_notes
+.DS_Store

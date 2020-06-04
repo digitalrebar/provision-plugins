@@ -19,6 +19,8 @@ Templates:
 
       {{ template "setup.tmpl" . }}
 
+      {{ template "ipmi-info-keys.sh.tmpl" . }}
+
       reset_ipmi() {
           echo "Failed to contact BMC.  Attempt to reset it if we know how."
           drpcli machines tasks add {{.Machine.UUID}} at 0 reset-bmc
