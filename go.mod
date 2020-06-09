@@ -41,3 +41,5 @@ require (
 	gopkg.in/imjoey/go-ovirt.v4 v4.0.6
 	gopkg.in/yaml.v2 v2.2.2
 )
+
+replace github.com/stmcginnis/gofish => github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875
