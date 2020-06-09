@@ -183,13 +183,4 @@ if ! curtin $CURTIN_DEBUG install -c curtin_config.yaml ; then
     exit 1
 fi
 
-{{ if .Param "curtin/debug" }}
-while true ; do
-    if [[ -e /tmp/continue ]] ; then
-        break
-    fi
-    sleep 5
-done
-{{ end }}
-
 exit 0
