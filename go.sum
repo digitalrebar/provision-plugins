@@ -34,8 +34,8 @@ github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875 h1:A2zFHJr02
 github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875/go.mod h1:Z5WuY/a4orY9JmjrwMIqdGyMeKDTmBHklV4GnZeBY+8=
 github.com/digitalrebar/logger v0.3.0 h1:7/XP3BQiWfl1Lqmm7tvkvdwjPilDUUPC/iWbeWO9G6g=
 github.com/digitalrebar/logger v0.3.0/go.mod h1:zH2t4FBhzVxZJTg+eaPzNCRL50nlcRLxWurfTsl5jWE=
-github.com/digitalrebar/provision/v4 v4.3.1 h1:B7fivKIY4+Jhxj2JF3Yp/GN2pdos0w9JNjMmN6HtJ94=
-github.com/digitalrebar/provision/v4 v4.3.1/go.mod h1:YxgvzqguuRQGjroUJWZ0fI/ufauWByPzmFSPzxsQelQ=
+github.com/digitalrebar/provision/v4 v4.4.0-alpha00 h1:G/KUWxq9IaJstIENtMSClQ60ZZEXaWWGXl8DbjlXEAc=
+github.com/digitalrebar/provision/v4 v4.4.0-alpha00/go.mod h1:YxgvzqguuRQGjroUJWZ0fI/ufauWByPzmFSPzxsQelQ=
 github.com/digitalrebar/tftp v2.1.0+incompatible/go.mod h1:k1tcsyQwHE72oTU5sfXPJdOCHFiZUt3M2BdYdHsfw6c=
 github.com/digitalrebar/tftp/v3 v3.0.0/go.mod h1:OEQX1RPK9eiehWKXeZMbYiRLJ3JJLaB68vj7IR7LvOM=
 github.com/docker/go-units v0.3.3/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
