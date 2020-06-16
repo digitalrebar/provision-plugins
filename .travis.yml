@@ -10,6 +10,7 @@ install:
 - "./tools/build.sh"
 script:
 - "./tools/test.sh"
+- "./tools/build_rel_notes.sh"
 - "./tools/publish.sh"
 after_script:
 - tools/notify.sh digitalrebar/provision-plugins
