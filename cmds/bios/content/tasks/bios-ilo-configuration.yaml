@@ -1,0 +1,35 @@
+---
+Name: "bios-ilo-configuration"
+Description: "Configure the ILO through hponcfg"
+Meta:
+  icon: "money"
+  color: "grey"
+  title: "RackN Content"
+RequiredParams:
+  - bios-ilo-configuration
+Prerequisites:
+  - bios-tools-install
+Templates:
+  - Name: "bios-ilo-config.sh"
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{ template "setup.tmpl" . }}
+
+      mfgr="$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')"
+      case $mfgr in
+          HPE|HP) echo "Supported";;
+          *) echo "Not an ILO-based system: $mfgr"; exit 0;;
+      esac
+
+      {{ range $index, $tmpl := .Param "bios-ilo-configuration" }}
+      cat > file.{{$index}} <<EOF
+      {{$tmpl}}
+      EOF
+      echo "Update item {{$index}}"
+      hponcfg -f file.{{$index}} || exit 1
+      rm -f file.{{$index}}
+      {{ end }}
+
+      echo "Update complete"
+      exit 0

@@ -1,0 +1,14 @@
+---
+Name: bios-ilo-configuration
+Description: "The ILO configuration xml files to apply to the system"
+Documentation: |
+  This is a list of xml strings to apply to the system through hponcfg.
+
+Meta:
+  color: grey
+  icon: money
+Schema:
+  type: array
+  default: []
+  items:
+    type: string
