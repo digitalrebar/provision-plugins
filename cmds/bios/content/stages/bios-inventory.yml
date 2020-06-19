@@ -1,0 +1,13 @@
+---
+Name: bios-inventory
+Description: "Discover BIOS configurations on a system"
+Documentation: |
+  This stage inventories the current BIOS configuration with the
+  `` bios-current-config`` task.
+BootEnv: sledgehammer
+Tasks:
+  - bios-current-config
+Meta:
+  icon: "setting"
+  color: "yellow"
+  title: "RackN Content"
