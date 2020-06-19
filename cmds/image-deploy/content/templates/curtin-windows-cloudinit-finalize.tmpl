@@ -18,15 +18,15 @@ if [[ ! -e "$target/$BASEDIR" ]] ; then
 fi
 
 if [[ -e "$target/$BASEDIR/conf/cloudbase-init.conf" ]] ; then
-    sed -ibak -e "s/metadata_services=\(.*\)/metadata_services=\1,cloudbaseinit.metadata.services.rackn.FileService/g" "$target/$BASEDIR/conf/cloudbase-init.conf"
+    sed -ibak -e "s/metadata_services=.*/metadata_services=cloudbaseinit.metadata.services.rackn.FileService/g" "$target/$BASEDIR/conf/cloudbase-init.conf"
     cat "$target/$BASEDIR/conf/cloudbase-init.conf"
 fi
 
 # Only change the above
-#if [[ -e "$target/$BASEDIR/conf/cloudbase-init-unattend.conf" ]] ; then
-#    sed -ibak -e "s/metadata_services=.*/metadata_services=cloudbaseinit.metadata.services.rackn.FileService/g" "$target/$BASEDIR/conf/cloudbase-init-unattend.conf"
-#    cat "$target/$BASEDIR/conf/cloudbase-init-unattend.conf"
-#fi
+if [[ -e "$target/$BASEDIR/conf/cloudbase-init-unattend.conf" ]] ; then
+    sed -ibak -e "s/metadata_services=.*/metadata_services=cloudbaseinit.metadata.services.rackn.FileService/g" "$target/$BASEDIR/conf/cloudbase-init-unattend.conf"
+    cat "$target/$BASEDIR/conf/cloudbase-init-unattend.conf"
+fi
 
 exit 0
 
