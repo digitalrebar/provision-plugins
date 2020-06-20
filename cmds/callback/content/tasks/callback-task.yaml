@@ -9,8 +9,25 @@ Meta:
   title: RackN
 Name: callback-task
 Templates:
+- Name: callback-task.ps1
+  Meta:
+    OS: "windows"
+  Contents: |-
+    {{ if .Param "callback/skip" }}
+    Write-Host "callback/skip is true.  skipping..."
+    exit 0
+    {{ else }}
+      {{ if .ParamExists "callback/action" }}
+    & \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} --plugin "{{.Param "callback/plugin" }}" callback/action {{.Param "callback/action"}}
+    exit $lastExitCode
+      {{ else }}
+    Write-Host "callback/action is not specified. Fail."
+    exit 1
+      {{ end }}
+    {{ end }}
 - Name: callback-task.sh
-  Path: ""
+  Meta:
+    OS: "linux,darwin"
   Contents: |-
     #!/usr/bin/env bash
     #
@@ -34,4 +51,38 @@ Templates:
     echo "Action not specified - failing"
     exit 1
     {{ end }}
+- Name: callback-esxi-task.py
+  Meta:
+    OS: "esxi"
+  Contents: |-
+    #!/usr/bin/env python
+    #
+    # A Callback to DRP from ESXI python3 env
+    # This assumes that the firewall rules are already adjusted
+    #
+    # drpcli machines runaction $RS_UUID callbackDo --plugin "{{.Param "callback/plugin" }}" callback/action "{{.Param "callback/action" }}"
+    #
 
+    import os, urllib, urllib.request, socket, ssl, time
+    url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}/actions/callbackDo?plugin={{.Param "callback/plugin" }}'
+
+    {{ if .Param "callback/skip" }}
+    exit(0)
+    {{ end }}
+
+    print(url)
+
+    # Create the json blob needed to call the action
+    data = b'''
+    {
+      "callback/action": "{{.Param "callback/action" }}"
+    }
+    '''
+
+    print(data)
+
+    req = urllib.request.Request(url, method='POST',data=data)
+    req.add_header('Content-Type', 'application/json')
+    req.add_header('Authorization','Bearer {{.GenerateInfiniteToken}}')
+    rep = urllib.request.urlopen(req,context=ssl.SSLContext(ssl.PROTOCOL_SSLv23))
+    print(rep)
