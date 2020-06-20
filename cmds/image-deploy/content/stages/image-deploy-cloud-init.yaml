@@ -48,6 +48,12 @@ Templates:
   - Contents: |
       instance-id: {{.Machine.UUID}}
       local-hostname: {{.Machine.Name}}
+      {{ if .ParamExists "image-deploy/admin-username" }}
+      admin-username: "{{ .Param "image-deploy/admin-username" }}"
+      {{ end }}
+      {{ if .ParamExists "image-deploy/admin-password" }}
+      admin-password: "{{ .Param "image-deploy/admin-password" }}"
+      {{ end }}
       {{if .ParamExists "cloud-init/x509-certs"}}
       x509: {{.Param "cloud-init/x509-certs"}}
       {{end}}
