@@ -9,6 +9,9 @@ before_install:
 install:
 - "./tools/build.sh"
 script:
+- curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+- unzip awscli-bundle.zip
+- "./awscli-bundle/install -b ~/bin/aws"
 - "./tools/test.sh"
 - "./tools/build_rel_notes.sh"
 - "./tools/publish.sh"
