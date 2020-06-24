@@ -69,7 +69,6 @@ var (
     <channel type='spicevmc'>
       <target type='virtio' name='com.redhat.spice.0'/>
     </channel>
-    <input type='tablet' bus='usb'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='spice' autoport='yes' listen='127.0.0.1'>
@@ -133,7 +132,6 @@ var (
     </interface>
     <input type='keyboard' bus='usb'/>
     <input type='mouse' bus='usb'/>
-    <input type='tablet' bus='usb'/>
     <graphics type='vnc'/>
     <video>
       <model type='virtio' heads='1' primary='yes'/>
