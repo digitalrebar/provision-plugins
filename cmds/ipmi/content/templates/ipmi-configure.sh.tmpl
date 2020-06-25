@@ -525,10 +525,10 @@ echo "ipmi/configure/network is not true, skipping network configuation"
 if ! ipmi_user_configured "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD"; then
     echo "Configure USER account $IPMI_CONFIGURE_USERNAME"
     configure_user "$IPMI_CONFIGURE_USERNAME" "$IPMI_CONFIGURE_PASSWORD" $IPMI_CONFIGURE_USERID
-    if [[ $IPMI_SERVICE_USER != true ]]; then
-        drpcli machines set $RS_UUID param ipmi/username to "$IPMI_CONFIGURE_USERNAME"
-        drpcli machines set $RS_UUID param ipmi/password to "$IPMI_CONFIGURE_PASSWORD"
-    fi
+fi
+if [[ $IPMI_SERVICE_USER != true ]]; then
+    drpcli machines set $RS_UUID param ipmi/username to "$IPMI_CONFIGURE_USERNAME"
+    drpcli machines set $RS_UUID param ipmi/password to "$IPMI_CONFIGURE_PASSWORD"
 fi
 {{ else }}
 echo "ipmi/configure/user not set, skipping user creation"
@@ -540,6 +540,9 @@ if ! ipmi_user_configured dr-provision "$IPMI_PASSWORD"; then
     configure_user dr-provision "$auto_password"
     drpcli machines set $RS_UUID param ipmi/username to dr-provision
     drpcli machines set $RS_UUID param ipmi/password to "$auto_password"
+else
+    drpcli machines set $RS_UUID param ipmi/username to dr-provision
+    drpcli machines set $RS_UUID param ipmi/password to "$IPMI_PASSWORD"
 fi
 {{ else }}
 echo "ipmi/service-user not set, skipping service user creation"
