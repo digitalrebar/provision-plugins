@@ -1,11 +1,11 @@
 ---
-Name: esxi_700-15843807_hpe-install
-Description: Install BootEnv for ESXi 700-15843807 for hpe
+Name: esxi_650u3-105610_hpe-install
+Description: Install BootEnv for ESXi 650u3-105610 for hpe
 Documentation: |
-  Provides VMware BootEnv for ESXi 700-15843807 for hpe
+  Provides VMware BootEnv for ESXi 650u3-105610 for hpe
   For more details, and to download ISO see:
 
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,12 +16,12 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso
-  IsoSha256: 26ccc972ba1f84053c97b53197c8b93d1f37b3af6b75f62f8dbaebcbeb930e7f
+  IsoFile: RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso
+  IsoSha256: b981e9c22661ec2af530705a1ca83399a1c0b28221300a50ddf61041e11c50df
   IsoUrl: ""
-  Name: esxi_700-15843807_hpe
+  Name: esxi_650u3-105610_hpe
   SupportedArchitectures: {}
-  Version: 700
+  Version: 650u3
 OnlyUnknown: false
 OptionalParams:
   - provisioner-default-password-hash
@@ -47,9 +47,9 @@ Templates:
   - ID: esxi-install-py3.ks.tmpl
     Name: compute.ks
     Path: '{{.Machine.Path}}/compute.ks'
-  - ID: esxi_700-15843807_hpe.boot.cfg.tmpl
+  - ID: esxi_650u3-105610_hpe.boot.cfg.tmpl
     Name: boot.cfg
     Path: '{{.Machine.Path}}/boot.cfg'
-  - ID: esxi_700-15843807_hpe.boot.cfg.tmpl
+  - ID: esxi_650u3-105610_hpe.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

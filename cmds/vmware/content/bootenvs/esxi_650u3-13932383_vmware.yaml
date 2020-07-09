@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 650u3-13932383 for vmware
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=ESXI65U3&productId=614
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190701001s-standard.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware-VMvisor-Installer-6.5.0.update03-13932383.x86_64.iso
-  IsoSha256: d70609793add74372bb842ec66bc66f817516f6a99b0278ab1c73195fc2679a7
+  IsoFile: RKN-ESXi-6.5.0-20190701001s-standard.iso
+  IsoSha256: 9fb41ef01f74077b859f04e2c7bb7b93d37d274b335b93b6c6e7d3c9e7f4ed9e
   IsoUrl: ""
   Name: esxi_650u3-13932383_vmware
   SupportedArchitectures: {}

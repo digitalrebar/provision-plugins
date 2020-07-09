@@ -31,7 +31,6 @@ Stages:
   - vmware-esxi-selector
   - esxi-preserve-logs
   - finish-install
-  - esxi-acceptance-level
   - esxi-remove-vmware-bootorder
   - esxi-rename-datastore
   - esxi-preserve-logs

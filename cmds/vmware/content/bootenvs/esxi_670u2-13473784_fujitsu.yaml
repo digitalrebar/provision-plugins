@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13473784 for fujitsu
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-FUJITSU&productId=742
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-Fujitsu-VMvisor-Installer-6.7-13473784-v470-1.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware-ESXi-6.7.0-13473784-Fujitsu-v470-1.iso
-  IsoSha256: e11f4c1b5514208f57a1186af533851e663574f06d45e93d7689e2fd7c34bb53
+  IsoFile: RKN-Fujitsu-VMvisor-Installer-6.7-13473784-v470-1.iso
+  IsoSha256: 5d5d341222ec7f19036410312a9a95e292be53db65a3e7d7933f7130fdec50b4
   IsoUrl: ""
   Name: esxi_670u2-13473784_fujitsu
   SupportedArchitectures: {}

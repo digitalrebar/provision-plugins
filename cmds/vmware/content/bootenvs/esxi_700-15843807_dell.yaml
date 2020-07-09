@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 700-15843807 for dell
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI70GA-DELLEMC&productId=974
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-700_15843807-A00.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware-VMvisor-Installer-7.0.0-15843807.x86_64-DellEMC_Customized-A00.iso
-  IsoSha256: 5d8a0aef1414c92283e021b2010f61a75f6b80ff68e24a3652706425e2c81c0b
+  IsoFile: RKN-DEL-ESXi-700_15843807-A00.iso
+  IsoSha256: d71349cbf989fc65626aea6ad399886d48e22843cb174df6625a9e23cd74ec99
   IsoUrl: ""
   Name: esxi_700-15843807_dell
   SupportedArchitectures: {}

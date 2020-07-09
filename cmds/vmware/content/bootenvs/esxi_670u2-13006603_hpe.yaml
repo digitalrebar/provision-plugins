@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13006603 for hpe
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HPE&productId=742
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware-ESXi-6.7.0-Update2-13006603-HPE-Gen9plus-670.U2.10.4.1.8-Apr2019.iso
-  IsoSha256: 6914a4a388fa9a47bb3f23eab7aaf91019a46e0539f453e78f739acf59bbd7b8
+  IsoFile: RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso
+  IsoSha256: 75472295859da39f95f03ea465182000a64a4a6e5a29dc9b10dcf442807de295
   IsoUrl: ""
   Name: esxi_670u2-13006603_hpe
   SupportedArchitectures: {}

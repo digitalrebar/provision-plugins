@@ -2,3 +2,39 @@
 endpoint = {{ .ApiURL }}
 token = {{ .GenerateInfiniteToken  }}
 machine_uuid = {{ .Machine.UUID }}
+
+[loggers]
+keys=root,drpy
+
+[handlers]
+keys=fileHandler
+
+[formatters]
+keys=drpyFormatter
+
+[logger_root]
+handlers=
+
+[logger_drpy]
+; Set this to adjust
+level=INFO
+handlers=fileHandler
+qualname=drpy
+
+[handler_fileHandler]
+class=FileHandler
+; Set the level here to change the level output into the file
+; debug at logger level and info here would result in info only
+; messages logged to the file.
+; Likewise if logger is set to info but file is set to debug 
+; the logger is only putting out info level messages so thats 
+; still all that will be captured.
+level=DEBUG
+args=('drpy.log', 'w')
+formatter=drpyFormatter
+
+[formatter_drpyFormatter]
+format=RackN: %(asctime)s - %(name)s - %(levelname)s - %(message)s
+datefmt=
+class=logging.Formatter
+

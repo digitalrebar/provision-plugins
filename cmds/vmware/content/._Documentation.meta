@@ -136,7 +136,7 @@ approach is designed to work in conjunction with the ``vmware`` plugin, not to
 replace it.  In *content pack* mode, appropriate ``workflows`` and ``stages``
 will also be generated in addtion to the ``bootenvs`` and ``boot.cfg`` templates.
 
-RackN uses this same scrip to generate the ``vmware`` *plugin_provider* content
+RackN uses this same script to generate the ``vmware`` *plugin_provider* content
 pieces (``bootenvs`` and ``boot.cfg`` templates).
 
 Part of the process includes generating appropriate meta data information about
@@ -145,13 +145,13 @@ names and internal ISO meta data information is wildly inconsistent, it's imposs
 to dynamically generate structured and useful data.
 
 As a consequence, there is an internal array map (named ``ISO_MAP[]``) which contains
-all generated *bootenv* meta data details.  This is a currated list that is amended
+all generated *bootenv* meta data details.  This is a curated list that is amended
 as RackN adds more ISOs to the support list for the ``vmware`` *plugin_provider*.
 
 If you are just testing one-off or a small handful of ISOs for installation, it may
 not be necessary to worry about this.  Just use the '``-g``' (Generated) mode of
 the script, and minimal meta data will be built.  If you wish to maintain a more
-comprehensive content pack for longer term use with currated ``bootenvs``, we
+comprehensive content pack for longer term use with curated ``bootenvs``, we
 highly recommend you generate an appropriate ``ISO_MAP`` set of values.  The ``ISO_MAP``
 can be contained in a separate reference file independent of the script.
 
@@ -207,6 +207,17 @@ managed secrets system (eg vault or password keeper) for consumption by other
 automated systems.
 
 Please see the per-Param documentation below for more details on the above methods.
+
+.. _vmware_esxi_v440_upgrade:
+
+NOTES ON UPGRADING TO  v4.4.0 Plugin
+====================================
+
+In the v4.4.0 *plugin_provider* the rackn agent known as drpy is now provided as a VMware Partner
+Supported package which requires building a custom ISO to include the packages needed. RackN provides
+a build script to produce the ISO, but it must be run from Windows and depends on PowerCLI from VMware. 
+To make this process easier for our customers we include a link to a pre-built ISO for many common releases. 
+
 
 
 .. _vmware_esxi_v430_upgrade:
@@ -742,5 +753,29 @@ Error Message:
   To insure that ``tools.t00`` modules is properly loaded.  You can no longer skip loading this
   module.
 
+  Starting in v4.4 of the VMWare plugin many of the ISO files now provide a -no-tools ISO file and 
+  matching bootenv you can use.
 
+
+Building ESXi ISOs With RackN Agent Embedded
+============================================
+
+As mentioned above in the upgrading to v4.4 notes a Windows machine will be required to build the ISO.
+On the Windows machine you need to have powershell, and powercli from VMware. Its fine to use your normal
+user. Admin privs were not needed in testing. The powercli script to build the iso is part of the vmware
+plugin.
+
+::
+
+    PS C:\Users\errr> Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP $false # only needed the first time you use powercli
+    PS C:\Users\errr> mkdir rackn
+    PS C:\Users\errr> cd rackn
+    PS C:\Users\errr\rackn> Invoke-Webrequest -Uri http://RS_ENDPOINT:8091/files/plugin_providers/vmware/scripts/build_iso.ps1 -Outfile build_iso.ps1
+    PS C:\Users\errr\rackn> build-iso.ps1 -exportpath C:\temp\isos\7-0\ -rackNolbDir C:\temp\olbs\rkn-7-0\ -esxiOlbDir C:\temp\olbs\7-0\
+
+
+
+Once that is done a command prompt should be returned, but sometimes it doesnt so after 30-60 seconds if you
+dont have a prompt hit enter and it should show up if its done if not just wait a bit more. The process takes
+under 1 min in most cases. This process will build an ISO & OLB for every profile listed in the ESXi OLB.
 
