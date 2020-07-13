@@ -1,11 +1,11 @@
 ---
-Name: esxi_700-15843807_hpe-install
-Description: Install BootEnv for ESXi 700-15843807 for hpe
+Name: esxi_700-x15843807_vmware-install
+Description: Install BootEnv for ESXi 700-x15843807 for vmware
 Documentation: |
-  Provides VMware BootEnv for ESXi 700-15843807 for hpe
+  Provides VMware BootEnv for ESXi 700-x15843807 for vmware
   For more details, and to download ISO see:
 
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-no-tools.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,10 +16,10 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso
-  IsoSha256: 26ccc972ba1f84053c97b53197c8b93d1f37b3af6b75f62f8dbaebcbeb930e7f
+  IsoFile: RKN-ESXi-7.0.0-15843807-no-tools.iso
+  IsoSha256: d460e071f5193107509c9e8b0719080271cb61fdfb18b644558a6d2b0a3bb661
   IsoUrl: ""
-  Name: esxi_700-15843807_hpe
+  Name: esxi_700-x15843807_vmware
   SupportedArchitectures: {}
   Version: 700
 OnlyUnknown: false
@@ -47,9 +47,9 @@ Templates:
   - ID: esxi-install-py3.ks.tmpl
     Name: compute.ks
     Path: '{{.Machine.Path}}/compute.ks'
-  - ID: esxi_700-15843807_hpe.boot.cfg.tmpl
+  - ID: esxi_700-x15843807_vmware.boot.cfg.tmpl
     Name: boot.cfg
     Path: '{{.Machine.Path}}/boot.cfg'
-  - ID: esxi_700-15843807_hpe.boot.cfg.tmpl
+  - ID: esxi_700-x15843807_vmware.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

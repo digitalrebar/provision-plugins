@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 670u2-13981272 for lenovo
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/web/vmware/details?downloadGroup=OEM-ESXI67U2-LENOVO&productId=742
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware_ESXi_6.7.0.update02_13981272_LNV_20190630.iso
-  IsoSha256: f1f5d8925cd80b6d4d4980129fd70fb8761904111520e10a62e9fd7f6634ef38
+  IsoFile: RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso
+  IsoSha256: f8b8307b42a4ea2a7c9baba73a82edbdf24ef49458cb702ab9d0d3b9f49348c2
   IsoUrl: ""
   Name: esxi_670u2-13981272_lenovo
   SupportedArchitectures: {}

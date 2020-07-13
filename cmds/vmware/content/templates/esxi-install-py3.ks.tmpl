@@ -48,54 +48,19 @@ reboot --noeject
 
 {{ if .ParamExists "esxi/disk-install-override" }}{{ template "esxi-disk-install-override.tmpl" .}}{{ end }}
 
-%post --interpreter=python
-script_env = "post"
-{{ template "esxi-render-firewall-vib.py.tmpl" .}}
-
-%post --interpreter=python
-script_env = "post"
-{{ template "esxi-drpy-vib-render.py.tmpl" .}}
-
-%firstboot --interpreter=python
-script_env = "fb"
-{{ template "esxi-render-firewall-vib.py.tmpl" .}}
-
-%firstboot --interpreter=python
-script_env = "fb"
-{{ template "esxi-drpy-vib-render.py.tmpl" .}}
-
+# This can be problematic if there is a command included that will cause the system to
+# reboot prematurely making our final section below not run.
+# %post sections are run in a top down order so ours must be last.
 {{ template "esxi-ks-custom-sections.tmpl" .}}
 
-%post --interpreter=python
-script_env = "post"
-{{ template "esxi-drpy-run.py.tmpl" .}}
-
-%firstboot --interpreter=busybox
-# This is backgrounded to allow for the system to stablize and installations to finish
-RB="/opt/rackn/drpy"
-RA="$RB/agent"
-RD="$RB/bin"
-RP="$RD/esxi-drp-run.py"
-RC=/etc/rc.local.d/local.sh
-head -n -1 $RC > /tmp/install-agent
-cat >> /tmp/install-agent <<EOF
-mkdir -p $RD
-cat > $RP <<INSIDEEOF
-{{template "esxi-drpy-run.py.tmpl" .}}
-INSIDEEOF
-chmod +x $RP
-/bin/nohup $RP &
-exit 0
+%post --interpreter=busybox
+# remove later if not needed
+rackn_dir="/opt/rackn/drpy"
+DS_PATH=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['Type'].lower()];print(y[0]['Mount Point'])")
+mkdir $DS_PATH/rackn
+conf_file="$DS_PATH/rackn/drpy.conf"
+cat << EOF >> $conf_file
+{{ template "drpy-agent.conf.tmpl" .}}
 EOF
-mv -f /tmp/install-agent $RC
-chmod +x $RC
-
-%firstboot --interpreter=busybox
-{{ if eq (.Param "esxi/drp-port-disable") true -}}
-# disable the DRP API outbound port access if requested
-# NOTE: this should be run last - as actions above require API port access
-#       during the install
-esxcli network firewall ruleset set --ruleset-id=dr-provision --enabled=false
-{{ else -}}
-echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disable' Param."
-{{ end -}}
+chmod +t $conf_file
+cd $rackn_dir && python agent -f $conf_file
