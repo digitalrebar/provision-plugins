@@ -7,18 +7,18 @@ Documentation: |
   The administrator may choose to configure a user, the network pieces, or both.
 
   Defaults:
-    impi/configure/address = unset
-    impi/configure/gateway = unset
-    impi/configure/ip-mode = dhcp
-    impi/configure/netmask = unset
-    impi/configure/network = false
-    impi/configure/no-bmc-fatal = false
-    impi/configure/reserve-ip = true
-    impi/configure/port = unset
-    impi/configure/user = false
-    impi/configure/username = root
-    impi/configure/password = cr0wBar!
-    impi/configure/userid = unset
+    ipmi/configure/address = unset
+    ipmi/configure/gateway = unset
+    ipmi/configure/ip-mode = dhcp
+    ipmi/configure/netmask = unset
+    ipmi/configure/network = false
+    ipmi/configure/no-bmc-fatal = false
+    ipmi/configure/reserve-ip = true
+    ipmi/configure/port = unset
+    ipmi/configure/user = false
+    ipmi/configure/username = root
+    ipmi/configure/password = cr0wBar!
+    ipmi/configure/userid = unset
 
 Templates:
   - Name: "Copy ipmi-quirks file"
@@ -32,20 +32,20 @@ Prerequisites:
 RequiredParams:
   - "ipmi/service-user"
 OptionalParams:
-  - "impi/configure/no-bmc-fatal"
-  - "impi/configure/network"
-  - "impi/configure/user"
-  - "impi/configure/address"
-  - "impi/configure/gateway"
-  - "impi/configure/ip-mode"
-  - "impi/configure/netmask"
-  - "impi/configure/reserve-ip"
-  - "impi/configure/port"
-  - "impi/configure/username"
-  - "impi/configure/password"
-  - "impi/configure/generate-random-password"
-  - "impi/configure/random-password-settings"
-  - "impi/configure/userid"
+  - "ipmi/configure/no-bmc-fatal"
+  - "ipmi/configure/network"
+  - "ipmi/configure/user"
+  - "ipmi/configure/address"
+  - "ipmi/configure/gateway"
+  - "ipmi/configure/ip-mode"
+  - "ipmi/configure/netmask"
+  - "ipmi/configure/reserve-ip"
+  - "ipmi/configure/port"
+  - "ipmi/configure/username"
+  - "ipmi/configure/password"
+  - "ipmi/configure/generate-random-password"
+  - "ipmi/configure/random-password-settings"
+  - "ipmi/configure/userid"
 Meta:
   icon: "server"
   color: "blue"
