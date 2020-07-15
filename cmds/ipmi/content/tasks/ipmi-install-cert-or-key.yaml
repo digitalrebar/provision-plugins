@@ -8,8 +8,8 @@ Documentation: |
   If the parameters are not preset, nothing is done.
 
   Defaults:
-    impi/configure/certificate = unset
-    impi/configure/key = unset
+    ipmi/configure/certificate = unset
+    ipmi/configure/key = unset
 
 Templates:
   - Name: "Install Cert/Key on BMC"
