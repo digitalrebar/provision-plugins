@@ -4,11 +4,19 @@ Description: "Deploy an image within sledgehammer"
 Documentation: |
   Deploy an image within sledgehammer
 BootEnv: "sledgehammer"
+RequiredParams:
+  - image-deploy/image-os
+  - image-deploy/image-type
+OptionalParams:
+  - image-deploy/image-file
+  - image-deploy/image-url
+  - image-deploy/image-os-subtype
 Tasks:
   - "erase-hard-disks-for-os-install"
   - "curtin-install"
   - "curtin-deploy"
 Meta:
+  type: install
   icon: "image"
-  color: "yellow"
+  color: "orange"
   title: "RackN Content"

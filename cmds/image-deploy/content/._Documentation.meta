@@ -12,6 +12,12 @@ The image-deploy system is built upon and extends the *curtin* project.  Curtin 
 YAML file that is built dynamically based upon the value of parameters.  These parameters drive the actual imaging
 process.
 
+Getting Started
+---------------
+
+The 'image-deploy-base' Workflow has been defined as a getting started reference
+example.  It contains the mose basic components needed for image provisioning.
+
 Image-Deploy Image Construction
 -------------------------------
 
