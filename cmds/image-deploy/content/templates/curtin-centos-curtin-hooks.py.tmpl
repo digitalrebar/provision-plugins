@@ -388,11 +388,9 @@ def main():
 {{if (not (.Param "image-deploy/skip-grub2-configure"))}}
     print("%s: Grub2 mkconfig" % str(datetime.datetime.now()))
     grub2_mkconfig(target)
-{{end}}
     if util.is_uefi_bootable():
         print("%s: Grub2 efi install" % str(datetime.datetime.now()))
         grub2_install_efi(target)
-{{if (not (.Param "image-deploy/skip-grub2-configure"))}}
     else:
         for dev in devices:
             print("%s: Grub2 install on %s" % (str(datetime.datetime.now()), dev))
