@@ -1,0 +1,22 @@
+Name: image-deploy-base
+Description: Reference example for Image Deploy
+Documentation: |
+  Provides the minimal workflow needed to install
+  an image using the image deploy process. 
+  Cloud-init defaults includes starting the runner and ssh-access.
+
+  The three Params are required
+  
+  * Location of image: either `image-deploy/image-file` or `image-deploy/image-url`
+  * Operating system: `image-deploy/image-os`
+  * Image format: `image-deploy/image-type`
+Stages:
+  - "discover"
+  - "image-deploy"
+  - "image-deploy-cloud-init"
+  - "complete"
+Meta:
+  type: install
+  color: orange
+  icon: bullseye
+  title: RackN 2020

@@ -27,8 +27,18 @@ Templates:
       {{if .ParamExists "access-keys"}}
       {{range $key := .Param "access-keys"}}
       {{$key}}
-      {{end}}
-      {{end}}
+      {{end -}}
+      {{end -}}
+      {{if .ParamExists "access-keys-shared" -}}
+      {{range $key := .Param "access-keys-shared" -}}
+      {{$key}}
+      {{end -}}
+      {{end -}}
+      {{if .ParamExists "access-keys-global" -}}
+      {{range $key := .Param "access-keys-global" -}}
+      {{$key}}
+      {{end -}}
+      {{end -}}
     Name: "cloud-init-public-keys-maas"
     Path: "{{.Machine.Path}}/2012-03-01/meta-data/public-keys"
   - Contents: "{{.Machine.Name}}"
