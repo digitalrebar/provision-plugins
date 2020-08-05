@@ -7,4 +7,7 @@ from the following manufacturers:
 * Lenovo, which requires the ``lenovo-support`` content bundle.
 
 In all cases, bios configuration management is implemented as a set of tasks
-designed to be run in the Sledgehammer boot environment.  
+designed to be run in the Sledgehammer boot environment.
+
+In addition to this documentation, please see the :ref:`rs_operation_bios` documentation.
+
