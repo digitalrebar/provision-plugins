@@ -117,6 +117,11 @@ ISO_MAP=(
   [RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso]="670u2|13006603|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso"
   [RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso]="670u2|13981272|lenovo|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso"
   [RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso]="670|13006603|cisco|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso"
+  [RKN-ESXi-6.7.0-20190801001s-no-tools.iso]="670u3|xs20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190801001s-no-tools.iso"
+  [RKN-ESXi-6.7.0-20190801001s-standard.iso]="670u3|s20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190801001s-standard.iso"
+  [RKN-ESXi-6.7.0-20190802001-no-tools.iso]="670u3|x20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-no-tools.iso"
+  [RKN-ESXi-6.7.0-20190802001-standard.iso]="670u3|20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-standard.iso"
+  
   # 7.0.0 versions
   [RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso]="700|15843807|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso"
   [RKN-ESXi-7.0.0-15843807-no-tools.iso]="700|x15843807|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-no-tools.iso"
