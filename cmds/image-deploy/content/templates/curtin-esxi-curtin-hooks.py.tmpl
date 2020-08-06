@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+#
+# curtin-hooks - Curtin installation hooks for VMware ESXi
+#
+# Author: Lee Trager <lee.trager@canonical.com>
+#
+# Copyright (C) 2019 Canonical
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from curtin.config import load_command_config
+from curtin.util import load_command_environment
+
+from subprocess import check_call
+import os
+import shutil
+import tempfile
+import yaml
+
+
+def write_config(target, config):
+    """Write the network config and MAAS credentials to the deployed filesystem
+
+    Writes the network configuration and MAAS credentials to the 6th partition
+    which maps to /altbootbank on the booted system. /altbootbank was chosen
+    because it is the largest writable filesystem which is easily accessible
+    by both Curtin and the %firstboot script.
+    """
+    altbootbank_blkdev = None
+    # The curtin-hooks are stored on the first partition so Curtin finds the
+    # hooks before encountering VMFS. The first partition is not visible in
+    # the booted system. Use the block device for the partition Curtin was
+    # found on and change the partition to find /altbootbank which is
+    # visible on the booted system.
+    with open('/proc/mounts', 'r') as mounts:
+        for line in mounts.readlines():
+            mount = line.split()
+            blkdev = mount[0]
+            mount_point = mount[1]
+            if mount_point == target:
+                altbootbank_blkdev = '%s6' % blkdev[0:-1]
+                break
+
+    if altbootbank_blkdev is None:
+        raise Exception('ERROR: Unable to find /altbootbank block device!')
+
+    altbootbank_mount_point = tempfile.mkdtemp(prefix='curtin-hooks-')
+    check_call(['mount', altbootbank_blkdev, altbootbank_mount_point])
+
+    curtin_cfg_path = os.path.join(
+        altbootbank_mount_point, 'maas', 'curtin.cfg')
+    with open(curtin_cfg_path, 'w') as f:
+        f.write(yaml.dump(config))
+
+    check_call(['umount', altbootbank_blkdev])
+
+
+def cleanup():
+    """NOT REMOVING curtin-hooks - for debugging."""
+#    """Remove curtin-hooks so its as if we were never here."""
+#    curtin_dir = os.path.dirname(__file__)
+#    shutil.rmtree(curtin_dir)
+
+
+def main():
+    state = load_command_environment()
+    config = load_command_config(None, state)
+
+    write_config(state['target'], config)
+    cleanup()
+
+
+if __name__ == "__main__":
+    main()

@@ -11,12 +11,19 @@ Meta:
   title: RackN
 Name: cloud-init-wait
 Templates:
-- Name: cloud-init-wait.sh
+- Name: cloud-init-wait.bash
   Path: ""
   Meta:
     OS: "linux,darwin"
   Contents: |-
     #!/usr/bin/env bash
+    exit 0
+- Name: cloud-init-wait.sh
+  Path: ""
+  Meta:
+    OS: "esxi"
+  Contents: |-
+    #!/usr/bin/env sh
     exit 0
 - Name: cloud-init-wait.ps1
   Path: ""

@@ -153,6 +153,15 @@ EOFUSER
 {{end}}
 {{end}}
 
+elif [[ $OSTYPE == esxi ]] ; then
+
+    echo "Deploying image for OS type:  ESXi"
+    echo "No DRPY rendered in image yet ... please fix me ... "
+
+    [[ ! -d /tmp/drpcli/curtin ]] && mkdir -p /tmp/drpcli/curtin || true
+    cp esxi/* /tmp/drpcli/curtin
+    chmod +x /tmp/drpcli/curtin/*
+
 else
     echo "Unknown OS type: $OSTYPE"
     exit 1
