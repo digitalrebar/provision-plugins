@@ -6,8 +6,18 @@ Documentation: |
   method to use to install.
 
   Validated methods are:
-  * tgz = root file system in compressed tar file.
-  * dd-tgz = Compressed tar file with a single raw disk image.
+
+  * ``tgz`` - Tar gzip compress filesystem
+  * ``dd-tgz`` - tar file containing a single gzip compressed disk image
+  * ``dd-txz`` - tar file containing a single XV compressed disk image`
+  * ``dd-tbz`` - tar file containing a single BZ compressed disk image`
+  * ``dd-tar`` - tar file containing a single uncompressed disk image`
+  * ``dd-bz2`` - tar file containing a single BZ2 compressed disk image`
+  * ``dd-gz`` - raw disk image that is gzip compressed
+  * ``dd-xz`` - raw disk image that is XZ compressed`
+  * ``dd-raw`` - raw disk image that is uncompressed
+
+  .. note:: For the most up to date list, see the Param type definition below on your DRP Endpoint.
 
 Schema:
   type: "string"
