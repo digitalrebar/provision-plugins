@@ -38,6 +38,10 @@ type Plugin struct {
 	mux  sync.Mutex
 }
 
+func (p *Plugin) SelectEvents() []string {
+	return []string{"*.*.*"}
+}
+
 func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) (err *models.Error) {
 	p.Path, _ = config["filebeat/path"].(string)
 	dir := filepath.Dir(p.Path)
