@@ -25,6 +25,7 @@ var (
 		Name:          "filebeat",
 		Version:       version,
 		PluginVersion: 4,
+		AutoStart:     true,
 		HasPublish:    true,
 		OptionalParams: []string{
 			"filebeat/path",
