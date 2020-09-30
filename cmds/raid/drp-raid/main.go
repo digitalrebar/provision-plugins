@@ -186,7 +186,7 @@ func (s *session) Compile() *session {
 		s.WantedSpecs()
 	}
 	if len(s.inSpecs) == 0 {
-		s.Errorf("No volspecs present to compile from")
+		s.log.Printf("No volspecs present to compile from")
 		return s
 	}
 	outSpecs, err := s.inSpecs.Compile(s, s.controllers)
