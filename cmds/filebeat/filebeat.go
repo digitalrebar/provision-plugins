@@ -6,10 +6,13 @@ package main
 //go:generate rm content.yaml
 
 import (
+	"bufio"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision-plugins/v4"
@@ -34,31 +37,57 @@ var (
 	}
 )
 
+type logbuf struct {
+	data []byte
+	err chan error
+}
+
 type Plugin struct {
-	Path string
-	mux  sync.Mutex
+	logs chan *logbuf
+	cm *sync.RWMutex
 }
 
 func (p *Plugin) SelectEvents() []string {
 	return []string{"*.*.*"}
 }
 
-func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) (err *models.Error) {
-	p.Path, _ = config["filebeat/path"].(string)
-	dir := filepath.Dir(p.Path)
+func (p *Plugin) writer(bufs chan *logbuf, f *os.File) {
+	defer f.Close()
+	bf := bufio.NewWriter(f)
+	defer bf.Flush()
+	for buf := range bufs {
+		if buf.data[len(buf.data)-1] != '\n' {
+			buf.data = append(buf.data,'\n')
+		}
+		_,err := bf.Write(buf.data)
+		buf.err <- err
+		close(buf.err)
+	}
+}
+
+func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) *models.Error {
+	p.cm.Lock()
+	defer p.cm.Unlock()
+	close(p.logs)
+	tgtName, ok  := config["filebeat/path"].(string)
+	if !ok {
+		return utils.ConvertError(500,fmt.Errorf("filebeat/path not a string"))
+	}
+	dir := filepath.Dir(tgtName)
 	if merr := os.MkdirAll(dir, 0700); merr != nil {
 		return utils.ConvertError(400, merr)
 	}
 	// Make sure file is there.
-	f, e := os.OpenFile(p.Path, os.O_RDONLY|os.O_CREATE, 0600)
-	if e == nil {
-		f.Close()
-	} else {
-		err = utils.ConvertError(400, e)
-		err.Errorf("file: %s", p.Path)
+	f, e := os.OpenFile(tgtName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+	if e != nil {
+		err := utils.ConvertError(400, e)
+		err.Errorf("file: %s", tgtName)
+		return err
 	}
-
-	return
+	logs := make(chan *logbuf,16)
+	p.logs = logs
+	go p.writer(logs, f)
+	return nil
 }
 
 func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
@@ -77,29 +106,36 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
 	if merr != nil {
 		return utils.ConvertError(400, merr)
 	}
-
-	return p.SendMessage(string(text) + "\n")
-}
-
-func (p *Plugin) SendMessage(msg string) *models.Error {
-	p.mux.Lock()
-	defer p.mux.Unlock()
-
-	f, err := os.OpenFile(p.Path, os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		return utils.ConvertError(400, err)
+	lb := &logbuf{
+		data: text,
+		err: make(chan error),
 	}
-	defer f.Close()
-	_, err = f.WriteString(msg)
-	if err != nil {
-		return utils.ConvertError(400, err)
+	p.cm.RLock()
+	if len(p.logs) == cap(p.logs) {
+		p.cm.RUnlock()
+		l.Errorf("Exceeded 16 queued log writes, dropping event.")
+		return nil
+	}
+	p.logs <- lb
+	p.cm.RUnlock()
+	lerr := <- lb.err
+	if lerr != nil {
+		return utils.ConvertError(400, lerr)
 	}
 	return nil
 }
 
 func main() {
-	plugin.InitApp("filebeat", "Sends events to filebeat event.", version, &def, &Plugin{})
+	p := &Plugin{
+		logs: make(chan *logbuf,16),
+		cm: &sync.RWMutex{},
+	}
+	plugin.InitApp("filebeat", "Sends events to filebeat event.", version, &def, p)
+
 	err := plugin.App.Execute()
+	p.cm.Lock()
+	close(p.logs)
+	time.Sleep(500*time.Millisecond)
 	if err != nil {
 		os.Exit(1)
 	}
