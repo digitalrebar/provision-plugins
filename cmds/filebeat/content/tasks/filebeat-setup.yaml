@@ -1,0 +1,90 @@
+---
+Name: "filebeat-setup"
+Description: "A task to install and setup filebeat"
+Documentation: |
+  A task to install and setup filebeat.
+Templates:
+  - Name: "install-filebeat.sh"
+    Contents: |
+      #!/bin/bash
+
+      {{ template "setup.tmpl" . }}
+
+      if [[ "$OS_FAMILY" == "rhel" ]] ; then
+        curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.9.2-x86_64.rpm
+        rpm -vi filebeat-7.9.2-x86_64.rpm
+        rm -f filebeat-7.9.2-x86_64.rpm
+      elif [[ "$OS_FAMILY" == "debian" ]] ; then
+        curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.9.2-amd64.deb
+        dpkg -i filebeat-7.9.2-amd64.deb
+        rm -f filebeat-7.9.2-amd64.deb
+      else
+        echo "Unknown install method for $OS_FAMILY"
+        exit 1
+      fi
+      exit 0
+  - Name: "The filebeat config file"
+    Path: "/etc/filebeat/filebeat.yml"
+    Contents: |
+      filebeat.inputs:
+      {{ if eq "file" (.Param "filebeat/mode") }}
+        - type: log
+          paths:
+            - {{ .Param "filebeat/path" }}
+          fields:
+            drp_id: {{ .Info.DrpId }}
+          fields_under_root: true
+          json.keys_under_root: true
+      {{ end }}
+      {{ if eq "file" (.Param "filebeat/mode") }}
+        - type: tcp
+          enabled: true
+          host: {{ .Param "filebeat/tcp" }}
+          max_message_size: 10MiB
+          fields:
+            drp_id: {{ .Info.DrpId }}
+          fields_under_root: true
+          json.keys_under_root: true
+      {{ end }}
+
+      # ============================== Filebeat modules ==============================
+      filebeat.config.modules:
+        path: ${path.config}/modules.d/*.yml
+        reload.enabled: false
+
+      # ======================= Elasticsearch template setting =======================
+      setup.template.settings:
+        index.number_of_shards: 1
+
+      # ---------------------------- Elasticsearch Output ----------------------------
+      output.elasticsearch:
+        # Array of hosts to connect to.
+        hosts: ["{{.Param "filebeat/elasticsearch" }}"]
+
+      # ================================= Processors =================================
+      processors:
+        - add_host_metadata:
+            when.not.contains.tags: forwarded
+        - decode_json_fields:
+            fields: ["message"]
+            process_array: false
+            max_depth: 1
+            target: ""
+            overwrite_keys: true
+            add_error_key: true
+        - drop_fields:
+            fields:
+              - message
+
+  - Name: "start-filebeat.sh"
+    Contents: |
+      #!/bin/bash
+      {{ template "setup.tmpl" . }}
+      service filebeat enable
+      service filebeat restart
+
+Meta:
+  icon: "bug"
+  color: "green"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"
