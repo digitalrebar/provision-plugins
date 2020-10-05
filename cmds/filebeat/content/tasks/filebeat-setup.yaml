@@ -38,17 +38,17 @@ Templates:
           paths:
             - {{ .Param "filebeat/path" }}
           fields:
-            drp_id: {{ .Info.DrpId }}
+            drp_id: {{ .Info.Id }}
           fields_under_root: true
           json.keys_under_root: true
       {{ end }}
-      {{ if eq "file" (.Param "filebeat/mode") }}
+      {{ if eq "tcp" (.Param "filebeat/mode") }}
         - type: tcp
           enabled: true
           host: {{ .Param "filebeat/tcp" }}
           max_message_size: 10MiB
           fields:
-            drp_id: {{ .Info.DrpId }}
+            drp_id: {{ .Info.Id }}
           fields_under_root: true
           json.keys_under_root: true
       {{ end }}
