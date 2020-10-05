@@ -1,0 +1,12 @@
+Description: Filebeat elasticsearch connection string
+Documentation: |
+  Filebeat elasticsearch connection string in the form of ip:port.
+Meta:
+  color: blue
+  icon: tag
+  title: RackN
+Name: filebeat/elasticsearch
+Schema:
+  default: "127.0.0.1:9200"
+  type: string
+
