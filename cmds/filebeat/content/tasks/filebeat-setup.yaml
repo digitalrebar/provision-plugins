@@ -3,6 +3,10 @@ Name: "filebeat-setup"
 Description: "A task to install and setup filebeat"
 Documentation: |
   A task to install and setup filebeat.
+ExtraClaims:
+  - action: '*'
+    scope: plugins
+    specific: '*'
 Templates:
   - Name: "install-filebeat.sh"
     Contents: |
@@ -12,10 +16,12 @@ Templates:
 
       if [[ "$OS_FAMILY" == "rhel" ]] ; then
         curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.9.2-x86_64.rpm
+        rpm -e filebeat || :
         rpm -vi filebeat-7.9.2-x86_64.rpm
         rm -f filebeat-7.9.2-x86_64.rpm
       elif [[ "$OS_FAMILY" == "debian" ]] ; then
         curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.9.2-amd64.deb
+        dpkg -r filebeat || :
         dpkg -i filebeat-7.9.2-amd64.deb
         rm -f filebeat-7.9.2-amd64.deb
       else
@@ -82,6 +88,11 @@ Templates:
       {{ template "setup.tmpl" . }}
       service filebeat enable
       service filebeat restart
+
+      # Make sure plugin matches
+      drpcli plugins set filebeat param "filebeat/mode" to "{{.Param "filebeat/mode" }}"
+      drpcli plugins set filebeat param "filebeat/tcp" to "{{.Param "filebeat/tcp" }}"
+      drpcli plugins set filebeat param "filebeat/path" to "{{.Param "filebeat/path" }}"
 
 Meta:
   icon: "bug"
