@@ -6,9 +6,10 @@ package main
 //go:generate rm content.yaml
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"sync"
@@ -29,9 +30,10 @@ var (
 		Version:       version,
 		PluginVersion: 4,
 		AutoStart:     true,
-		HasPublish:    true,
 		OptionalParams: []string{
 			"filebeat/path",
+			"filebeat/mode",
+			"filebeat/tcp",
 		},
 		Content: contentYamlString,
 	}
@@ -39,29 +41,54 @@ var (
 
 type logbuf struct {
 	data []byte
-	err chan error
 }
 
 type Plugin struct {
 	logs chan *logbuf
-	cm *sync.RWMutex
+	cm   *sync.RWMutex
+	tcp  string
+	wc   io.WriteCloser
 }
 
 func (p *Plugin) SelectEvents() []string {
 	return []string{"*.*.*"}
 }
 
-func (p *Plugin) writer(bufs chan *logbuf, f *os.File) {
-	defer f.Close()
-	bf := bufio.NewWriter(f)
-	defer bf.Flush()
-	for buf := range bufs {
-		if buf.data[len(buf.data)-1] != '\n' {
-			buf.data = append(buf.data,'\n')
+func (p *Plugin) writer(l logger.Logger) {
+	defer func() {
+		if p.wc != nil {
+			p.wc.Close()
 		}
-		_,err := bf.Write(buf.data)
-		buf.err <- err
-		close(buf.err)
+	}()
+
+	tcpF := func() {
+		var err error
+		if p.wc != nil {
+			p.wc.Close()
+			p.wc = nil
+		}
+		for {
+			p.wc, err = net.Dial("tcp", p.tcp)
+			if err == nil {
+				break
+			}
+			l.Errorf("Failed to connect to filebeat on %s: %v", p.tcp, err)
+			time.Sleep(3 * time.Second)
+		}
+	}
+	if p.tcp != "" {
+		tcpF()
+	}
+
+	for buf := range p.logs {
+		if buf.data[len(buf.data)-1] != '\n' {
+			buf.data = append(buf.data, '\n')
+		}
+		_, err := p.wc.Write(buf.data)
+		if p.tcp != "" && err != nil {
+			l.Errorf("Failed to send event to filebeat on %s: %v", p.tcp, err)
+			tcpF()
+		}
 	}
 }
 
@@ -69,24 +96,42 @@ func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]
 	p.cm.Lock()
 	defer p.cm.Unlock()
 	close(p.logs)
-	tgtName, ok  := config["filebeat/path"].(string)
+
+	mode, ok := config["filebeat/mode"].(string)
 	if !ok {
-		return utils.ConvertError(500,fmt.Errorf("filebeat/path not a string"))
+		return utils.ConvertError(500, fmt.Errorf("filebeat/mode not a string"))
 	}
-	dir := filepath.Dir(tgtName)
-	if merr := os.MkdirAll(dir, 0700); merr != nil {
-		return utils.ConvertError(400, merr)
+
+	switch mode {
+	case "file":
+		tgtName, ok := config["filebeat/path"].(string)
+		if !ok {
+			return utils.ConvertError(500, fmt.Errorf("filebeat/path not a string"))
+		}
+		dir := filepath.Dir(tgtName)
+		if merr := os.MkdirAll(dir, 0700); merr != nil {
+			return utils.ConvertError(400, merr)
+		}
+		// Make sure file is there.
+		f, e := os.OpenFile(tgtName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if e != nil {
+			err := utils.ConvertError(400, e)
+			err.Errorf("file: %s", tgtName)
+			return err
+		}
+		p.wc = f
+	case "tcp":
+		p.tcp, ok = config["filebeat/tcp"].(string)
+		if !ok {
+			return utils.ConvertError(500, fmt.Errorf("filebeat/tcp not a string"))
+		}
+		p.wc = nil
+	default:
+		return utils.ConvertError(400, fmt.Errorf("filebeat/mode is not valid: %s", mode))
 	}
-	// Make sure file is there.
-	f, e := os.OpenFile(tgtName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
-	if e != nil {
-		err := utils.ConvertError(400, e)
-		err.Errorf("file: %s", tgtName)
-		return err
-	}
-	logs := make(chan *logbuf,16)
-	p.logs = logs
-	go p.writer(logs, f)
+
+	p.logs = make(chan *logbuf, 16)
+	go p.writer(l)
 	return nil
 }
 
@@ -108,7 +153,6 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
 	}
 	lb := &logbuf{
 		data: text,
-		err: make(chan error),
 	}
 	p.cm.RLock()
 	if len(p.logs) == cap(p.logs) {
@@ -118,24 +162,20 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
 	}
 	p.logs <- lb
 	p.cm.RUnlock()
-	lerr := <- lb.err
-	if lerr != nil {
-		return utils.ConvertError(400, lerr)
-	}
 	return nil
 }
 
 func main() {
 	p := &Plugin{
-		logs: make(chan *logbuf,16),
-		cm: &sync.RWMutex{},
+		logs: make(chan *logbuf, 16),
+		cm:   &sync.RWMutex{},
 	}
 	plugin.InitApp("filebeat", "Sends events to filebeat event.", version, &def, p)
 
 	err := plugin.App.Execute()
 	p.cm.Lock()
 	close(p.logs)
-	time.Sleep(500*time.Millisecond)
+	time.Sleep(500 * time.Millisecond)
 	if err != nil {
 		os.Exit(1)
 	}

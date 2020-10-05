@@ -6,14 +6,53 @@ the event to logstash or elasticsearch.
 Installation / Configuration Filebeat
 -------------------------------------
 
-Install filebeat:
+Install filebeat
+================
+
+  The quick start installation for ``filebeat`` can be found `here <https://www.elastic.co/guide/en/beats/filebeat/current/filebeat-installation-configuration.html>`_
+
+  The following is the example for RPM-based systems.
 
   ::
 
-    curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.3.2-x86_64.rpm
-    rpm -vi filebeat-6.3.2-x86_64.rpm
+    curl -L -O https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-7.9.2-x86_64.rpm
+    rpm -vi filebeat-7.9.2-x86_64.rpm
 
-Configure filebeat:
+Configure filebeat
+==================
+
+There are two modes of operation of the filebeat plugin.  The first
+mode, ``file``, is the original method for transferring events to
+filebeat from the filebeat plugin.  The other method, ``tcp``, uses
+tcp sockets to send messages.
+
+Regardless of mode, you will need to configure your output section.  See the
+*logstash* or *elasticsearch* as needed.
+
+file mode
++++++++++
+
+Inside the /etc/filebeat/filebeat.yml file, you will need to add
+a filebeat.inputs stanza.
+
+This looks like:
+
+  ::
+
+    - type: log
+      paths:
+      - /var/log/filebeat-plugin/json.log
+      fields:
+        drp_id: test1
+      fields_under_root: true
+      json.keys_under_root: true
+
+The two parts that the user needs to configure are hte filename of the intermediate logging file.  Also,
+it is helpful to add a field to the event that indicates which DRP endpoint the event came from.  This is done
+by changing ``test1`` to the DRP endpoint id.
+
+tcp mode
+++++++++
 
 Inside the /etc/filebeat/filebeat.yml file.  You will need to
 add a filebeat.inputs stanza.
@@ -22,21 +61,45 @@ add a filebeat.inputs stanza.
 
     - type: tcp
       enabled: true
+      host: "127.0.0.1:9000"
       max_message_size: 10MiB
-      host: "localhost:9008"
+      fields:
+        drp_id: test1
       fields_under_root: true
+      json.keys_under_root: true
 
-You will also need to configure your output section.  See the
-*logstash* or *elasticsearch* as needed.
+Additionally, a couple processors needs to be added to handle the JSON conversion.  The log directory already
+handles this.
+
+  ::
+
+    - decode_json_fields:
+        fields: ["message"]
+        process_array: false
+        max_depth: 1
+        target: ""
+        overwrite_keys: true
+        add_error_key: true
+    - drop_fields:
+        fields:
+          - message
+
+These processors cause the system to convert the TCP message data into a json blob stored at the top of the event
+and drop the ``message`` field to remove duplicate data.
+
 
 Configuration DRP Filebeat Plugin
 ---------------------------------
 
-A plugin will need to be created for the filebeat.
+The default plugin for the ``filebeat`` plugin will use the ``file`` mode with a filename of
+``/var/log/filebeat-plugin/filebeat.json``.  This plugin will be added automatically on startup if not already created.
+These are the defaults for the starting system.
 
-The *filebeat/url* parameter can be used to specify the IP:Port pair that
-filebeat is listening on.  This defaults to 127.0.0.1:9008.
+If the path needs to be changed, add the ``filebeat/path`` parameter to match the input file path in the filebeat yaml
+file.
 
+To change modes, add the ``filebeat/mode`` parameter to the plugin and set it to ``tcp``.  The default is ``file``.
 
-
+In ``tcp`` mode, the default tcp connection string is ``127.0.0.1:9000``.  This should match the ``tcp`` filebeat input
+stanza exactly.
 
