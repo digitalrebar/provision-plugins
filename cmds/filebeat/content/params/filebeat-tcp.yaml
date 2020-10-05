@@ -1,0 +1,12 @@
+Description: Filebeat tcp connection string
+Documentation: |
+  Filebeat tcp connection string in the form of ip:port.
+Meta:
+  color: blue
+  icon: tag
+  title: RackN
+Name: filebeat/tcp
+Schema:
+  default: "127.0.0.1:9000"
+  type: string
+

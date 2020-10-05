@@ -37,8 +37,10 @@ github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875 h1:A2zFHJr02
 github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875/go.mod h1:Z5WuY/a4orY9JmjrwMIqdGyMeKDTmBHklV4GnZeBY+8=
 github.com/digitalrebar/logger v0.3.0 h1:7/XP3BQiWfl1Lqmm7tvkvdwjPilDUUPC/iWbeWO9G6g=
 github.com/digitalrebar/logger v0.3.0/go.mod h1:zH2t4FBhzVxZJTg+eaPzNCRL50nlcRLxWurfTsl5jWE=
-github.com/digitalrebar/provision/v4 v4.5.0 h1:o9lx4DR0OEkAbz2TfLu+EqPYrqlTu8erHkNDgEHCTPg=
-github.com/digitalrebar/provision/v4 v4.5.0/go.mod h1:6RVCvHA0zLLX+H0ykzoo4maLhSQ1LYHkR/wZcfO46Us=
+github.com/digitalrebar/provision/v4 v4.6.0-alpha00.0.20201004050636-b210fbcf8750 h1:sVm0mLn3w/fXefdH4+J81BCFEKORjui0g5tZ2SQwoIk=
+github.com/digitalrebar/provision/v4 v4.6.0-alpha00.0.20201004050636-b210fbcf8750/go.mod h1:6RVCvHA0zLLX+H0ykzoo4maLhSQ1LYHkR/wZcfO46Us=
+github.com/digitalrebar/provision/v4 v4.6.0-alpha00.0.20201004210955-430093ae6808 h1:nbYBK24zN+Wrc8Lko+T147ddfokyXgqx5zN8XNr+0D0=
+github.com/digitalrebar/provision/v4 v4.6.0-alpha00.0.20201004210955-430093ae6808/go.mod h1:6RVCvHA0zLLX+H0ykzoo4maLhSQ1LYHkR/wZcfO46Us=
 github.com/digitalrebar/tftp v2.1.0+incompatible h1:CzBcnsUaMtdLSOf3dSycinnfpajAAro7l8oo/ILyzOI=
 github.com/digitalrebar/tftp v2.1.0+incompatible/go.mod h1:k1tcsyQwHE72oTU5sfXPJdOCHFiZUt3M2BdYdHsfw6c=
 github.com/digitalrebar/tftp/v3 v3.0.0 h1:Ft2i3s2gCZ795rISs9vlcy3YSqfd6mtodxGoUcPSrhs=
