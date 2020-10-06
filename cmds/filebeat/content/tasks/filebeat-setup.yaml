@@ -91,8 +91,8 @@ Templates:
 
       # Make sure plugin matches
       drpcli plugins set filebeat param "filebeat/mode" to "{{.Param "filebeat/mode" }}"
-      drpcli plugins set filebeat param "filebeat/tcp" to "{{.Param "filebeat/tcp" }}"
-      drpcli plugins set filebeat param "filebeat/path" to "{{.Param "filebeat/path" }}"
+      echo "{{.Param "filebeat/tcp"}}" | drpcli plugins set filebeat param "filebeat/tcp" to -
+      echo "{{.Param "filebeat/path"}}" | drpcli plugins set filebeat param "filebeat/path" to -
 
 Meta:
   icon: "bug"
