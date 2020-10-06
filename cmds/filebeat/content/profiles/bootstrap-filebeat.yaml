@@ -4,7 +4,7 @@ Meta:
   color: blue
   icon: world
   title: Digital Rebar Provision
-Name: filebeat-bootstrap
+Name: bootstrap-filebeat
 Params:
   universal/bootstrap-post-flexiflow:
     - filebeat-setup

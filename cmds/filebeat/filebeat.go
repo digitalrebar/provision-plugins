@@ -15,6 +15,8 @@ import (
 	"sync"
 	"time"
 
+	utils2 "github.com/VictorLowther/jsonpatch2/utils"
+
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision-plugins/v4/utils"
@@ -40,7 +42,7 @@ var (
 )
 
 type logbuf struct {
-	data []byte
+	e *models.Event
 }
 
 type Plugin struct {
@@ -72,7 +74,7 @@ func (p *Plugin) writer(l logger.Logger) {
 			if err == nil {
 				break
 			}
-			l.Errorf("Failed to connect to filebeat on %s: %v", p.tcp, err)
+			l.NoRepublish().Errorf("Failed to connect to filebeat on %s: %v", p.tcp, err)
 			time.Sleep(3 * time.Second)
 		}
 	}
@@ -81,12 +83,17 @@ func (p *Plugin) writer(l logger.Logger) {
 	}
 
 	for buf := range p.logs {
-		if buf.data[len(buf.data)-1] != '\n' {
-			buf.data = append(buf.data, '\n')
+		data, merr := p.filter(l, buf.e)
+		if merr != nil {
+			l.NoRepublish().Errorf("Failed to marshal event to filebeat on %s: %v", p.tcp, merr)
+			continue
 		}
-		_, err := p.wc.Write(buf.data)
+		if data[len(data)-1] != '\n' {
+			data = append(data, '\n')
+		}
+		_, err := p.wc.Write(data)
 		if p.tcp != "" && err != nil {
-			l.Errorf("Failed to send event to filebeat on %s: %v", p.tcp, err)
+			l.NoRepublish().Errorf("Failed to send event to filebeat on %s: %v", p.tcp, err)
 			tcpF()
 		}
 	}
@@ -135,7 +142,7 @@ func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]
 	return nil
 }
 
-func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
+func (p *Plugin) filter(l logger.Logger, e *models.Event) (data []byte, err *models.Error) {
 	// Filter out gohai data.
 	if e.Type == "machines" {
 		if obj, err := e.Model(); err != nil {
@@ -147,12 +154,51 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
 		}
 	}
 
-	text, merr := json.Marshal(e)
-	if merr != nil {
-		return utils.ConvertError(400, merr)
+	newData := map[string]interface{}{}
+	if merr := utils2.Remarshal(e, &newData); merr != nil {
+		return nil, utils.ConvertError(400, merr)
 	}
+	t, ok := newData["Type"].(string)
+	if !ok {
+		t = "unknown"
+	}
+	if d, ok := newData["Object"]; ok {
+		if t == "machines" {
+			o := map[string]interface{}{}
+			if merr := utils2.Remarshal(d, &o); merr != nil {
+				return nil, utils.ConvertError(400, merr)
+			}
+			if d2, ok := o["OS"]; ok {
+				delete(o, "OS")
+				o["MachineOS"] = d2
+			}
+			newData["Object"] = o
+		}
+	}
+	if d, ok := newData["Original"]; ok {
+		if t == "machines" {
+			o := map[string]interface{}{}
+			if merr := utils2.Remarshal(d, &o); merr != nil {
+				return nil, utils.ConvertError(400, merr)
+			}
+			if d2, ok := o["OS"]; ok {
+				delete(o, "OS")
+				o["MachineOS"] = d2
+			}
+			newData["Original"] = o
+		}
+	}
+	if text, merr := json.Marshal(newData); merr != nil {
+		return nil, utils.ConvertError(400, merr)
+	} else {
+		data = text
+	}
+	return
+}
+
+func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
 	lb := &logbuf{
-		data: text,
+		e: e,
 	}
 	p.cm.RLock()
 	if len(p.logs) == cap(p.logs) {
@@ -165,17 +211,18 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
 	return nil
 }
 
+func (p *Plugin) Stop(l logger.Logger) {
+	p.cm.Lock()
+	close(p.logs)
+}
+
 func main() {
 	p := &Plugin{
 		logs: make(chan *logbuf, 16),
 		cm:   &sync.RWMutex{},
 	}
 	plugin.InitApp("filebeat", "Sends events to filebeat event.", version, &def, p)
-
 	err := plugin.App.Execute()
-	p.cm.Lock()
-	close(p.logs)
-	time.Sleep(500 * time.Millisecond)
 	if err != nil {
 		os.Exit(1)
 	}
