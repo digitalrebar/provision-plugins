@@ -32,6 +32,9 @@ var (
 		Version:       version,
 		PluginVersion: 4,
 		AutoStart:     true,
+		RequiredParams: []string{
+			"filebeat/events",
+		},
 		OptionalParams: []string{
 			"filebeat/path",
 			"filebeat/mode",
@@ -46,14 +49,15 @@ type logbuf struct {
 }
 
 type Plugin struct {
-	logs chan *logbuf
-	cm   *sync.RWMutex
-	tcp  string
-	wc   io.WriteCloser
+	logs   chan *logbuf
+	cm     *sync.RWMutex
+	tcp    string
+	wc     io.WriteCloser
+	events []string
 }
 
 func (p *Plugin) SelectEvents() []string {
-	return []string{"*.*.*"}
+	return p.events
 }
 
 func (p *Plugin) writer(l logger.Logger) {
@@ -108,6 +112,16 @@ func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]
 	if !ok {
 		return utils.ConvertError(500, fmt.Errorf("filebeat/mode not a string"))
 	}
+
+	events := []string{}
+	eventsRaw, ok := config["filebeat/events"]
+	if !ok {
+		return utils.ConvertError(500, fmt.Errorf("filebeat/events not specified"))
+	}
+	if merr := utils2.Remarshal(eventsRaw, &events); merr != nil {
+		return utils.ConvertError(500, fmt.Errorf("filebeat/events not valid: %v", merr))
+	}
+	p.events = events
 
 	switch mode {
 	case "file":
