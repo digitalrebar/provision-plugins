@@ -1,0 +1,24 @@
+Description: Filebeat should listen/register for these events
+Documentation: |
+  This parameter defines the DRP events that should be registered for
+  and forwarded to Filebeat.
+
+  The default is:
+
+    ::
+
+      *.*.*
+
+  This is all events.  The general form is scope.action.specific.
+
+Meta:
+  color: blue
+  icon: tag
+  title: RackN
+Name: filebeat/events
+Schema:
+  default:
+    - "*.*.*"
+  type: array
+  items:
+    type: string
