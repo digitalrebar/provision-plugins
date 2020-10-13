@@ -7,9 +7,15 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
+	"net"
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
+
+	utils2 "github.com/VictorLowther/jsonpatch2/utils"
 
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision-plugins/v4"
@@ -26,42 +32,131 @@ var (
 		Version:       version,
 		PluginVersion: 4,
 		AutoStart:     true,
-		HasPublish:    true,
+		RequiredParams: []string{
+			"filebeat/events",
+		},
 		OptionalParams: []string{
 			"filebeat/path",
+			"filebeat/mode",
+			"filebeat/tcp",
 		},
 		Content: contentYamlString,
 	}
 )
 
+type logbuf struct {
+	e *models.Event
+}
+
 type Plugin struct {
-	Path string
-	mux  sync.Mutex
+	logs   chan *logbuf
+	cm     *sync.RWMutex
+	tcp    string
+	wc     io.WriteCloser
+	events []string
 }
 
 func (p *Plugin) SelectEvents() []string {
-	return []string{"*.*.*"}
+	return p.events
 }
 
-func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) (err *models.Error) {
-	p.Path, _ = config["filebeat/path"].(string)
-	dir := filepath.Dir(p.Path)
-	if merr := os.MkdirAll(dir, 0700); merr != nil {
-		return utils.ConvertError(400, merr)
+func (p *Plugin) writer(l logger.Logger) {
+	defer func() {
+		if p.wc != nil {
+			p.wc.Close()
+		}
+	}()
+
+	tcpF := func() {
+		var err error
+		if p.wc != nil {
+			p.wc.Close()
+			p.wc = nil
+		}
+		for {
+			p.wc, err = net.Dial("tcp", p.tcp)
+			if err == nil {
+				break
+			}
+			l.NoRepublish().Errorf("Failed to connect to filebeat on %s: %v", p.tcp, err)
+			time.Sleep(3 * time.Second)
+		}
 	}
-	// Make sure file is there.
-	f, e := os.OpenFile(p.Path, os.O_RDONLY|os.O_CREATE, 0600)
-	if e == nil {
-		f.Close()
-	} else {
-		err = utils.ConvertError(400, e)
-		err.Errorf("file: %s", p.Path)
+	if p.tcp != "" {
+		tcpF()
 	}
 
-	return
+	for buf := range p.logs {
+		data, merr := p.filter(l, buf.e)
+		if merr != nil {
+			l.NoRepublish().Errorf("Failed to marshal event to filebeat on %s: %v", p.tcp, merr)
+			continue
+		}
+		if data[len(data)-1] != '\n' {
+			data = append(data, '\n')
+		}
+		_, err := p.wc.Write(data)
+		if p.tcp != "" && err != nil {
+			l.NoRepublish().Errorf("Failed to send event to filebeat on %s: %v", p.tcp, err)
+			tcpF()
+		}
+	}
 }
 
-func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
+func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) *models.Error {
+	p.cm.Lock()
+	defer p.cm.Unlock()
+	close(p.logs)
+
+	mode, ok := config["filebeat/mode"].(string)
+	if !ok {
+		return utils.ConvertError(500, fmt.Errorf("filebeat/mode not a string"))
+	}
+
+	events := []string{}
+	eventsRaw, ok := config["filebeat/events"]
+	if !ok {
+		return utils.ConvertError(500, fmt.Errorf("filebeat/events not specified"))
+	}
+	if merr := utils2.Remarshal(eventsRaw, &events); merr != nil {
+		return utils.ConvertError(500, fmt.Errorf("filebeat/events not valid: %v", merr))
+	}
+	p.events = events
+
+	switch mode {
+	case "file":
+		tgtName, ok := config["filebeat/path"].(string)
+		if !ok {
+			return utils.ConvertError(500, fmt.Errorf("filebeat/path not a string"))
+		}
+		dir := filepath.Dir(tgtName)
+		if merr := os.MkdirAll(dir, 0700); merr != nil {
+			return utils.ConvertError(400, merr)
+		}
+		// Make sure file is there.
+		f, e := os.OpenFile(tgtName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
+		if e != nil {
+			err := utils.ConvertError(400, e)
+			err.Errorf("file: %s", tgtName)
+			return err
+		}
+		p.wc = f
+	case "tcp":
+		p.tcp, ok = config["filebeat/tcp"].(string)
+		if !ok {
+			return utils.ConvertError(500, fmt.Errorf("filebeat/tcp not a string"))
+		}
+		p.wc = nil
+	default:
+		return utils.ConvertError(400, fmt.Errorf("filebeat/mode is not valid: %s", mode))
+	}
+
+	p.logs = make(chan *logbuf, 16)
+	go p.writer(l)
+	return nil
+}
+
+func (p *Plugin) filter(l logger.Logger, e *models.Event) (data []byte, err *models.Error) {
 	// Filter out gohai data.
 	if e.Type == "machines" {
 		if obj, err := e.Model(); err != nil {
@@ -73,32 +168,74 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
 		}
 	}
 
-	text, merr := json.Marshal(e)
-	if merr != nil {
-		return utils.ConvertError(400, merr)
+	newData := map[string]interface{}{}
+	if merr := utils2.Remarshal(e, &newData); merr != nil {
+		return nil, utils.ConvertError(400, merr)
 	}
-
-	return p.SendMessage(string(text) + "\n")
+	t, ok := newData["Type"].(string)
+	if !ok {
+		t = "unknown"
+	}
+	if d, ok := newData["Object"]; ok {
+		if t == "machines" {
+			o := map[string]interface{}{}
+			if merr := utils2.Remarshal(d, &o); merr != nil {
+				return nil, utils.ConvertError(400, merr)
+			}
+			if d2, ok := o["OS"]; ok {
+				delete(o, "OS")
+				o["MachineOS"] = d2
+			}
+			newData["Object"] = o
+		}
+	}
+	if d, ok := newData["Original"]; ok {
+		if t == "machines" {
+			o := map[string]interface{}{}
+			if merr := utils2.Remarshal(d, &o); merr != nil {
+				return nil, utils.ConvertError(400, merr)
+			}
+			if d2, ok := o["OS"]; ok {
+				delete(o, "OS")
+				o["MachineOS"] = d2
+			}
+			newData["Original"] = o
+		}
+	}
+	if text, merr := json.Marshal(newData); merr != nil {
+		return nil, utils.ConvertError(400, merr)
+	} else {
+		data = text
+	}
+	return
 }
 
-func (p *Plugin) SendMessage(msg string) *models.Error {
-	p.mux.Lock()
-	defer p.mux.Unlock()
-
-	f, err := os.OpenFile(p.Path, os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		return utils.ConvertError(400, err)
+func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
+	lb := &logbuf{
+		e: e,
 	}
-	defer f.Close()
-	_, err = f.WriteString(msg)
-	if err != nil {
-		return utils.ConvertError(400, err)
+	p.cm.RLock()
+	if len(p.logs) == cap(p.logs) {
+		p.cm.RUnlock()
+		l.Errorf("Exceeded 16 queued log writes, dropping event.")
+		return nil
 	}
+	p.logs <- lb
+	p.cm.RUnlock()
 	return nil
 }
 
+func (p *Plugin) Stop(l logger.Logger) {
+	p.cm.Lock()
+	close(p.logs)
+}
+
 func main() {
-	plugin.InitApp("filebeat", "Sends events to filebeat event.", version, &def, &Plugin{})
+	p := &Plugin{
+		logs: make(chan *logbuf, 16),
+		cm:   &sync.RWMutex{},
+	}
+	plugin.InitApp("filebeat", "Sends events to filebeat event.", version, &def, p)
 	err := plugin.App.Execute()
 	if err != nil {
 		os.Exit(1)

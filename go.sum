@@ -35,8 +35,8 @@ github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875 h1:A2zFHJr02
 github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875/go.mod h1:Z5WuY/a4orY9JmjrwMIqdGyMeKDTmBHklV4GnZeBY+8=
 github.com/digitalrebar/logger v0.3.0 h1:7/XP3BQiWfl1Lqmm7tvkvdwjPilDUUPC/iWbeWO9G6g=
 github.com/digitalrebar/logger v0.3.0/go.mod h1:zH2t4FBhzVxZJTg+eaPzNCRL50nlcRLxWurfTsl5jWE=
-github.com/digitalrebar/provision/v4 v4.5.0 h1:o9lx4DR0OEkAbz2TfLu+EqPYrqlTu8erHkNDgEHCTPg=
-github.com/digitalrebar/provision/v4 v4.5.0/go.mod h1:6RVCvHA0zLLX+H0ykzoo4maLhSQ1LYHkR/wZcfO46Us=
+github.com/digitalrebar/provision/v4 v4.5.1 h1:hgrURSBYfFLaucwbBq4B+HpzaYr8JJjz6CSa2rCZuc4=
+github.com/digitalrebar/provision/v4 v4.5.1/go.mod h1:7Unaxd18JfzaxibzzUgBDFOVex6U8HZ1AmDPvGQszuY=
 github.com/digitalrebar/tftp v2.1.0+incompatible/go.mod h1:k1tcsyQwHE72oTU5sfXPJdOCHFiZUt3M2BdYdHsfw6c=
 github.com/digitalrebar/tftp/v3 v3.0.0/go.mod h1:OEQX1RPK9eiehWKXeZMbYiRLJ3JJLaB68vj7IR7LvOM=
 github.com/docker/go-units v0.3.3/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
@@ -172,7 +172,7 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/rackn/gohai v0.0.0-20190619164647-92918a701117/go.mod h1:1NhfVxJ6qD4S5ondz2CobWFiYlODF8ex4pNgQrKYCxc=
 github.com/rackn/gohai v0.5.0 h1:W56MFkYUpHkzl6RhffVjcuH9wJHLcBHMIKA4U+xnOm4=
 github.com/rackn/gohai v0.5.0/go.mod h1:L14W5Y4U9zycW/zJlbg75nVbrO6qWj80FWHjiCgxnag=
-github.com/rackn/netwrangler v0.7.0/go.mod h1:1ZvFAprvzdbIZ/kMYh90tLMGsK4U31YqrAsKNIUEqls=
+github.com/rackn/netwrangler v0.7.1/go.mod h1:hGj63TX3L7BRiZVZ3jIIsKTwy78VIpDHCoe1tkk//xI=
 github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR/rfWxYHBV53g=
 github.com/shirou/gopsutil v2.18.12+incompatible/go.mod h1:5b4v6he4MtMOwMlS0TUMTu2PcXUg8+E1lC7eC3UO/RA=
 github.com/shirou/w32 v0.0.0-20160930032740-bb4de0191aa4/go.mod h1:qsXQc7+bwAM3Q1u/4XEfrquwF8Lw7D7y5cD8CuHnfIc=

@@ -1,0 +1,123 @@
+---
+Name: "filebeat-setup"
+Description: "A task to install and setup filebeat"
+Documentation: |
+  A task to install and setup filebeat.
+ExtraClaims:
+  - action: '*'
+    scope: plugins
+    specific: '*'
+Templates:
+  - Name: "install-filebeat.sh"
+    Contents: |
+      #!/bin/bash
+
+      {{ template "setup.tmpl" . }}
+
+      if [[ "$OS_FAMILY" == "rhel" ]] ; then
+        rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+        REPODIR=/etc/yum.repos.d/
+        if [[ -e /etc/zypp/repos.d ]] ; then
+          REPODIR=/etc/zypp/repos.d
+        fi
+
+        cat > $REPODIR/elastic.repo <<EOF
+      [elasticsearch-7.x]
+      name=Elasticsearch repository for 7.x packages
+      baseurl=https://artifacts.elastic.co/packages/7.x/yum
+      gpgcheck=1
+      gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+      enabled=1
+      autorefresh=1
+      type=rpm-md
+      EOF
+
+        if which zypper 2>/dev/null ; then
+          zypper install -y filebeat
+        elif which dnf 2>/dev/null ; then
+          dnf install -y filebeat
+        else
+          yum install -y filebeat
+        fi
+      elif [[ "$OS_FAMILY" == "debian" ]] ; then
+        wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+        apt-get install -y apt-transport-https
+        echo "deb https://artifacts.elastic.co/packages/7.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-7.x.list
+        apt-get update && apt-get install filebeat
+      else
+        echo "Unknown install method for $OS_FAMILY"
+        exit 1
+      fi
+      exit 0
+  - Name: "The filebeat config file"
+    Path: "/etc/filebeat/filebeat.yml"
+    Contents: |
+      filebeat.inputs:
+      {{ if eq "file" (.Param "filebeat/mode") }}
+        - type: log
+          paths:
+            - {{ .Param "filebeat/path" }}
+          fields:
+            drp_id: {{ .Info.Id }}
+          fields_under_root: true
+          json.keys_under_root: true
+      {{ end }}
+      {{ if eq "tcp" (.Param "filebeat/mode") }}
+        - type: tcp
+          enabled: true
+          host: {{ .Param "filebeat/tcp" }}
+          max_message_size: 10MiB
+          fields:
+            drp_id: {{ .Info.Id }}
+          fields_under_root: true
+          json.keys_under_root: true
+      {{ end }}
+
+      # ============================== Filebeat modules ==============================
+      filebeat.config.modules:
+        path: ${path.config}/modules.d/*.yml
+        reload.enabled: false
+
+      # ======================= Elasticsearch template setting =======================
+      setup.template.settings:
+        index.number_of_shards: 1
+
+      # ---------------------------- Elasticsearch Output ----------------------------
+      output.elasticsearch:
+        # Array of hosts to connect to.
+        hosts: ["{{.Param "filebeat/elasticsearch" }}"]
+
+      # ================================= Processors =================================
+      processors:
+        - add_host_metadata:
+            when.not.contains.tags: forwarded
+        - decode_json_fields:
+            fields: ["message"]
+            process_array: false
+            max_depth: 1
+            target: ""
+            overwrite_keys: true
+            add_error_key: true
+        - drop_fields:
+            fields:
+              - message
+
+  - Name: "start-filebeat.sh"
+    Contents: |
+      #!/bin/bash
+      {{ template "setup.tmpl" . }}
+      systemctl daemon-reload
+      service filebeat enable
+      service filebeat restart
+
+      # Make sure plugin matches
+      drpcli plugins set filebeat param "filebeat/mode" to "{{.Param "filebeat/mode" }}"
+      echo "{{.Param "filebeat/tcp"}}" | drpcli plugins set filebeat param "filebeat/tcp" to -
+      echo "{{.Param "filebeat/path"}}" | drpcli plugins set filebeat param "filebeat/path" to -
+
+Meta:
+  icon: "bug"
+  color: "green"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"

@@ -1,0 +1,19 @@
+Description: Filebeat connection mode
+Documentation: |
+  Filebeat connection mode to attack to filebeat.
+
+  This can be:
+  * file - uses `filebeat/path` to define file
+  * tcp - uses `filebeat/tcp` to define connection string
+
+Meta:
+  color: blue
+  icon: tag
+  title: RackN
+Name: filebeat/mode
+Schema:
+  default: "file"
+  type: string
+  enum:
+    - tcp
+    - file

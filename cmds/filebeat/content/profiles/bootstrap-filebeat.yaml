@@ -1,0 +1,12 @@
+Description: Profile to bootstrap file beat.
+Documentation: Profile to bootstrap file beat.
+Meta:
+  color: blue
+  icon: world
+  title: Digital Rebar Provision
+Name: bootstrap-filebeat
+Params:
+  universal/bootstrap-post-flexiflow:
+    - filebeat-setup
+  filebeat/mode: tcp
+
