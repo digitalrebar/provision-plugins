@@ -1,0 +1,16 @@
+---
+Name: bios-target-configuration-compose
+Description: Should the system compose bios-target-configuration from the full set of layered components
+Documentation: |
+  If ``bios-target-configuration-compose`` is set to ``true``, the system will attempt to build
+  the ``bios-target-configuration`` from all the layers of profiles and parameters with
+  the layers closer to the machine object overriding the other layers.
+
+  This parameter defaults to ``false`` for backwards compatability.
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  default: false
+  type: boolean

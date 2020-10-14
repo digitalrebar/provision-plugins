@@ -46,12 +46,12 @@ Templates:
       fi
       target="$(
       cat <<"EOF"
-      {{.ParamAsJSON "bios-target-configuration"}}
+      {{ if .Param "bios-target-configuration-compose" }}{{.ComposeParam "bios-target-configuration" | toJson}}{{else}}{{.ParamAsJSON "bios-target-configuration"}}{{end}}
       EOF
       )"
       lastAttempt="$(
       cat <<"EOF"
-      {{.ParamAsJSON "bios-last-attempted-configuration"}}
+      {{ if .Param "bios-target-configuration-compose" }}{{.ComposeParam "bios-target-configuration" | toJson}}{{else}}{{.ParamAsJSON "bios-target-configuration"}}{{end}}
       EOF
       )"
       toTry="$(drp-bioscfg -driver {{.Param "bios-driver"}} -operation test <<< "$target")"
