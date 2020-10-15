@@ -699,10 +699,6 @@ function get_bootcfg_info() {
   MODULES=$(echo "$MODULES" | sed 's|\( --- s.v00\)|\1{{ range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}|')
   # inject golang template to enable/disable installing tools modules
   MODULES="$(echo "$MODULES" | sed 's| --- tools.t00|{{ if eq (.Param \"esxi/skip-tools\") false }} --- tools.t00{{end}}|')"
-  # inject template for adding DRPY agent at install time
-  MODULES="$(echo "$MODULES" | sed 's|\(sb.v00 --- \)|\1{{ if (.Param \"esxi/add-drpy-agent\") }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}|')"
-  # inject the DRPY Firewall VIB
-  MODULES="$(echo "$MODULES" | sed 's|\(sb.v00 --- \)|\1{{ if (.Param \"esxi/add-drpy-firewall\") }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}|')"
 
   # because BASH 5.x FORKS this up - we need to have else true
   [[ $MODE = bsdtar && -d $BOOTCFGDIR ]] && rm -rf "$BOOTCFGDIR" || true
