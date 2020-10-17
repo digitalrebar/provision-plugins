@@ -18,34 +18,34 @@ Templates:
       {{ if .Param "vmware/esxi-generic" }}
       echo "Requested to use generic ESXi install"
       VENDOR="generic"
-      BOOTENV="esxi-670u1-install"
+      BOOTENV="esxi_700-x15843807_rkn_vmware-install"
       {{ else }}
       mfgr="$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')"
       case $mfgr in
           'Dell Inc.')
               VENDOR="dell"
-              BOOTENV="esxi-dellemc-esxi-6.7u1-10764712-a04-install"
+              BOOTENV="esxi_700-16324942_rkn_dell-install"
               ;;
           'HP'|'HPE')
               VENDOR="hpe"
-              BOOTENV="esxi-hpe-esxi-6.7.0-update1-iso-gen9p-install"
+              BOOTENV="esxi_700-15843807_rkn_hpe-install"
               ;;
           'NEC')
               VENDOR="nec"
-              BOOTENV="esxi-6.7.1-10302608-nec-6.702-install"
+              BOOTENV="esxi_700-x15843807_rkn_vmware-install"
               ;;
           'fujitsu')
               VENDOR="fujitsu"
-              BOOTENV="esxi-fujitsu-vmvisor-installer-6.7-10-install"
+              BOOTENV="esxi_700-x15843807_rkn_vmware-install"
               ;;
           'Lenovo'|'lenovo')
               VENDOR="lenovo"
-              BOOTENV="esxi-lenovo_esxi6.7u1-10302608_201810-install"
+              BOOTENV="esxi_700-x15843807_rkn_vmware-install"
               ;;
           *)
               echo "No idea how to install ESXi for $mfgr - selecting generic"
               VENDOR="generic"
-              BOOTENV="esxi-670u1-install"
+              BOOTENV="esxi_700-x15843807_rkn_vmware-install"
               ;;
       esac
 
