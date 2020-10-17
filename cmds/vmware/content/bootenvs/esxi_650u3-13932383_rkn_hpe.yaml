@@ -1,0 +1,55 @@
+---
+Name: esxi_650u3-13932383_rkn_hpe-install
+Description: Install BootEnv for ESXi 650u3-13932383 for rkn_hpe
+Documentation: |
+  Provides VMware BootEnv for ESXi 650u3-13932383 for rkn_hpe
+  For more details, and to download ISO see:
+
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-Gen9plus-650.U3.10.5.5.16.iso
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: RKN-HPE-ESXi-6.5.0-Update3-Gen9plus-650.U3.10.5.5.16.iso
+  IsoSha256: b455d4014b863762219b71ab6bb46e85a9368de7b932dff5bf33ee11e9e622be
+  IsoUrl: ""
+  Name: esxi_650u3-13932383_rkn_hpe
+  SupportedArchitectures: {}
+  Version: 650u3
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_650u3-13932383_rkn_hpe.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_650u3-13932383_rkn_hpe.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 700-15843807 for hpe
   For more details, and to download ISO see:
 
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso
+    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI70-HPE&productId=974
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso
-  IsoSha256: 26ccc972ba1f84053c97b53197c8b93d1f37b3af6b75f62f8dbaebcbeb930e7f
+  IsoFile: VMware_ESXi_7.0.0_15843807_HPE_700.0.0.10.5.0.108_April2020.iso
+  IsoSha256: 15165409f641fdd4f394967e6374a2a97d2341a32a4d0b9a412d93d8bb388e55
   IsoUrl: ""
   Name: esxi_700-15843807_hpe
   SupportedArchitectures: {}

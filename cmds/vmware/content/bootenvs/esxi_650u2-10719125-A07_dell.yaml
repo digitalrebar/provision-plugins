@@ -1,0 +1,55 @@
+---
+Name: esxi_650u2-10719125-A07_dell-install
+Description: Install BootEnv for ESXi 650u2-10719125-A07 for dell
+Documentation: |
+  Provides VMware BootEnv for ESXi 650u2-10719125-A07 for dell
+  For more details, and to download ISO see:
+
+    - https://www.dell.com/support/home/us/en/04/drivers/driversdetails?driverid=5d3h5
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: VMware-VMvisor-Installer-6.5.0.update02-10719125.x86_64-DellEMC_Customized-A07.iso
+  IsoSha256: 75c87516cbf4e696d2e3f142cc5818ba66c53f42c7abb1b4deb54007860d1f0a
+  IsoUrl: ""
+  Name: esxi_650u2-10719125-A07_dell
+  SupportedArchitectures: {}
+  Version: 650u2
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_650u2-10719125-A07_dell.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_650u2-10719125-A07_dell.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

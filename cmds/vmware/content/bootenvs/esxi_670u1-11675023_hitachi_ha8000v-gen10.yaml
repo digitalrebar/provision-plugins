@@ -1,0 +1,55 @@
+---
+Name: esxi_670u1-11675023_hitachi_ha8000v-gen10-install
+Description: Install BootEnv for ESXi 670u1-11675023 for hitachi (ha8000v-gen10)
+Documentation: |
+  Provides VMware BootEnv for ESXi 670u1-11675023 for hitachi (ha8000v-gen10)
+  For more details, and to download ISO see:
+
+    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-HITACHI&productId=742
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: VMware_ESXi_6.7.0_Update1_11675023_hitachi_1201_HA8000VGen10.iso
+  IsoSha256: 4075f8cb84d6ba325cbe9ef7b2c1563bf960e568bf94bf0bc82a9586e4ebf1e8
+  IsoUrl: ""
+  Name: esxi_670u1-11675023_hitachi_ha8000v-gen10
+  SupportedArchitectures: {}
+  Version: 670u1
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_670u1-11675023_hitachi_ha8000v-gen10.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_670u1-11675023_hitachi_ha8000v-gen10.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

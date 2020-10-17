@@ -1,0 +1,55 @@
+---
+Name: esxi_672u3-13644319_rkn_nec-install
+Description: Install BootEnv for ESXi 672u3-13644319 for rkn_nec
+Documentation: |
+  Provides VMware BootEnv for ESXi 672u3-13644319 for rkn_nec
+  For more details, and to download ISO see:
+
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.2-13644319-NEC-6.7-03.iso
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: RKN-ESXi-6.7.2-13644319-NEC-6.7-03.iso
+  IsoSha256: c2676acdd5d8f7a093c46ca7d6546b67eedabcc1048ef327b25143ea5dcc94d2
+  IsoUrl: ""
+  Name: esxi_672u3-13644319_rkn_nec
+  SupportedArchitectures: {}
+  Version: 672u3
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_672u3-13644319_rkn_nec.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_672u3-13644319_rkn_nec.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

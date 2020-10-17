@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 700-15843807 for vmware
   For more details, and to download ISO see:
 
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-standard.iso
+    - https://my.vmware.com/group/vmware/details?downloadGroup=ESXI700&productId=974
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: RKN-ESXi-7.0.0-15843807-standard.iso
-  IsoSha256: a922e5544bcfb5ca236476b4eeddb5225487d266c28bc2f465b7db231b4793ad
+  IsoFile: VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso
+  IsoSha256: cf3c8324ede983f4148df9ea161d9d6fccf40105aed204f5f59c1c5bd3377517
   IsoUrl: ""
   Name: esxi_700-15843807_vmware
   SupportedArchitectures: {}
