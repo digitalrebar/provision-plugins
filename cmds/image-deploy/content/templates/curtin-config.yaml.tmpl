@@ -50,5 +50,20 @@ partitioning_commands:
   builtin: curtin block-meta --device={{.Param "image-deploy/install-disk"}} simple
 {{end}}
 
+{{ if eq (.Param "image-deploy/image-os") "linux" }}
+  {{ if or (.ParamExists "image-deploy/swapfile-maxsize") (or (.ParamExists "image-deploy/swapfile-name") (.ParamExists "image-deploy/swapfile-size")) }}
+swap:
+    {{ if .ParamExists "image-deploy/swapfile-name" }}
+  filename: {{ .Param "image-deploy/swapfile-name" }}
+    {{ end }}
+    {{ if .ParamExists "image-deploy/swapfile-maxsize" }}
+  maxsize: {{ .Param "image-deploy/swapfile-maxsize" }}
+    {{ end }}
+    {{ if .ParamExists "image-deploy/swapfile-size" }}
+  size: {{ .Param "image-deploy/swapfile-size" }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
 # vi: ts=4 expandtab syntax=yaml
 #

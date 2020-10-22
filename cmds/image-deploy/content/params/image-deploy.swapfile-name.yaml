@@ -1,0 +1,14 @@
+---
+Name: "image-deploy/swapfile-name"
+Description: "The path to the linux swap file curtin creates."
+Documentation: |
+  The path to the linux swap file created by curtin.
+
+  If unspecified, the path will default to ``/swap.img``.
+
+Schema:
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

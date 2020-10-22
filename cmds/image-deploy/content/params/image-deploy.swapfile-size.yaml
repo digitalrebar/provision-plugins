@@ -1,0 +1,21 @@
+---
+Name: "image-deploy/swapfile-size"
+Description: "The exact size of the curtin created swap file"
+Documentation: |
+  The exact size of the curtin created swap file.  This will
+  default to something upto the max size.
+
+  The default if unspecified is to create a file bounded by
+  the value of ``image-deploy/swapfile-maxsize`` or 8GB.
+
+  The value of this string is a size string, ##KB, ##MB, ##GB, or ##TB.
+  The B is optional.
+
+  To turn off creation of the swapfile, set this value to 0.
+
+Schema:
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"
