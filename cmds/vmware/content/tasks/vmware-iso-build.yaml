@@ -1,0 +1,31 @@
+Description: A task to build RackN ISOs
+Documentation: |
+  A task to build RackN ISOs
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: building
+  title: RackN
+Name: vmware-iso-build
+Templates:
+- Name: vmware-iso-build.ps1
+  Meta:
+    OS: "windows"
+  Contents: |-
+
+    ls /tmp/rackn/isos
+    ls /tmp/rackn/esxi-bundles-7
+    ls /tmp/rackn/esxi-bundles-6
+    ls /tmp/rackn/rackn-bundles-7
+    ls /tmp/rackn/rackn-bundles-6
+
+    mkdir /tmp/rackn
+    cd /tmp/rackn
+    Write-Output "Getting build_iso.ps1"
+    Invoke-Webrequest -Uri {{.ProvisionerURL}}/files/plugin_providers/vmware/scripts/build_iso.ps1 -Outfile build_iso.ps1
+
+    Write-Output "Building 6.X isos"
+    .\build_iso.ps1 -exportpath \tmp\rackn\isos\ -rackNolbDir \tmp\rackn\rackn-bundles-6\ -esxiOlbDir \tmp\rackn\esxi-bundles-6\
+
+    Write-Output "Building 7.X isos"
+    .\build_iso.ps1 -exportpath \tmp\rackn\isos\ -rackNolbDir \tmp\rackn\rackn-bundles-7\ -esxiOlbDir \tmp\rackn\esxi-bundles-7\

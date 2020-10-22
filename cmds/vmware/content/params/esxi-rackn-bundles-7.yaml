@@ -1,0 +1,19 @@
+---
+Name: esxi/rackn-bundles-7
+Description: "Array of rackn bundles to dowload"
+Documentation: |
+  Defines the 7.X RackN Bundles list.
+
+  This can be relative to the files directory on DRP or a URL.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  type: array
+  items:
+    type: string
+  default:
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/7.0/RKN-DRPY-Agent_1.1-0.0.0001_16469971.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/7.0/RKN-DRPY-FW-RULE_1.0-0.0.0003_16333171.zip"
