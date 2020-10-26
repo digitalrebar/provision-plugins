@@ -1,0 +1,32 @@
+---
+Name: esxi/bundles-7
+Description: "Array of esxi bundles to dowload"
+Documentation: |
+  Defines the 7.X ESXi Bundles list.
+
+  This can be relative to the files directory on DRP or a URL.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  type: array
+  items:
+    type: string
+  default:
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/ESXi-7.0.0-16324942-NEC-7.0-01.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/ESXi-7.0.0-16324942-NEC-GEN-7.0-01.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0.0-15843807-depot.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0.0-16324942-Custom-Cisco-4.1.2a-Bundle.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0.1-16412512-depot.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0.1-16850804-HPE-701.0.0.10.6.0.40-Oct2020-depot.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0.1.-16850804-LNV-20200917.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0U1-16850804-depot.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0b-16324942-depot.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-VMvisor-Installer-7.0.0-15843807.x86_64-DellEMC_Customized-A00.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-VMvisor-Installer-7.0.0.update01-16850804.x86_64-DellEMC_Customized-A00.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware_ESXi_7.0.0_15843807_Fujitsu_v500_1_offline_bundle.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware_ESXi_7.0.0_15843807_HPE_700.0.0.10.5.0.108_April2020_depot.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware_ESXi_7.0b_16324942_hitachi_1103_HA8KVGen10_RV3K.zip"
+    - "https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware_VMvisor_Installer_7.0.0_16324942.x86_64_DellEMC_Customized_A02.zip"

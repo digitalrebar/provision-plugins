@@ -1,0 +1,46 @@
+Description: A task to install the VMWare PowerShell
+Documentation: |
+  A task to install the VMWare PowerShell client
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: building
+  title: RackN
+Name: vmware-powershell-install
+Templates:
+- Name: vmware-powershell-install.ps1
+  Meta:
+    OS: "windows"
+  Contents: |-
+    function Check-Command($cmdname)
+    {
+        return [bool](Get-Command -Name $cmdname -ErrorAction SilentlyContinue)
+    }
+
+    if (!(Check-Command -cmdname 'Get-EsxSoftwareDepot'))
+    {
+      Write-Output "Starting install process"
+      $Url = '{{.ProvisionerURL}}/files/VMware-PowerCLI-12.1.0-17009493.zip'
+      $ZipFile = $(Split-Path -Path $Url -Leaf)
+      Write-Output $ZipFile
+      $Destination= '\tmp\rackn\cli'
+      mkdir \tmp\rackn
+      mkdir \tmp\rackn\cli
+
+      Write-Output "Starting to get file"
+      (New-Object System.Net.WebClient).DownloadFile($Url, $ZipFile)
+      Write-Output "Got get file"
+
+      Expand-Archive -Path $ZipFile -DestinationPath $Destination -Force
+      cd \tmp\rackn\cli
+      Set-ExecutionPolicy RemoteSigned
+      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+      Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+      Install-Module VMware.PowerCLI -Scope CurrentUser -Force
+      Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP $false
+    }
+    else
+    {
+      Set-PowerCLIConfiguration -Scope User -ParticipateInCEIP $false
+      Write-Output "VMWare PowerCli already present"
+    }

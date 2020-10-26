@@ -1,0 +1,17 @@
+Description: A task to push VMWare ISOs to DRP
+Documentation: |
+  A task to push VMWare ISOs to DRP
+Meta:
+  color: blue
+  feature-flags: sane-exit-codes
+  icon: building
+  title: RackN
+Name: vmware-push-isos
+Templates:
+- Name: vmware-push-isos.ps1
+  Meta:
+    OS: "windows"
+  Contents: |-
+
+    drpcil isos upload /tmp/rackn/isos/jj
+

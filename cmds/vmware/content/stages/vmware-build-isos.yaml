@@ -1,0 +1,15 @@
+---
+Name: "vmware-build-isos"
+Description: "Build ISOs for RackN with DRPY embedded in the iso"
+Documentation: |
+  Build ISOs for RackN with DRPY embedded in the iso
+Meta:
+  color: "blue"
+  feature-flags: "sane-exit-codes"
+  icon: "search"
+  title: "RackN"
+Tasks:
+  - vmware-powershell-install
+  - vmware-get-bundles
+  - vmware-iso-build
+  - vmware-push-isos

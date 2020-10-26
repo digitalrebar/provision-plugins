@@ -1,0 +1,10 @@
+Meta:
+  color: yellow
+  icon: cloud
+Name: esxi-build-isos
+Description: "Build isos for RackN"
+Documentation: |
+  Build isos for RackN
+Stages:
+  - vmware-build-isos
+  - complete
