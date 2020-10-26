@@ -1,0 +1,16 @@
+---
+Name: "image-deploy/swapfile-maxsize"
+Description: "The maximum size of the curtin created swap file"
+Documentation: |
+  The maximum size of the curtin created swap file.  This will
+  default to 8GB if unspecified.
+
+  The value of this string is a size string, ##KB, ##MB, ##GB, or ##TB.
+  The B is optional.
+
+Schema:
+  type: string
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"
