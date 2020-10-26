@@ -36,13 +36,6 @@ if [[ $OSTYPE == linux ]] ; then
     cp linux/* /tmp/drpcli/curtin
     chmod +x /tmp/drpcli/curtin/*
 
-    if [[ $OSSUBTYPE == "" ]] || [[ $OSSUBTYPE == centos ]] || [[ $OSSUBTYPE == redhat ]] || [[ $OSSUBTYPE == rhel ]] ; then
-        cp centos/* /tmp/drpcli/curtin
-        cd /tmp/drpcli/curtin
-        ln -s python_wrapper curtin-hooks
-        cd -
-    fi
-
     # Cloud-init hackery
 {{ if .Param "image-deploy/use-cloud-init" }}
 {{ $ci_url := .ParamExpand "image-deploy/cloud-init-base-url" }}

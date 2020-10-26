@@ -32,12 +32,6 @@ Templates:
 - ID: "curtin-linux-runner-install.sh.tmpl"
   Path: "linux/drpcli-install.sh"
   Name: "Linux drpcli-install.sh"
-- ID: "curtin-linux-python_wrapper.tmpl"
-  Path: "linux/python_wrapper"
-  Name: "Linux python_wrapper"
-- ID: "curtin-centos-curtin-hooks.py.tmpl"
-  Path: "centos/curtin-hooks.py"
-  Name: "centos curtin-hooks.py"
 
 #
 # Windows set
