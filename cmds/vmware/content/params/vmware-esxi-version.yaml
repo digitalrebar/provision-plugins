@@ -51,6 +51,12 @@ Documentation: |
       - esxi_700-15843807_dell
       - esxi_700-15843807_hpe
       - esxi_700-15843807_vmware
+      - esxi_700u1-16850804_vmware
+      - esxi_700u1-x16850804_vmware
+      - esxi_700u1-16850804_cisco
+      - esxi_700u1-16850804_dell
+      - esxi_700u1-16850804_hpe
+      - esxi_700u1-16850804_lenovo
 
     NOTICE:  The following BootEnvs have been removed from the vmware plugin and are no
     longer supported:
@@ -129,6 +135,12 @@ Schema:
     - esxi_700-15843807_dell
     - esxi_700-15843807_hpe
     - esxi_700-15843807_vmware
+    - esxi_700u1-16850804_vmware
+    - esxi_700u1-x16850804_vmware
+    - esxi_700u1-16850804_cisco
+    - esxi_700u1-16850804_dell
+    - esxi_700u1-16850804_hpe
+    - esxi_700u1-16850804_lenovo
 Meta:
   color: "blue"
   icon: "ship"

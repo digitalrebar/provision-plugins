@@ -121,12 +121,20 @@ ISO_MAP=(
   [RKN-ESXi-6.7.0-20190801001s-standard.iso]="670u3|s20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190801001s-standard.iso"
   [RKN-ESXi-6.7.0-20190802001-no-tools.iso]="670u3|x20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-no-tools.iso"
   [RKN-ESXi-6.7.0-20190802001-standard.iso]="670u3|20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-standard.iso"
-  
+
   # 7.0.0 versions
   [RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso]="700|15843807|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso"
   [RKN-ESXi-7.0.0-15843807-no-tools.iso]="700|x15843807|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-no-tools.iso"
   [RKN-ESXi-7.0.0-15843807-standard.iso]="700|15843807|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-standard.iso"
   [RKN-DEL-ESXi-700_15843807-A00.iso]="700|15843807|dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-700_15843807-A00.iso"
+
+  # 7.0.0update1 versions
+  [RKN-ESXi-7.0.1-16850804-no-tools.iso]="700u1|x16850804|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.1-16850804-no-tools.iso"
+  [RKN-ESXi-7.0.1-16850804-standard.iso]="700u1|16850804|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.1-16850804-standard.iso"
+  [RKN-DEL-ESXi-701_16850804-A00.iso]="700u1|16850804|dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-701_16850804-A00.iso"
+  [RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso]="700u1|16850804|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso"
+  [RKN-LVO_7.0.1-LVO.701.10.1.iso]="700u1|16850804|lenovo|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-LVO_7.0.1-LVO.701.10.1.iso"
+  [RKN-Cisco-UCS-Custom-ESXi-70U1-16850804_4.1.2-b.iso]="700u1|16850804|cisco|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-Cisco-UCS-Custom-ESXi-70U1-16850804_4.1.2-b.iso"
 )
 
 ###
