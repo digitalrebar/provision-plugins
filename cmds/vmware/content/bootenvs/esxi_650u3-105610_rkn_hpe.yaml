@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso
-  IsoSha256: b981e9c22661ec2af530705a1ca83399a1c0b28221300a50ddf61041e11c50df
+  IsoSha256: 502ccb818ea42e42cb212de045ec3ebe11b687cd898665ddcea265eb26e908dd
   IsoUrl: ""
   Name: esxi_650u3-105610_rkn_hpe
   SupportedArchitectures: {}

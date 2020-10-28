@@ -1,11 +1,11 @@
 ---
-Name: esxi_670u1-110302608_lenovo-install
-Description: Install BootEnv for ESXi 670u1-110302608 for lenovo
+Name: esxi_700u1-16850804_rkn_hpe-install
+Description: Install BootEnv for ESXi 700u1-16850804 for rkn_hpe
 Documentation: |
-  Provides VMware BootEnv for ESXi 670u1-110302608 for lenovo
+  Provides VMware BootEnv for ESXi 700u1-16850804 for rkn_hpe
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-LENOVO&productId=742
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,12 +16,12 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware-ESXi-6.7.0.update01-10302608-LNV-20181010.iso
-  IsoSha256: unset
+  IsoFile: RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso
+  IsoSha256: 67e5741e44412acd4ef080d054f134f5e78efcb31b616c1936b0decd84c53b3e
   IsoUrl: ""
-  Name: esxi_670u1-110302608_lenovo
+  Name: esxi_700u1-16850804_rkn_hpe
   SupportedArchitectures: {}
-  Version: 670u1
+  Version: 700u1
 OnlyUnknown: false
 OptionalParams:
   - provisioner-default-password-hash
@@ -47,9 +47,9 @@ Templates:
   - ID: esxi-install-py3.ks.tmpl
     Name: compute.ks
     Path: '{{.Machine.Path}}/compute.ks'
-  - ID: esxi_670u1-110302608_lenovo.boot.cfg.tmpl
+  - ID: esxi_700u1-16850804_rkn_hpe.boot.cfg.tmpl
     Name: boot.cfg
     Path: '{{.Machine.Path}}/boot.cfg'
-  - ID: esxi_670u1-110302608_lenovo.boot.cfg.tmpl
+  - ID: esxi_700u1-16850804_rkn_hpe.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

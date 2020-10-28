@@ -1,11 +1,11 @@
 ---
-Name: esxi_670u1-110302608_lenovo-install
-Description: Install BootEnv for ESXi 670u1-110302608 for lenovo
+Name: esxi_670u3-15160138_hpe-install
+Description: Install BootEnv for ESXi 670u3-15160138 for hpe
 Documentation: |
-  Provides VMware BootEnv for ESXi 670u1-110302608 for lenovo
+  Provides VMware BootEnv for ESXi 670u3-15160138 for hpe
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-LENOVO&productId=742
+    - 
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,12 +16,12 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: VMware-ESXi-6.7.0.update01-10302608-LNV-20181010.iso
-  IsoSha256: unset
+  IsoFile: VMware-ESXi-6.7.0-Update3-15160138-HPE-Gen9plus-670.U3.10.5.0.48-Dec2019.iso
+  IsoSha256: 38e0f19d377698f3b55fa1a9380f3955e2f3ea46c948aa1e7772485937430cd6
   IsoUrl: ""
-  Name: esxi_670u1-110302608_lenovo
+  Name: esxi_670u3-15160138_hpe
   SupportedArchitectures: {}
-  Version: 670u1
+  Version: 670u3
 OnlyUnknown: false
 OptionalParams:
   - provisioner-default-password-hash
@@ -47,9 +47,9 @@ Templates:
   - ID: esxi-install-py3.ks.tmpl
     Name: compute.ks
     Path: '{{.Machine.Path}}/compute.ks'
-  - ID: esxi_670u1-110302608_lenovo.boot.cfg.tmpl
+  - ID: esxi_670u3-15160138_hpe.boot.cfg.tmpl
     Name: boot.cfg
     Path: '{{.Machine.Path}}/boot.cfg'
-  - ID: esxi_670u1-110302608_lenovo.boot.cfg.tmpl
+  - ID: esxi_670u3-15160138_hpe.boot.cfg.tmpl
     Name: boot-uefi.cfg
     Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

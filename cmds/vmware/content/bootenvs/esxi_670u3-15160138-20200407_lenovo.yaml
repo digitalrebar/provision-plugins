@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 670u3-15160138-20200407 for lenovo
   For more details, and to download ISO see:
 
-    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U3-LENOVO&productId=742
+    - 
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: VMware_ESXi_6.7.0.update03_15160138_LNV_20200407.iso
-  IsoSha256: 136b56043b79fd92a99b21073ce0d547953203f30dccb2c0a026bbd7d8e3bb46
+  IsoSha256: unset
   IsoUrl: ""
   Name: esxi_670u3-15160138-20200407_lenovo
   SupportedArchitectures: {}
