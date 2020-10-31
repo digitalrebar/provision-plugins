@@ -17,7 +17,7 @@ handlers=
 
 [logger_drpy]
 ; Set this to adjust
-level=INFO
+level={{.Param "esxi/drpy-log-level" }}
 handlers=fileHandler
 qualname=drpy
 
@@ -30,7 +30,7 @@ class=FileHandler
 ; the logger is only putting out info level messages so thats 
 ; still all that will be captured.
 level=DEBUG
-args=('drpy.log', 'w')
+args=('/opt/rackn/drpy/drpy.log', 'w')
 formatter=drpyFormatter
 
 [formatter_drpyFormatter]

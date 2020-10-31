@@ -15,7 +15,7 @@ import sys, os, datetime, re
 agent = "/opt/rackn/drpy/agent"
 
 rackn_dir = "/opt/rackn/drpy"
-agent_output_log = rackn_dir + "/drpy.log"
+#agent_output_log = rackn_dir + "/drpy.log"
 conf_file = rackn_dir + "/drpy.conf"
 
 if not os.path.isdir(rackn_dir):
@@ -41,17 +41,17 @@ if not conf_file:
 if not agent:
   sys.exit('DRPY agent not found on system"' + agent + '.')
 
-start_agent = "python " + agent + " -f " + conf_file + " >> " + agent_output_log + " 2>&1"
+start_agent = "python " + agent + " -f " + conf_file + " 2>&1"
 
 # rotate if log larger than 1 MB
-if os.path.exists(agent_output_log):
-  log_size = os.path.getsize(agent_output_log)
-  if log_size > 1048576:
-    datestamp = ".rotated." + datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    rotate_log = agent_output_log + datestamp
-    os.rename(agent_output_log, rotate_log)
-    if rotate_log:
-      print("Rotated log file to: " + rotate_log)
+#if os.path.exists(agent_output_log):
+#  log_size = os.path.getsize(agent_output_log)
+#  if log_size > 1048576:
+#    datestamp = ".rotated." + datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+#    rotate_log = agent_output_log + datestamp
+#    os.rename(agent_output_log, rotate_log)
+#    if rotate_log:
+#      print("Rotated log file to: " + rotate_log)
 
 count = 0
 while not os.path.exists(agent):
@@ -62,7 +62,7 @@ while not os.path.exists(agent):
     sys.exit('DRPY agent not found on system"' + agent + '.')
 
 print("Starting agent with config file named '" + conf_file + "'.")
-os.system('echo "--------------------------- $(date) ---------------------------" | tee -a ' + agent_output_log)
+#os.system('echo "--------------------------- $(date) ---------------------------" | tee -a ' + agent_output_log)
 os.system(start_agent)
 
 print("Completed processing workflow jobs. Agent exited.")
