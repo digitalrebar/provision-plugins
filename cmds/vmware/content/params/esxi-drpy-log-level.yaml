@@ -1,0 +1,13 @@
+---
+Name: esxi/drpy-log-level
+Description: Default log level for DRPY Agent
+Documentation: |
+  Can be one of CRITICAL, ERROR, WARNING, INFO, DEBUG, and NOTSET. Default if not set is INFO
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: INFO
