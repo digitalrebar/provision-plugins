@@ -5,7 +5,7 @@ Documentation: |
   Provides VMware BootEnv for ESXi 650u3-x13932383 for rkn_vmware
   For more details, and to download ISO see:
 
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190702001-no-tools.iso
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190701001s-no-tools.iso
 
   NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
 
@@ -16,8 +16,8 @@ Meta:
 OS:
   Codename: esxi
   Family: vmware
-  IsoFile: RKN-ESXi-6.5.0-20190702001-no-tools.iso
-  IsoSha256: 08099646c7289e043a965e2d42462db92952a65fd68e05be7cf0f437f74976e3
+  IsoFile: RKN-ESXi-6.5.0-20190701001s-no-tools.iso
+  IsoSha256: 237fbe6ea001ce6e1a7edf41d0038393b959d3fdbb7feb32f6c9688f4f227d3a
   IsoUrl: ""
   Name: esxi_650u3-x13932383_rkn_vmware
   SupportedArchitectures: {}

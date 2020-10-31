@@ -422,19 +422,17 @@ Schema:
     title: esxi_650u3-13932383_hitachi_ha8000v-gen10
     vendor: hitachi
     version: 650u3
-  - author: hpe
+  - author: rackn
     bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- {{ if
-      (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall" }} ---
-      {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
-      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
-      --- {{$key}}{{ end }} --- scsi_mpt.v00 --- elx_esx_.v00 --- elxiscsi.v00 ---
-      elxnet.v00 --- lpfc.v00 --- amshelpe.v00 --- conrep.v00 --- hpbootcf.v00 ---
-      hpe_cru.v00 --- hpe_esxi.v00 --- hpe_ilo.v00 --- hpe_nmi.v00 --- hpe_smx_.v00
-      --- hponcfg.v00 --- hptestev.v00 --- oem_buil.v00 --- scsi_hpd.v00 --- scsi_hpv.v00
-      --- ssacli.v00 --- nhpsa.v00 --- qedentv.v00 --- qfle3.v00 --- misc_cni.v00
-      --- net_bnx2.v00 --- net_bnx2.v01 --- net_cnic.v00 --- qlnative.v00 --- scsi_bnx.v00
-      --- scsi_bnx.v01 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02
+      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- s.v00{{
+      range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}
+      --- scsi_mpt.v00 --- elx_esx_.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00
+      --- amshelpe.v00 --- conrep.v00 --- hpbootcf.v00 --- hpe_cru.v00 --- hpe_esxi.v00
+      --- hpe_ilo.v00 --- hpe_nmi.v00 --- hpe_smx_.v00 --- hponcfg.v00 --- hptestev.v00
+      --- oem_buil.v00 --- scsi_hpd.v00 --- scsi_hpv.v00 --- ssacli.v00 --- nhpsa.v00
+      --- qedentv.v00 --- qfle3.v00 --- misc_cni.v00 --- net_bnx2.v00 --- net_bnx2.v01
+      --- net_cnic.v00 --- qlnative.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- drpy.v00
+      --- payload1.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02
       --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07
       --- block_cc.v00 --- bnxtnet.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
       --- i40en.v00 --- igbn.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
@@ -458,14 +456,18 @@ Schema:
       --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
       --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
       --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: "13932383"
-    description: ESXi 650u3-13932383 for hpe (pregen9)
-    iso: VMware-ESXi-6.5.0-Update3-13932383-HPE-preGen9-650.U3.9.6.8.8-Jun2019.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-HPE&productId=614
+    build: "105610"
+    bundleurls:
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/6.5/VMware-ESXi-6.5.0-Update3-15256549-HPE-Synergy-650.U3.10.5.6.10-May2020-depot.zip
+    description: ESXi 650u3-105610 for rkn_hpe
+    iso: RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso
+    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso
     kernel: tboot.b00
-    sha256sum: 547d4583b34c69ccf2f43acd3c04a15b6c0bc255818c2edcf70974d67c9532e8
-    subvendor: pregen9
-    title: esxi_650u3-13932383_hpe_pregen9
+    sha256sum: 502ccb818ea42e42cb212de045ec3ebe11b687cd898665ddcea265eb26e908dd
+    sourcebundleurls:
+    - https://fill.in.next.time
+    subvendor: none
+    title: esxi_650u3-105610_rkn_hpe
     vendor: hpe
     version: 650u3
   - author: lenovo
@@ -559,6 +561,52 @@ Schema:
     title: esxi_650u3-13932383_cisco
     vendor: cisco
     version: 650u3
+  - author: hpe
+    bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
+      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- {{ if
+      (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall" }} ---
+      {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
+      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
+      --- {{$key}}{{ end }} --- scsi_mpt.v00 --- elx_esx_.v00 --- elxiscsi.v00 ---
+      elxnet.v00 --- lpfc.v00 --- amshelpe.v00 --- conrep.v00 --- hpbootcf.v00 ---
+      hpe_cru.v00 --- hpe_esxi.v00 --- hpe_ilo.v00 --- hpe_nmi.v00 --- hpe_smx_.v00
+      --- hponcfg.v00 --- hptestev.v00 --- oem_buil.v00 --- scsi_hpd.v00 --- scsi_hpv.v00
+      --- ssacli.v00 --- nhpsa.v00 --- qedentv.v00 --- qfle3.v00 --- misc_cni.v00
+      --- net_bnx2.v00 --- net_bnx2.v01 --- net_cnic.v00 --- qlnative.v00 --- scsi_bnx.v00
+      --- scsi_bnx.v01 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02
+      --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07
+      --- block_cc.v00 --- bnxtnet.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
+      --- i40en.v00 --- igbn.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
+      --- ipmi_ipm.v02 --- ixgben.v00 --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01
+      --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_cdc_.v00
+      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
+      --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
+      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nmlx4_co.v00
+      --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- ntg3.v00 --- nvme.v00
+      --- nvmxnet3.v00 --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00
+      --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03
+      --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00
+      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
+      --- scsi_meg.v02 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00
+      --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03
+      --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02
+      --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
+      --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- emulex_e.v00
+      --- btldr.t00 --- weaselin.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- lsu_hp_h.v00
+      --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04
+      --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
+      --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
+      --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
+    build: "13932383"
+    description: ESXi 650u3-13932383 for hpe (pregen9)
+    iso: VMware-ESXi-6.5.0-Update3-13932383-HPE-preGen9-650.U3.9.6.8.8-Jun2019.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-HPE&productId=614
+    kernel: tboot.b00
+    sha256sum: 547d4583b34c69ccf2f43acd3c04a15b6c0bc255818c2edcf70974d67c9532e8
+    subvendor: pregen9
+    title: esxi_650u3-13932383_hpe_pregen9
+    vendor: hpe
+    version: 650u3
   - author: dell
     bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- {{ if
@@ -604,52 +652,6 @@ Schema:
     subvendor: none
     title: esxi_650u3-13932383-A01_dell
     vendor: dell
-    version: 650u3
-  - author: lenovo
-    bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- {{ if
-      (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall" }} ---
-      {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
-      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
-      --- {{$key}}{{ end }} --- lsi_msgp.v00 --- bnxtnet.v00 --- lsi_mr3.v00 --- lsi_msgp.v01
-      --- elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00
-      --- i40en.v00 --- igbn.v00 --- intel_nv.v00 --- ixgben.v00 --- concrete.v00
-      --- filetran.v00 --- fupb.v00 --- fwupdate.v00 --- immpasst.v00 --- pciinfo.v00
-      --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
-      --- qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedrntv.v00 --- qfle3.v00 ---
-      qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00 --- qlnative.v00 --- ata_liba.v00
-      --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04
-      --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00
-      --- ehci_ehc.v00 --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
-      --- ipmi_ipm.v02 --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00
-      --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00
-      --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00
-      --- net_forc.v00 --- net_igb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
-      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nhpsa.v00
-      --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- ohci_usb.v00 --- pvscsi.v00 ---
-      qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
-      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00
-      --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00 --- scsi_hps.v00
-      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
-      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
-      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
-      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
-      --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00
-      --- vmkata.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00
-      --- emulex_e.v00 --- btldr.t00 --- weaselin.t00 --- esx_dvfi.v00 --- esx_ui.v00
-      --- lsu_hp_h.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
-      --- lsu_lsi_.v04 --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00
-      --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }}
-      --- tools.t00{{end}} --- lnvcusto.v00 --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: "15177306"
-    description: ESXi 650u3-15177306 for lenovo
-    iso: VMware_ESXi_6.5.0.update03_15177306_LNV_20191216.iso
-    isourl: ""
-    kernel: tboot.b00
-    sha256sum: 3f54aa4c9606e548b5af099f1a96bf32503bc9182810d3519b1fb81a1b65bb16
-    subvendor: none
-    title: esxi_650u3-15177306_lenovo
-    vendor: lenovo
     version: 650u3
   - author: dell
     bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
@@ -973,49 +975,53 @@ Schema:
     title: esxi_650u3-14320405_lenovo
     vendor: lenovo
     version: 650u3
-  - author: nec
+  - author: rackn
     bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- {{ if
-      (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall" }} ---
-      {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
-      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
-      --- {{$key}}{{ end }} --- net_tg3.v00 --- lpfc.v00 --- igbn.v00 --- ixgben.v00
-      --- net_ixgb.v00 --- smartpqi.v00 --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00
-      --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- misc_cni.v00 --- net_bnx2.v00
-      --- net_bnx2.v01 --- net_cnic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- ata_liba.v00
-      --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04
-      --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00
-      --- brcmfcoe.v00 --- char_ran.v00 --- ehci_ehc.v00 --- elxnet.v00 --- hid_hid.v00
-      --- i40en.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02
-      --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_dri.v00
-      --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_cdc_.v00 --- net_e100.v00
-      --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00
-      --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_usbn.v00
-      --- net_vmxn.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00
-      --- nmlx5_co.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- ohci_usb.v00
-      --- pvscsi.v00 --- qflge.v00 --- qlnative.v00 --- sata_ahc.v00 --- sata_ata.v00
+      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- s.v00{{
+      range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}
+      --- lsi_mr3.v00 --- scsi_mpt.v00 --- bnxtnet.v00 --- bnxtroce.v00 --- elx_esx_.v00
+      --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00 --- amsd.v00 ---
+      bootcfg.v00 --- conrep.v00 --- cru.v00 --- fc_enabl.v00 --- hponcfg.v00 ---
+      ilo.v00 --- oem_buil.v00 --- scsi_hpd.v00 --- scsi_hpv.v00 --- smx_prov.v00
+      --- ssacli.v00 --- sut.v00 --- testeven.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00
+      --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
+      --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 --- qcnic.v00 --- qedentv.v00 ---
+      qedf.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00
+      --- qlnative.v00 --- drpy.v00 --- payload1.v00 --- ata_liba.v00 --- ata_pata.v00
+      --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05
+      --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00 --- ehci_ehc.v00
+      --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02
+      --- lsi_msgp.v00 --- lsi_msgp.v01 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00
+      --- nenic.v00 --- net_cdc_.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00
+      --- net_fcoe.v00 --- net_forc.v00 --- net_libf.v00 --- net_nx_n.v00 --- net_tg3.v00
+      --- net_usbn.v00 --- net_vmxn.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00
+      --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00
       --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04
-      --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00 --- scsi_hps.v00
-      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
-      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
-      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
-      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
-      --- shim_vmk.v02 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
-      --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- emulex_e.v00
-      --- btldr.t00 --- weaselin.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- lsu_hp_h.v00
-      --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04
-      --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
-      --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
-      --- nec_conf.v00 --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
+      --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00 --- scsi_ips.v00
+      --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01 --- scsi_meg.v02
+      --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00 --- shim_isc.v01
+      --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04
+      --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- uhci_usb.v00
+      --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkplexe.v00 --- vmkusb.v00
+      --- vmw_ahci.v00 --- xhci_xhc.v00 --- emulex_e.v00 --- btldr.t00 --- weaselin.t00
+      --- esx_dvfi.v00 --- esx_ui.v00 --- lsu_hp_h.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01
+      --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- native_m.v00 --- rste.v00
+      --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param
+      "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz
+      --- imgpayld.tgz
     build: "13932383"
-    description: ESXi 650u3-13932383 for nec (standard)
-    iso: ESXi-6.5.3-13932383-NEC-6.5.3-01.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-NEC&productId=614
+    bundleurls:
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/6.5/VMware-ESXi-6.5.0-Update3-13932383-HPE-preGen9-650.U3.9.6.8.8-Jun2019-depot.zip
+    description: ESXi 650u3-13932383 for rkn_hpe
+    iso: RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso
+    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso
     kernel: tboot.b00
-    sha256sum: 59ad5fef9aeb918deccbb79227e5020c51e4ef9f40a36e567434ce6d758b1bdd
-    subvendor: standard
-    title: esxi_650u3-13932383_nec_standard
-    vendor: nec
+    sha256sum: b981e9c22661ec2af530705a1ca83399a1c0b28221300a50ddf61041e11c50df
+    sourcebundleurls:
+    - https://fill.in.next.time
+    subvendor: none
+    title: esxi_650u3-13932383_rkn_hpe
+    vendor: hpe
     version: 650u3
   - author: rackn
     bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
@@ -1288,101 +1294,95 @@ Schema:
     title: esxi_650u3-x13932383_rkn_vmware
     vendor: vmware
     version: 650u3
-  - author: rackn
+  - author: lenovo
     bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- s.v00{{
-      range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}
-      --- scsi_mpt.v00 --- elx_esx_.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00
-      --- amshelpe.v00 --- conrep.v00 --- hpbootcf.v00 --- hpe_cru.v00 --- hpe_esxi.v00
-      --- hpe_ilo.v00 --- hpe_nmi.v00 --- hpe_smx_.v00 --- hponcfg.v00 --- hptestev.v00
-      --- oem_buil.v00 --- scsi_hpd.v00 --- scsi_hpv.v00 --- ssacli.v00 --- nhpsa.v00
-      --- qedentv.v00 --- qfle3.v00 --- misc_cni.v00 --- net_bnx2.v00 --- net_bnx2.v01
-      --- net_cnic.v00 --- qlnative.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- drpy.v00
-      --- payload1.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02
-      --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07
-      --- block_cc.v00 --- bnxtnet.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
-      --- i40en.v00 --- igbn.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
-      --- ipmi_ipm.v02 --- ixgben.v00 --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01
-      --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_cdc_.v00
-      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
-      --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
-      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nmlx4_co.v00
-      --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- ntg3.v00 --- nvme.v00
-      --- nvmxnet3.v00 --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00
-      --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03
-      --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00
+      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- {{ if
+      (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall" }} ---
+      {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
+      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
+      --- {{$key}}{{ end }} --- lsi_msgp.v00 --- bnxtnet.v00 --- lsi_mr3.v00 --- lsi_msgp.v01
+      --- elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00
+      --- i40en.v00 --- igbn.v00 --- intel_nv.v00 --- ixgben.v00 --- concrete.v00
+      --- filetran.v00 --- fupb.v00 --- fwupdate.v00 --- immpasst.v00 --- pciinfo.v00
+      --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
+      --- qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedrntv.v00 --- qfle3.v00 ---
+      qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00 --- qlnative.v00 --- ata_liba.v00
+      --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04
+      --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00
+      --- ehci_ehc.v00 --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
+      --- ipmi_ipm.v02 --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00
+      --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00
+      --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00
+      --- net_forc.v00 --- net_igb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
+      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nhpsa.v00
+      --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- ohci_usb.v00 --- pvscsi.v00 ---
+      qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
+      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00
+      --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00 --- scsi_hps.v00
       --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
-      --- scsi_meg.v02 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00
-      --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03
-      --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02
-      --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
+      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
+      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
+      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
+      --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00
+      --- vmkata.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00
+      --- emulex_e.v00 --- btldr.t00 --- weaselin.t00 --- esx_dvfi.v00 --- esx_ui.v00
+      --- lsu_hp_h.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
+      --- lsu_lsi_.v04 --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00
+      --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }}
+      --- tools.t00{{end}} --- lnvcusto.v00 --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
+    build: "15177306"
+    description: ESXi 650u3-15177306 for lenovo
+    iso: VMware_ESXi_6.5.0.update03_15177306_LNV_20191216.iso
+    isourl: ""
+    kernel: tboot.b00
+    sha256sum: 3f54aa4c9606e548b5af099f1a96bf32503bc9182810d3519b1fb81a1b65bb16
+    subvendor: none
+    title: esxi_650u3-15177306_lenovo
+    vendor: lenovo
+    version: 650u3
+  - author: nec
+    bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
+      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- {{ if
+      (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall" }} ---
+      {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
+      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
+      --- {{$key}}{{ end }} --- net_tg3.v00 --- lpfc.v00 --- igbn.v00 --- ixgben.v00
+      --- net_ixgb.v00 --- smartpqi.v00 --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00
+      --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- misc_cni.v00 --- net_bnx2.v00
+      --- net_bnx2.v01 --- net_cnic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- ata_liba.v00
+      --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04
+      --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00
+      --- brcmfcoe.v00 --- char_ran.v00 --- ehci_ehc.v00 --- elxnet.v00 --- hid_hid.v00
+      --- i40en.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02
+      --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_dri.v00
+      --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_cdc_.v00 --- net_e100.v00
+      --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00
+      --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_usbn.v00
+      --- net_vmxn.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00
+      --- nmlx5_co.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- ohci_usb.v00
+      --- pvscsi.v00 --- qflge.v00 --- qlnative.v00 --- sata_ahc.v00 --- sata_ata.v00
+      --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04
+      --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00 --- scsi_hps.v00
+      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
+      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
+      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
+      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
+      --- shim_vmk.v02 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
       --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- emulex_e.v00
       --- btldr.t00 --- weaselin.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- lsu_hp_h.v00
       --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04
       --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
       --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
-      --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: "105610"
-    bundleurls:
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/6.5/VMware-ESXi-6.5.0-Update3-15256549-HPE-Synergy-650.U3.10.5.6.10-May2020-depot.zip
-    description: ESXi 650u3-105610 for rkn_hpe
-    iso: RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso
-    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso
-    kernel: tboot.b00
-    sha256sum: 502ccb818ea42e42cb212de045ec3ebe11b687cd898665ddcea265eb26e908dd
-    sourcebundleurls:
-    - https://fill.in.next.time
-    subvendor: none
-    title: esxi_650u3-105610_rkn_hpe
-    vendor: hpe
-    version: 650u3
-  - author: rackn
-    bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- a.b00 --- user.b00 --- uc_intel.b00 --- uc_amd.b00 --- sb.v00 --- s.v00{{
-      range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}
-      --- lsi_mr3.v00 --- scsi_mpt.v00 --- bnxtnet.v00 --- bnxtroce.v00 --- elx_esx_.v00
-      --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00 --- amsd.v00 ---
-      bootcfg.v00 --- conrep.v00 --- cru.v00 --- fc_enabl.v00 --- hponcfg.v00 ---
-      ilo.v00 --- oem_buil.v00 --- scsi_hpd.v00 --- scsi_hpv.v00 --- smx_prov.v00
-      --- ssacli.v00 --- sut.v00 --- testeven.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00
-      --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
-      --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 --- qcnic.v00 --- qedentv.v00 ---
-      qedf.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00
-      --- qlnative.v00 --- drpy.v00 --- payload1.v00 --- ata_liba.v00 --- ata_pata.v00
-      --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05
-      --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00 --- ehci_ehc.v00
-      --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02
-      --- lsi_msgp.v00 --- lsi_msgp.v01 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00
-      --- nenic.v00 --- net_cdc_.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00
-      --- net_fcoe.v00 --- net_forc.v00 --- net_libf.v00 --- net_nx_n.v00 --- net_tg3.v00
-      --- net_usbn.v00 --- net_vmxn.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00
-      --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00
-      --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04
-      --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00 --- scsi_ips.v00
-      --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01 --- scsi_meg.v02
-      --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00 --- shim_isc.v01
-      --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04
-      --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- uhci_usb.v00
-      --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkplexe.v00 --- vmkusb.v00
-      --- vmw_ahci.v00 --- xhci_xhc.v00 --- emulex_e.v00 --- btldr.t00 --- weaselin.t00
-      --- esx_dvfi.v00 --- esx_ui.v00 --- lsu_hp_h.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01
-      --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- native_m.v00 --- rste.v00
-      --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param
-      "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz
-      --- imgpayld.tgz
+      --- nec_conf.v00 --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
     build: "13932383"
-    bundleurls:
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/6.5/VMware-ESXi-6.5.0-Update3-13932383-HPE-preGen9-650.U3.9.6.8.8-Jun2019-depot.zip
-    description: ESXi 650u3-13932383 for rkn_hpe
-    iso: RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso
-    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso
+    description: ESXi 650u3-13932383 for nec (standard)
+    iso: ESXi-6.5.3-13932383-NEC-6.5.3-01.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI65U3-NEC&productId=614
     kernel: tboot.b00
-    sha256sum: b981e9c22661ec2af530705a1ca83399a1c0b28221300a50ddf61041e11c50df
-    sourcebundleurls:
-    - https://fill.in.next.time
-    subvendor: none
-    title: esxi_650u3-13932383_rkn_hpe
-    vendor: hpe
+    sha256sum: 59ad5fef9aeb918deccbb79227e5020c51e4ef9f40a36e567434ce6d758b1bdd
+    subvendor: standard
+    title: esxi_650u3-13932383_nec_standard
+    vendor: nec
     version: 650u3
   - author: vmware
     bootcfg: b.b00 --- jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
@@ -1436,6 +1436,55 @@ Schema:
     title: esxi_650u3-14293459_vmware_rollup
     vendor: vmware
     version: 650u3
+  - author: fujitsu
+    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
+      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
+      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
+      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
+      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
+      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- lsi_msgp.v00
+      --- elx_esx_.v00 --- emulex_e.v00 --- emulex_e.v01 --- emulex_e.v02 --- emulex_e.v03
+      --- brcm_cim.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- emulex_c.v00
+      --- lpfc.v00 --- pci_fuji.v00 --- raid0.v00 --- svscimpr.v00 --- i40en.v00 ---
+      igbn.v00 --- intel_nv.v00 --- ixgben.v00 --- lsiprovi.v00 --- vmware_s.v00 ---
+      nmlx5_co.v00 --- nmlx5_rd.v00 --- qedentv.v00 --- qlnative.v00 --- qlogic_a.v00
+      --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03
+      --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00
+      --- bnxtnet.v00 --- bnxtroce.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
+      --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00
+      --- lpnic.v00 --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00
+      --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01
+      --- net_cdc_.v00 --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00
+      --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00
+      --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00
+      --- net_vmxn.v00 --- nfnic.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00
+      --- nmlx4_rd.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
+      --- ohci_usb.v00 --- pvscsi.v00 --- qcnic.v00 --- qfle3.v00 --- qfle3f.v00 ---
+      qfle3i.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00
+      --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00
+      --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00
+      --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00
+      --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02
+      --- scsi_qla.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01
+      --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00
+      --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00
+      --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00
+      --- vmw_ahci.v00 --- xhci_xhc.v00 --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00
+      --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00
+      --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00
+      --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
+      --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
+      --- fujitsu_.v00 --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
+    build: "11675023"
+    description: ESXi 670-11675023 for fujitsu
+    iso: VMware-ESXi-6.7.0-11675023-Fujitsu-v461-1.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI670-FUJITSU&productId=742
+    kernel: b.b00
+    sha256sum: bc5248207fd5bc064d86add046f333ef3c11a950bb88a9290afcbd6ed49d0b39
+    subvendor: none
+    title: esxi_670-11675023_fujitsu
+    vendor: fujitsu
+    version: "670"
   - author: rackn
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
@@ -1483,51 +1532,6 @@ Schema:
     - https://fill.in.next.time
     subvendor: none
     title: esxi_670-s20190401001_rkn_vmware
-    vendor: vmware
-    version: "670"
-  - author: vmware
-    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- vmx.v00 ---
-      vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall"
-      }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
-      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
-      --- {{$key}}{{ end }} --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 ---
-      ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06
-      --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00 --- brcmfcoe.v00 --- char_ran.v00
-      --- ehci_ehc.v00 --- elxiscsi.v00 --- elxnet.v00 --- hid_hid.v00 --- i40en.v00
-      --- iavmd.v00 --- igbn.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
-      --- ipmi_ipm.v02 --- iser.v00 --- ixgben.v00 --- lpfc.v00 --- lpnic.v00 ---
-      lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_cni.v00
-      --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00
-      --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01
-      --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_ixgb.v00
-      --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00
-      --- net_usbn.v00 --- net_vmxn.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00
-      --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00 --- ntg3.v00 --- nvme.v00
-      --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00 --- qcnic.v00
-      --- qedentv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- qflge.v00 ---
-      sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02
-      --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00
-      --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00 --- scsi_hps.v00 --- scsi_ips.v00
-      --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01 --- scsi_meg.v02
-      --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00
-      --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03
-      --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02
-      --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
-      --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00
-      --- elx_esx_.v00 --- btldr.t00 --- weaselin.t00 --- esx_dvfi.v00 --- esx_ui.v00
-      --- lsu_hp_h.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
-      --- native_m.v00 --- qlnative.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00
-      --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }}
-      --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: "8169922"
-    description: ESXi 670-8169922 for vmware
-    iso: VMware-VMvisor-Installer-6.7.0-8169922.x86_64.iso
-    isourl: https://my.vmware.com/web/vmware/details?productId=742&downloadGroup=ESXI670
-    kernel: b.b00
-    sha256sum: 884ead30532f4a5c2152e4ac450839a0062aba3ae859b5fa5e233ce4275c8cb6
-    subvendor: none
-    title: esxi_670-8169922_vmware
     vendor: vmware
     version: "670"
   - author: rackn
@@ -1628,55 +1632,6 @@ Schema:
     title: esxi_670-13006603_rkn_cisco
     vendor: cisco
     version: "670"
-  - author: fujitsu
-    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
-      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
-      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
-      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
-      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- lsi_msgp.v00
-      --- elx_esx_.v00 --- emulex_e.v00 --- emulex_e.v01 --- emulex_e.v02 --- emulex_e.v03
-      --- brcm_cim.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- emulex_c.v00
-      --- lpfc.v00 --- pci_fuji.v00 --- raid0.v00 --- svscimpr.v00 --- i40en.v00 ---
-      igbn.v00 --- intel_nv.v00 --- ixgben.v00 --- lsiprovi.v00 --- vmware_s.v00 ---
-      nmlx5_co.v00 --- nmlx5_rd.v00 --- qedentv.v00 --- qlnative.v00 --- qlogic_a.v00
-      --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03
-      --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00
-      --- bnxtnet.v00 --- bnxtroce.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
-      --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00
-      --- lpnic.v00 --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00
-      --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01
-      --- net_cdc_.v00 --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00
-      --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00
-      --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00
-      --- net_vmxn.v00 --- nfnic.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00
-      --- nmlx4_rd.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
-      --- ohci_usb.v00 --- pvscsi.v00 --- qcnic.v00 --- qfle3.v00 --- qfle3f.v00 ---
-      qfle3i.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00
-      --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00
-      --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00
-      --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00
-      --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02
-      --- scsi_qla.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01
-      --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00
-      --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00
-      --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00
-      --- vmw_ahci.v00 --- xhci_xhc.v00 --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00
-      --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00
-      --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00
-      --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
-      --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
-      --- fujitsu_.v00 --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: "11675023"
-    description: ESXi 670-11675023 for fujitsu
-    iso: VMware-ESXi-6.7.0-11675023-Fujitsu-v461-1.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI670-FUJITSU&productId=742
-    kernel: b.b00
-    sha256sum: bc5248207fd5bc064d86add046f333ef3c11a950bb88a9290afcbd6ed49d0b39
-    subvendor: none
-    title: esxi_670-11675023_fujitsu
-    vendor: fujitsu
-    version: "670"
   - author: rackn
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
@@ -1774,125 +1729,27 @@ Schema:
     title: esxi_670-x20190402001_rkn_vmware
     vendor: vmware
     version: "670"
-  - author: cisco
+  - author: vmware
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
-      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
-      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
-      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
-      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- scsi_aac.v00 ---
-      lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- scsi_meg.v00 --- ucs_tool.v00
-      --- nenic.v00 --- nfnic.v00 --- elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00
-      --- elxnet.v00 --- lpfc.v00 --- i40en.v00 --- igbn.v00 --- intel_nv.v00 ---
-      ixgben.v00 --- net_i40e.v00 --- net_ixgb.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
-      --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 ---
-      qfle3i.v00 --- scsi_qed.v00 --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00
-      --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05
-      --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00 --- bnxtroce.v00
-      --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00
-      --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v02
-      --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- net_bnx2.v00
+      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- vmx.v00 ---
+      vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall"
+      }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
+      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
+      --- {{$key}}{{ end }} --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 ---
+      ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06
+      --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00 --- brcmfcoe.v00 --- char_ran.v00
+      --- ehci_ehc.v00 --- elxiscsi.v00 --- elxnet.v00 --- hid_hid.v00 --- i40en.v00
+      --- iavmd.v00 --- igbn.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
+      --- ipmi_ipm.v02 --- iser.v00 --- ixgben.v00 --- lpfc.v00 --- lpnic.v00 ---
+      lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_cni.v00
+      --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00
       --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01
-      --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_libf.v00 --- net_mlx4.v00
-      --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00
-      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
-      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
-      --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
-      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_adp.v00 --- scsi_aic.v00
-      --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00
-      --- scsi_lib.v00 --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01
-      --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00
-      --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05
-      --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00
-      --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00
-      --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- elx_esx_.v01 --- btldr.t00
-      --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00
-      --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
-      --- lsu_smar.v00 --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00
-      --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }}
-      --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: "10302608"
-    description: ESXi 670u1-10302608 for cisco
-    iso: VMware_ESXi_6.7.0_10302608_Custom_Cisco_6.7.1.2.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-CISCO&productId=742
-    kernel: b.b00
-    sha256sum: 4d861953787950197e4c956be52dddd172f8cdff9367537b3081e7922bfb6055
-    subvendor: none
-    title: esxi_670u1-10302608_cisco
-    vendor: cisco
-    version: 670u1
-  - author: dell
-    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
-      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
-      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
-      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
-      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- dell_sha.v00 ---
-      lsi_mr3.v00 --- lsi_msgp.v00 --- bnxtnet.v00 --- bnxtroce.v00 --- dellemc_.v00
-      --- lpfc.v00 --- i40en_en.v00 --- i40en.v00 --- igbn.v00 --- ixgben_e.v00 ---
-      ixgben.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00 --- qcnic.v00 --- qedentv.v00 ---
-      qedf.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00
-      --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02
-      --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07
-      --- block_cc.v00 --- brcmfcoe.v00 --- char_ran.v00 --- ehci_ehc.v00 --- elxiscsi.v00
-      --- elxnet.v00 --- hid_hid.v00 --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00
-      --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v01
-      --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00
-      --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00
-      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
-      --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
-      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00
-      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
-      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
-      --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
-      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00
-      --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00 --- scsi_hps.v00
-      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
-      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
-      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
-      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
-      --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00
-      --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00
-      --- xhci_xhc.v00 --- elx_esx_.v00 --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00
-      --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00
-      --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_smar.v00 --- native_m.v00
-      --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{
-      if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}} --- dell_con.v00
-      --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: 10764712-A04
-    description: ESXi 670u1-10764712-A04 for dell
-    iso: VMware-VMvisor-Installer-6.7.0.update01-10764712.x86_64-DellEMC_Customized-A04.iso
-    isourl: https://www.dell.com/support/home/us/en/19/drivers/driversdetails?driverid=6g5t3
-    kernel: b.b00
-    sha256sum: 0220d4939b518485275861d49133be6339af8e16cfa9eb34a86a84f3ae7bb1d5
-    subvendor: none
-    title: esxi_670u1-10764712-A04_dell
-    vendor: dell
-    version: 670u1
-  - author: fujitsu
-    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
-      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
-      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
-      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
-      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
-      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- elx_esx_.v00
-      --- emulex_e.v00 --- emulex_e.v01 --- emulex_e.v02 --- brcm_cim.v00 --- brcmfcoe.v00
-      --- elxiscsi.v00 --- elxnet.v00 --- emulex_c.v00 --- lpfc.v00 --- pci_fuji.v00
-      --- raid0.v00 --- svscimpr.v00 --- i40en.v00 --- igbn.v00 --- intel_nv.v00 ---
-      ixgben.v00 --- lsiprovi.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00 --- qedentv.v00
-      --- qlnative.v00 --- qlogic_a.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01
-      --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06
-      --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00 --- bnxtroce.v00 --- char_ran.v00
-      --- ehci_ehc.v00 --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
-      --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v00 --- lsi_msgp.v01
-      --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00
-      --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00
-      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
-      --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
-      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00
-      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
-      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
-      --- qcnic.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- qflge.v00 ---
+      --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_ixgb.v00
+      --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00
+      --- net_usbn.v00 --- net_vmxn.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00
+      --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00 --- ntg3.v00 --- nvme.v00
+      --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00 --- qcnic.v00
+      --- qedentv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- qflge.v00 ---
       sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02
       --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00
       --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00 --- scsi_hps.v00 --- scsi_ips.v00
@@ -1902,22 +1759,21 @@ Schema:
       --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02
       --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
       --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00
-      --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00
-      --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02
-      --- lsu_lsi_.v03 --- lsu_smar.v00 --- native_m.v00 --- rste.v00 --- vmware_e.v00
-      --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools")
-      false }} --- tools.t00{{end}} --- fujitsu_.v00 --- xorg.v00 --- imgdb.tgz ---
-      imgpayld.tgz
-    build: "10302608"
-    description: ESXi 670u1-10302608 for fujitsu
-    iso: VMware-ESXi-6.7.0-10302608-Fujitsu-v460-1.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-FUJITSU&productId=742
+      --- elx_esx_.v00 --- btldr.t00 --- weaselin.t00 --- esx_dvfi.v00 --- esx_ui.v00
+      --- lsu_hp_h.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
+      --- native_m.v00 --- qlnative.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00
+      --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }}
+      --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
+    build: "8169922"
+    description: ESXi 670-8169922 for vmware
+    iso: VMware-VMvisor-Installer-6.7.0-8169922.x86_64.iso
+    isourl: https://my.vmware.com/web/vmware/details?productId=742&downloadGroup=ESXI670
     kernel: b.b00
-    sha256sum: 068d70a54d856119af064a8217e0fb1d2ac26e08cc209ad0c4e27ff86cd12718
+    sha256sum: 884ead30532f4a5c2152e4ac450839a0062aba3ae859b5fa5e233ce4275c8cb6
     subvendor: none
-    title: esxi_670u1-10302608_fujitsu
-    vendor: fujitsu
-    version: 670u1
+    title: esxi_670-8169922_vmware
+    vendor: vmware
+    version: "670"
   - author: hitachi
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
@@ -2057,6 +1913,150 @@ Schema:
     subvendor: none
     title: esxi_670u1-11675023_lenovo
     vendor: lenovo
+    version: 670u1
+  - author: fujitsu
+    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
+      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
+      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
+      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
+      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
+      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- elx_esx_.v00
+      --- emulex_e.v00 --- emulex_e.v01 --- emulex_e.v02 --- brcm_cim.v00 --- brcmfcoe.v00
+      --- elxiscsi.v00 --- elxnet.v00 --- emulex_c.v00 --- lpfc.v00 --- pci_fuji.v00
+      --- raid0.v00 --- svscimpr.v00 --- i40en.v00 --- igbn.v00 --- intel_nv.v00 ---
+      ixgben.v00 --- lsiprovi.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00 --- qedentv.v00
+      --- qlnative.v00 --- qlogic_a.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01
+      --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06
+      --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00 --- bnxtroce.v00 --- char_ran.v00
+      --- ehci_ehc.v00 --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
+      --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v00 --- lsi_msgp.v01
+      --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00
+      --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00
+      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
+      --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
+      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00
+      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
+      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
+      --- qcnic.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- qflge.v00 ---
+      sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02
+      --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00
+      --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00 --- scsi_hps.v00 --- scsi_ips.v00
+      --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01 --- scsi_meg.v02
+      --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00
+      --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03
+      --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02
+      --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
+      --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00
+      --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00
+      --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02
+      --- lsu_lsi_.v03 --- lsu_smar.v00 --- native_m.v00 --- rste.v00 --- vmware_e.v00
+      --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools")
+      false }} --- tools.t00{{end}} --- fujitsu_.v00 --- xorg.v00 --- imgdb.tgz ---
+      imgpayld.tgz
+    build: "10302608"
+    description: ESXi 670u1-10302608 for fujitsu
+    iso: VMware-ESXi-6.7.0-10302608-Fujitsu-v460-1.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-FUJITSU&productId=742
+    kernel: b.b00
+    sha256sum: 068d70a54d856119af064a8217e0fb1d2ac26e08cc209ad0c4e27ff86cd12718
+    subvendor: none
+    title: esxi_670u1-10302608_fujitsu
+    vendor: fujitsu
+    version: 670u1
+  - author: dell
+    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
+      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
+      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
+      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
+      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
+      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- dell_sha.v00 ---
+      lsi_mr3.v00 --- lsi_msgp.v00 --- bnxtnet.v00 --- bnxtroce.v00 --- dellemc_.v00
+      --- lpfc.v00 --- i40en_en.v00 --- i40en.v00 --- igbn.v00 --- ixgben_e.v00 ---
+      ixgben.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00 --- qcnic.v00 --- qedentv.v00 ---
+      qedf.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00
+      --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02
+      --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07
+      --- block_cc.v00 --- brcmfcoe.v00 --- char_ran.v00 --- ehci_ehc.v00 --- elxiscsi.v00
+      --- elxnet.v00 --- hid_hid.v00 --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00
+      --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v01
+      --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00
+      --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00
+      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
+      --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01
+      --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00
+      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
+      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
+      --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
+      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00
+      --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00 --- scsi_hps.v00
+      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
+      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
+      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
+      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
+      --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00
+      --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00
+      --- xhci_xhc.v00 --- elx_esx_.v00 --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00
+      --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00
+      --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_smar.v00 --- native_m.v00
+      --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{
+      if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}} --- dell_con.v00
+      --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
+    build: 10764712-A04
+    description: ESXi 670u1-10764712-A04 for dell
+    iso: VMware-VMvisor-Installer-6.7.0.update01-10764712.x86_64-DellEMC_Customized-A04.iso
+    isourl: https://www.dell.com/support/home/us/en/19/drivers/driversdetails?driverid=6g5t3
+    kernel: b.b00
+    sha256sum: 0220d4939b518485275861d49133be6339af8e16cfa9eb34a86a84f3ae7bb1d5
+    subvendor: none
+    title: esxi_670u1-10764712-A04_dell
+    vendor: dell
+    version: 670u1
+  - author: cisco
+    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
+      --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
+      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
+      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
+      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
+      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- scsi_aac.v00 ---
+      lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- scsi_meg.v00 --- ucs_tool.v00
+      --- nenic.v00 --- nfnic.v00 --- elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00
+      --- elxnet.v00 --- lpfc.v00 --- i40en.v00 --- igbn.v00 --- intel_nv.v00 ---
+      ixgben.v00 --- net_i40e.v00 --- net_ixgb.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
+      --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 ---
+      qfle3i.v00 --- scsi_qed.v00 --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00
+      --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05
+      --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- bnxtnet.v00 --- bnxtroce.v00
+      --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00 --- ima_qla4.v00 --- ipmi_ipm.v00
+      --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v02
+      --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- net_bnx2.v00
+      --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01
+      --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_libf.v00 --- net_mlx4.v00
+      --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00
+      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
+      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
+      --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
+      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_adp.v00 --- scsi_aic.v00
+      --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00
+      --- scsi_lib.v00 --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01
+      --- scsi_mpt.v02 --- scsi_qla.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00
+      --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05
+      --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00
+      --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00
+      --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- elx_esx_.v01 --- btldr.t00
+      --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00
+      --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
+      --- lsu_smar.v00 --- native_m.v00 --- rste.v00 --- vmware_e.v00 --- vsan.v00
+      --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }}
+      --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz --- imgpayld.tgz
+    build: "10302608"
+    description: ESXi 670u1-10302608 for cisco
+    iso: VMware_ESXi_6.7.0_10302608_Custom_Cisco_6.7.1.2.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U1-CISCO&productId=742
+    kernel: b.b00
+    sha256sum: 4d861953787950197e4c956be52dddd172f8cdff9367537b3081e7922bfb6055
+    subvendor: none
+    title: esxi_670u1-10302608_cisco
+    vendor: cisco
     version: 670u1
   - author: nec
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
@@ -2246,52 +2246,54 @@ Schema:
     title: esxi_670u1-10302608_nec_r120h-t120h-r110j
     vendor: nec
     version: 670u1
-  - author: hitachi
+  - author: rackn
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
-      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
-      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
-      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
-      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- bnxtnet.v00
-      --- bnxtroce.v00 --- elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00
-      --- lpfc.v00 --- amsd.v00 --- bootcfg.v00 --- conrep.v00 --- cru.v00 --- fc_enabl.v00
-      --- hponcfg.v00 --- ilo.v00 --- smx_prov.v00 --- ssacli.v00 --- testeven.v00
-      --- hfcndd.v00 --- hfc.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00 --- nmlx5_co.v00
-      --- nmlx5_rd.v00 --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 --- qcnic.v00 ---
-      qedentv.v00 --- qedf.v00 --- qedi.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00
-      --- qfle3i.v00 --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01
-      --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06
-      --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
-      --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02
-      --- iser.v00 --- lpnic.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02
-      --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_cdc_.v00
-      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
-      --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00
-      --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00 --- nmlx4_co.v00 --- nmlx4_en.v00
-      --- nmlx4_rd.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
-      --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00
-      --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04
-      --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00 --- scsi_ips.v00
-      --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01 --- scsi_meg.v02
-      --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- sfvmk.v00
-      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
-      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
-      --- shim_vmk.v02 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
-      --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00
-      --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00
-      --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02
-      --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00 --- rste.v00
-      --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param
-      "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz
-      --- imgpayld.tgz
+      --- vmx.v00 --- vim.v00 --- sb.v00 --- s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules"
+      }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- bnxtnet.v00 --- bnxtroce.v00 ---
+      elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00 ---
+      amsd.v00 --- bootcfg.v00 --- conrep.v00 --- cru.v00 --- fc_enabl.v00 --- hponcfg.v00
+      --- ilo.v00 --- smx_prov.v00 --- ssacli.v00 --- testeven.v00 --- hfcndd.v00
+      --- hfc.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
+      --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 --- qcnic.v00 --- qedentv.v00 ---
+      qedf.v00 --- qedi.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00
+      --- qlnative.v00 --- drpy.v00 --- payload1.v00 --- ata_liba.v00 --- ata_pata.v00
+      --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05
+      --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00 --- ehci_ehc.v00
+      --- hid_hid.v00 --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
+      --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v00 --- lsi_msgp.v01
+      --- lsi_msgp.v02 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00
+      --- net_cdc_.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00
+      --- net_forc.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00
+      --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00 --- nmlx4_co.v00
+      --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00
+      --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00
+      --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03
+      --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00
+      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
+      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
+      --- sfvmk.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01
+      --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00
+      --- shim_vmk.v01 --- shim_vmk.v02 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00
+      --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00
+      --- xhci_xhc.v00 --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00
+      --- weaselin.t00 --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01
+      --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00
+      --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{
+      if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00
+      --- imgdb.tgz --- imgpayld.tgz
     build: "13006603"
-    description: ESXi 670u2-13006603 for hitachi
-    iso: VMware_ESXi_6.7.0_Update2_13006603_hitachi_1300_HA8KVGen10_RV3K.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HITACHI&productId=742
+    bundleurls:
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/6.7/VMware_ESXi_6.7.0_Update2_13006603_hitachi_1300_HA8KVGen10_RV3K.zip
+    description: ESXi 670u2-13006603 for rkn_hitachi
+    iso: RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso
+    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso
     kernel: b.b00
-    sha256sum: a64e94c33e3817e6ebf0bb403c373ddba6fd521ceaf78be13a31251820842698
+    sha256sum: 8ce39e2471c2dd0fdbd37d9849a228b461a20c6201df2615e20a25a45d81fea5
+    sourcebundleurls:
+    - https://fill.in.next.time
     subvendor: none
-    title: esxi_670u2-13006603_hitachi
+    title: esxi_670u2-13006603_rkn_hitachi
     vendor: hitachi
     version: 670u2
   - author: fujitsu
@@ -2344,7 +2346,7 @@ Schema:
     title: esxi_670u2-13473784_fujitsu
     vendor: fujitsu
     version: 670u2
-  - author: hpe
+  - author: hitachi
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
       --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
@@ -2353,44 +2355,44 @@ Schema:
       "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- bnxtnet.v00
       --- bnxtroce.v00 --- elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00
       --- lpfc.v00 --- amsd.v00 --- bootcfg.v00 --- conrep.v00 --- cru.v00 --- fc_enabl.v00
-      --- hponcfg.v00 --- ilo.v00 --- oem_buil.v00 --- scsi_hpd.v00 --- smx_prov.v00
-      --- ssacli.v00 --- testeven.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00 ---
-      nmlx5_co.v00 --- nmlx5_rd.v00 --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 ---
-      qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedi.v00 --- qedrntv.v00 --- qfle3.v00
-      --- qfle3f.v00 --- qfle3i.v00 --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00
-      --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05
-      --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00 --- ehci_ehc.v00
-      --- hid_hid.v00 --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
-      --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_msgp.v00 --- lsi_msgp.v01
-      --- lsi_msgp.v02 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00
-      --- net_cdc_.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00
-      --- net_forc.v00 --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00
-      --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00 --- nmlx4_co.v00
-      --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00
-      --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00
-      --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03
-      --- sata_sat.v04 --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00
-      --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01
-      --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00
-      --- sfvmk.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01
-      --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00
-      --- shim_vmk.v01 --- shim_vmk.v02 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00
-      --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00
-      --- xhci_xhc.v00 --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00
-      --- weaselin.t00 --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01
-      --- lsu_lsi_.v02 --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00
-      --- rste.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{
-      if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00
-      --- imgdb.tgz --- imgpayld.tgz
+      --- hponcfg.v00 --- ilo.v00 --- smx_prov.v00 --- ssacli.v00 --- testeven.v00
+      --- hfcndd.v00 --- hfc.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00 --- nmlx5_co.v00
+      --- nmlx5_rd.v00 --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 --- qcnic.v00 ---
+      qedentv.v00 --- qedf.v00 --- qedi.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00
+      --- qfle3i.v00 --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01
+      --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06
+      --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
+      --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02
+      --- iser.v00 --- lpnic.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02
+      --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- net_cdc_.v00
+      --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00 --- net_forc.v00
+      --- net_libf.v00 --- net_mlx4.v00 --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00
+      --- net_usbn.v00 --- net_vmxn.v00 --- nfnic.v00 --- nmlx4_co.v00 --- nmlx4_en.v00
+      --- nmlx4_rd.v00 --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
+      --- ohci_usb.v00 --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00
+      --- sata_sat.v00 --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04
+      --- scsi_aac.v00 --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_fni.v00 --- scsi_ips.v00
+      --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00 --- scsi_meg.v01 --- scsi_meg.v02
+      --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02 --- scsi_qla.v00 --- sfvmk.v00
+      --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02
+      --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01
+      --- shim_vmk.v02 --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00
+      --- vmkfcoe.v00 --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00
+      --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00
+      --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02
+      --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00 --- rste.v00
+      --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param
+      "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz
+      --- imgpayld.tgz
     build: "13006603"
-    description: ESXi 670u2-13006603 for hpe
-    iso: VMware-ESXi-6.7.0-Update2-13006603-HPE-Gen9plus-670.U2.10.4.1.8-Apr2019.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HPE&productId=742
+    description: ESXi 670u2-13006603 for hitachi
+    iso: VMware_ESXi_6.7.0_Update2_13006603_hitachi_1300_HA8KVGen10_RV3K.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HITACHI&productId=742
     kernel: b.b00
-    sha256sum: 6914a4a388fa9a47bb3f23eab7aaf91019a46e0539f453e78f739acf59bbd7b8
+    sha256sum: a64e94c33e3817e6ebf0bb403c373ddba6fd521ceaf78be13a31251820842698
     subvendor: none
-    title: esxi_670u2-13006603_hpe
-    vendor: hpe
+    title: esxi_670u2-13006603_hitachi
+    vendor: hitachi
     version: 670u2
   - author: rackn
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
@@ -2442,54 +2444,53 @@ Schema:
     title: esxi_670u2-13006603_rkn_hpe
     vendor: hpe
     version: 670u2
-  - author: dell
+  - author: cisco
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
       --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
       }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
       }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
-      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- dell_sha.v00 ---
-      bnxtnet.v00 --- bnxtroce.v00 --- dellemc_.v00 --- lpfc.v00 --- i40en_en.v00
-      --- i40en.v00 --- igbn.v00 --- ixgben_e.v00 --- ixgben.v00 --- nmlx5_co.v00
-      --- nmlx5_rd.v00 --- qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedrntv.v00
+      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- scsi_aac.v00 ---
+      scsi_meg.v00 --- ucs_tool.v00 --- nenic.v00 --- nfnic.v00 --- elx_esx_.v00 ---
+      brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00 --- i40en.v00 ---
+      igbn.v00 --- intel_nv.v00 --- ixgben.v00 --- net_i40e.v00 --- net_ixgb.v00 ---
+      nmlx5_co.v00 --- nmlx5_rd.v00 --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00
       --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00 --- qlnative.v00
       --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03
       --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00
-      --- brcmfcoe.v00 --- char_ran.v00 --- ehci_ehc.v00 --- elxiscsi.v00 --- elxnet.v00
-      --- hid_hid.v00 --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
-      --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00
-      --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00
-      --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00
-      --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00
-      --- net_forc.v00 --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00
+      --- bnxtnet.v00 --- bnxtroce.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
+      --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00
+      --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02
+      --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- net_bnx2.v00
+      --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01
+      --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_libf.v00 --- net_mlx4.v00
       --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00
-      --- nfnic.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00
-      --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00
-      --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00
-      --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00
-      --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00
-      --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00
-      --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02
-      --- scsi_qla.v00 --- sfvmk.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00
-      --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05
-      --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00
-      --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00
-      --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- elx_esx_.v00 --- btldr.t00
-      --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00
-      --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
-      --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00 --- rste.v00 --- vmware_e.v00
-      --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools")
-      false }} --- tools.t00{{end}} --- dell_con.v00 --- xorg.v00 --- imgdb.tgz ---
-      imgpayld.tgz
-    build: 13981272-A02
-    description: ESXi 670u2-13981272-A02 for dell
-    iso: VMware-VMvisor-Installer-6.7.0.update02-13981272.x86_64-DellEMC_Customized-A02.iso
-    isourl: https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=p92h9
+      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
+      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
+      --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
+      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_adp.v00 --- scsi_aic.v00
+      --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00
+      --- scsi_lib.v00 --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01
+      --- scsi_mpt.v02 --- scsi_qla.v00 --- sfvmk.v00 --- shim_isc.v00 --- shim_isc.v01
+      --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04
+      --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00
+      --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00
+      --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- elx_esx_.v01
+      --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00
+      --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02
+      --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00 --- rste.v00
+      --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param
+      "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz
+      --- imgpayld.tgz
+    build: "13006603"
+    description: ESXi 670u2-13006603 for cisco
+    iso: VMware_ESXi_6.7.0_13006603_Custom_Cisco_6.7.2.1.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-CISCO&productId=742
     kernel: b.b00
-    sha256sum: 10e440c75a9c8cd84c3de9d4481cb7ca11ecee04a7848004cc0722456bd12c41
+    sha256sum: 97d1a5ea7a16de884566d7669502b8142cb807b3df5bf104a0679b0a1337924a
     subvendor: none
-    title: esxi_670u2-13981272-A02_dell
-    vendor: dell
+    title: esxi_670u2-13006603_cisco
+    vendor: cisco
     version: 670u2
   - author: vmware
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
@@ -2687,18 +2688,20 @@ Schema:
     title: esxi_670u2-13473784_rkn_fujitsu
     vendor: fujitsu
     version: 670u2
-  - author: rackn
+  - author: hpe
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
-      --- vmx.v00 --- vim.v00 --- sb.v00 --- s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules"
-      }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- bnxtnet.v00 --- bnxtroce.v00 ---
-      elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00 ---
-      amsd.v00 --- bootcfg.v00 --- conrep.v00 --- cru.v00 --- fc_enabl.v00 --- hponcfg.v00
-      --- ilo.v00 --- smx_prov.v00 --- ssacli.v00 --- testeven.v00 --- hfcndd.v00
-      --- hfc.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
-      --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 --- qcnic.v00 --- qedentv.v00 ---
-      qedf.v00 --- qedi.v00 --- qedrntv.v00 --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00
-      --- qlnative.v00 --- drpy.v00 --- payload1.v00 --- ata_liba.v00 --- ata_pata.v00
+      --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
+      }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
+      }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
+      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- lsi_mr3.v00 --- bnxtnet.v00
+      --- bnxtroce.v00 --- elx_esx_.v00 --- brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00
+      --- lpfc.v00 --- amsd.v00 --- bootcfg.v00 --- conrep.v00 --- cru.v00 --- fc_enabl.v00
+      --- hponcfg.v00 --- ilo.v00 --- oem_buil.v00 --- scsi_hpd.v00 --- smx_prov.v00
+      --- ssacli.v00 --- testeven.v00 --- i40en.v00 --- igbn.v00 --- ixgben.v00 ---
+      nmlx5_co.v00 --- nmlx5_rd.v00 --- nmst.v00 --- smartpqi.v00 --- nhpsa.v00 ---
+      qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedi.v00 --- qedrntv.v00 --- qfle3.v00
+      --- qfle3f.v00 --- qfle3i.v00 --- qlnative.v00 --- ata_liba.v00 --- ata_pata.v00
       --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03 --- ata_pata.v04 --- ata_pata.v05
       --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00 --- char_ran.v00 --- ehci_ehc.v00
       --- hid_hid.v00 --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
@@ -2724,66 +2727,63 @@ Schema:
       if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00
       --- imgdb.tgz --- imgpayld.tgz
     build: "13006603"
-    bundleurls:
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/6.7/VMware_ESXi_6.7.0_Update2_13006603_hitachi_1300_HA8KVGen10_RV3K.zip
-    description: ESXi 670u2-13006603 for rkn_hitachi
-    iso: RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso
-    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso
+    description: ESXi 670u2-13006603 for hpe
+    iso: VMware-ESXi-6.7.0-Update2-13006603-HPE-Gen9plus-670.U2.10.4.1.8-Apr2019.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-HPE&productId=742
     kernel: b.b00
-    sha256sum: 8ce39e2471c2dd0fdbd37d9849a228b461a20c6201df2615e20a25a45d81fea5
-    sourcebundleurls:
-    - https://fill.in.next.time
+    sha256sum: 6914a4a388fa9a47bb3f23eab7aaf91019a46e0539f453e78f739acf59bbd7b8
     subvendor: none
-    title: esxi_670u2-13006603_rkn_hitachi
-    vendor: hitachi
+    title: esxi_670u2-13006603_hpe
+    vendor: hpe
     version: 670u2
-  - author: cisco
+  - author: dell
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
       --- user.b00 --- procfs.b00 --- uc_intel.b00 --- uc_amd.b00 --- uc_hygon.b00
       --- vmx.v00 --- vim.v00 --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall")
       }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent")
       }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}s.v00{{ range $key := .Param
-      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- scsi_aac.v00 ---
-      scsi_meg.v00 --- ucs_tool.v00 --- nenic.v00 --- nfnic.v00 --- elx_esx_.v00 ---
-      brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- lpfc.v00 --- i40en.v00 ---
-      igbn.v00 --- intel_nv.v00 --- ixgben.v00 --- net_i40e.v00 --- net_ixgb.v00 ---
-      nmlx5_co.v00 --- nmlx5_rd.v00 --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00
+      "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }} --- dell_sha.v00 ---
+      bnxtnet.v00 --- bnxtroce.v00 --- dellemc_.v00 --- lpfc.v00 --- i40en_en.v00
+      --- i40en.v00 --- igbn.v00 --- ixgben_e.v00 --- ixgben.v00 --- nmlx5_co.v00
+      --- nmlx5_rd.v00 --- qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedrntv.v00
       --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- scsi_qed.v00 --- qlnative.v00
       --- ata_liba.v00 --- ata_pata.v00 --- ata_pata.v01 --- ata_pata.v02 --- ata_pata.v03
       --- ata_pata.v04 --- ata_pata.v05 --- ata_pata.v06 --- ata_pata.v07 --- block_cc.v00
-      --- bnxtnet.v00 --- bnxtroce.v00 --- char_ran.v00 --- ehci_ehc.v00 --- hid_hid.v00
-      --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01 --- ipmi_ipm.v02 --- iser.v00
-      --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02
-      --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00 --- ne1000.v00 --- net_bnx2.v00
-      --- net_bnx2.v01 --- net_cdc_.v00 --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01
-      --- net_fcoe.v00 --- net_forc.v00 --- net_igb.v00 --- net_libf.v00 --- net_mlx4.v00
+      --- brcmfcoe.v00 --- char_ran.v00 --- ehci_ehc.v00 --- elxiscsi.v00 --- elxnet.v00
+      --- hid_hid.v00 --- iavmd.v00 --- ima_qla4.v00 --- ipmi_ipm.v00 --- ipmi_ipm.v01
+      --- ipmi_ipm.v02 --- iser.v00 --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00
+      --- lsi_msgp.v01 --- lsi_msgp.v02 --- misc_cni.v00 --- misc_dri.v00 --- mtip32xx.v00
+      --- ne1000.v00 --- nenic.v00 --- net_bnx2.v00 --- net_bnx2.v01 --- net_cdc_.v00
+      --- net_cnic.v00 --- net_e100.v00 --- net_e100.v01 --- net_enic.v00 --- net_fcoe.v00
+      --- net_forc.v00 --- net_igb.v00 --- net_ixgb.v00 --- net_libf.v00 --- net_mlx4.v00
       --- net_mlx4.v01 --- net_nx_n.v00 --- net_tg3.v00 --- net_usbn.v00 --- net_vmxn.v00
-      --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- ntg3.v00
-      --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00 --- pvscsi.v00
-      --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00 --- sata_sat.v01
-      --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_adp.v00 --- scsi_aic.v00
-      --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00
-      --- scsi_lib.v00 --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01
-      --- scsi_mpt.v02 --- scsi_qla.v00 --- sfvmk.v00 --- shim_isc.v00 --- shim_isc.v01
-      --- shim_lib.v00 --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04
-      --- shim_lib.v05 --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00
-      --- uhci_usb.v00 --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00
-      --- vmkplexe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- elx_esx_.v01
-      --- btldr.t00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00
-      --- lsu_hp_h.v00 --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02
-      --- lsu_lsi_.v03 --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00 --- rste.v00
-      --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param
-      "esxi/skip-tools") false }} --- tools.t00{{end}} --- xorg.v00 --- imgdb.tgz
-      --- imgpayld.tgz
-    build: "13006603"
-    description: ESXi 670u2-13006603 for cisco
-    iso: VMware_ESXi_6.7.0_13006603_Custom_Cisco_6.7.2.1.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI67U2-CISCO&productId=742
+      --- nfnic.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00
+      --- ntg3.v00 --- nvme.v00 --- nvmxnet3.v00 --- nvmxnet3.v01 --- ohci_usb.v00
+      --- pvscsi.v00 --- qflge.v00 --- sata_ahc.v00 --- sata_ata.v00 --- sata_sat.v00
+      --- sata_sat.v01 --- sata_sat.v02 --- sata_sat.v03 --- sata_sat.v04 --- scsi_aac.v00
+      --- scsi_adp.v00 --- scsi_aic.v00 --- scsi_bnx.v00 --- scsi_bnx.v01 --- scsi_fni.v00
+      --- scsi_hps.v00 --- scsi_ips.v00 --- scsi_isc.v00 --- scsi_lib.v00 --- scsi_meg.v00
+      --- scsi_meg.v01 --- scsi_meg.v02 --- scsi_mpt.v00 --- scsi_mpt.v01 --- scsi_mpt.v02
+      --- scsi_qla.v00 --- sfvmk.v00 --- shim_isc.v00 --- shim_isc.v01 --- shim_lib.v00
+      --- shim_lib.v01 --- shim_lib.v02 --- shim_lib.v03 --- shim_lib.v04 --- shim_lib.v05
+      --- shim_vmk.v00 --- shim_vmk.v01 --- shim_vmk.v02 --- smartpqi.v00 --- uhci_usb.v00
+      --- usb_stor.v00 --- usbcore_.v00 --- vmkata.v00 --- vmkfcoe.v00 --- vmkplexe.v00
+      --- vmkusb.v00 --- vmw_ahci.v00 --- xhci_xhc.v00 --- elx_esx_.v00 --- btldr.t00
+      --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- weaselin.t00 --- lsu_hp_h.v00
+      --- lsu_inte.v00 --- lsu_lsi_.v00 --- lsu_lsi_.v01 --- lsu_lsi_.v02 --- lsu_lsi_.v03
+      --- lsu_lsi_.v04 --- lsu_smar.v00 --- native_m.v00 --- rste.v00 --- vmware_e.v00
+      --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools")
+      false }} --- tools.t00{{end}} --- dell_con.v00 --- xorg.v00 --- imgdb.tgz ---
+      imgpayld.tgz
+    build: 13981272-A02
+    description: ESXi 670u2-13981272-A02 for dell
+    iso: VMware-VMvisor-Installer-6.7.0.update02-13981272.x86_64-DellEMC_Customized-A02.iso
+    isourl: https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=p92h9
     kernel: b.b00
-    sha256sum: 97d1a5ea7a16de884566d7669502b8142cb807b3df5bf104a0679b0a1337924a
+    sha256sum: 10e440c75a9c8cd84c3de9d4481cb7ca11ecee04a7848004cc0722456bd12c41
     subvendor: none
-    title: esxi_670u2-13006603_cisco
-    vendor: cisco
+    title: esxi_670u2-13981272-A02_dell
+    vendor: dell
     version: 670u2
   - author: hitachi
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- chardevs.b00
@@ -4296,6 +4296,39 @@ Schema:
     title: esxi_700-15843807_vmware
     vendor: vmware
     version: "700"
+  - author: dell
+    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00
+      --- uc_amd.b00 --- uc_hygon.b00 --- procfs.b00 --- vmx.v00 --- vim.v00 --- tpm.v00
+      --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall"
+      }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
+      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
+      --- {{$key}}{{ end }} --- dell_osn.v00 --- bnxtnet.v00 --- bnxtroce.v00 ---
+      brcmfcoe.v00 --- brcmnvme.v00 --- elxiscsi.v00 --- elxnet.v00 --- i40en.v00
+      --- i40iwn.v00 --- iavmd.v00 --- igbn.v00 --- iser.v00 --- ixgben.v00 --- lpfc.v00
+      --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02
+      --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- nfnic.v00 --- nhpsa.v00 ---
+      nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
+      --- ntg3.v00 --- nvme_pci.v00 --- nvmerdma.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
+      --- pvscsi.v00 --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00 --- qfle3.v00 ---
+      qfle3f.v00 --- qfle3i.v00 --- qflge.v00 --- rste.v00 --- sfvmk.v00 --- smartpqi.v00
+      --- vmkata.v00 --- vmkfcoe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- crx.v00 ---
+      elx_esx_.v00 --- btldr.v00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 ---
+      tpmesxup.v00 --- weaselin.v00 --- loadesx.v00 --- lsuv2_hp.v00 --- lsuv2_in.v00
+      --- lsuv2_ls.v00 --- lsuv2_nv.v00 --- lsuv2_oe.v00 --- lsuv2_oe.v01 --- lsuv2_oe.v02
+      --- lsuv2_sm.v00 --- native_m.v00 --- qlnative.v00 --- vdfs.v00 --- vmware_e.v00
+      --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools")
+      false }} --- tools.t00{{end}} --- dell_con.v00 --- xorg.v00 --- imgdb.tgz ---
+      imgpayld.tgz
+    build: "15843807"
+    description: ESXi 700-15843807 for dell
+    iso: VMware-VMvisor-Installer-7.0.0-15843807.x86_64-DellEMC_Customized-A00.iso
+    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI70GA-DELLEMC&productId=974
+    kernel: b.b00
+    sha256sum: 5d8a0aef1414c92283e021b2010f61a75f6b80ff68e24a3652706425e2c81c0b
+    subvendor: none
+    title: esxi_700-15843807_dell
+    vendor: dell
+    version: "700"
   - author: rackn
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00
       --- uc_amd.b00 --- uc_hygon.b00 --- procfs.b00 --- vmx.v00 --- vim.v00 --- tpm.v00
@@ -4330,39 +4363,6 @@ Schema:
     subvendor: none
     title: esxi_700-16324942_rkn_cisco
     vendor: cisco
-    version: "700"
-  - author: dell
-    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00
-      --- uc_amd.b00 --- uc_hygon.b00 --- procfs.b00 --- vmx.v00 --- vim.v00 --- tpm.v00
-      --- sb.v00 --- {{ if (.Param "esxi/add-drpy-firewall") }}{{ .Param "esxi/add-drpy-firewall"
-      }} --- {{end}}{{ if (.Param "esxi/add-drpy-agent") }}{{ .Param "esxi/add-drpy-agent"
-      }} --- {{end}}s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
-      --- {{$key}}{{ end }} --- dell_osn.v00 --- bnxtnet.v00 --- bnxtroce.v00 ---
-      brcmfcoe.v00 --- brcmnvme.v00 --- elxiscsi.v00 --- elxnet.v00 --- i40en.v00
-      --- i40iwn.v00 --- iavmd.v00 --- igbn.v00 --- iser.v00 --- ixgben.v00 --- lpfc.v00
-      --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00 --- lsi_msgp.v01 --- lsi_msgp.v02
-      --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00 --- nfnic.v00 --- nhpsa.v00 ---
-      nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00 --- nmlx5_co.v00 --- nmlx5_rd.v00
-      --- ntg3.v00 --- nvme_pci.v00 --- nvmerdma.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
-      --- pvscsi.v00 --- qcnic.v00 --- qedentv.v00 --- qedrntv.v00 --- qfle3.v00 ---
-      qfle3f.v00 --- qfle3i.v00 --- qflge.v00 --- rste.v00 --- sfvmk.v00 --- smartpqi.v00
-      --- vmkata.v00 --- vmkfcoe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- crx.v00 ---
-      elx_esx_.v00 --- btldr.v00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 ---
-      tpmesxup.v00 --- weaselin.v00 --- loadesx.v00 --- lsuv2_hp.v00 --- lsuv2_in.v00
-      --- lsuv2_ls.v00 --- lsuv2_nv.v00 --- lsuv2_oe.v00 --- lsuv2_oe.v01 --- lsuv2_oe.v02
-      --- lsuv2_sm.v00 --- native_m.v00 --- qlnative.v00 --- vdfs.v00 --- vmware_e.v00
-      --- vsan.v00 --- vsanheal.v00 --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools")
-      false }} --- tools.t00{{end}} --- dell_con.v00 --- xorg.v00 --- imgdb.tgz ---
-      imgpayld.tgz
-    build: "15843807"
-    description: ESXi 700-15843807 for dell
-    iso: VMware-VMvisor-Installer-7.0.0-15843807.x86_64-DellEMC_Customized-A00.iso
-    isourl: https://my.vmware.com/group/vmware/details?downloadGroup=OEM-ESXI70GA-DELLEMC&productId=974
-    kernel: b.b00
-    sha256sum: 5d8a0aef1414c92283e021b2010f61a75f6b80ff68e24a3652706425e2c81c0b
-    subvendor: none
-    title: esxi_700-15843807_dell
-    vendor: dell
     version: "700"
   - author: rackn
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00
@@ -4473,44 +4473,6 @@ Schema:
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00
       --- uc_amd.b00 --- uc_hygon.b00 --- procfs.b00 --- vmx.v00 --- vim.v00 --- tpm.v00
       --- sb.v00 --- s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
-      --- {{$key}}{{ end }} --- bnxtnet.v00 --- bnxtroce.v00 --- amscli.v00 --- amsd.v00
-      --- amshelpr.v00 --- amshelpr.v01 --- stage.v00 --- stage.v01 --- cru.v00 ---
-      stage.v02 --- payload.v00 --- ssacli.v00 --- stage.v03 --- ilo.v00 --- ilorest.v00
-      --- stage.v04 --- stage.v05 --- sut.v00 --- stage.v06 --- stage.v07 --- i40en.v00
-      --- igbn.v00 --- ixgben.v00 --- nmlx5cor.v00 --- nmlx5rdm.v00 --- nmst.v00 ---
-      qlnative.v00 --- qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedi.v00 --- qedrntv.v00
-      --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- drpy.v00 --- payload1.v00 ---
-      brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- i40iwn.v00 --- iavmd.v00 ---
-      icen.v00 --- iser.v00 --- lpfc.v00 --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00
-      --- lsi_msgp.v01 --- lsi_msgp.v02 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00
-      --- nfnic.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00
-      --- ntg3.v00 --- nvme_pci.v00 --- nvmerdma.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
-      --- pvscsi.v00 --- qflge.v00 --- rste.v00 --- sfvmk.v00 --- smartpqi.v00 ---
-      vmkata.v00 --- vmkfcoe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- crx.v00 --- elx_esx_.v00
-      --- btldr.v00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- tpmesxup.v00
-      --- weaselin.v00 --- loadesx.v00 --- lsuv2_hp.v00 --- lsuv2_in.v00 --- lsuv2_ls.v00
-      --- lsuv2_nv.v00 --- lsuv2_oe.v00 --- lsuv2_oe.v01 --- lsuv2_oe.v02 --- lsuv2_sm.v00
-      --- native_m.v00 --- vdfs.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
-      --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
-      --- xorg.v00 --- gc.v00 --- imgdb.tgz --- imgpayld.tgz
-    build: "16850804"
-    bundleurls:
-    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0.1-16850804-HPE-701.0.0.10.6.0.40-Oct2020-depot.zip
-    description: ESXi 700u1-16850804 for rkn_hpe
-    iso: RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso
-    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso
-    kernel: b.b00
-    sha256sum: 67e5741e44412acd4ef080d054f134f5e78efcb31b616c1936b0decd84c53b3e
-    sourcebundleurls:
-    - https://fill.in.next.time
-    subvendor: none
-    title: esxi_700u1-16850804_rkn_hpe
-    vendor: hpe
-    version: 700u1
-  - author: rackn
-    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00
-      --- uc_amd.b00 --- uc_hygon.b00 --- procfs.b00 --- vmx.v00 --- vim.v00 --- tpm.v00
-      --- sb.v00 --- s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
       --- {{$key}}{{ end }} --- bnxtnet.v00 --- bnxtroce.v00 --- dellshar.v00 ---
       lsimr3.v00 --- lsimsgpt.v00 --- dell_osn.v00 --- i40en.v00 --- igbn.v00 ---
       ixgben.v00 --- nmlx5cor.v00 --- nmlx5rdm.v00 --- qlnative.v00 --- qcnic.v00
@@ -4576,6 +4538,44 @@ Schema:
     subvendor: none
     title: esxi_700u1-x16850804_rkn_vmware
     vendor: vmware
+    version: 700u1
+  - author: rackn
+    bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00
+      --- uc_amd.b00 --- uc_hygon.b00 --- procfs.b00 --- vmx.v00 --- vim.v00 --- tpm.v00
+      --- sb.v00 --- s.v00{{ range $key := .Param "esxi/boot-cfg-extra-modules" }}
+      --- {{$key}}{{ end }} --- bnxtnet.v00 --- bnxtroce.v00 --- amscli.v00 --- amsd.v00
+      --- amshelpr.v00 --- amshelpr.v01 --- stage.v00 --- stage.v01 --- cru.v00 ---
+      stage.v02 --- payload.v00 --- ssacli.v00 --- stage.v03 --- ilo.v00 --- ilorest.v00
+      --- stage.v04 --- stage.v05 --- sut.v00 --- stage.v06 --- stage.v07 --- i40en.v00
+      --- igbn.v00 --- ixgben.v00 --- nmlx5cor.v00 --- nmlx5rdm.v00 --- nmst.v00 ---
+      qlnative.v00 --- qcnic.v00 --- qedentv.v00 --- qedf.v00 --- qedi.v00 --- qedrntv.v00
+      --- qfle3.v00 --- qfle3f.v00 --- qfle3i.v00 --- drpy.v00 --- payload1.v00 ---
+      brcmfcoe.v00 --- elxiscsi.v00 --- elxnet.v00 --- i40iwn.v00 --- iavmd.v00 ---
+      icen.v00 --- iser.v00 --- lpfc.v00 --- lpnic.v00 --- lsi_mr3.v00 --- lsi_msgp.v00
+      --- lsi_msgp.v01 --- lsi_msgp.v02 --- mtip32xx.v00 --- ne1000.v00 --- nenic.v00
+      --- nfnic.v00 --- nhpsa.v00 --- nmlx4_co.v00 --- nmlx4_en.v00 --- nmlx4_rd.v00
+      --- ntg3.v00 --- nvme_pci.v00 --- nvmerdma.v00 --- nvmxnet3.v00 --- nvmxnet3.v01
+      --- pvscsi.v00 --- qflge.v00 --- rste.v00 --- sfvmk.v00 --- smartpqi.v00 ---
+      vmkata.v00 --- vmkfcoe.v00 --- vmkusb.v00 --- vmw_ahci.v00 --- crx.v00 --- elx_esx_.v00
+      --- btldr.v00 --- esx_dvfi.v00 --- esx_ui.v00 --- esxupdt.v00 --- tpmesxup.v00
+      --- weaselin.v00 --- loadesx.v00 --- lsuv2_hp.v00 --- lsuv2_in.v00 --- lsuv2_ls.v00
+      --- lsuv2_nv.v00 --- lsuv2_oe.v00 --- lsuv2_oe.v01 --- lsuv2_oe.v02 --- lsuv2_sm.v00
+      --- native_m.v00 --- vdfs.v00 --- vmware_e.v00 --- vsan.v00 --- vsanheal.v00
+      --- vsanmgmt.v00{{ if eq (.Param "esxi/skip-tools") false }} --- tools.t00{{end}}
+      --- xorg.v00 --- gc.v00 --- imgdb.tgz --- imgpayld.tgz
+    build: "16850804"
+    bundleurls:
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/VMware-ESXi-7.0.1-16850804-HPE-701.0.0.10.6.0.40-Oct2020-depot.zip
+    description: ESXi 700u1-16850804 for rkn_hpe
+    iso: RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso
+    isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso
+    kernel: b.b00
+    sha256sum: 67e5741e44412acd4ef080d054f134f5e78efcb31b616c1936b0decd84c53b3e
+    sourcebundleurls:
+    - https://fill.in.next.time
+    subvendor: none
+    title: esxi_700u1-16850804_rkn_hpe
+    vendor: hpe
     version: 700u1
   - author: vmware
     bootcfg: jumpstrt.gz --- useropts.gz --- features.gz --- k.b00 --- uc_intel.b00

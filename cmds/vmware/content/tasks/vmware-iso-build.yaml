@@ -7,6 +7,13 @@ Meta:
   icon: building
   title: RackN
 Name: vmware-iso-build
+ExtraClaims:
+  - scope: files
+    action: "*"
+    specific: "*"
+  - scope: isos
+    action: "*"
+    specific: "*"
 Templates:
 - Name: vmware-iso-build.ps1
   Meta:
@@ -14,8 +21,6 @@ Templates:
   Contents: |-
 
     ls /tmp/rackn/isos
-    ls /tmp/rackn/esxi-bundles-7
-    ls /tmp/rackn/esxi-bundles-6
     ls /tmp/rackn/rackn-bundles-7
     ls /tmp/rackn/rackn-bundles-6
 
@@ -24,8 +29,75 @@ Templates:
     Write-Output "Getting build_iso.ps1"
     Invoke-Webrequest -Uri {{.ProvisionerURL}}/files/plugin_providers/vmware/scripts/build_iso.ps1 -Outfile build_iso.ps1
 
-    Write-Output "Building 6.X isos"
-    .\build_iso.ps1 -exportpath \tmp\rackn\isos\ -rackNolbDir \tmp\rackn\rackn-bundles-6\ -esxiOlbDir \tmp\rackn\esxi-bundles-6\
 
+    {{ range $isoData := .Param "esxi/iso-catalog" }}
+    {{ if and (eq (get $isoData "iso") "") (eq (get $isoData "isoUrl") "") }}
+    {{ if ne (len (get $isoData "bundleurls")) 0 }}
+
+    $Destination = 'c:\tmp\rackn\my-bundle'
+    Get-ChildItem -Path $Destination -Recurse | Remove-Item -force -recurse
+    Remove-Item $Destination -Force
+    new-item -itemtype directory -path $Destination
+    cd $Destination
+
+    {{ range $k, $v := (get $isoData "bundleurls") }}
+    {{ if hasPrefix "http" $v }}
+    $Url = '{{$v}}'
+    {{ else }}
+    $Url = '{{$.ProvisionerURL}}/files/{{$v}}'
+    {{ end }}
+    $ZipFile = $(Split-Path -Path $Url -Leaf)
+    $ZipFile = "c:\tmp\rackn\my-bundle\$ZipFile"
+    if (-not (Test-Path -LiteralPath $ZipFile -PathType Leaf))
+    {
+      Write-Output "Downloading $Url to $ZipFile"
+      (New-Object System.Net.WebClient).DownloadFile($Url, $ZipFile)
+    }
+    else
+    {
+      Write-Output "Already $ZipFile downloaded"
+    }
+    {{ end }}
+
+    cd c:\tmp\rackn
+
+    {{ if hasPrefix "6" (get $isoData "version") }}
+    Write-Output "Building 6.X isos"
+    .\build_iso.ps1 -exportpath \tmp\rackn\isos\ -rackNolbDir \tmp\rackn\rackn-bundles-6\ -esxiOlbDir \tmp\rackn\my-bundle\
+    {{ else }}
     Write-Output "Building 7.X isos"
-    .\build_iso.ps1 -exportpath \tmp\rackn\isos\ -rackNolbDir \tmp\rackn\rackn-bundles-7\ -esxiOlbDir \tmp\rackn\esxi-bundles-7\
+    .\build_iso.ps1 -exportpath \tmp\rackn\isos\ -rackNolbDir \tmp\rackn\rackn-bundles-7\ -esxiOlbDir \tmp\rackn\my-bundle\
+    {{ end }}
+
+    cd c:\tmp\rackn\isos
+    foreach ($file in Get-ChildItem c:\tmp\rackn\isos -Name) {
+      c:\curtin\drpcli.exe isos upload $file
+
+      Echo "Add/Update stanza:"
+      Echo "- iso: $file"
+      echo "  isourl: https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/FIX_VERSION/$file"
+      {{ if ne (len (get $isoData "sourcebundleurls")) 0 }}
+      echo "  sourcebundleurls:"
+      {{ range $k, $v := (get $isoData "sourcebundleurls") }}
+      echo "  - {{$v}}"
+      {{ end }}
+      {{ end }}
+      {{ if ne (len (get $isoData "bundleurls")) 0 }}
+      echo "  bundleurls:"
+      {{ range $k, $v := (get $isoData "bundleurls") }}
+      echo "  - {{$v}}"
+      {{ end }}
+      {{ end }}
+      echo "  version: {{get $isoData "version"}}"
+      echo "  vendor: {{get $isoData "vendor"}}"
+      echo "  subvendor: {{get $isoData "subvendor"}}"
+      echo "  author: {{get $isoData "author"}}"
+      $rest = $file -replace '.*{{get $isoData "build"}}', ''
+      $rest = $rest -replace '.iso', ''
+      echo "  build: `"{{get $isoData "build"}}$rest`""
+    }
+
+    {{ end }}
+    {{ end }}
+    {{ end }}
+

@@ -28,6 +28,7 @@ Add entry to the esxi/iso-catalog parameter.
   vendor: FILL
   author: FILL
   subvendor: FILL (none if not needed)
+  version: 700
 
 
 To Bundle ISO for RackN
