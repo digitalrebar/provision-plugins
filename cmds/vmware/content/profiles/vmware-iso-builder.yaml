@@ -1,0 +1,21 @@
+---
+Meta:
+  color": "black"
+  icon": "wrench"
+Name: vmware-iso-builder
+Description: Profile to use with image-builder to build a vm to build isos
+Documentation: |
+  Profile to use with image-builder to build a vm to build isos.
+
+  This assumes that you have a windows image.
+Params:
+  image-deploy/image-file: "files/images/win10ent-1909.box.gz"
+  image-deploy/image-os: "windows"
+  image-deploy/image-type: "dd-gz"
+  universal/image-deploy-post-flexiflow:
+    - vmware-powershell-install
+    - vmware-get-bundles
+  universal/application: vmware-iso-builder
+  universal/workflow-chain-map:
+    vmware-iso-builder:
+      universal-image-builder: esxi-build-isos

@@ -67,17 +67,6 @@ func (ii IsoDatas) Swap(i, j int) {
 	ii[j] = t
 }
 
-// elements of the collection be enumerated by an integer index.
-type Interface interface {
-	// Len is the number of elements in the collection.
-	Len() int
-	// Less reports whether the element with
-	// index i should sort before the element with index j.
-	Less(i, j int) bool
-	// Swap swaps the elements with indexes i and j.
-	Swap(i, j int)
-}
-
 var httpClient *http.Client
 
 func getBootcfg(id *IsoData, data []byte, sha256sum string) (string, string, error) {
@@ -225,8 +214,12 @@ func main() {
 		}
 
 		if id.Iso == "" {
-			fmt.Printf("Missing iso name! %v\n", id)
-			error = true
+			if len(id.Bundleurls) == 0 {
+				fmt.Printf("Missing iso name! %v\n", id)
+				error = true
+			} else {
+				fmt.Printf("Need to run isobuilder! %v\n", id)
+			}
 			continue
 		}
 
