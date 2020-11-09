@@ -1,0 +1,55 @@
+---
+Name: esxi_670-13006603_rkn_cisco-install
+Description: Install BootEnv for ESXi 670-13006603 for rkn_cisco
+Documentation: |
+  Provides VMware BootEnv for ESXi 670-13006603 for rkn_cisco
+  For more details, and to download ISO see:
+
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso
+  IsoSha256: 24e242f9a80a751f4db1525740ead5773df21719053fbc15776efe5ee56d5bcd
+  IsoUrl: ""
+  Name: esxi_670-13006603_rkn_cisco
+  SupportedArchitectures: {}
+  Version: 670
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_670-13006603_rkn_cisco.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_670-13006603_rkn_cisco.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

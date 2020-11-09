@@ -1,0 +1,55 @@
+---
+Name: esxi_670u1-10302608_nec-install
+Description: Install BootEnv for ESXi 670u1-10302608 for nec
+Documentation: |
+  Provides VMware BootEnv for ESXi 670u1-10302608 for nec
+  For more details, and to download ISO see:
+
+    - https://my.vmware.com/group/vmware/details?downloadGroup=OEM_ESXI67U1_NEC&productId=742
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: ESXi-6.7.1-10302608-NEC-6.7-02.iso
+  IsoSha256: 72f433956e894a19170f8bcd8bf6ccfec551f4b5734a09f6b0699ccd1ca4d5ed
+  IsoUrl: ""
+  Name: esxi_670u1-10302608_nec
+  SupportedArchitectures: {}
+  Version: 670u1
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi_670u1-10302608_nec.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi_670u1-10302608_nec.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

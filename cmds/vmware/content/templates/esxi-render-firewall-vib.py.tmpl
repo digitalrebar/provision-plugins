@@ -2,9 +2,7 @@
 
 import base64
 import json
-import os
 import subprocess
-import sys
 import time
 {{ template "esxi-vib-common.py.tmpl" .}}
 
@@ -18,7 +16,7 @@ init_logging("{}/{}".format(rackn_dir, logfile_name))
 vib_file_output = {{ if .ParamExists "esxi/vib-drpy-firewall" }}"{{ .Param "esxi/vib-drpy-firewall"}}"{{ else }}rackn_dir + "/firewall.vib"{{ end }}
 vib_file_content = """{{ template "DRP-Firewall-Rule.vib.base64.tmpl" .}}"""
 if not vib_file_content:
-    logging.error('No base64 encoded data found in tmplate "esxi-vib-fw.base64.tmpl".')
+    logging.error('No base64 encoded data found in template "esxi-vib-fw.base64.tmpl".')
     raise SystemError
 try:
    vib_file_content=base64.b64decode(vib_file_content)

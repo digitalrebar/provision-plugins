@@ -1,4 +1,9 @@
+dist: xenial
 language: go
+addons:
+  apt:
+    packages:
+      - bsdtar
 go:
 - '1.13'
 git:

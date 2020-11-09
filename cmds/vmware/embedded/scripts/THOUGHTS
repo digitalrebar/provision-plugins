@@ -1,0 +1,119 @@
+
+For customer to build normal ISO.
+- Use normal make-esxi.sh script and generate bootenv for iso.
+
+For customer to build RACKN ISO.
+- Create custom esxi/iso-catalog with their entry:
+
+  - sourcebundleurls:
+    - URL of source bundle
+    bundleurls:
+    - URL for bundles that can be retreived
+    version: 700
+    vendor: FILL
+    subvendor: FILL (none if not needed)
+    author: FILL (Different than vendor)
+
+- Use PHASE 0 and PHASE 1 in DRP
+- Save bootenv and iso from DRP
+
+
+To Add Normal ISO for RacKN
+
+Download ISO and place in AWS at https://s3-us-west-2.amazonaws.com/get.rebar.digital/images/vmware/esxi/<isoname>
+Add entry to the esxi/iso-catalog parameter.
+
+- iso: <isoname>
+  isourl: Source of where iso is in universe (VMWARE Site...)
+  vendor: FILL
+  author: FILL
+  subvendor: FILL (none if not needed)
+  version: 700
+
+
+To Bundle ISO for RackN
+
+Download Bundles and place in AWS at https://rackn-repo.s3-us-west-2.amazonaws.com/packages/vmware/esxi/olbs/7.0/ESXi-7.0.0-16324942-NEC-7.0-01.zip
+Add entry to the esxi/iso-catalog parameter
+
+- sourcebundleurls:
+  - URL of source bundle in VMWARE usually
+  bundleurls:
+  - URL from above in AWS
+  version: 700
+  vendor: FILL
+  subvendor: FILL (none if not needed)
+  author: rackn
+
+
+Have DRP with vmware and image-deploy plugin installed, Create VM and start esxi-build-isos.
+- For RackN build new vmware plugin with new isos to add to the mix.  This is only required for RACKN Bundles.
+
+
+PHASE 0 - setup builder
+
+  image-deploy windows image
+  install POWERCLI
+  GET VIBS for 6 and 7
+
+
+PHASE 1 - process bundles
+
+process the array in esxi/iso-catalog ($element)
+
+  if (len($element.bundleurls) == 0)
+    continue
+
+  if $element.iso != ""
+    continue
+
+  if $element.isourl != ""
+    curl --head $element.isourl
+    if found
+      continue
+
+  get bundles
+  build isos
+
+  for each iso built.
+    add to drp isos directory
+    sha256sum iso
+    extract bootcfg
+    FOR NON_RACKN BUILD:
+      make bootenv/profile for this object.
+    FOR RACKN BUILD:
+      upload isos into appropriate s3 buckets
+      update esxi/iso-catalog - name and url location
+
+
+PHASE 2 - process AWS DATA (RACKN ONLY) - Apply the esxi/iso-catalog-new parameter to the defaults in the esxi/iso-catalog
+
+Run this script:
+
+process the array in esxi/iso-catalog ($element)
+
+  iso = $element.iso
+  if iso == "" -> error "missing name"
+
+  if (len($element.bundleurls) == 0)
+    curl --head https://s3-us-west-2.amazonaws.com/get.rebar.digital/images/vmware/esxi/<isoname>
+  else
+    curl --head $element.isourl
+
+  if not found -> error "not found"
+
+  if sha256sum != $element.sha256sum && $element.sha256sum != unset or "" -> error
+
+  if $element.sha256sum == "" or unset || $element.bootcfg == "" or "unset"
+    download $iso
+
+    sha256sum iso
+    extract bootcfg
+
+    store sha256sum on aws object.
+    store sha256sum and bootcfg on esxi/iso-catalog object.
+  fi
+
+  make bootenv/profile for this object.
+
+Commit changes

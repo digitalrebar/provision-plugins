@@ -1,0 +1,58 @@
+%pre --interpreter=busybox
+# Set the network according to the "esxi/network-type" (default is "dhcp")
+# Also set /tmp/install-override if Param "esxi/disk-install-override" set
+{{ template "esxi-network-kickstart.tmpl" .}}
+
+{{ if .ParamExists "esxi/disk-install-override" }}{{ template "esxi-disk-install-override.tmpl" .}}{{ end }}
+
+%post --interpreter=python
+script_env = "post"
+{{ template "esxi-render-firewall-vib.py.tmpl" .}}
+
+%post --interpreter=python
+script_env = "post"
+{{ template "esxi-drpy-vib-render.py.tmpl" .}}
+
+%firstboot --interpreter=python
+script_env = "fb"
+{{ template "esxi-render-firewall-vib.py.tmpl" .}}
+
+%firstboot --interpreter=python
+script_env = "fb"
+{{ template "esxi-drpy-vib-render.py.tmpl" .}}
+
+{{ template "esxi-ks-custom-sections.tmpl" .}}
+
+%post --interpreter=python
+script_env = "post"
+{{ template "esxi-drpy-run.py.tmpl" .}}
+
+%firstboot --interpreter=busybox
+# This is backgrounded to allow for the system to stablize and installations to finish
+RB="/opt/rackn/drpy"
+RA="$RB/agent"
+RD="$RB/bin"
+RP="$RD/esxi-drp-run.py"
+RC=/etc/rc.local.d/local.sh
+head -n -1 $RC > /tmp/install-agent
+cat >> /tmp/install-agent <<EOF
+mkdir -p $RD
+cat > $RP <<INSIDEEOF
+{{template "esxi-drpy-run.py.tmpl" .}}
+INSIDEEOF
+chmod +x $RP
+/bin/nohup $RP &
+exit 0
+EOF
+mv -f /tmp/install-agent $RC
+chmod +x $RC
+
+%firstboot --interpreter=busybox
+{{ if eq (.Param "esxi/drp-port-disable") true -}}
+# disable the DRP API outbound port access if requested
+# NOTE: this should be run last - as actions above require API port access
+#       during the install
+esxcli network firewall ruleset set --ruleset-id=dr-provision --enabled=false
+{{ else -}}
+echo "ESXi Firewall rule left enabled since not disabled by 'esxi/drp-port-disable' Param."
+{{ end -}}

@@ -12,4 +12,3 @@ Tasks:
   - vmware-powershell-install
   - vmware-get-bundles
   - vmware-iso-build
-  - vmware-push-isos

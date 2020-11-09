@@ -17,50 +17,8 @@ Templates:
 
     new-item -itemtype directory -path c:\tmp\rackn
     new-item -itemtype directory -path c:\tmp\rackn\isos
-    new-item -itemtype directory -path c:\tmp\rackn\esxi-bundles-7
-    new-item -itemtype directory -path c:\tmp\rackn\esxi-bundles-6
     new-item -itemtype directory -path c:\tmp\rackn\rackn-bundles-7
     new-item -itemtype directory -path c:\tmp\rackn\rackn-bundles-6
-
-    cd c:\tmp\rackn\esxi-bundles-7
-    {{ range $k, $v := .Param "esxi/bundles-7" }}
-    {{ if hasPrefix "http" $v }}
-    $Url = '{{$v}}'
-    {{ else }}
-    $Url = '{{$.ProvisionerURL}}/files/{{$v}}'
-    {{ end }}
-    $ZipFile = $(Split-Path -Path $Url -Leaf)
-    $ZipFile = "c:\tmp\rackn\esxi-bundles-7\$ZipFile"
-    if (-not (Test-Path -LiteralPath $ZipFile -PathType Leaf))
-    {
-      Write-Output "Downloading $Url to $ZipFile"
-      (New-Object System.Net.WebClient).DownloadFile($Url, $ZipFile)
-    }
-    else
-    {
-      Write-Output "Already $ZipFile downloaded"
-    }
-    {{ end }}
-
-    cd c:\tmp\rackn\esxi-bundles-6
-    {{ range $k, $v := .Param "esxi/bundles-6" }}
-    {{ if hasPrefix "http" $v }}
-    $Url = '{{$v}}'
-    {{ else }}
-    $Url = '{{$.ProvisionerURL}}/files/{{$v}}'
-    {{ end }}
-    $ZipFile = $(Split-Path -Path $Url -Leaf)
-    $ZipFile = "c:\tmp\rackn\esxi-bundles-6\$ZipFile"
-    if (-not (Test-Path -LiteralPath $ZipFile -PathType Leaf))
-    {
-      Write-Output "Downloading $Url to $ZipFile"
-      (New-Object System.Net.WebClient).DownloadFile($Url, $ZipFile)
-    }
-    else
-    {
-      Write-Output "Already $ZipFile downloaded"
-    }
-    {{ end }}
 
     cd c:\tmp\rackn\rackn-bundles-7
     {{ range $k, $v := .Param "esxi/rackn-bundles-7" }}
@@ -103,7 +61,5 @@ Templates:
     {{ end }}
 
     ls c:\tmp\rackn\isos
-    ls c:\tmp\rackn\esxi-bundles-7
-    ls c:\tmp\rackn\esxi-bundles-6
     ls c:\tmp\rackn\rackn-bundles-7
     ls c:\tmp\rackn\rackn-bundles-6
