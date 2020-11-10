@@ -1,11 +1,9 @@
 
-The ipmi plugin adds the ability to do IPMI actions on machines.  Additionally, the plugin
-provides a stage, tasks, and parameters to facilitate the configuration of the BMC as part
-of a workflow.
+The ipmi plugin adds the ability to do multi-vendor out-of band managment (e.g. IPMI, Redfish, iDRAC, ILO, etc) actions on machines.  Additionally, the plugin provides a stage, tasks, and parameters to facilitate the configuration of the BMC as part of a workflow.
 
 Training Video: https://youtu.be/Zs6KvwBvZYQ
 
-NOTE: To use this plugin, *ipmitool* needs to be installed on the DRP endpoint.  The plugin
+NOTE: To use this plugin, *ipmitool* needs to be installed on the DRP endpoint.  The plugin 
 will fail to load/configure if missing.
 
 The following actions have become a loose API across all IPMI plugins.
