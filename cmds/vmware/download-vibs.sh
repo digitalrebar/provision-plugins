@@ -74,7 +74,7 @@ dl_failed() {
     local _err[7]="Protocol errors."
     local _err[8]="Server issued an error response."
 
-    rm -f embedded/$VIB
+    rm -f embedded/$AGT_VIB
     echo "!! FAILED !!"
     echo "FATAL: VIB file failed to download"
     echo "       source: $VIB_BASE/$VIB"
