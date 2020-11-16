@@ -1,0 +1,5 @@
+#!/bin/bash
+
+/curtin/drpcli -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines update {{.Machine.UUID}} '{ "Runnable": true }'
+/curtin/drpcli -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines processjobs {{.Machine.UUID}}
+
