@@ -1,0 +1,386 @@
+#!/usr/bin/env python
+
+from __future__ import (
+    absolute_import,
+    print_function,
+    unicode_literals,
+    )
+
+import io
+import os
+import re
+import sys
+import shutil
+import datetime
+
+sys.path.append('/curtin')
+from curtin import (
+    block,
+    net,
+    util,
+    config,
+    )
+
+"""
+CentOS 7
+
+Currently Support:
+
+- Legacy boot
+- UEFI boot
+- DHCP of BOOTIF
+
+Not Supported:
+
+- Multiple network configration
+- IPv6
+"""
+
+FSTAB_PREPEND = """\
+#
+# /etc/fstab
+# Created by MAAS fast-path installer.
+#
+# Accessible filesystems, by reference, are maintained under '/dev/disk'
+# See man pages fstab(5), findfs(8), mount(8) and/or blkid(8) for more info
+#
+"""
+
+FSTAB_UEFI = """\
+LABEL=uefi-boot /boot/efi vfat defaults 0 0
+"""
+
+GRUB_PREPEND = """\
+# Set by MAAS fast-path installer.
+GRUB_TIMEOUT=0
+GRUB_TERMINAL_OUTPUT=console
+GRUB_DISABLE_OS_PROBER=true
+"""
+
+
+def get_block_devices(target, cfg):
+    """Returns list of block devices for the given target."""
+    # target is the path to the mounted filesystem
+
+    # FIXME: these methods need moving to curtin.block
+    # and using them from there rather than commands.block_meta
+    from curtin.commands.block_meta import (extract_storage_ordered_dict,
+                                            get_path_to_storage_volume)
+
+    grubcfg = cfg.get('grub', {})
+
+    # copy legacy top level name
+    if 'grub_install_devices' in cfg and 'install_devices' not in grubcfg:
+        grubcfg['install_devices'] = cfg['grub_install_devices']
+
+    # if there is storage config, look for devices tagged with 'grub_device'
+    storage_cfg_odict = None
+    try:
+        storage_cfg_odict = extract_storage_ordered_dict(cfg)
+    except ValueError as e:
+        pass
+
+    if storage_cfg_odict:
+        storage_grub_devices = []
+        for item_id, item in storage_cfg_odict.items():
+            if not item.get('grub_device'):
+                continue
+            storage_grub_devices.append(
+                get_path_to_storage_volume(item_id, storage_cfg_odict))
+        if len(storage_grub_devices) > 0:
+            grubcfg['install_devices'] = storage_grub_devices
+
+    if 'install_devices' in grubcfg:
+        instdevs = grubcfg.get('install_devices')
+        if isinstance(instdevs, str):
+            instdevs = [instdevs]
+    else:
+        # If there were no install_devices found then we try to do the right
+        # thing.  That right thing is basically installing on all block
+        # devices that are mounted.  On powerpc, though it means finding PrEP
+        # partitions.
+        devs = block.get_devices_for_mp(target)
+        blockdevs = set()
+        for maybepart in devs:
+            (blockdev, part) = block.get_blockdev_for_partition(maybepart)
+            blockdevs.add(blockdev)
+        instdevs = list(blockdevs)
+    return instdevs
+
+
+def get_root_info(target):
+    """Returns the root partitions information."""
+    rootpath = block.get_devices_for_mp(target)[0]
+    rootdev = os.path.basename(rootpath)
+    blocks = block._lsblock()
+    return blocks[rootdev]
+
+
+def read_file(path):
+    """Returns content of a file."""
+    with io.open(path, encoding="utf-8") as stream:
+        return stream.read()
+
+
+def write_fstab(target, curtin_fstab):
+    """Writes the new fstab, using the fstab provided
+    from curtin."""
+    fstab_path = os.path.join(target, 'etc', 'fstab')
+    fstab_data = read_file(curtin_fstab)
+    with open(fstab_path, 'w') as stream:
+        stream.write(FSTAB_PREPEND)
+        stream.write(fstab_data)
+        if util.is_uefi_bootable():
+            stream.write(FSTAB_UEFI)
+
+
+def strip_kernel_params(params, strip_params=[]):
+    """Removes un-needed kernel parameters."""
+    new_params = []
+    for param in params:
+        remove = False
+        for strip in strip_params:
+             if param.startswith(strip):
+                 remove = True
+                 break
+        if remove is False:
+            new_params.append(param)
+    return new_params
+
+
+def get_extra_kernel_parameters():
+    """Extracts the extra kernel commands from /proc/cmdline
+    that should be placed onto the host.
+
+    Any command following the '--' entry should be placed
+    onto the host.
+    """
+    cmdline = read_file('/proc/cmdline')
+    cmdline = cmdline.split()
+    if '--' not in cmdline:
+        return []
+    idx = cmdline.index('--') + 1
+    if idx >= len(cmdline) + 1:
+        return []
+    return strip_kernel_params(
+        cmdline[idx:],
+        strip_params=['initrd=', 'BOOT_IMAGE=', 'BOOTIF='])
+
+
+def update_grub_default(target, extra=[]):
+    """Updates /etc/default/grub with the correct options."""
+    grub_default_path = os.path.join(target, 'etc', 'default', 'grub')
+    kernel_cmdline = ' '.join(extra)
+    with open(grub_default_path, 'a') as stream:
+        stream.write(GRUB_PREPEND)
+        stream.write('GRUB_CMDLINE_LINUX=\"%s\"\n' % kernel_cmdline)
+
+
+def grub2_install(target, root):
+    """Installs grub2 to the root."""
+    with util.RunInChroot(target) as in_chroot:
+        in_chroot(['grub2-install', '--recheck', root])
+
+
+def grub2_mkconfig(target):
+    """Writes the new grub2 config."""
+    with util.RunInChroot(target) as in_chroot:
+        in_chroot(['grub2-mkconfig', '-o', '/boot/grub2/grub.cfg'])
+
+
+def grub2_install_efi(target):
+    """Configure for EFI."""
+    with util.RunInChroot(target) as in_chroot:
+        in_chroot([
+            'grub2-install', '--target=x86_64-efi',
+            '--efi-directory', '/boot/efi',
+            '--recheck'])
+
+
+def set_autorelabel(target):
+    """Creates file /.autorelabel.
+
+    This is used by SELinux to relabel all of the
+    files on the filesystem to have the correct
+    security context. Without this SSH login will
+    fail.
+    """
+    path = os.path.join(target, '.autorelabel')
+    open(path, 'a').close()
+
+
+def get_boot_mac():
+    """Return the mac address of the booting interface."""
+    cmdline = read_file('/proc/cmdline')
+    cmdline = cmdline.split()
+    try:
+        bootif = [
+            option
+            for option in cmdline
+            if option.startswith('BOOTIF')
+            ][0]
+    except IndexError:
+        return None
+    _, mac = bootif.split('=')
+    mac = mac.split('-')[1:]
+    return ':'.join(mac)
+
+
+def get_interface_names():
+    """Return a dictionary mapping mac addresses to interface names."""
+    sys_path = "/sys/class/net"
+    ifaces = {}
+    for iname in os.listdir(sys_path):
+        mac = read_file(os.path.join(sys_path, iname, "address"))
+        mac = mac.strip().lower()
+        ifaces[mac] = iname
+    return ifaces
+
+
+def get_ipv4_config(iface, data):
+    """Returns the contents of the interface file for ipv4."""
+    config = [
+        'TYPE="Ethernet"',
+        'NM_CONTROLLED="no"',
+        'USERCTL="yes"',
+        ]
+    if 'hwaddress' in data:
+        config.append('HWADDR="%s"' % data['hwaddress'])
+    # Fallback to using device name
+    else:
+        config.append('DEVICE="%"' % iface)
+    if data['auto']:
+        config.append('ONBOOT="yes"')
+    else:
+        config.append('ONBOOT="no"')
+
+    method = data['method']
+    if method == 'dhcp':
+        config.append('BOOTPROTO="dhcp"')
+        config.append('PEERDNS="yes"')
+        config.append('PERSISTENT_DHCLIENT="1"')
+        if 'hostname' in data:
+            config.append('DHCP_HOSTNAME="%s"' % data['hostname'])
+    elif method == 'static':
+        config.append('BOOTPROTO="none"')
+        config.append('IPADDR="%s"' % data['address'])
+        config.append('NETMASK="%s"' % data['netmask'])
+        if 'broadcast' in data:
+            config.append('BROADCAST="%s"' % data['broadcast'])
+        if 'gateway' in data:
+            config.append('GATEWAY="%s"' % data['gateway'])
+    elif method == 'manual':
+        config.append('BOOTPROTO="none"')
+    return '\n'.join(config)
+
+
+def write_interface_config(target, iface, data):
+    """Writes config for interface."""
+    family = data['family']
+    if family != "inet":
+        # Only supporting ipv4 currently
+        print(
+            "WARN: unsupported family %s, "
+            "failed to configure interface: %s" (family, iface))
+        return
+    config = get_ipv4_config(iface, data)
+    path = os.path.join(
+        target, 'etc', 'sysconfig', 'network-scripts', 'ifcfg-%s' % iface)
+    with open(path, 'w') as stream:
+        stream.write(config + '\n')
+
+def update_initramfs(target):
+    # Only do dracut style initramfs'es, debian stype is handled by
+    # the main curtin hook.
+    dracut = util.which("/sbin/dracut", target=target)
+    if dracut is None:
+        return
+    with util.RunInChroot(target) as in_chroot:
+        # mount any umount /boot if they exist, but do not care otherwise.
+        in_chroot.subp(["mount","/boot"],rcs=[0,1,32])
+        in_chroot.subp(["mount","/var"],rcs=[0,1,32])
+        try:
+            out, err = in_chroot(["/bin/bash","-c","""
+for d in /lib/modules/*/kernel; do
+    [[ -d $d ]] || continue
+    kv="${d%/kernel}"; kv="${kv#/lib/modules/}"
+    /sbin/dracut -f "/boot/initramfs-${kv}.img" "${kv}"
+done
+"""
+], capture=True)
+            print("%s: dracut chroot:\nso=%s\nse=%s\n" % (str(datetime.datetime.now()), out, err))
+        finally:
+            in_chroot.subp(["umount","/boot"],rcs=[0,32])
+            in_chroot.subp(["umount","/var"],rcs=[0,32])
+
+def write_network_config(target, mac):
+    """Write network configuration for the given MAC address."""
+    inames = get_interface_names()
+    iname = inames[mac.lower()]
+    write_interface_config(
+        target, iname, {
+            'family': 'inet',
+            'hwaddress': mac.upper(),
+            'auto': True,
+            'method': 'dhcp'
+        })
+
+
+def main():
+    print("%s: Linux Curtin Hook Starting" % str(datetime.datetime.now()))
+    state = util.load_command_environment()
+    cdata = config.load_config(state['config'])
+    target = state['target']
+    if target is None:
+        print("Target was not provided in the environment.")
+        sys.exit(1)
+    fstab = state['fstab']
+    if fstab is None:
+        print("/etc/fstab output was not provided in the environment.")
+        sys.exit(1)
+    print("%s: get boot mac" % str(datetime.datetime.now()))
+    bootmac = get_boot_mac()
+    if bootmac is None:
+        print("Unable to determine boot interface.")
+        sys.exit(1)
+    print("%s: get block devices" % str(datetime.datetime.now()))
+    devices = get_block_devices(target, cdata)
+    if not devices:
+        print("Unable to find block device for: %s" % target)
+        sys.exit(1)
+{{if (not (.Param "image-deploy/skip-grub2-configure"))}}
+    print("%s: write fstab" % str(datetime.datetime.now()))
+    write_fstab(target, fstab)
+{{end}}
+
+    print("%s: update grub default" % str(datetime.datetime.now()))
+    update_grub_default(
+        target, extra=get_extra_kernel_parameters())
+{{if (not (.Param "image-deploy/skip-grub2-configure"))}}
+    print("%s: Grub2 mkconfig" % str(datetime.datetime.now()))
+    grub2_mkconfig(target)
+{{end}}
+    if util.is_uefi_bootable():
+        print("%s: Grub2 efi install" % str(datetime.datetime.now()))
+        grub2_install_efi(target)
+{{if (not (.Param "image-deploy/skip-grub2-configure"))}}
+    else:
+        for dev in devices:
+            print("%s: Grub2 install on %s" % (str(datetime.datetime.now()), dev))
+            grub2_install(target, dev)
+{{end}}
+    print("%s: Auto Relabel" % str(datetime.datetime.now()))
+    set_autorelabel(target)
+{{if (not (.Param "image-deploy/skip-network-configure"))}}
+    if os.path.exists(util.target_path(target,"etc/sysconfig/network-scripts/network-functions")):
+        print("%s: Writing network config" % str(datetime.datetime.now()))
+        write_network_config(target, bootmac)
+{{end}}
+{{if (not (.Param "image-deploy/skip-initramfs"))}}
+    print("%s: Starting update initramfs" % str(datetime.datetime.now()))
+    update_initramfs(target)
+{{end}}
+    print("%s: Linux Curtin Hook Finished" % str(datetime.datetime.now()))
+
+if __name__ == "__main__":
+    main()
