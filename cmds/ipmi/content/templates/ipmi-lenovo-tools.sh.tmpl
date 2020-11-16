@@ -138,6 +138,7 @@ vendor_generate_csr() {
       <name>organizationName</name>
       <value minlen="1" maxlen="60">{{.Param "ipmi/configure/cert-org"}}</value>
     </item>
+{{ if .ParamExists "ipmi/configure/hostname" }}
     <item type="Optional">
       <vectorID>0001</vectorID>
       <name>emailAddress</name>
@@ -148,6 +149,7 @@ vendor_generate_csr() {
       <name>commonName</name>
       <value minlen="1" maxlen="60">{{.Param "ipmi/configure/hostname"}}</value>
     </item>
+{{ end }}
     <item type="Optional">
       <vectorID>0001</vectorID>
       <name>Name</name>
