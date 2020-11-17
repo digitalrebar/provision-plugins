@@ -1,0 +1,11 @@
+---
+Name: "ipmi/virtual-media-url"
+Description: "URL to attach to the BMC for virtual media."
+Documentation: |
+  URL to attach to the BMC for virtual media.
+Schema:
+  type: string
+Meta:
+  icon: server
+  color: blue
+  title: "RackN Content"

@@ -34,7 +34,7 @@ require (
 	github.com/kevinburke/go-bindata v3.13.0+incompatible
 	github.com/packethost/packngo v0.0.0-20181206143517-b36133050ae5
 	github.com/pborman/uuid v1.2.0
-	github.com/stmcginnis/gofish v0.4.1-0.20200422114932-ce37e50e6886
+	github.com/stmcginnis/gofish v0.6.0
 	github.com/vishvananda/netlink v0.0.0-20181208180451-78a3099b7080
 	github.com/vishvananda/netns v0.0.0-20180720170159-13995c7128cc // indirect
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
@@ -42,4 +42,3 @@ require (
 	gopkg.in/yaml.v2 v2.2.2
 )
 
-replace github.com/stmcginnis/gofish => github.com/digitalrebar/gofish v0.5.1-0.20200609063214-b41c00410875
