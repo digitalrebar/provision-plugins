@@ -3,7 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
 	"time"
+
+	utils2 "github.com/VictorLowther/jsonpatch2/utils"
+
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 
 	"github.com/stmcginnis/gofish/common"
 
@@ -63,12 +70,243 @@ func (r *redfish) Probe(l logger.Logger, address string, port int, username, pas
 	return true
 }
 
+func (r *redfish) getManager() (string, *models.Error) {
+	m, merr := r.client.Get("/redfish/v1/Managers/")
+	if merr != nil {
+		return "", utils.ConvertError(400, merr)
+	}
+	defer m.Body.Close()
+	data, derr := ioutil.ReadAll(m.Body)
+	if derr != nil {
+		return "", utils.ConvertError(400, derr)
+	}
+	mdata := map[string]interface{}{}
+	jerr := json.Unmarshal(data, &mdata)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+
+	mem := []map[string]string{}
+	jerr = utils2.Remarshal(mdata["Members"], &mem)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+
+	s, ok := mem[0]["@odata.id"]
+	if !ok {
+		return "", utils.MakeError(400, "bad struct")
+	}
+	return s, nil
+}
+
+func (r *redfish) getVirtualMedia() (string, *models.Error) {
+	mgr, err := r.getManager()
+	if err != nil {
+		return "", err
+	}
+	m, merr := r.client.Get(mgr)
+	if merr != nil {
+		return "", utils.ConvertError(400, merr)
+	}
+	defer m.Body.Close()
+	data, derr := ioutil.ReadAll(m.Body)
+	if derr != nil {
+		return "", utils.ConvertError(400, derr)
+	}
+	mdata := map[string]interface{}{}
+	jerr := json.Unmarshal(data, &mdata)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+
+	d, ok := mdata["VirtualMedia"]
+	if !ok {
+		return "", utils.MakeError(400, "No virtual media field")
+	}
+
+	mem := map[string]string{}
+	jerr = utils2.Remarshal(d, &mem)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+
+	s, ok := mem["@odata.id"]
+	if !ok {
+		return "", utils.MakeError(400, "bad struct")
+	}
+
+	return s, nil
+}
+
+func (r *redfish) getVirtualMediaCd() (string, *models.Error) {
+	mgr, verr := r.getVirtualMedia()
+	if verr != nil {
+		return "", verr
+	}
+	m, merr := r.client.Get(mgr)
+	if merr != nil {
+		return "", utils.ConvertError(400, merr)
+	}
+	defer m.Body.Close()
+	data, derr := ioutil.ReadAll(m.Body)
+	if derr != nil {
+		return "", utils.ConvertError(400, derr)
+	}
+	mdata := map[string]interface{}{}
+	jerr := json.Unmarshal(data, &mdata)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+
+	mem := []map[string]string{}
+	jerr = utils2.Remarshal(mdata["Members"], &mem)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+
+	// First one is removeable disk, second is cd
+	s, ok := mem[1]["@odata.id"]
+	if !ok {
+		return "", utils.MakeError(400, "bad struct")
+	}
+	return s, nil
+}
+
+func (r *redfish) getVirtualMediaCdStatus() (interface{}, *models.Error) {
+	mgr, verr := r.getVirtualMediaCd()
+	if verr != nil {
+		return "", verr
+	}
+
+	m, merr := r.client.Get(mgr)
+	if merr != nil {
+		return "", utils.ConvertError(400, merr)
+	}
+	defer m.Body.Close()
+	data, derr := ioutil.ReadAll(m.Body)
+	if derr != nil {
+		return "", utils.ConvertError(400, derr)
+	}
+	mdata := map[string]interface{}{}
+	jerr := json.Unmarshal(data, &mdata)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+
+	type answer struct {
+		Inserted interface{}
+		Image    interface{}
+	}
+	ans := &answer{
+		Inserted: mdata["Inserted"],
+		Image:    mdata["Image"],
+	}
+	return ans, nil
+}
+
+func (r *redfish) doVirtualMediaCdAction(action, actionData string, nextBoot bool) (interface{}, *models.Error) {
+	mgr, verr := r.getVirtualMediaCd()
+	if verr != nil {
+		return "", verr
+	}
+
+	hpe := false
+	dell := false
+	if strings.Contains(mgr, "iDRAC") {
+		dell = true
+	} else {
+		// XXX: Assume HPE>>>>
+		hpe = true
+	}
+
+	data := map[string]interface{}{}
+	if actionData != "" {
+		data["Image"] = actionData
+		if nextBoot && hpe {
+			boolData := map[string]bool{}
+			boolData["BootOnNextServerReset"] = true
+			moreData := map[string]interface{}{}
+			moreData["Hpe"] = boolData
+			data["Oem"] = moreData
+		}
+	}
+	if !strings.HasSuffix(mgr, "/") {
+		mgr = mgr + "/"
+	}
+	m, merr := r.client.Post(mgr+action, data)
+	if merr != nil {
+		return "", utils.ConvertError(400, merr)
+	}
+	defer m.Body.Close()
+
+	if m.StatusCode == http.StatusNoContent {
+		if nextBoot {
+			if dell {
+				mgr, verr = r.getManager() // Should cache this
+				if verr != nil {
+					return "", verr
+				}
+				if !strings.HasSuffix(mgr, "/") {
+					mgr = mgr + "/"
+				}
+
+				aadata := map[string]string{}
+				aadata["Target"] = "ALL"
+				adata := map[string]interface{}{}
+				adata["ShareParameters"] = aadata
+				adata["ImportBuffer"] = "<SystemConfiguration><Component FQDD=\"iDRAC.Embedded.1\"><Attribute Name=\"ServerBoot.1#BootOnce\">Enabled</Attribute><Attribute Name=\"ServerBoot.1#FirstBootDevice\">VCD-DVD</Attribute></Component></SystemConfiguration>"
+				arep, aerr := r.client.Post(mgr+"Actions/Oem/EID_674_Manager.ImportSystemConfiguration", adata)
+				if aerr != nil {
+					return "", utils.MakeError(400, fmt.Sprintf("GREG: %s %v %v", mgr+"Attributes/", adata, aerr))
+				}
+				defer arep.Body.Close()
+
+				if arep.StatusCode == 204 || arep.StatusCode == 202 {
+					return "Success", nil
+				}
+
+				bs, derr := ioutil.ReadAll(arep.Body)
+				if derr != nil {
+					return "", utils.ConvertError(400, derr)
+				}
+				return "", utils.MakeError(400, fmt.Sprintf("%d: %s", arep.StatusCode, string(bs)))
+			}
+		}
+		return "Success", nil
+	}
+
+	bs, derr := ioutil.ReadAll(m.Body)
+	if derr != nil {
+		return "", utils.ConvertError(400, derr)
+	}
+	mdata := map[string]interface{}{}
+	jerr := json.Unmarshal(bs, &mdata)
+	if jerr != nil {
+		return "", utils.ConvertError(400, jerr)
+	}
+	return mdata, nil
+}
+
 func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, res interface{}, err *models.Error) {
 	var cmdErr error
 	// Close session when done
 	defer r.client.Logout()
 
 	switch ma.Command {
+	case "statusVirtualMedia":
+		supported = true
+		res, err = r.getVirtualMediaCdStatus()
+		return
+	case "mountVirtualMedia":
+		supported = true
+		imageName := ma.Params["ipmi/virtual-media-url"].(string)
+		bootIt := ma.Params["ipmi/virtual-media-boot"].(bool)
+		res, err = r.doVirtualMediaCdAction("Actions/VirtualMedia.InsertMedia", imageName, bootIt)
+		return
+	case "unmountVirtualMedia":
+		supported = true
+		res, err = r.doVirtualMediaCdAction("Actions/VirtualMedia.EjectMedia", "", false)
+		return
 	case "getBoot":
 		p := r.system.Boot
 		return true, p, nil
@@ -366,7 +604,7 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 			err.Errorf("Redfish error: %v", cmdErr)
 		}
 		res = "{}"
-	case "nextbootpxe", "nextbootdisk", "forcebootpxe", "forcebootdisk":
+	case "nextbootcd", "nextbootpxe", "nextbootdisk", "forcebootpxe", "forcebootdisk":
 		supported = true
 		type rsBootUpdate struct {
 			Boot struct {
@@ -376,6 +614,9 @@ func (r *redfish) Action(l logger.Logger, ma *models.Action) (supported bool, re
 		}
 		bootUpdate := rsBootUpdate{}
 		switch ma.Command {
+		case "nextbootcd":
+			bootUpdate.Boot.BootSourceOverrideEnabled = "Once"
+			bootUpdate.Boot.BootSourceOverrideTarget = "Cd"
 		case "nextbootpxe":
 			bootUpdate.Boot.BootSourceOverrideEnabled = "Once"
 			bootUpdate.Boot.BootSourceOverrideTarget = "Pxe"

@@ -1,0 +1,12 @@
+---
+Name: "ipmi/virtual-media-boot"
+Description: "Should the virtual media be set to next boot"
+Documentation: |
+  Should the virtual media be set to next boot
+Schema:
+  type: "boolean"
+  default: false
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
