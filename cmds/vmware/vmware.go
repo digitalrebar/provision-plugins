@@ -1,7 +1,8 @@
 package main
 
 //go:generate ./download-vibs.sh
-//go:generate sh -c "cd process ; go build -o ../process-content"
+//go:generate sh -c "cd process ; GOOS=$(uname -o | tr [:upper:] [:lower:]) go build -o ../process-content"
+//go:generate ./process-content
 //go:generate sh -c "cd content ; drpcli contents bundle ../content.go"
 //go:generate sh -c "cd content ; drpcli contents bundle ../content.yaml"
 //go:generate sh -c "drpcli contents document content.yaml > vmware.rst"
