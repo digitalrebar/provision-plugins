@@ -1,7 +1,7 @@
 package main
 
 //go:generate ./download-vibs.sh
-//go:generate sh -c "cd process ; GOOS=$(uname -o | tr [:upper:] [:lower:]) go build -o ../process-content"
+//go:generate sh -c "cd process ; GOOS=${GOHOSTOS} go build -o ../process-content"
 //go:generate ./process-content
 //go:generate sh -c "cd content ; drpcli contents bundle ../content.go"
 //go:generate sh -c "cd content ; drpcli contents bundle ../content.yaml"
