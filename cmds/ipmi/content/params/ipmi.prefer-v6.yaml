@@ -1,0 +1,10 @@
+---
+Name: "ipmi/prefer-v6"
+Description: "Prefer IPv6 connectivity if it is enabled on the out of band controller"
+Schema:
+  type: "boolean"
+  default: false
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
