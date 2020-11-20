@@ -1,6 +1,6 @@
 ---
-Name: "ipmi/address"
-Description: "IP Address of the BMC"
+Name: "ipmi/address-v6"
+Description: "IP v6 Address of the BMC"
 Documentation: |
   This parameter is used by the IPMI Plugin to access the BMC.
 
@@ -8,7 +8,7 @@ Documentation: |
   *ipmi-configure* stage.
 Schema:
   type: "string"
-  default: ""
+  default: "::/255"
 Meta:
   icon: "address card outline"
   color: "blue"

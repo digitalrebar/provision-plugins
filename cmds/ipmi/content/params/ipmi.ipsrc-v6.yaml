@@ -1,6 +1,6 @@
 ---
-Name: "ipmi/ipsrc"
-Description: "IP address configuration method of the BMC"
+Name: "ipmi/ipsrc-v6"
+Description: "IP v6 address configuration method of the BMC"
 Documentation: |
   This parameter shows the method the BMC is using to configure the network.
 Schema:
