@@ -32,10 +32,10 @@ Stages:
   - esxi-preserve-logs
   - finish-install
   - esxi-remove-vmware-bootorder
-  - esxi-rename-datastore
   - esxi-preserve-logs
   - esxi-install-patches
   - esxi-activate-network
+  - esxi-rename-datastore
   - esxi-activate-shells
   - esxi-activate-nested
   - esxi-install-welcome
