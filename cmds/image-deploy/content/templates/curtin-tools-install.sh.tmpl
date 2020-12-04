@@ -21,7 +21,7 @@ echo "Installing required packages"
 if rpm -qa | grep -q PyYAML-3.10-11 ; then
     echo "packages already installed."
 else
-    rpm --rebuilddb
+    rpm --rebuilddb || :
     yum clean all
     yum install -y *.rpm
 fi
