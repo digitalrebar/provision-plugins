@@ -11,6 +11,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -20,10 +21,11 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/digitalrebar/logger"
-	"github.com/digitalrebar/provision-plugins/v4"
+	v4 "github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision-plugins/v4/utils"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
@@ -106,66 +108,73 @@ type auth struct {
 	bearerCacheLookupTime time.Time
 }
 
-// Plugin is the overall data holder for the plugin
-// If you defined extra operational values or params, they are typically included here
-type Plugin struct {
-	drpClient *api.Client
-	name      string
-
+type runningConfig struct {
+	drpClient      *api.Client
 	callbackClient *http.Client
 	callbacks      map[string]*callback
 	auths          map[string]*auth
 	proxy          string
 }
 
+// Plugin is the overall data holder for the plugin
+// If you defined extra operational values or params, they are typically included here
+type Plugin struct {
+	name  string
+	rc    *runningConfig
+	rcMux *sync.Mutex
+	pmq   *utils.PerIdQueue
+}
+
 // Config handles the configuration call from the DRP Endpoint
 func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) *models.Error {
-	p.drpClient = session
 	name, vverr := utils.ValidateStringValue("Name", config["Name"])
 	if vverr != nil {
 		name = "unknown"
 	}
 	p.name = name
 	utils.SetErrorName(p.name)
-
+	p.rcMux.Lock()
+	defer p.rcMux.Unlock()
+	rc := &runningConfig{}
+	rc.drpClient = session
 	err := &models.Error{Type: "plugin", Model: "plugins", Key: name}
 
 	callbacks := map[string]*callback{}
 	if rerr := models.Remarshal(config["callback/callbacks"], &callbacks); rerr != nil {
 		err.AddError(rerr)
 	}
-	p.callbacks = callbacks
+	rc.callbacks = callbacks
 
 	auths := map[string]*auth{}
 	if rerr := models.Remarshal(config["callback/auths"], &auths); rerr != nil {
 		err.AddError(rerr)
 	}
-	p.auths = auths
+	rc.auths = auths
 
 	if sval, ok := config["callback/proxy"]; ok {
-		p.proxy = sval.(string)
+		rc.proxy = sval.(string)
 	}
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	if p.proxy != "" {
-		if purl, rerr := url.Parse(p.proxy); err != nil {
+	if rc.proxy != "" {
+		if purl, rerr := url.Parse(rc.proxy); err != nil {
 			err.AddError(rerr)
 		} else {
 			tr.Proxy = http.ProxyURL(purl)
 		}
 	}
-	p.callbackClient = &http.Client{Transport: tr}
+	rc.callbackClient = &http.Client{Transport: tr}
 
 	if err.HasError() != nil {
 		return err
 	}
-
+	p.rc = rc
 	return nil
 }
 
-func (p *Plugin) getJsonToken(l logger.Logger, auth *auth) (string, error) {
+func (p *runningConfig) getJsonToken(l logger.Logger, auth *auth) (string, error) {
 	out := "getJsonToken:\n"
 	/*
 		Url           string // URL for auth
@@ -294,7 +303,7 @@ func getExecString(l logger.Logger, auth *auth) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
-func (p *Plugin) getExecBearer(l logger.Logger, auth *auth) (string, error) {
+func getExecBearer(l logger.Logger, auth *auth) (string, error) {
 	/*
 		Path          string // URL for auth
 	*/
@@ -315,42 +324,31 @@ func (p *Plugin) getExecBearer(l logger.Logger, auth *auth) (string, error) {
 	return out, nil
 }
 
-func (p *Plugin) postTrigger(l logger.Logger, machine *models.Machine, overrideData interface{}, action string) (answer interface{}, err *models.Error) {
-	cb, ok := p.callbacks[action]
-	if !ok {
-		l.Infof("Callback action unknown: %s", action)
-		answer = fmt.Sprintf("Callback attempted, but skipped because action unknown: %s", action)
-		return
-	}
-	var auths []*auth
-	if a, ok := p.auths[cb.Auth]; ok {
-		auths = append(auths, a)
-	}
-	if cb.Auths != nil {
-		for _, aname := range cb.Auths {
-			if a, ok := p.auths[aname]; ok {
-				auths = append(auths, a)
-			}
-		}
-	}
-	var cauth *auth
-	authindex := 0
-	if len(auths) > 0 {
-		cauth = auths[authindex]
-	}
+type remoteReq struct {
+	p         *runningConfig
+	l         logger.Logger
+	cb        *callback
+	action    string
+	authindex int
+	auths     []*auth
+	cauth     *auth
+	localUrl  string
+	payload   []byte
+}
 
+func (rr *remoteReq) do() (answer interface{}, err *models.Error) {
 	count := -1
 	dt := 7200
-	if cb.Timeout > 0 {
-		dt = cb.Timeout
+	if rr.cb.Timeout > 0 {
+		dt = rr.cb.Timeout
 	}
 	et := time.Now().Add(time.Duration(dt) * time.Second)
 
-	out := fmt.Sprintf("Doing %s callback\n", action)
+	out := fmt.Sprintf("Doing %s callback\n", rr.action)
 cb_retry:
 	count++
-	if count > 0 && cb.Delay > 0 {
-		time.Sleep(time.Duration(cb.Delay) * time.Second)
+	if count > 0 && rr.cb.Delay > 0 {
+		time.Sleep(time.Duration(rr.cb.Delay) * time.Second)
 	}
 	if time.Now().After(et) {
 		e := utils.MakeError(400, "Timeout of callback call")
@@ -358,6 +356,163 @@ cb_retry:
 		return out, e
 	}
 
+	out += fmt.Sprintf("Attempt %s (%d)\n", rr.action, count)
+	out += fmt.Sprintf("url: %s %s\n", rr.localUrl, rr.cb.Method)
+	var req *http.Request
+	if rr.cb.NoBody {
+		req, _ = http.NewRequest(rr.cb.Method, rr.localUrl, nil)
+	} else {
+		req, _ = http.NewRequest(rr.cb.Method, rr.localUrl, bytes.NewBuffer(rr.payload))
+	}
+
+	if rr.cauth != nil {
+		out += fmt.Sprintf("auth: %s\n", rr.cauth.AuthType)
+		switch rr.cauth.AuthType {
+		case "basic":
+			req.SetBasicAuth(rr.cauth.Username, rr.cauth.Password)
+		case "json-token":
+			// JSON Token Blob / Bearer
+			if rr.cauth.bearerCache == "" ||
+				time.Now().Sub(rr.cauth.bearerCacheLookupTime) > time.Duration(rr.cauth.bearerCacheTimeout)*time.Second {
+				jout, jterr := rr.p.getJsonToken(rr.l, rr.cauth)
+				if jterr != nil {
+					rr.cauth.bearerCache = ""
+					out += fmt.Sprintf("Auth[%d] failed: %v\n", rr.authindex, jterr)
+					rr.authindex++
+					if rr.authindex < len(rr.auths) {
+						rr.cauth = rr.auths[rr.authindex]
+						count = -1
+						goto cb_retry
+					}
+					e := utils.MakeError(400, "Failed to get auths")
+					e.AddError(fmt.Errorf("out: %s", out))
+					e.AddError(jterr)
+					return "", e
+				}
+				out += jout
+			}
+			out += fmt.Sprintf("token: %s\n", rr.cauth.bearerCache)
+			req.Header.Set("Authentication", fmt.Sprintf("Bearer %s", rr.cauth.bearerCache))
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", rr.cauth.bearerCache))
+		case "exec":
+			// Exec program to get a string that is a bearer token.
+			if rr.cauth.bearerCache == "" ||
+				time.Now().Sub(rr.cauth.bearerCacheLookupTime) > time.Duration(rr.cauth.bearerCacheTimeout)*time.Second {
+				jout, jterr := getExecBearer(rr.l, rr.cauth)
+				if jterr != nil {
+					rr.cauth.bearerCache = ""
+					out += fmt.Sprintf("Auth[%d] failed: %v\n", rr.authindex, jterr)
+					rr.authindex++
+					if rr.authindex < len(rr.auths) {
+						rr.cauth = rr.auths[rr.authindex]
+						count = -1
+						goto cb_retry
+					}
+					e := utils.MakeError(400, "Failed to get auths")
+					e.AddError(fmt.Errorf("out: %s", out))
+					e.AddError(jterr)
+					return "", e
+				}
+				out += jout
+			}
+			out += fmt.Sprintf("token: %s\n", rr.cauth.bearerCache)
+			req.Header.Set("Authentication", fmt.Sprintf("Bearer %s", rr.cauth.bearerCache))
+			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", rr.cauth.bearerCache))
+		}
+	}
+
+	hasContentType := false
+	hasAccept := false
+	if rr.cb.Headers != nil {
+		for k, v := range rr.cb.Headers {
+			if strings.ToLower(k) == strings.ToLower("Content-Type") {
+				hasContentType = true
+			}
+			if strings.ToLower(k) == strings.ToLower("Accept") {
+				hasAccept = true
+			}
+			req.Header.Set(k, v)
+		}
+	}
+	if !hasContentType {
+		req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	}
+	if !hasAccept {
+		req.Header.Set("Accept", "application/json")
+	}
+
+	resp2, rerr := rr.p.callbackClient.Do(req)
+	if rerr != nil {
+		if count < rr.cb.Retry {
+			goto cb_retry
+		}
+		e := utils.MakeError(400, "Failed to callback API")
+		e.AddError(fmt.Errorf("out: %s", out))
+		e.AddError(rerr)
+		return string(rr.payload), e
+	}
+	defer resp2.Body.Close()
+
+	out += fmt.Sprintf("request: %s\n", string(rr.payload))
+	out += fmt.Sprintf("request Headers: %v\n", req.Header)
+	out += fmt.Sprintf("response Status: %v\n", resp2.Status)
+	out += fmt.Sprintf("response Headers: %v\n", resp2.Header)
+	body, _ := ioutil.ReadAll(resp2.Body)
+	out += fmt.Sprintf("response Body: %s\n", string(body))
+
+	if resp2.StatusCode >= 400 {
+		if count < rr.cb.Retry {
+			goto cb_retry
+		}
+		if resp2.StatusCode == 401 || resp2.StatusCode == 403 {
+			// If more auths, try them.
+			rr.authindex++
+			if rr.authindex < len(rr.auths) {
+				rr.cauth = rr.auths[rr.authindex]
+				count = -1
+				goto cb_retry
+			}
+		}
+		err = utils.MakeError(resp2.StatusCode, fmt.Sprintf("Callback API returned %d", resp2.StatusCode))
+		err.AddError(fmt.Errorf("out: %s", out))
+	} else {
+		if rr.cb.JsonResponse {
+			if jerr := json.Unmarshal(body, &answer); jerr != nil {
+				err = utils.MakeError(400, "Callback JSON parse")
+				err.AddError(fmt.Errorf("body: %s", string(body)))
+			}
+		} else if rr.cb.StringResponse {
+			answer = string(body)
+		} else {
+			answer = body
+		}
+	}
+	return
+}
+
+func (p *runningConfig) postTrigger(l logger.Logger,
+	machine *models.Machine,
+	overrideData interface{},
+	action string,
+	cb *callback) (rreq *remoteReq, err *models.Error) {
+	rreq = &remoteReq{p: p}
+	rreq.l = l
+	rreq.auths = []*auth{}
+	rreq.action = action
+	rreq.cb = cb
+	if a, ok := p.auths[cb.Auth]; ok {
+		rreq.auths = append(rreq.auths, a)
+	}
+	if cb.Auths != nil {
+		for _, aname := range cb.Auths {
+			if a, ok := p.auths[aname]; ok {
+				rreq.auths = append(rreq.auths, a)
+			}
+		}
+	}
+	if len(rreq.auths) > 0 {
+		rreq.cauth = rreq.auths[rreq.authindex]
+	}
 	var res map[string]interface{}
 	rr := p.drpClient.Req().UrlFor("machines", machine.UUID(), "params")
 	if cb.Aggregate || overrideData != nil {
@@ -367,9 +522,6 @@ cb_retry:
 		rr = rr.Params("decode", "true")
 	}
 	if derr := rr.Do(&res); derr != nil {
-		if count < cb.Retry {
-			goto cb_retry
-		}
 		err = utils.ConvertError(400, derr)
 		return
 	}
@@ -400,151 +552,17 @@ cb_retry:
 
 	buf2, jerr := json.Marshal(overrideData)
 	if jerr != nil {
-		if count < cb.Retry {
-			goto cb_retry
-		}
 		err = utils.ConvertError(400, jerr)
 		return
 	}
+	rreq.payload = buf2
 
 	localUrl, uerr := Render(l, p.auths, p.drpClient, cb.Url, machine, info)
 	if uerr != nil {
 		err = utils.ConvertError(400, uerr)
 		return
 	}
-
-	out += fmt.Sprintf("Attempt %s (%d)\n", action, count)
-	out += fmt.Sprintf("url: %s %s\n", localUrl, cb.Method)
-	var req *http.Request
-	if cb.NoBody {
-		req, _ = http.NewRequest(cb.Method, localUrl, nil)
-	} else {
-		req, _ = http.NewRequest(cb.Method, localUrl, bytes.NewBuffer(buf2))
-	}
-
-	if cauth != nil {
-		out += fmt.Sprintf("auth: %s\n", cauth.AuthType)
-		switch cauth.AuthType {
-		case "basic":
-			req.SetBasicAuth(cauth.Username, cauth.Password)
-		case "json-token":
-			// JSON Token Blob / Bearer
-			if cauth.bearerCache == "" ||
-				time.Now().Sub(cauth.bearerCacheLookupTime) > time.Duration(cauth.bearerCacheTimeout)*time.Second {
-				jout, jterr := p.getJsonToken(l, cauth)
-				if jterr != nil {
-					cauth.bearerCache = ""
-					out += fmt.Sprintf("Auth[%d] failed: %v\n", authindex, jterr)
-					authindex++
-					if authindex < len(auths) {
-						cauth = auths[authindex]
-						count = -1
-						goto cb_retry
-					}
-					e := utils.MakeError(400, "Failed to get auths")
-					e.AddError(fmt.Errorf("out: %s", out))
-					e.AddError(jterr)
-					return "", e
-				}
-				out += jout
-			}
-			out += fmt.Sprintf("token: %s\n", cauth.bearerCache)
-			req.Header.Set("Authentication", fmt.Sprintf("Bearer %s", cauth.bearerCache))
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cauth.bearerCache))
-		case "exec":
-			// Exec program to get a string that is a bearer token.
-			if cauth.bearerCache == "" ||
-				time.Now().Sub(cauth.bearerCacheLookupTime) > time.Duration(cauth.bearerCacheTimeout)*time.Second {
-				jout, jterr := p.getExecBearer(l, cauth)
-				if jterr != nil {
-					cauth.bearerCache = ""
-					out += fmt.Sprintf("Auth[%d] failed: %v\n", authindex, jterr)
-					authindex++
-					if authindex < len(auths) {
-						cauth = auths[authindex]
-						count = -1
-						goto cb_retry
-					}
-					e := utils.MakeError(400, "Failed to get auths")
-					e.AddError(fmt.Errorf("out: %s", out))
-					e.AddError(jterr)
-					return "", e
-				}
-				out += jout
-			}
-			out += fmt.Sprintf("token: %s\n", cauth.bearerCache)
-			req.Header.Set("Authentication", fmt.Sprintf("Bearer %s", cauth.bearerCache))
-			req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cauth.bearerCache))
-		}
-	}
-
-	hasContentType := false
-	hasAccept := false
-	if cb.Headers != nil {
-		for k, v := range cb.Headers {
-			if strings.ToLower(k) == strings.ToLower("Content-Type") {
-				hasContentType = true
-			}
-			if strings.ToLower(k) == strings.ToLower("Accept") {
-				hasAccept = true
-			}
-			req.Header.Set(k, v)
-		}
-	}
-	if !hasContentType {
-		req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	}
-	if !hasAccept {
-		req.Header.Set("Accept", "application/json")
-	}
-
-	resp2, rerr := p.callbackClient.Do(req)
-	if rerr != nil {
-		if count < cb.Retry {
-			goto cb_retry
-		}
-		e := utils.MakeError(400, "Failed to callback API")
-		e.AddError(fmt.Errorf("out: %s", out))
-		e.AddError(rerr)
-		return string(buf2), e
-	}
-	defer resp2.Body.Close()
-
-	out += fmt.Sprintf("request: %s\n", string(buf2))
-	out += fmt.Sprintf("request Headers: %v\n", req.Header)
-	out += fmt.Sprintf("response Status: %v\n", resp2.Status)
-	out += fmt.Sprintf("response Headers: %v\n", resp2.Header)
-	body, _ := ioutil.ReadAll(resp2.Body)
-	out += fmt.Sprintf("response Body: %s\n", string(body))
-
-	if resp2.StatusCode >= 400 {
-		if count < cb.Retry {
-			goto cb_retry
-		}
-		if resp2.StatusCode == 401 || resp2.StatusCode == 403 {
-			// If more auths, try them.
-			authindex++
-			if authindex < len(auths) {
-				cauth = auths[authindex]
-				count = -1
-				goto cb_retry
-			}
-		}
-		err = utils.MakeError(resp2.StatusCode, fmt.Sprintf("Callback API returned %d", resp2.StatusCode))
-		err.AddError(fmt.Errorf("out: %s", out))
-	} else {
-		if cb.JsonResponse {
-			if jerr := json.Unmarshal(body, &answer); jerr != nil {
-				err = utils.MakeError(400, "Callback JSON parse")
-				err.AddError(fmt.Errorf("body: %s", string(body)))
-			}
-		} else if cb.StringResponse {
-			answer = string(body)
-		} else {
-			answer = body
-		}
-	}
-
+	rreq.localUrl = localUrl
 	return
 }
 
@@ -553,6 +571,9 @@ cb_retry:
 // reminder when validating params:
 //   DRP will pass in required machine params if they exist in hierarchy
 func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{}, err *models.Error) {
+	p.rcMux.Lock()
+	rc := p.rc
+	p.rcMux.Unlock()
 
 	switch ma.Command {
 	case "callbackDo":
@@ -570,8 +591,16 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 			err = utils.ConvertError(400, rerr)
 			return
 		}
-
-		answer, err = p.postTrigger(l, machine, overrideData, action)
+		cb, ok := rc.callbacks[action]
+		if !ok {
+			err.Errorf("Callback attempted, but skipped because action unknown: %s", action)
+			return
+		}
+		var rreq *remoteReq
+		rreq, err = rc.postTrigger(l, machine, overrideData, action, cb)
+		if err == nil {
+			answer, err = rreq.do()
+		}
 
 	default:
 		err = utils.MakeError(404, fmt.Sprintf("Unknown command: %s", ma.Command))
@@ -589,77 +618,86 @@ func (p *Plugin) SelectEvents() []string {
 }
 
 // Event handler - need to deal with this...
-func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
-
-	if e.Type == "machines" && e.Action == "update" {
-		if _, ok := p.callbacks["taskcomplete"]; !ok {
-			return nil
-		}
-
-		machine := &models.Machine{}
-		if perr := p.drpClient.FillModel(machine, e.Key); perr != nil {
-			return utils.ConvertError(400, perr)
-		}
-
-		if machine.CurrentTask == len(machine.Tasks) {
-			_, err := p.postTrigger(l, machine, nil, "taskcopmlete")
-			return err
-		}
-		return nil
-	}
-
-	if _, ok := p.callbacks["jobfail"]; !ok {
-		return nil
-	}
-
-	if e.Type != "jobs" {
-		return nil
-	}
-	if e.Action != "update" && e.Action != "save" {
-		return nil
-	}
-	// Make sure we get a job model.
+func (p *Plugin) Publish(l logger.Logger, e *models.Event) (err *models.Error) {
+	p.rcMux.Lock()
+	rc := p.rc
+	p.rcMux.Unlock()
 	obj, merr := e.Model()
 	if merr != nil {
-		// Bad machine ignore.
-		return nil
+		// Bad object
+		return
 	}
-	job := obj.(*models.Job)
-
-	res, rerr := models.New(e.Type)
-	if rerr != nil {
-		return utils.ConvertError(400, rerr)
-	}
-	buf := bytes.Buffer{}
-	enc, dec := json.NewEncoder(&buf), json.NewDecoder(&buf)
-	if eerr := enc.Encode(e.Original); eerr != nil {
-		return utils.ConvertError(400, eerr)
-	}
-	if eerr := dec.Decode(res); eerr != nil {
-		return utils.ConvertError(400, eerr)
-	}
-	ojob := res.(*models.Job)
-
-	machine := &models.Machine{}
-	if perr := p.drpClient.FillModel(machine, job.Machine.String()); perr != nil {
-		return utils.ConvertError(400, perr)
-	}
-
-	if job.State == "failed" && (ojob.State == "running" || ojob.State == "created") {
-		data, err := p.postTrigger(l, machine, nil, "jobfail")
-		if err != nil {
-			l.Errorf("Callback job fail function failed: %v\nData: %v\n", err, data)
+	var rreq *remoteReq
+	tc, tok := rc.callbacks["taskcomplete"]
+	jc, jok := rc.callbacks["jobfail"]
+	if e.Type == "machines" && tok {
+		machine := obj.(*models.Machine)
+		if machine.CurrentTask != len(machine.Tasks) {
+			return
 		}
-		return err
+		rreq, err = rc.postTrigger(l, machine, nil, "taskcomplete", tc)
+		if err == nil {
+			p.pmq.Add(machine.UUID(), rreq.l, func() {
+				data, err := rreq.do()
+				if err != nil {
+					rreq.l.Errorf("Task complete callback failed: %v\nData: %v\n", err, data)
+				}
+			})
+		} else {
+			l.Errorf("Task complete callback prep failed: %v", err)
+		}
+		return
 	}
+	if e.Type == "jobs" && jok {
+		job := obj.(*models.Job)
+		var ojob *models.Job
+		if e.Original != nil {
+			res, rerr := models.New(e.Type)
+			if rerr != nil {
+				err = utils.ConvertError(400, rerr)
+				return
+			}
+			if eerr := models.Remarshal(e.Original, &res); eerr != nil {
+				err = utils.ConvertError(400, eerr)
+				return
+			}
+			ojob = res.(*models.Job)
+		}
+		machine := &models.Machine{}
+		if perr := rc.drpClient.FillModel(machine, job.Machine.String()); perr != nil {
+			err = utils.ConvertError(400, perr)
+			return
+		}
 
-	return nil
+		if !(job.State == "failed" && (ojob == nil || ojob.State == "running" || ojob.State == "created")) {
+			return
+		}
+		rreq, err = rc.postTrigger(l, machine, nil, "jobfail", jc)
+		if err == nil {
+			p.pmq.Add(machine.UUID(), rreq.l, func() {
+				data, err := rreq.do()
+				if err != nil {
+					rreq.l.Errorf("Jobfail callback failed: %v\nData: %v\n", err, data)
+				}
+			})
+		} else {
+			l.Errorf("Jobfail callback prep failed: %v", err)
+		}
+	}
+	return
 }
 
 // main is the entry point for the plugin code
 // the InitApp routine should reflect the name and purpose of the plugin
 func main() {
-	plugin.InitApp("callback", "Provides way to callback to other systems", version, &def, &Plugin{})
+	plugin.InitApp("callback",
+		"Provides way to callback to other systems",
+		version,
+		&def,
+		&Plugin{
+			rcMux: &sync.Mutex{},
+			pmq:   utils.NewQueues(context.Background(), 100),
+		})
 	err := plugin.App.Execute()
 	if err != nil {
 		os.Exit(1)
