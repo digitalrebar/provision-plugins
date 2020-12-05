@@ -34,6 +34,13 @@ Templates:
   Name: "Linux drpcli-install.sh"
 
 #
+# linux sub-type raw set
+#
+- ID: "curtin-basic-curtin-hooks.tmpl"
+  Path: "raw/curtin-hooks"
+  Name: "raw curtin hooks"
+
+#
 # Windows set
 #
 - ID: "curtin-windows-curtin-hooks.tmpl"

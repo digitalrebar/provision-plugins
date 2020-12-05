@@ -34,6 +34,9 @@ if [[ $OSTYPE == linux ]] ; then
     chmod +x /tmp/drpcli/usr/local/bin
 
     cp linux/* /tmp/drpcli/curtin
+    if [[ $OSSUBTYPE == "raw" ]] ; then
+        cp raw/* /tmp/drpcli/curtin
+    fi
     chmod +x /tmp/drpcli/curtin/*
 
     # Cloud-init hackery
