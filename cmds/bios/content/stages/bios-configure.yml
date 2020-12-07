@@ -9,7 +9,7 @@ BootEnv: sledgehammer
 Tasks:
   - bios-current-config
   - bios-configure
-  - bios-ilo-configuration
+  - bios-custom-configuration
 Meta:
   icon: "setting"
   color: "yellow"

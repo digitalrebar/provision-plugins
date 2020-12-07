@@ -1,0 +1,23 @@
+---
+Name: "bios-custom-configuration"
+Description: "Configure custom additional bios pieces by vendor"
+Meta:
+  icon: "money"
+  color: "grey"
+  title: "RackN Content"
+Prerequisites:
+  - bios-tools-install
+Templates:
+  - Name: "bios-custom-config.sh"
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{ template "setup.tmpl" . }}
+
+      mfgr="$(drpcli gohai |jq -r '.DMI | .System | .Manufacturer')"
+      case $mfgr in
+         "Dell Inc.") drpcli machines tasks add {{.Machine.UUID}} at 0 bios-idrac-configuration;;
+         "HP"|"HPE") drpcli machines tasks add {{.Machine.UUID}} at 0 bios-ilo-configuration;;
+         Lenovo) drpcli machines tasks add {{.Machine.UUID}} at 0 bios-lenovo-configuration;;
+         *) echo "No idea how to custom config for $mfgr";;
+      esac
