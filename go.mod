@@ -41,4 +41,3 @@ require (
 	gopkg.in/imjoey/go-ovirt.v4 v4.0.6
 	gopkg.in/yaml.v2 v2.2.2
 )
-
