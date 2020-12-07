@@ -6,13 +6,15 @@ package main
 //go:generate rm content.yaml
 
 import (
+	"context"
 	"fmt"
 	"os"
+	"sync"
 
 	"github.com/digitalocean/go-netbox/netbox"
 	"github.com/digitalocean/go-netbox/netbox/client"
 	"github.com/digitalrebar/logger"
-	"github.com/digitalrebar/provision-plugins/v4"
+	v4 "github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision-plugins/v4/utils"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
@@ -34,12 +36,16 @@ var (
 )
 
 type Plugin struct {
+	*sync.Mutex
 	drpClient    *api.Client
 	netboxClient *client.NetBox
 	name         string
+	pmq          *utils.PerIdQueue
 }
 
 func (p *Plugin) Config(l logger.Logger, session *api.Client, config map[string]interface{}) *models.Error {
+	p.Lock()
+	defer p.Unlock()
 	p.drpClient = session
 	if name, err := utils.ValidateStringValue("Name", config["Name"]); err != nil {
 		p.name = "unknown"
@@ -78,14 +84,17 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 		// Bad model ignore.
 		return nil
 	}
-
+	p.Lock()
+	nb := p.netboxClient
+	drp := p.drpClient
+	p.Unlock()
 	switch e.Type {
 	case "machines":
 		m := obj.(*models.Machine)
 		if e.Action == "delete" {
-			p.RemoveNetboxDevice(l, m)
+			removeNetboxDevice(l, nb, m)
 		} else {
-			p.CreateOrUpdateNetboxDevice(l, m)
+			createOrUpdateNetboxDevice(l, nb, drp, m)
 		}
 	default:
 	}
@@ -94,7 +103,10 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) *models.Error {
 }
 
 func main() {
-	plugin.InitApp("netbox", "Allows for integration with NetBox", version, &def, &Plugin{})
+	plugin.InitApp("netbox", "Allows for integration with NetBox", version, &def, &Plugin{
+		Mutex: &sync.Mutex{},
+		pmq:   utils.NewQueues(context.Background(), 100),
+	})
 	if err := plugin.App.Execute(); err != nil {
 		os.Exit(1)
 	}

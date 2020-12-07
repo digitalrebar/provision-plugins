@@ -19,7 +19,7 @@ import (
 	"github.com/VictorLowther/simplexml/search"
 	libvirt "github.com/digitalocean/go-libvirt"
 	"github.com/digitalrebar/logger"
-	"github.com/digitalrebar/provision-plugins/v4"
+	v4 "github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/digitalrebar/provision/v4/plugin"
@@ -231,15 +231,12 @@ func (p *Plugin) SelectEvents() []string {
 }
 
 func (p *Plugin) Publish(l logger.Logger, e *models.Event) (res *models.Error) {
-	if e.Type != "machines" {
-		return
-	}
 	obj, err := e.Model()
 	if err != nil {
 		return
 	}
-	m, ok := obj.(*models.Machine)
-	if !ok {
+	m := obj.(*models.Machine)
+	if pname, ok := m.Params["machine-plugin"].(string); !ok || pname != "kvm-test" {
 		return
 	}
 	lv, err := p.lv()
@@ -265,11 +262,6 @@ func (p *Plugin) Publish(l logger.Logger, e *models.Event) (res *models.Error) {
 		fws := map[string]Firmware{}
 		if err := p.session.Req().UrlFor("machines", m.UUID(), "params", "kvm-test/bios").Params("aggregate", "true").Do(&fws); err != nil {
 			res.AddError(err)
-		}
-		pname, ok := m.Params["machine-plugin"].(string)
-		if !ok || pname != "kvm-test" {
-			l.Infof("Ignoring machine create for %s, machine-plugin Param is %v", m.Uuid, pname)
-			return nil
 		}
 		l.Infof("New machine %s, wants to be handled by kvm-test", m.Uuid)
 		mSpec := &Machine{}
