@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"io/ioutil"
 
+	"github.com/digitalocean/go-netbox/netbox/client"
+	"github.com/digitalrebar/provision/v4/api"
+
 	"github.com/digitalocean/go-netbox/netbox/client/dcim"
 	nbm "github.com/digitalocean/go-netbox/netbox/models"
 	"github.com/digitalrebar/logger"
+	"github.com/digitalrebar/provision-plugins/v4/utils"
 	"github.com/digitalrebar/provision/v4/models"
 	"github.com/go-openapi/runtime"
-	"github.com/digitalrebar/provision-plugins/v4/utils"
 )
 
 func handleNetBoxError(err error) string {
@@ -39,40 +42,35 @@ func (p *Plugin) ImportNetboxDevices(l logger.Logger) *models.Error {
 	} else {
 		for _, d := range data {
 			m := d.(*models.Machine)
-			if e := p.CreateOrUpdateNetboxDevice(l, m); e != nil {
-				l.Errorf(e.Error())
-			}
+			createOrUpdateNetboxDevice(l, p.netboxClient, p.drpClient, m)
 		}
 	}
 
 	return nil
 }
 
-func (p *Plugin) RemoveNetboxDevice(l logger.Logger, m *models.Machine) *models.Error {
+func removeNetboxDevice(l logger.Logger, netboxClient *client.NetBox, m *models.Machine) {
 	id := utils.GetParamOrInt64(m.Params, "netbox/id", -1)
 	if id == -1 {
-		return nil
+		return
 	}
 	params := dcim.NewDcimDevicesDeleteParams().WithID(id)
-	if _, err := p.netboxClient.Dcim.DcimDevicesDelete(params, nil); err != nil {
-		return utils.MakeError(400, fmt.Sprintf("Failed to delete %d: %v", id,
-			handleNetBoxError(err)))
-
+	if _, err := netboxClient.Dcim.DcimDevicesDelete(params, nil); err != nil {
+		l.Errorf("Failed to delete %d: %v", id, handleNetBoxError(err))
 	}
-	return nil
 }
 
-func (p *Plugin) CreateOrUpdateNetboxDevice(l logger.Logger, m *models.Machine) *models.Error {
+func createOrUpdateNetboxDevice(l logger.Logger, netboxClient *client.NetBox, drpClient *api.Client, m *models.Machine) {
 	device := &nbm.WritableDevice{}
 	id := utils.GetParamOrInt64(m.Params, "netbox/id", -1)
 	if id != -1 {
 		// Get it to update
 		ids := fmt.Sprintf("%d", id)
 		filter := dcim.NewDcimDevicesListParams().WithIDIn(&ids)
-		answer, err := p.netboxClient.Dcim.DcimDevicesList(filter, nil)
+		answer, err := netboxClient.Dcim.DcimDevicesList(filter, nil)
 		if err != nil {
-			return utils.MakeError(400, fmt.Sprintf("Failed to lookup: %d: %v", id,
-				handleNetBoxError(err)))
+			l.Errorf("Failed to lookup: %d: %v", id, handleNetBoxError(err))
+			return
 		}
 		if *answer.Payload.Count == 1 {
 			device = convertDeviceToWritableDevice(answer.Payload.Results[0])
@@ -85,17 +83,17 @@ func (p *Plugin) CreateOrUpdateNetboxDevice(l logger.Logger, m *models.Machine) 
 
 	if id == -1 {
 		params := dcim.NewDcimDevicesCreateParams().WithData(device)
-		if answer, err := p.netboxClient.Dcim.DcimDevicesCreate(params, nil); err != nil {
-			return utils.MakeError(400, fmt.Sprintf("Failed to create: %s: %v", m.UUID(),
-				handleNetBoxError(err)))
+		if answer, err := netboxClient.Dcim.DcimDevicesCreate(params, nil); err != nil {
+			l.Errorf("Failed to create: %s: %v", m.UUID(), handleNetBoxError(err))
+			return
 		} else {
 			device = answer.Payload
 		}
 	} else {
 		params := dcim.NewDcimDevicesUpdateParams().WithData(device).WithID(id)
-		if answer, err := p.netboxClient.Dcim.DcimDevicesUpdate(params, nil); err != nil {
-			return utils.MakeError(400, fmt.Sprintf("Failed to update: %s: %v", m.UUID(),
-				handleNetBoxError(err)))
+		if answer, err := netboxClient.Dcim.DcimDevicesUpdate(params, nil); err != nil {
+			l.Errorf("Failed to update: %s: %v", m.UUID(), handleNetBoxError(err))
+			return
 		} else {
 			device = answer.Payload
 		}
@@ -105,12 +103,10 @@ func (p *Plugin) CreateOrUpdateNetboxDevice(l logger.Logger, m *models.Machine) 
 		// Update DRP machine entry.
 		m.Params["netbox/id"] = device.ID
 
-		if err := p.drpClient.PutModel(m); err != nil {
-			return utils.MakeError(400, fmt.Sprintf("Failed to update %s: %v", m.UUID(), err.Error()))
+		if err := drpClient.PutModel(m); err != nil {
+			l.Errorf("Failed to update %s: %v", m.UUID(), err.Error())
 		}
 	}
-
-	return nil
 }
 
 func updateNetboxDeviceFromDrpMachine(l logger.Logger, d *nbm.WritableDevice, m *models.Machine) {
