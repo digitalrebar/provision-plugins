@@ -570,7 +570,7 @@ func (p *runningConfig) postTrigger(l logger.Logger,
 // using ma.Command, all registered actions should be handled
 // reminder when validating params:
 //   DRP will pass in required machine params if they exist in hierarchy
-func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{}, err *models.Error) {
+func (p *Plugin) Action(l logger.Logger, ma *models.Action) (interface{}, *models.Error) {
 	p.rcMux.Lock()
 	rc := p.rc
 	p.rcMux.Unlock()
@@ -579,34 +579,30 @@ func (p *Plugin) Action(l logger.Logger, ma *models.Action) (answer interface{},
 	case "callbackDo":
 		// validate action and do
 		var action string
-		action, err = utils.ValidateStringValue("callback/action", ma.Params["callback/action"])
+		action, err := utils.ValidateStringValue("callback/action", ma.Params["callback/action"])
 		if err != nil {
-			return
+			return nil, err
 		}
 		overrideData, _ := ma.Params["callback/data-override"]
 
 		machine := &models.Machine{}
 		machine.Fill()
 		if rerr := models.Remarshal(ma.Model, &machine); rerr != nil {
-			err = utils.ConvertError(400, rerr)
-			return
+			return nil, utils.ConvertError(400, rerr)
 		}
 		cb, ok := rc.callbacks[action]
 		if !ok {
-			err.Errorf("Callback attempted, but skipped because action unknown: %s", action)
-			return
+			return fmt.Sprintf("Callback attempted, but skipped because action unknown: %s", action), nil
 		}
 		var rreq *remoteReq
-		rreq, err = rc.postTrigger(l, machine, overrideData, action, cb)
-		if err == nil {
-			answer, err = rreq.do()
+		if rreq, err = rc.postTrigger(l, machine, overrideData, action, cb); err != nil {
+			return nil, err
+		} else {
+			return rreq.do()
 		}
-
 	default:
-		err = utils.MakeError(404, fmt.Sprintf("Unknown command: %s", ma.Command))
+		return nil, utils.MakeError(404, fmt.Sprintf("Unknown command: %s", ma.Command))
 	}
-
-	return
 }
 
 func (p *Plugin) SelectEvents() []string {
