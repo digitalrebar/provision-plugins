@@ -71,8 +71,8 @@ To define the type and content of the image, all of these values must be specifi
 * image-deploy/image-os - This is the type of OS being installed.  Current values are are linux or windows.  The
   value of *basic* is deprecated and maps to *windows*.
 * image-deploy/image-os-subtype - This is the subtype of the `image-deploy/image-os` value.  This is ignored currently
-  for *windows*, but for *linux*, this is used to indicate family information.  Valid values for *linux* subtypes are
-  *centos* (and all its RHEL buddies) or *ubuntu* (and all its debian buddies).
+  for *windows*, but for *linux*, this is used to indicate a `raw` image.  The `raw` value indicates
+  that the disk is a full disk image and curtin should not run any hooks to alter the image state.
 
 Additional parameters can be used to override and expand the system.
 

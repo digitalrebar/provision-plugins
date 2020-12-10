@@ -1,0 +1,15 @@
+---
+Name: bios-current-configuration
+Description: The current BIOS configuration for a system as a set of key:data elements.
+Documentation: |
+  The current configuration that the various tasks have gathered about the system.
+  Valid settings for this field vary depending on system manufacturer,
+  model, BIOS and firmware revision, and even on the current system settings.
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  default: {}
+  type: object
+  additionalProperties: true

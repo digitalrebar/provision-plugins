@@ -1,0 +1,14 @@
+---
+Name: bios-file-base-url
+Description: "Base url to use for bios custom configuration"
+Documentation: |
+  This url defines the path to find files needed by the custom configuration tasks.
+
+  This is currently only used by the lenovo tooling.
+
+  This is an expanding parameter.  Template expansions can be added to the string.
+
+  The string should NOT end in a '/'.
+Schema:
+  default: "{{.ProvisionerURL}}/files"
+  type: string
