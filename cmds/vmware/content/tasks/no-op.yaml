@@ -1,0 +1,14 @@
+---
+Name: no-op
+Description: Do nothing task
+Documentation: |
+  Task that is used by the esxi-join-local stage that does nothing.
+Meta:
+  icon: "money"
+  color: "yellow"
+  title: "RackN Content"
+Templates:
+  - Name: no-op.sh
+    Contents: |
+      #!/usr/bin/env sh
+      exit 0
