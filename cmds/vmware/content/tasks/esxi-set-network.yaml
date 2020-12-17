@@ -21,7 +21,7 @@ Templates:
       url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}'
 
       {{ if .Param "esxi/skip-update-address" }}
-      # Only do this if we are allowed to.
+      print('"esxi/skip-update-address" is set to "true" (the default value), no address update performed.')
       exit(0)
       {{ end }}
 
