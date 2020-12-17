@@ -1,0 +1,13 @@
+Meta:
+  color: yellow
+  icon: cloud
+Name: esxi-join-local
+Description: "Workflow for use by the esxi-join-up.py script"
+Documentation: |
+  This workflow provides a minimal set of stages and tasks to get an ESXi host
+  added to the DRP endpoint using the esxi-join-up.py script. Upon completion
+  the host will be set to boot locally.
+
+Stages:
+  - esxi-join-local
+  - complete

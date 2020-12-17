@@ -1,0 +1,17 @@
+---
+Name: "esxi-join-local"
+Description: "Joins an ESXi host to the DRP endpoint and sets it to local boot"
+Documentation: |
+  Used to join an ESXi host to the DRP endpoint using the esxi-join-up.py script.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN Content
+Tasks:
+  - no-op
+Templates:
+  - Name: "drpy.conf"
+    Path: "{{.Machine.Path}}/drpy.conf"
+    ID: drpy-agent.conf.tmpl
+BootEnv: local
