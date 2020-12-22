@@ -220,9 +220,12 @@ func (r *redfish) doVirtualMediaCdAction(action, actionData string, nextBoot boo
 	}
 
 	data := map[string]interface{}{}
+	method := "POST"
 	if actionData != "" {
 		data["Image"] = actionData
 		if nextBoot && hpe {
+			method = "PATCH"
+			action = ""
 			boolData := map[string]bool{}
 			boolData["BootOnNextServerReset"] = true
 			moreData := map[string]interface{}{}
@@ -233,7 +236,15 @@ func (r *redfish) doVirtualMediaCdAction(action, actionData string, nextBoot boo
 	if !strings.HasSuffix(mgr, "/") {
 		mgr = mgr + "/"
 	}
-	m, merr := r.client.Post(mgr+action, data)
+	var merr error
+	var m *http.Response
+	if method == "POST" {
+		m, merr = r.client.Post(mgr+action, data)
+	} else if method == "PATCH" {
+		m, merr = r.client.Patch(mgr+action, data)
+	} else {
+		return "", utils.MakeError(500, fmt.Sprintf("Unknown method: %s", method))
+	}
 	if merr != nil {
 		return "", utils.ConvertError(400, merr)
 	}
