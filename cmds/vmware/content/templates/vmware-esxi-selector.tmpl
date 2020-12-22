@@ -75,6 +75,7 @@ then
 
   BE=$(echo '{{ .ParamAsJSON "vmware/esxi-version-vendor-map" }}' \
     | jq -r ".[] | select((.mfg == \"${VENDOR}\")${MODEL}) | .bootenv")
+  BE_COUNT=$(echo $BE | wc -w)
   MATCHED="true"
   BOOTENV="${BE}"
   NEED_TO_SET_VENDOR="false"
@@ -84,6 +85,7 @@ fi
 
 {{ end -}}
 
+[[ "$BE_COUNT" -gt 1 ]] && xiterr 1 "Matched more than 1 bootenv, likely error in vendor mappings Param."
 [[ -z "$BOOTENV" ]] && xiterr 1 "Bootenv is unset, this shouldn't have happend."
 
 if [[ "$NEED_TO_SET_VENDOR" == "true" ]]
