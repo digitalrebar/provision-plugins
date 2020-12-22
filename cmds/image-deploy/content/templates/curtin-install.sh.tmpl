@@ -31,7 +31,7 @@ mkdir -p /tmp/drpcli/curtin
 if [[ $OSTYPE == linux ]] ; then
     # Agent in reasonable place
     cp /usr/local/bin/drpcli /tmp/drpcli/usr/local/bin
-    chmod +x /tmp/drpcli/usr/local/bin
+    chmod +x /tmp/drpcli/usr/local/bin/*
 
     cp linux/* /tmp/drpcli/curtin
     if [[ $OSSUBTYPE == "raw" ]] ; then
@@ -152,6 +152,14 @@ EOFUSER
 {{end}}
 {{end}}
 {{end}}
+
+elif [[ $OSTYPE == esxi ]] ; then
+
+    echo "Deploying image for OS type:  ESXi"
+    echo "DRPY rendered in image"
+
+    cp esxi/* /tmp/drpcli/curtin
+    chmod +x /tmp/drpcli/curtin/*
 
 else
     echo "Unknown OS type: $OSTYPE"

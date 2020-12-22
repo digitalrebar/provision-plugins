@@ -8,6 +8,7 @@ Documentation: |
 
   Valid values are:
 
+    * esxi
     * linux
     * windows
 
@@ -16,9 +17,10 @@ Documentation: |
 Schema:
   type: "string"
   enum:
+    - "basic"
+    - "esxi"
     - "linux"
     - "windows"
-    - "basic"
 Meta:
   icon: "image"
   color: "blue"
