@@ -10,6 +10,13 @@ Meta:
   color: "yellow"
   title: "Digital Rebar"
 Templates:
+  - Name: "esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+    Path: "/tmp/esxi-params.py"
+  - Name: "os-identity.sh"
+    ID: "os-identity.sh.tmpl"
+  - Name: "esxi-render-network-data.sh.tmpl"
+    ID: "esxi-render-network-data.sh.tmpl"
   - Name: "esxi-set-address-field.py"
     Contents: |
       #!/usr/bin/python
