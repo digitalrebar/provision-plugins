@@ -51,6 +51,12 @@ Templates:
 - ID: "curtin-drpy-agent.conf.tmpl"
   Path: "esxi/drpy.conf"
   Name: "esxi drpy config"
+- ID: "curtin-esxi-network-startup.sh.tmpl"
+  Path: "esxi/network-startup.sh"
+  Name: "esxi network startup"
+- ID: "curtin-esxi-network-startup.sh.tmpl"
+  Path: "esxi/network-startup.sh.bak"
+  Name: "esxi network startup backup"
 
 #
 # Windows set
