@@ -1,0 +1,22 @@
+---
+Name: esxi/skip-render-network-data
+Description: "Skip using the 'network-data' structure for esxi/network-firstboot-* values"
+Documentation: |
+  This Param lets the operator skip the use of the ``network-data``
+  structure from being converted in to the ``esxi/network-firstboot-*``
+  values.  If this value is set to ``true``, then the appropriate
+  network configuration values must be set via another mechanism.
+
+  If this value is ``false`` (the default), then any existing "bare
+  Params" on the Machine object will be overwritten with the values
+  found in the ``network-data`` structure.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: boolean
+  default: false
+Secure: false

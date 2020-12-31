@@ -1,0 +1,162 @@
+#!/usr/bin/env sh
+# Convert the 'network-data' key/values to esxi/network-firstboot-* Param values
+
+###
+#  Uses the 'network-data' structure and the 'newtwork-data-parser.tmpl'
+#  template to generate the esxi/network-firstboot-* Params which are
+#  later used by 'esxi-set-network' task.
+#
+#  If the 'esxi/skip-render-network-data' is 'true', then this task will
+#  not convert the 'network-data' structure to ESXi params.
+###
+
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+set -e
+
+{{ if .Param "esxi/skip-render-network-data" -}}
+echo "Skipping rendering any 'network-data' values as requested by 'esxi/skip-render-network-data'."
+exit 0
+{{ else -}}
+echo "Will render any found 'network-data' keys that have a value to 'esxi/firstboot-network-*' Params."
+{{ end -}}
+
+[[ ! -r "/tmp/esxi-params.py" ]] && xiterr 1 "Unable read required 'esxi-params.py' helper file."
+
+### begin template network-data-parser.tmpl
+{{ template "network-data-parser.tmpl" .}}
+
+###
+#  Do our main processing
+###
+main() {
+  echo ""
+  echo "NOTE:  Any Param 'remove' operations may fail with an error message"
+  echo "       which does not stop processing.  This can happen if the Param"
+  echo "       is provided on the Machine via Profile and is not directly on"
+  echo "       the Machine object.  This is not necessarily a concern."
+  echo ""
+
+  if [[ "$(fetch_nd_var dhcp)" == "true" ]]
+  then
+    echo ">>> Updating 'esxi/network-firstboot-type' to 'dhcp' ..."
+    set_param "esxi/network-firstboot-type" "dhcp"
+    process_keys mtu vlan interface
+    echo "No further Param processing will be done ..."
+  else
+    echo ">>> Updating 'esxi/network-firstboot-type' to 'manual' ..."
+    set_param "esxi/network-firstboot-type" "manual"
+    process_keys address netmask gateway dns-servers mtu vlan interface
+  fi
+} # end main()
+
+###
+#  Given as ARGv1 input the name of a Param on the system, then any remaining
+#  ARG data as the value, determine if the Param exists on the Machine object,
+#  attempt to remove it, and then add the new value to the system.
+###
+set_param() {
+  local _param="$1"
+  shift
+  local _value="$*"
+  local _exists
+  local _op=""
+
+  case "$_param" in
+    *mtu|*vlan) _op="add-raw" ;;
+    *)          _op="add"     ;;
+  esac
+
+  echo "... Checking if Param '$_param' is set on Machine"
+  _exists=$(python3 /tmp/esxi-params.py get "$_param")
+
+  if [[ "$_exists" != "null" ]]
+  then
+    echo "... Param exists, removing first"
+    python3 /tmp/esxi-params.py delete "$_param"
+  fi
+
+  echo "... Adding Param '$_param' to Machine with value '$_value'"
+  # if _op is 'add-raw', _value will dequote correctly when applied to Machine
+  python3 /tmp/esxi-params.py $_op "$_param" "$_value"
+
+  _exists=$(python3 /tmp/esxi-params.py get "$_param")
+  if [[ "$_exists" != "null" ]]
+  then
+    echo "... Param value successfully set on Machine"
+  else
+    xiterr 1 "Failed to set '$_param' to value '$_value'"
+  fi
+} # end set_param()
+
+###
+#  Given as input ARGv1, verify if we have a variable with a value in the
+#  environment, and return success (0) if we do; otherwise, return failure (1).
+###
+check_for_value() {
+  local _check="$1"
+  local _value="$(fetch_nd_var "$_check")"
+  [[ -n "$_value" ]] && return 0 || return 1
+} # end check_for_value()
+
+###
+#  Input as ARGv1 the 'network-data' key name to remap to 'esxi/network-firstboot-*'
+#  value.
+#
+#  Echos the remapped key value, otherwise if no mapping is found, simply echo back
+#  the ARGv1 provided value.
+###
+remap_key() {
+  local _key="$1"
+
+  case "$_key" in
+    address)      echo "ipaddr"    ;;
+    interface)    echo "vmk"       ;;
+    dns-servers)  echo "dns"       ;;
+    *)            echo "$_key"     ;; # no explicit remapping needed
+  esac
+} # end remap_key()
+
+###
+#  Because ESXi has specific DNS server values they support...  Only return
+#  2 dns servers, separated by commas.
+###
+fix_dns() {
+  local _servers="$*"
+  echo $_servers | awk ' { print $1 "," $2 } ' | sed 's/,$//g'
+} # end fix_dns()
+
+###
+#  Given a list of network-data keys, process and add them to the Machine object.
+###
+process_keys() {
+  local _keys="$*"
+  local _nd_key=""
+  local _var_key=""
+  local _key=""
+  local _value=""
+  local _param=""
+
+  for _key in $_keys
+  do
+    _nd_key=$_key
+    _var_key="$(echo $_nd_key | sed 's/-/_/g')"
+    if check_for_value "$_var_key"
+    then
+      _value="$(fetch_nd_var ${_nd_key})"
+      _key=$(remap_key "$_nd_key")
+      [[ "$_nd_key" == "dns-servers" ]] && _value=$(fix_dns "$_value")
+      _param="esxi/network-firstboot-${_key}"
+      echo ">>> Updating '$_param' ... "
+      set_param "$_param" "$_value"
+    else
+      echo "+++ 'network-data' key ('$_key') has an empty value, not processed ... "
+    fi
+  done
+} # end process_keys()
+
+# do the main stuff
+main $*
+
+rm -f /tmp/esxi-params.py
