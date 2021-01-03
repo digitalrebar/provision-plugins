@@ -15,26 +15,4 @@ Meta:
   title: "Digital Rebar"
 Templates:
   - Name: "esxi-set-hostname.sh"
-    Contents: |
-      #!/usr/bin/env sh
-      # Set Hostname
-
-      {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
-
-      {{ if .ParamExists "esxi/network-firstboot-hostname" -}}
-      NAME={{ .Param "esxi/network-firstboot-hostname" }}
-      {{ else if .ParamExists "hostname" -}}
-      NAME={{ .Param "hostname" }}
-      {{ else -}}
-      NAME="{{ .Machine.Name }}"
-      {{ end -}}
-      HOSTNAME="$(echo ${NAME%%.*} | sed 's/\.$//')"
-      if [[ -z "$HOSTNAME" ]]
-      then
-        echo "NOTICE: error getting a value to set hostname"
-      else
-        echo "Setting hostname to: '$HOSTNAME'"
-        [[ -n "$HOSTNAME" ]] && esxcli system hostname set --host="$HOSTNAME"
-      fi
-
-      exit 0
+    ID: "esxi-set-hostname.sh.tmpl"

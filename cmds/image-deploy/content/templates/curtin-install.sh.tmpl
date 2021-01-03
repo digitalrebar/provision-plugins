@@ -10,6 +10,7 @@
 #
 #
 
+{{ if .Param "rs-debug-enable" }}set -x{{ end }}
 set -e
 
 # This will contain a token appropriate for the path being
@@ -186,5 +187,47 @@ if ! curtin $CURTIN_DEBUG install -c curtin_config.yaml ; then
     # Don't reboot so we can look at the logs in /tmp.
     exit 1
 fi
+
+{{ if .Param "curtin/debug-deploy-pause" }}
+SLP=5
+NUM=0
+ESC_CNT=360
+
+ESC_SEC=$(expr $SLP \* $ESC_CNT)
+ESC_MIN=$(expr $SLP \* $ESC_CNT / 60)
+
+CNTRL="/tmp/curtin-debug-pause-deploy"
+touch $CNTRL
+
+echo ""
+echo "'curtin/debug-pause-deploy' has been set to 'true', curtin deploy will pause"
+echo "To resume normal workflow, remove the file '$CNTRL'"
+echo ""
+
+echo "Starting '$ESC_CNT' sleep loops of '$SLP' seconds per loop..."
+while [[ -e "$CNTRL" ]]
+do
+  eval sleep ${SLP}
+  NUM=$(expr $NUM + 1)
+#  (( NUM++ ))
+  printf "%s " $NUM
+  [[ "$NUM" -ge "$ESC_CNT" ]] && { ESCAPE="yes"; break; }
+done
+
+echo ""
+
+if [[ -z "$ESCAPE" ]]
+then
+  echo "The control file was removed (/tmp/curtin-debug-pause-deploy) - continuing on."
+else
+  echo "Escape timer expired at '$ESC_CNT' cycles of '$SLP' seconds."
+  echo "seconds:  $ESC_SEC"
+  echo "minutes:  $ESC_MIN"
+  echo "Continuing on..."
+  echo ""
+fi
+
+rm -f $CNTRL
+{{end}}
 
 exit 0

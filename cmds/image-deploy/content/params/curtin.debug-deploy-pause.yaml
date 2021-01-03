@@ -1,0 +1,20 @@
+---
+Name: "curtin/debug-deploy-pause"
+Description: "Enable debug pause for curtin deploy"
+Documentation: |
+  If set to ``true``, then the ``curtin-deploy`` task will pause for
+  debugging the deployment environment.  The pause will last a total
+  of 30 minutes, after which provisioning will continue.
+
+  To force return to normal operation, remove the control file, and the
+  pause loop will escape; continuing provisioning.
+
+    * ``rm -f /tmp/curtin-debug-pause-deploy``
+
+Meta:
+  icon: "bug"
+  color: "orange"
+  title: "RackN Content"
+Schema:
+  default: false
+  type: "boolean"

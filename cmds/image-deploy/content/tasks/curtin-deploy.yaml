@@ -43,7 +43,7 @@ Templates:
 
 #
 # ESXi set - this uses the same as linux/raw - do nothing
-# Assumes that /curtin was added to the /dev/sda6
+# Assumes that /curtin was added to the /dev/sda6 (/altbootbank/curtin)
 #
 - ID: "curtin-basic-curtin-hooks.tmpl"
   Path: "esxi/curtin-hooks"

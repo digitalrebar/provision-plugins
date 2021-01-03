@@ -1,5 +1,105 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-echo "Configure stuff"
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+{{ if .Param "rs-debug-enable"}}set -x{{ end }}
+
+BASE="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+ME="$(basename $0)"
+
+# wholesale stdout/stderr redirects don't work in Busybox/ASH (ala ESXi) shell
+LOG="$BASE/${ME}.log"
+> $LOG
+
+echolog() {
+  echo "$*" | tee -a $LOG
+}
+
+cmd() {
+  echolog "CMD: $*"
+  eval $* | tee -a $LOG
+}
+
+echolog "+++ Starting logging at: $(date)"
+
+echolog ""
+echolog ">>> Rendered network-data-parser template:"
+{{ template "network-data-parser.tmpl" . }}
+
+echolog ""
+echolog ">>> Setting 'root' password ..."
+PW='{{if .ParamExists "provisioner-default-password-hash"}}{{ .Param "provisioner-default-password-hash" }}{{else}}$6$rebar$HBaBj/uDmsQMEw4Si6eja9Yba3rhB73Na36hbrp9KxDHm6s5veeWyXlsUkoxRACtP47978iiidziRdsYUC7gC/{{end}}'
+# our password is a hashed value, not a plain text value
+# 'passwd' command expects plain text input, as well as 'localcli system account set ...' cmd
+# sed is different in ESXi, non-greedy matching didn't seem to work; so brute force this pattern
+sed -i.bak "s|\(^root\):\(.*\):\(.*\):\(.*\):\(.*\):\(.*\):\(.*\):\(.*\):|\1:$PW:\3:\4:\5:\6:\7:\8:|g" /etc/shadow
+echolog "Password changed directly in '/etc/shadow', a backup copy was made as '/etc/shadow.bak' ..."
+
+echolog ""
+echolog ">>> Setting system host and domain name ..."
+set_hostname() {
+{{ template "esxi-set-hostname.sh.tmpl" . }}
+} # end set_hostname()
+set_hostname 2>&1 | tee -a $LOG
+
+echolog ""
+echolog ">>> Setting system DNS server and search order ..."
+set_dns() {
+{{ template "esxi-set-dns.sh.tmpl" . }}
+} # end set_dns()
+set_dns 2>&1 | tee -a $LOG
+
+echolog ""
+echolog ">>> Setting system network configuration ... "
+[[ -n "$_nd_interface" ]] && VMK=$_nd_interface || VMK="vmk0"
+
+if [[ -n "$_nd_vlan" ]]
+then
+  SET_VLAN="localcli network vswitch standard portgroup set --portgroup-name=\"Management Network\" --vlan-id=$_nd_vlan"
+
+  cmd ${SET_VLAN}
+fi
+
+if [[ -n "$_nd_mtu" ]]
+then
+  UPLINK=$(esxcfg-vswitch --list | grep "Management Network" | head -1 | awk ' { print $NF } ')
+  VSWITCH=$(esxcfg-vswitch --list | grep -v "^ " | grep "${UPLINK}" | head -1 | awk ' { print $1 } ')
+  echolog ">>> Setting MTU value for uplink '$UPLINK' on vSwitch '$VSWITCH' ..."
+
+  SET_MTU_VSW="esxcfg-vswitch --mtu=$_nd_mtu $VSWITCH"
+  SET_MTU_VMK="localcli network ip interface set --mtu=$_nd_mtu --interface-name=$VMK"
+
+  cmd ${SET_MTU_VSW}
+  cmd ${SET_MTU_VMK}
+fi
+
+if [[ "$_nd_dhcp" == "true" ]]
+then
+  echolog ">>> Setting DHCP for interface vmk '$VMK' ..."
+  cmd localcli network ip interface ipv4 set --interface-name=${VMK} --type=dhcp
+else
+  IP="$_nd_address"
+  NM="$_nd_netmask"
+  GW="$_nd_gateway"
+  echolog ">>> Setting static IP address assignment ... "
+  for CHECK in "ipaddr:$IP" "netmask:$NM" "gateway:$GW" "vmkernel_interface:$VMK"
+  do
+    T=$(echo $CHECK | cut -d":" -f1)
+    V=$(echo $CHECK | cut -d":" -f2)
+    echolog "Checking required '$T' config with value '$V'..."
+    [[ -z "$V" ]] && (echolog "FATAL: Required value ('$T') missing for 'manual' network config."; exit 1)
+  done
+  cmd localcli network ip interface ipv4 set --type=static --interface-name="${VMK}" --ipv4="${IP}" --netmask="${NM}" --gateway="${GW}"
+  cmd esxcfg-route ${GW}
+fi
+
+cmd localcli system syslog reload
+cmd /bin/services.sh restart
+
+echolog ""
+echolog "Remove startup script ('$BASE/$ME').  Backup of script rendered as"
+echolog "'$BASE/$ME.bak' for audit/logging purposes."
+echolog ""
+cmd rm -f $BASE/$ME
 
 exit 0

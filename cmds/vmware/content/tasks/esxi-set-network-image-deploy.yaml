@@ -1,0 +1,24 @@
+---
+Name: "esxi-set-network-image-deploy"
+Description: "Set the network components of ESXi"
+Documentation: |
+  For an ESXi Image Deploy path; configure the ESXi network based on
+  the various param values defined with names ``esxi/network-*``.
+
+Meta:
+  icon: "cloud"
+  color: "orange"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+    Path: "esxi/esxi-params.py"
+  - Name: "esxi-render-network-data.sh"
+    ID: "esxi-render-network-data.sh.tmpl"
+    Path: "esxi/esxi-render-network-data.sh"
+  - Name: "esxi-set-address-field.py"
+    ID: "esxi-set-address-field.py.tmpl"
+    Path: "esxi/esxi-set-address-field.py"
+  - Name: "esxi-set-network.sh"
+    ID: "esxi-set-network.sh.tmpl"
+    Path: "esxi/esxi-set-network.sh"
