@@ -12,7 +12,8 @@ NAME='{{ .Machine.Name }}'
 {{ end -}}
 
 HOSTNAME="$(echo ${NAME%%.*} | sed 's/\.$//')"
-DOMAIN="$(echo ${NAME} | sed "s/^${HOSTNAME}\.//")"
+DOMAIN=$(echo ${NAME#*.} | sed 's/\.$//')
+[[ "$DOMAIN" == "$HOSTNAME" ]] && DOMAIN=""
 
 {{ if .ParamExists "dns-domain" -}}
 echo "Setting domain name from Param 'dns-domain'."
