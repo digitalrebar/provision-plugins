@@ -6,7 +6,7 @@
 # sigh ... because there is no 'remove --all' for search domains like there is
 # for removing DNS servers...
 search_remove_all() {
-  domains=$(localcli network ip dns search list | grep -v "^$" | awk -F":" ' { print $NF }' | sed 's/,//g')
+  domains=$(localcli network ip dns search list | grep "DNS Search Domains:" | awk -F":" ' { print $NF }' | sed 's/,//g')
   echo "Clearing existing search domains to set new ones."
   for domain in $domains
   do

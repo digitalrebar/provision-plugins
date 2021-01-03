@@ -51,7 +51,37 @@ set_dns 2>&1 | tee -a $LOG
 
 echolog ""
 echolog ">>> Setting system network configuration ... "
-[[ -n "$_nd_interface" ]] && VMK=$_nd_interface || VMK="vmk0"
+[[ -n "$_nd_interface" ]] && VMNICS=$(echo $_nd_interface | sed 's/,/ /g') || VMNICS="vmnic0"
+
+VSW="vSwitch0"
+VMK="{{ .Param "esxi/network-firstboot-vmk" }}"
+
+CHK=$(esxcfg-vswitch --check "$VSW")
+if [[ $CHK -ge 1 ]]
+then
+  echo "Setting $VSW uplinks..."
+
+  UPLINKS=$(esxcfg-vswitch --list | grep "^$VSW" | awk ' { print $NF } ' | sed 's/,/ /g')
+
+  if [[ "$UPLINKS" != "$VMNICS" ]]
+  then
+    for UP in $UPLINKS
+    do
+      echo "Unlinking uplink $UP from vswitch $VSW"
+      esxcfg-vswitch --unlink=$UP $VSW
+    done
+
+    for VMNIC in $VMNICS
+    do
+      echo "Linking uplink $UP in to vswitch $VSW"
+      esxcfg-vswitch --link=$VMNIC $VSW
+    done
+  else
+    echo "'$VSW' uplinks ('$UPLINKS') match requested uplink settings ('$VMNICS'), nothing done."
+  fi
+else
+  echo "vswitch0 doesn't exist, no VMNIC uplink port changes were made..."
+fi
 
 if [[ -n "$_nd_vlan" ]]
 then
