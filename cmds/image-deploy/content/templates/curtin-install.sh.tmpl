@@ -155,13 +155,19 @@ EOFUSER
 {{end}}
 
 elif [[ $OSTYPE == esxi ]] ; then
-
     echo "Deploying image for OS type:  ESXi"
     echo "DRPY rendered in image"
 
+    echo "Making empty onetime.tgz"
+    rm -rf /tmp/image-deploy-esxi
+    mkdir -p /tmp/image-deploy-esxi/var/lib/vmware/firstboot
+    cd /tmp/image-deploy-esxi
+    tar -zcvf /tmp/drpcli/onetime.tgz var
+    cd -
+    rm -rf /tmp/image-deploy-esxi
+
     cp esxi/* /tmp/drpcli/curtin
     chmod +x /tmp/drpcli/curtin/*
-
 else
     echo "Unknown OS type: $OSTYPE"
     exit 1
@@ -218,7 +224,7 @@ echo ""
 
 if [[ -z "$ESCAPE" ]]
 then
-  echo "The control file was removed (/tmp/curtin-debug-pause-deploy) - continuing on."
+  echo "The control file was removed ($CNTRL) - continuing on."
 else
   echo "Escape timer expired at '$ESC_CNT' cycles of '$SLP' seconds."
   echo "seconds:  $ESC_SEC"

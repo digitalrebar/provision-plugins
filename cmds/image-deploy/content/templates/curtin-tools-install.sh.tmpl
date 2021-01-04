@@ -18,12 +18,11 @@ do
 done
 
 echo "Installing required packages"
-if rpm -qa | grep -q PyYAML-3.10-11 ; then
+if rpm -qa | grep -iq PyYAML-3 ; then
     echo "packages already installed."
 else
     rpm --rebuilddb || :
-    yum clean all
-    yum install -y *.rpm
+    rpm -Uvh *.rpm
 fi
 
 echo "Updating curtin to 20.2"
