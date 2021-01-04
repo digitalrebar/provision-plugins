@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+# Set Host and Domain name of system
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+{{ if .ParamExists "esxi/network-firstboot-hostname" -}}
+NAME='{{ .Param "esxi/network-firstboot-hostname" }}'
+{{ else if .ParamExists "hostname" -}}
+NAME='{{ .Param "hostname" }}'
+{{ else -}}
+NAME='{{ .Machine.Name }}'
+{{ end -}}
+
+HOSTNAME="$(echo ${NAME%%.*} | sed 's/\.$//')"
+DOMAIN=$(echo ${NAME#*.} | sed 's/\.$//')
+[[ "$DOMAIN" == "$HOSTNAME" ]] && DOMAIN=""
+
+{{ if .ParamExists "dns-domain" -}}
+echo "Setting domain name from Param 'dns-domain'."
+DOMAIN="{{ .Param "dns-domain" }}"
+{{ else -}}
+echo "Setting domain name to '$DOMAIN' from domain portion of '$NAME'."
+{{ end -}}
+
+if [[ -n "$HOSTNAME" ]]
+then
+  echo "Setting hostname to: '$HOSTNAME'"
+  localcli system hostname set --host="$HOSTNAME"
+else
+  echo "No hostname found to set ... "
+fi
+
+if [[ -n "$DOMAIN" ]]
+then
+  echo "Setting domain to: '$DOMAIN'"
+  localcli system hostname set --domain="$DOMAIN"
+else
+  echo "No domain name found to set ... "
+fi
+
+echo "System host and domain name information is now set to:"
+localcli system hostname get

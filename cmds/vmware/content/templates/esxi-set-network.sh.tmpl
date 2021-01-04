@@ -1,0 +1,83 @@
+#!/usr/bin/env sh
+# set firstboot network configuration settings
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+VMK="{{ .Param "esxi/network-firstboot-vmk" }}"
+
+###
+#  Handle setting VLAN tagged portgroups if requested
+###
+{{ if .ParamExists "esxi/network-firstboot-vlan" -}}
+VLAN_MGMT={{ .Param "esxi/network-firstboot-vlan" }}
+SET_VLAN_MGMT="esxcli network vswitch standard portgroup set --portgroup-name=\"Management Network\" --vlan-id=$VLAN_MGMT"
+{{ end -}}
+{{ if .ParamExists "esxi/network-firstboot-vlan-vm-network" -}}
+VLAN_VM={{ .Param "esxi/network-firstboot-vlan-vm-network" }}
+
+if [[ ${VLAN_VM} = "management" ]]
+then
+  if [[ "$VLAN_MGMT" != "" ]] ; then
+    # set to same value as Management Network VLAN
+    if [[ $VLAN_MGMT -ge 0 && $VLAN_MGMT -le 4096 ]]
+    then
+      VLAN_VM=$VLAN_MGMT
+      SET_VLAN_VM="esxcli network vswitch standard portgroup set --portgroup-name=\"VM Network\" --vlan-id=$VLAN_VM"
+    else
+      echo "FATAL: Requested 'VM Network' portgroup be set to value of 'Management"
+      echo "       Network' VLAN - but Management VLAN did not validate to 0-4096"
+      echo "       ** We should never have gotten here ... :( **"
+      exit 1
+    fi
+  fi
+elif [[ $VLAN_VM -ge 0 && $VLAN_VM -le 4096 ]]
+then
+  # valid VLAN value
+  SET_VLAN_VM="esxcli network vswitch standard portgroup set --portgroup-name=\"VM Network\" --vlan-id=$VLAN_VM"
+else
+  echo "FATAL: Requested portgroup 'VM Network' be set to something, but failed"
+  echo "       validation checks.  Must be 'management' or range between the"
+  echo "       numbers '0-4095'"
+  exit 1
+fi
+{{ end -}}
+
+{{ if .ParamExists "esxi/network-firstboot-mtu" -}}
+UPLINK=$(esxcfg-vswitch --list | grep "Management Network" | head -1 | awk ' { print $NF } ')
+VSWITCH=$(esxcfg-vswitch --list | grep -v "^ " | grep "${UPLINK}" | head -1 | awk ' { print $1 } ')
+SET_MTU_VSW="esxcfg-vswitch --mtu={{ .Param "esxi/network-firstboot-mtu" }} $VSWITCH"
+SET_MTU_VMK="esxcli network ip interface set --mtu={{ .Param "esxi/network-firstboot-mtu" }} --interface-name=$VMK"
+{{ end -}}
+
+[[ -n "$SET_VLAN_MGMT" ]] && eval ${SET_VLAN_MGMT}
+[[ -n "$SET_VLAN_VM"   ]] && eval ${SET_VLAN_VM}
+[[ -n "$SET_MTU_VSW"   ]] && eval ${SET_MTU_VSW}
+[[ -n "$SET_MTU_VMK"   ]] && eval ${SET_MTU_VMK}
+
+{{ if eq (.Param "esxi/network-firstboot-type") "manual" }}
+
+IP="{{ .Param "esxi/network-firstboot-ipaddr" }}"
+NM="{{ .Param "esxi/network-firstboot-netmask" }}"
+GW="{{ .Param "esxi/network-firstboot-gateway" }}"
+for CHECK in "ipaddr:$IP" "netmask:$NM" "gateway:$GW" "vmkernel_interface:$VMK"
+do
+  T=$(echo $CHECK | cut -d":" -f1)
+  V=$(echo $CHECK | cut -d":" -f1)
+  [[ -z "$V" ]] && (echo "FATAL: Required value ('$T') missing for 'manual' network config."; exit 1)
+done
+esxcli network ip interface ipv4 set --type=static --interface-name="${VMK}" --ipv4="${IP}" --netmask="${NM}" --gateway="${GW}"
+esxcfg-route ${GW}
+esxcli system syslog reload
+/bin/services.sh restart
+
+{{ else if eq (.Param "esxi/network-firstboot-type") "dhcp" -}}
+
+esxcli network ip interface ipv4 set --interface-name=${VMK} --type=dhcp
+esxcli system syslog reload
+/bin/services.sh restart
+{{ else -}}
+echo "WARNING: 'esxi/network-firstboot-type' unsupported ... ('{{ .Param "esxi/network-firstboot-type" }}')."
+{{ end -}}
+
+exit 0
+

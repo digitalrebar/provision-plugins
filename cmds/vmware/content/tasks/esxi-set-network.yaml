@@ -112,7 +112,7 @@ Templates:
       for CHECK in "ipaddr:$IP" "netmask:$NM" "gateway:$GW" "vmkernel_interface:$VMK"
       do
         T=$(echo $CHECK | cut -d":" -f1)
-        V=$(echo $CHECK | cut -d":" -f1)
+        V=$(echo $CHECK | cut -d":" -f2)
         [[ -z "$V" ]] && (echo "FATAL: Required value ('$T') missing for 'manual' network config."; exit 1)
       done
       esxcli network ip interface ipv4 set --type=static --interface-name="${VMK}" --ipv4="${IP}" --netmask="${NM}" --gateway="${GW}"

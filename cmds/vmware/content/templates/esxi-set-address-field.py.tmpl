@@ -1,0 +1,29 @@
+#!/usr/bin/python
+# python3 version
+
+# Update Machine Address to match the new address
+
+import os, urllib, urllib.request, socket, ssl, time
+url = '{{.ApiURL}}/api/v3/machines/{{.Machine.UUID}}'
+
+{{ if .Param "esxi/skip-update-address" }}
+print('"esxi/skip-update-address" is set to "true" (the default value), no address update performed.')
+exit(0)
+{{ end }}
+
+{{ if .ParamExists "esxi/network-firstboot-ipaddr" }}
+# There is no DRP Runner for ESXi, so we don't have post-OS install control.
+# Force the machine to empty workflow, none stage, and the local bootenv.
+patch = b'''
+[
+{"op":"replace","path":"/Address","value":"{{.Param "esxi/network-firstboot-ipaddr"}}"}
+]
+'''
+req = urllib.request.Request(url, method='PATCH',data=patch)
+req.add_header('Content-Type', 'application/json')
+req.add_header('Authorization','Bearer {{.GenerateInfiniteToken}}')
+urllib.request.urlopen(req,context=ssl.SSLContext(ssl.PROTOCOL_SSLv23))
+{{ else }}
+# Nothing to do.
+exit(0)
+{{ end }}

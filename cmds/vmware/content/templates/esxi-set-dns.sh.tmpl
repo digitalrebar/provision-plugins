@@ -1,0 +1,63 @@
+#!/usr/bin/env sh
+# Set DNS Servers and Search behavior
+
+{{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
+
+# sigh ... because there is no 'remove --all' for search domains like there is
+# for removing DNS servers...
+search_remove_all() {
+  domains=$(localcli network ip dns search list | grep "DNS Search Domains:" | awk -F":" ' { print $NF }' | sed 's/,//g')
+  echo "Clearing existing search domains to set new ones."
+  for domain in $domains
+  do
+    echo "Remove search domain '$domain'"
+    localcli network ip dns search remove --domain=$domain
+  done
+}
+
+SEARCH=$(localcli system hostname get | grep "  Domain Name: " | awk ' { print $NF } ')
+
+{{ if .ParamExists "dns-search-domains" -}}
+echo "Set search order based on dns-search-domains param"
+search_remove_all
+{{ range $key, $search := .Param "dns-search-domains" -}}
+SEARCH="{{ $search }}"
+echo "Adding '$SEARCH' to the domain search path"
+[[ -n "$SEARCH" ]] && localcli network ip dns search add --domain="$SEARCH"
+{{ end -}}
+{{ else -}}
+# fallback to whatever the system domain name had been set to
+echo "Setting dns search to: '$DOMAIN'"
+[[ -n "$SEARCH" ]] && search_remove_all
+[[ -n "$SEARCH" ]] && localcli network ip dns search add --domain="$SEARCH"
+{{ end -}}
+
+{{ if .ParamExists "dns-servers" -}}
+# wipe our DNS servers we previously acquired - if any
+localcli network ip dns server remove --all
+{{ range $key, $dns := .Param "dns-servers" -}}
+DNS="{{ $dns }}"
+echo "Setting DNS server '$DNS'"
+[[ -n "$DNS" ]] && localcli network ip dns server add --server="$DNS"
+{{ end -}}
+{{ else -}}
+# Add DNS servers via the network-data structure if it exists - would be
+# set via other rendered templates before us in this script run
+if [[ "$_nd_dns_servers" ]]
+then
+  localcli network ip dns server remove --all
+  for DNS in $_nd_dns_servers
+  do
+    echo "Setting DNS server '$DNS'"
+    [[ -n "$DNS" ]] && localcli network ip dns server add --server="$DNS"
+  done
+fi
+{{ end -}}
+
+echo ""
+echo "DNS Server list set to:"
+localcli network ip dns server list
+
+echo "DNS Search Domain(s) set to:"
+localcli network ip dns search list
+
