@@ -1,1 +1,0 @@
-curtin-esxi-params.py.tmpl curtin-esxi-render-network-data.sh.tmpl curtin-esxi-set-address-field.py curtin-esxi-set-network.sh
