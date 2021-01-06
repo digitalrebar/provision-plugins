@@ -215,7 +215,7 @@ CURTIN_DEBUG=""
 if ! curtin $CURTIN_DEBUG install -c curtin_config.yaml ; then
     # Failure
     # Don't reboot so we can look at the logs in /tmp.
-        curtin_error_help $?
+    curtin_error_help $?
     exit 1
 fi
 
