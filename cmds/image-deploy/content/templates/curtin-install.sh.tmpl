@@ -173,6 +173,30 @@ else
     exit 1
 fi
 
+curtin_error_help() {
+    local _code=$1
+    case $_code in
+        3)
+            echo ""
+            echo ">>> The following are the reported block devices in the system:"
+            lsblk
+            echo ""
+            echo ">>> Errors similar to:"
+            echo "  Command: curtin block-meta --device=/dev/sda simple"
+            echo "  Exit code: 3"
+            echo "...and/or..."
+            echo "  /dev/sda had no syspath (/sys/class/block/sda)"
+            echo ""
+            echo ">>> May require setting the Param 'image-deploy/install-disk' to a different value for successful installation."
+            echo ""
+        ;;
+    esac
+
+    echo ">>> Curtin logs are available for debugging on the target machine in /tmp for"
+    echo "    potential additional help."
+    echo ""
+}
+
 cd /tmp/drpcli
 tar -zcvf ../drpcli.tar.gz .
 cd -
@@ -191,6 +215,7 @@ CURTIN_DEBUG=""
 if ! curtin $CURTIN_DEBUG install -c curtin_config.yaml ; then
     # Failure
     # Don't reboot so we can look at the logs in /tmp.
+    curtin_error_help $?
     exit 1
 fi
 
