@@ -342,15 +342,15 @@ use_v6=true
 
 for k in "${!p2li[@]}"; do
     if [[ ${lan_info["$k"]} ]]; then
-        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v4" to "${lan_info["$k"]}"
+        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v4" to "\"${lan_info["$k"]}\""
         if [[ $use_v4 ]]; then
-            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "${lan_info["$k"]}"
+            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "\"${lan_info["$k"]}\""
         fi
     fi
     if [[ ${lan6_info["$k"]} ]]; then
-        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v6" to "${lan6_info["$k"]}"
+        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v6" to "\"${lan6_info["$k"]}\""
         if [[ $use_v6 ]]; then
-            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "${lan6_info["$k"]}"
+            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "\"${lan6_info["$k"]}\""
         fi
     fi
 done
