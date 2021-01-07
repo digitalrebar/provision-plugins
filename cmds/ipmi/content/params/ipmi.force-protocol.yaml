@@ -1,0 +1,22 @@
+---
+Name: "ipmi/force-protocol"
+Description: "Force the system to use IPv4 or IPv6"
+Documentation: |
+  This parameter can be used to force a choice on IPv4 or IPv6.  By default, the system will
+  attempt to choose between IPv4 or IPv6 by the presence of a default gateway.  If IPv6 has a
+  default gateway, it will be preferred, otherwise IPv4 is prefered.
+
+  Setting this parameter will force the path.  It could lead to DRP not be able to connect to the BMC.
+
+  The parameter defaults to unset.
+
+Schema:
+  type: "string"
+  enum:
+    - v4
+    - v6
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"
