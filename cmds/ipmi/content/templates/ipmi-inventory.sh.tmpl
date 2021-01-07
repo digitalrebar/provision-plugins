@@ -17,14 +17,6 @@ success() {
     exit 0
 }
 
-# Who am I
-export RS_UUID={{.Machine.Uuid}}
-export RS_TOKEN={{.GenerateToken}}
-export RS_ENDPOINT={{.ApiURL}}
-
-# Gather Variables for configuration
-IPMI_ADDRESS=""
-
 IPMI_FORCE_LAN_CHAN=0
 IPMI_LAN_CHECK_START=1
 IPMI_LAN_CHECK_END=11
@@ -37,6 +29,7 @@ IPMI_LAN_CHECK_END=$IPMI_FORCE_LAN_CHAN
 declare -A quirk_data
 declare -A mc_info
 declare -A lan_info
+declare -A lan6_info
 lan_chan=0
 
 quirklist=()
@@ -53,15 +46,8 @@ disable_ipmi() {
 
     # Mark address as empty to make sure that actions aren't available.
     drpcli machines set $RS_UUID param ipmi/enabled to false
-    if ! drpcli machines remove $RS_UUID param ipmi/address; then
-        true
-    fi
-
-    if [[ $IPMI_CONFIGURE_FAIL == true ]] ; then
-        fail
-    else
-        success
-    fi
+    drpcli machines remove $RS_UUID param ipmi/address || :
+    [[ $IPMI_CONFIGURE_FAIL != true ]] && success || fail
 }
 
 
@@ -93,13 +79,11 @@ trim() {
 }
 
 tool() {
-    if [[ $ipmi_nodelay == "" ]] ; then
-        sleep 5
-    fi
-    if ! [[  "$@" =~ password ]] ; then
-        echo "ipmitool $@"
-    else
+    [[ $ipmi_nodelay ]] || sleep 5
+    if [[  "$@" =~ password ]] ; then
         echo "ipmitool password setting command"
+    else
+        echo "ipmitool $@"
     fi >&2
     ipmitool "$@"
 }
@@ -116,10 +100,7 @@ process_quirks() {
     testvalue=""
     while read line
     do
-            if [[ $line =~ ^# ]] ; then
-                    continue
-            fi
-
+            [[ $line =~ ^# ]] && continue
             front=${line%%:*}
             back=$(trim ${line#*:})
 
@@ -212,19 +193,11 @@ mc_info() {
             key=${mc_info_keys["$tkey"]}
             value=$(trim ${line#*:})
 
-            if [[ $key == "" ]] ; then
-                continue
-            fi
-            if [[ $value == "" ]] ; then
-                continue
-            fi
-
+            [[ $key && $value ]] || continue
             mc_info["$key"]="$value"
         done < <(tool mc info)
 
-        if [[ ${mc_info["version"]} != "" ]] ; then
-            break
-        fi
+        [[ ${mc_info["version"]} ]] && break
 
         echo "attempt $count failed -  trying again..."
         count=$(($count + 1))
@@ -237,6 +210,55 @@ mc_info() {
     fi
 }
 
+lan6_info() {
+   if ! grep -q lan6 < <(ipmitool help 2>&1); then
+     echo "No ipv6 support in ipmitool, skipping ipv6 inventory"
+     return 0
+  fi
+  local section k v
+  OLD_IFS=$IFS
+  IFS=""
+  while read line; do
+      case $line in
+          'IPv6 Static Address'*) section='static address'; continue;;
+          'IPv6 Dynamic Address'*) section='dynamic address'; continue;;
+          'IPv6 Static Router'*) section='gw'; continue;;
+          'IPv6 Dynamic Router'*) section='gw'; continue;;
+          '    '*);;
+          *) section=''; continue;;
+      esac
+      k="$(trim "${line%%:*}")"
+      v="$(trim "${line#*:}")"
+      case $section in
+          '') continue;;
+          'static address')
+              [[ ${lan6_info['ipaddr']} ]] && continue
+              [[ $k = Address && $v != ::/* ]] || continue
+              lan6_info['ipaddr']="${v%*/}"
+              lan6_info['netmask']="${v#/*}"
+              lan6_info['ipsrc']='static'
+              ;;
+          'dynamic address')
+              [[ ${lan6_info['ipaddr']} ]] && continue
+              case $k in
+                  'Source/Type')
+                      [[ $v && $v != 'static' ]] || continue
+                      lan6_info['ipsrc']="$v";;
+                  'Address')
+                      [[ $v != ::/* ]] || continue
+                      lan6_info['ipaddr']="${v%/*}"
+                      lan6_info['netmask']="${v#*/}";;
+              esac;;
+          'gw')
+              [[ ${lan6_info['defgw ipaddr']} ]] && continue
+              [[ $k = 'Address' ]] || continue
+              [[ $v && $v != :: ]] || continue
+              lan6_info['defgw ipaddr']="$v";;
+      esac
+  done < <(tool lan6 print $lan_chan)
+  IFS=$OLD_IFS
+}
+
 lan_info() {
     echo "Gathering Lan Info"
     for ((i=$IPMI_LAN_CHECK_START;i<=$IPMI_LAN_CHECK_END;i++)); do
@@ -244,29 +266,15 @@ lan_info() {
         while read line
         do
             tkey=$(trim ${line%%:*})
-            if [[ $tkey == "" ]] ; then
-                continue
-            fi
-
+            [[ $tkey ]] || continue
             key=${lan_info_keys["$tkey"]}
             value=$(trim ${line#*:})
 
-            if [[ $key == "" ]] ; then
-                continue
-            fi
-            if [[ $value == "" ]] ; then
-                continue
-            fi
-
+            [[ $key && $value ]] || continue
             lan_info["$key"]="$value"
         done < <(tool lan print $lan_chan)
 
-        if [[ $IPMI_FORCE_LAN_CHAN == $lan_chan ]] ; then
-            break
-        fi
-        if [[ ${lan_info["ipsrc"]} != "" ]] ; then
-            break
-        fi
+        [[ $IPMI_FORCE_LAN_CHAN = $lan_chan || ${lan_info["ipsrc"]} ]] && break
     done
 }
 
@@ -279,6 +287,7 @@ mc_info
 
 # Get Lan Info
 lan_info
+lan6_info
 
 # Identify MC and get quirks
 process_quirks
@@ -292,31 +301,48 @@ do
         key=${q//-/_}
         export ${key}=true
 done
+declare -A p2li=(['ipaddr']='ipmi/address'
+      ['netmask']='ipmi/netmask'
+      ['ipsrc']='ipmi/ipsrc'
+      ['defgw ipaddr']='ipmi/gateway')
 
-# Re-get the lan info
-IPMI_ADDRESS=${lan_info["ipaddr"]}
-IPMI_NETMASK=${lan_info["netmask"]}
-IPMI_GATEWAY=${lan_info["defgw ipaddr"]}
-IPMI_MACADDR=${lan_info["macaddr"]}
-IPMI_IPSRC=${lan_info["ipsrc"]}
+if [[ ${lan_info['macaddr']} != "" ]] ; then
+    drpcli machines set $RS_UUID param ipmi/macaddr to "${lan_info['macaddr']}"
+fi
 
-# Record parameters.
-if [[ $IPMI_ADDRESS != "" ]] ; then
-    drpcli machines set $RS_UUID param ipmi/enabled to true
-    drpcli machines set $RS_UUID param ipmi/address to "$IPMI_ADDRESS"
+if [[ ${lan_info['ipaddr']} && ${lan_info['ipaddr']} != '0.0.0.0' || ${lan6_info['ipaddr']} ]]; then
+   drpcli machines set $RS_UUID param ipmi/enabled to true
 fi
-if [[ $IPMI_NETMASK != "" ]] ; then
-    drpcli machines set $RS_UUID param ipmi/netmask to "$IPMI_NETMASK"
+
+if [[ ${lan_info['defgw ipaddr']} && {lan_info['defgw ipaddr']} != '0.0.0.0' ]]; then
+    use_v4=true
 fi
-if [[ $IPMI_GATEWAY != "" ]] ; then
-    drpcli machines set $RS_UUID param ipmi/gateway to "$IPMI_GATEWAY"
+
+if [[ ${lan6_info['defgw ipaddr']} && {lan6_info['defgw ipaddr']} != '::' ]]; then
+    use_v6=true
 fi
-if [[ $IPMI_MACADDR != "" ]] ; then
-    drpcli machines set $RS_UUID param ipmi/macaddr to "$IPMI_MACADDR"
+
+if [[ $use_v4 && $use_v6 ]]; then
+    case "{{.Param "ipmi/prefer-v6"}}" in
+        true) unset use_v4;;
+        false) unset use_v6;;
+    esac
 fi
-if [[ $IPMI_IPSRC != "" ]] ; then
-    drpcli machines set $RS_UUID param ipmi/ipsrc to "$IPMI_IPSRC"
-fi
+
+for k in "${!p2li[@]}"; do
+    if [[ ${lan_info["$k"]} ]]; then
+        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v4" to "${lan_info["$k"]}"
+        if [[ $use_v4 ]]; then
+            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "${lan_info["$k"]}"
+        fi
+    fi
+    if [[ ${lan6_info["$k"]} ]]; then
+        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v6" to "${lan6_info["$k"]}"
+        if [[ $use_v6 ]]; then
+            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "${lan6_info["$k"]}"
+        fi
+    fi
+done
 
 success
 

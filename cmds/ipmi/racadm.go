@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"net"
 	"os/exec"
+	"strconv"
 
 	"github.com/digitalrebar/logger"
 	"github.com/digitalrebar/provision/v4/models"
@@ -19,7 +20,7 @@ func (r *racadm) Name() string { return "racadm" }
 func (r *racadm) run(cmd ...string) ([]byte, error) {
 	addr := r.address
 	if r.port != 0 {
-		addr = fmt.Sprintf("%s:%d", addr, r.port)
+		addr = net.JoinHostPort(addr, strconv.Itoa(r.port))
 	}
 	args := []string{"-r", addr, "-u", r.username, "-p", r.password}
 	args = append(args, cmd...)

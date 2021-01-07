@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,13 +33,10 @@ func (r *redfish) Name() string { return "redfish" }
 func (r *redfish) Probe(l logger.Logger, address string, port int, username, password string) bool {
 	r.username = username
 	r.password = password
-	p := ""
-	if port != 0 {
-		p = fmt.Sprintf(":%d", port)
-	}
+
 	// Create a new instance of gofish client, ignoring self-signed certs
 	config := gofish.ClientConfig{
-		Endpoint: fmt.Sprintf("https://%s%s", address, p),
+		Endpoint: fmt.Sprintf("https://%s", net.JoinHostPort(address, strconv.Itoa(port))),
 		Username: r.username,
 		Password: r.password,
 		Insecure: true,

@@ -1,11 +1,11 @@
 ---
-Name: "ipmi/gateway"
-Description: "Default Gateway Address of the BMC"
+Name: "ipmi/gateway-v6"
+Description: "Default IPv6 Gateway Address of the BMC"
 Documentation: |
   This parameter shows the current default gateway of the BMC.
 Schema:
   type: "string"
-  default: ""
+  default: "::"
 Meta:
   icon: "address card outline"
   color: "blue"
