@@ -234,8 +234,8 @@ lan6_info() {
           'static address')
               [[ ${lan6_info['ipaddr']} ]] && continue
               [[ $k = Address && $v != ::/* ]] || continue
-              lan6_info['ipaddr']="${v%*/}"
-              lan6_info['netmask']="${v#/*}"
+              lan6_info['ipaddr']="${v%/*}"
+              lan6_info['netmask']="${v#*/}"
               lan6_info['ipsrc']='static'
               ;;
           'dynamic address')
@@ -329,17 +329,28 @@ if [[ $use_v4 && $use_v6 ]]; then
     esac
 fi
 
+{{ if .ParamExists "ipmi/force-protocol" }}
+{{ if eq (.Param "ipmi/force-protocol") "v4" }}
+unset use_v6
+use_v4=true
+{{ end }}
+{{ if eq (.Param "ipmi/force-protocol") "v6" }}
+unset use_v4
+use_v6=true
+{{ end }}
+{{ end }}
+
 for k in "${!p2li[@]}"; do
     if [[ ${lan_info["$k"]} ]]; then
-        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v4" to "${lan_info["$k"]}"
+        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v4" to "\"${lan_info["$k"]}\""
         if [[ $use_v4 ]]; then
-            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "${lan_info["$k"]}"
+            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "\"${lan_info["$k"]}\""
         fi
     fi
     if [[ ${lan6_info["$k"]} ]]; then
-        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v6" to "${lan6_info["$k"]}"
+        drpcli machines set "$RS_UUID" param "${p2li["$k"]}-v6" to "\"${lan6_info["$k"]}\""
         if [[ $use_v6 ]]; then
-            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "${lan6_info["$k"]}"
+            drpcli machines set "$RS_UUID" param "${p2li["$k"]}" to "\"${lan6_info["$k"]}\""
         fi
     fi
 done

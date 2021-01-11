@@ -1,5 +1,5 @@
 ---
-Name: "ipmi/netmask-v6 "
+Name: "ipmi/netmask-v6"
 Description: "CIDR prefix of the IP v6 Address of the BMC"
 Documentation: |
   This parameter shows the netmask of the IP address of the BMC.

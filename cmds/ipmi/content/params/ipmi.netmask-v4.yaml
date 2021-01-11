@@ -1,5 +1,5 @@
 ---
-Name: "ipmi/netmask-v4 "
+Name: "ipmi/netmask-v4"
 Description: "Netmask of the IP v4 Address of the BMC"
 Documentation: |
   This parameter shows the netmask of the IP address of the BMC.
