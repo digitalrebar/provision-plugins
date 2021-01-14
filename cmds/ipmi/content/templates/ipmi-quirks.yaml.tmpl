@@ -137,6 +137,26 @@ super-micro-redfish-bmc:
         op: ==
         match: 2084 (0x0824)
         score: 5
+super-micro-no-ipv6-bmc:
+  quirklist:
+    - ipmi-immutable-root
+    - ipmi-no-ipv6
+  match:
+    bmcinfo:
+      device_id:
+        __sm_leaf: true
+        match: "32"
+        op: ==
+      mfgr_id:
+        __sm_leaf: true
+        op: ==
+        match: "10876"
+        score: 5
+      product_id:
+        __sm_leaf: true
+        op: ==
+        match: 2440 (0x0988)
+        score: 5
 quanta-bmc:
   quirklist:
   - ipmi-immutable-root

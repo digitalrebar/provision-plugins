@@ -211,6 +211,10 @@ mc_info() {
 }
 
 lan6_info() {
+   if [[ "$ipmi_no_ipv6" == "true" ]] ; then
+     echo "No ipv6 within the BMC by quirk, skipping ipv6 inventory"
+     return 0
+   fi
    if ! grep -q lan6 < <(ipmitool help 2>&1); then
      echo "No ipv6 support in ipmitool, skipping ipv6 inventory"
      return 0
@@ -285,10 +289,6 @@ load_ipmi
 # Get MC info
 mc_info
 
-# Get Lan Info
-lan_info
-lan6_info
-
 # Identify MC and get quirks
 process_quirks
 
@@ -305,6 +305,10 @@ declare -A p2li=(['ipaddr']='ipmi/address'
       ['netmask']='ipmi/netmask'
       ['ipsrc']='ipmi/ipsrc'
       ['defgw ipaddr']='ipmi/gateway')
+
+# Get Lan Info
+lan_info
+lan6_info
 
 if [[ ${lan_info['macaddr']} != "" ]] ; then
     drpcli machines set $RS_UUID param ipmi/macaddr to "${lan_info['macaddr']}"
