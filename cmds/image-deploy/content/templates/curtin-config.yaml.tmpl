@@ -6,10 +6,10 @@ install:
 sources:
   05_primary:
 {{if .ParamExists "image-deploy/image-url" }}
-    uri: "{{.Param "image-deploy/image-url"}}"
+    uri: "{{.ParamExpand "image-deploy/image-url"}}"
 {{end }}
 {{if .ParamExists "image-deploy/image-file" }}
-    uri: "{{.ProvisionerURL}}/{{.Param "image-deploy/image-file"}}"
+    uri: "{{.ProvisionerURL}}/{{.ParamExpand "image-deploy/image-file"}}"
 {{end }}
     type: "{{.Param "image-deploy/image-type"}}"
   06_drp:
