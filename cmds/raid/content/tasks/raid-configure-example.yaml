@@ -25,11 +25,11 @@ Templates:
           exit 0
       fi
       if [[ {{.Param "raid-clear-config"}} == true ]]; then
-          (drp-raid -clear) || exit 1
+          (drp-raid -tools "{{.Param "raid-usable-utilities" | join ","}}" -clear) || exit 1
       fi
       echo "Building this configuration:"
-      (echo '{{.ParamAsJSON "raid-target-config"}}' | drp-raid -compile)
-      (echo '{{.ParamAsJSON "raid-target-config"}}' | drp-raid -configure) || exit 1
-      drp-raid | drpcli machines set {{.Machine.UUID}} param raid-current-config to -
+      (echo '{{.ParamAsJSON "raid-target-config"}}' | drp-raid -tools "{{.Param "raid-usable-utilities" | join ","}}" -compile)
+      (echo '{{.ParamAsJSON "raid-target-config"}}' | drp-raid -tools "{{.Param "raid-usable-utilities" | join ","}}" -configure) || exit 1
+      drp-raid -tools "{{.Param "raid-usable-utilities" | join ","}}" | drpcli machines set {{.Machine.UUID}} param raid-current-config to -
       drpcli machines set "$RS_UUID" param raid-skip-config to true
 

@@ -23,4 +23,4 @@ Templates:
       {{if .Param "raid-baseline-generic" }}
       GENERIC="-generic"
       {{end}}
-      drp-raid -volspecs $GENERIC | drpcli machines set {{.Machine.UUID}} param raid-target-config to -
+      drp-raid -tools "{{.Param "raid-usable-utilities" | join ","}}" -volspecs $GENERIC | drpcli machines set {{.Machine.UUID}} param raid-target-config to -

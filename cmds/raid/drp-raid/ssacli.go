@@ -16,6 +16,7 @@ type SsaCli struct {
 	executable string
 	order      int
 	log        *log.Logger
+	enabled    bool
 }
 
 var (
@@ -30,7 +31,10 @@ func (s *SsaCli) Logger(l *log.Logger) {
 	s.log = l
 }
 
-func (s *SsaCli) Order() int { return s.order }
+func (s *SsaCli) Order() int    { return s.order }
+func (s *SsaCli) Enabled() bool { return s.enabled }
+func (s *SsaCli) Enable()       { s.enabled = true }
+func (s *SsaCli) Disable()      { s.enabled = false }
 
 func (s *SsaCli) Name() string { return s.name }
 

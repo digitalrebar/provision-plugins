@@ -156,7 +156,8 @@ func compile(t *testing.T, controllers Controllers, specs string) {
 		t.Errorf("Error creating log dest %s: %v", logPath, err)
 		return
 	}
-	sess := Session().Log(logger)
+	sess := newSession()
+	sess.log = log.New(logger, "", 0)
 	sess.out = out
 	fake = true
 	for i := range controllers {

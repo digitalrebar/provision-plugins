@@ -16,6 +16,7 @@ type MVCli struct {
 	executable string
 	order      int
 	log        *log.Logger
+	enabled    bool
 }
 
 var (
@@ -28,7 +29,10 @@ func (s *MVCli) Logger(l *log.Logger) {
 	s.log = l
 }
 
-func (s *MVCli) Order() int { return s.order }
+func (s *MVCli) Order() int    { return s.order }
+func (s *MVCli) Enabled() bool { return s.enabled }
+func (s *MVCli) Enable()       { s.enabled = true }
+func (s *MVCli) Disable()      { s.enabled = false }
 
 func (s *MVCli) Name() string { return s.name }
 
