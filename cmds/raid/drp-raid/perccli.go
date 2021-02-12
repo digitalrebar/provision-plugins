@@ -16,6 +16,7 @@ type PercCli struct {
 	executable string
 	order      int
 	log        *log.Logger
+	enabled    bool
 }
 
 var (
@@ -31,7 +32,10 @@ func (s *PercCli) Logger(l *log.Logger) {
 	s.log = l
 }
 
-func (s *PercCli) Order() int { return s.order }
+func (s *PercCli) Order() int    { return s.order }
+func (s *PercCli) Enabled() bool { return s.enabled }
+func (s *PercCli) Enable()       { s.enabled = true }
+func (s *PercCli) Disable()      { s.enabled = false }
 
 func (s *PercCli) Name() string { return s.name }
 

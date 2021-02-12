@@ -3,12 +3,8 @@
       "RaidLevel": "raid1",
       "Size": "600.00 MB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 629145600,
@@ -26,20 +22,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid5",
       "Size": "3.00 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1099511627776,
@@ -73,8 +63,6 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     }
   ]

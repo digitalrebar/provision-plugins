@@ -24,13 +24,17 @@ type MegaCli struct {
 	executable string
 	order      int
 	log        *log.Logger
+	enabled    bool
 }
 
 func (m *MegaCli) Logger(l *log.Logger) {
 	m.log = l
 }
 
-func (m *MegaCli) Order() int { return m.order }
+func (m *MegaCli) Order() int    { return m.order }
+func (m *MegaCli) Enabled() bool { return m.enabled }
+func (m *MegaCli) Enable()       { m.enabled = true }
+func (m *MegaCli) Disable()      { m.enabled = false }
 
 func (m *MegaCli) Name() string { return m.name }
 

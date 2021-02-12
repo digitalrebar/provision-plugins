@@ -1,0 +1,24 @@
+---
+Name: raid-usable-utilities
+Description: A restricted set of tools to use
+Documentation: |
+  These are the tools that could be used and the order to use them in
+  configuration operations.
+
+  The `raid-install-tools` task will attempt to install all tools
+  it can find.  This list reflects the subset of those tools to use.
+Meta:
+  icon: "disk outline"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  type: array
+  items:
+    type: string
+  default:
+    - "ssacli"
+    - "storcli7"
+    - "storcli6"
+    - "megacli"
+    - "perccli"
+    - "mvcli"

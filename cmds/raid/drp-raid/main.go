@@ -9,15 +9,16 @@ import (
 	"log"
 	"os"
 	"sort"
+	"strings"
 )
 
 var allDrivers = []Driver{
-	&SsaCli{"ssacli", "/opt/smartstorageadmin/ssacli/bin/ssacli", 20, nil},
-	&MegaCli{"storcli7", "/opt/MegaRAID/storcli7/storcli", 25, nil},
-	&MegaCli{"storcli6", "/opt/MegaRAID/storcli6/storcli", 50, nil},
-	&MegaCli{"megacli", "/opt/MegaRAID/MegaCli/MegaCli64", 75, nil},
-	&PercCli{"perccli", "/opt/MegaRAID/perccli/perccli64", 10, nil},
-	&MVCli{"mvcli", "/usr/local/bin/mvcli", 85, nil},
+	&SsaCli{"ssacli", "/opt/smartstorageadmin/ssacli/bin/ssacli", 10, nil, true},
+	&MegaCli{"storcli7", "/opt/MegaRAID/storcli7/storcli", 20, nil, true},
+	&MegaCli{"storcli6", "/opt/MegaRAID/storcli6/storcli", 30, nil, true},
+	&MegaCli{"megacli", "/opt/MegaRAID/MegaCli/MegaCli64", 40, nil, true},
+	&PercCli{"perccli", "/opt/MegaRAID/perccli/perccli64", 50, nil, true},
+	&MVCli{"mvcli", "/usr/local/bin/mvcli", 60, nil, true},
 }
 
 var fake = false
@@ -96,6 +97,9 @@ func (s *session) Controllers(src string) *session {
 		drivers := []Driver{}
 		controllers := Controllers([]*Controller{})
 		for _, driver := range allDrivers {
+			if !driver.Enabled() {
+				continue
+			}
 			driver.Logger(s.log)
 			if err := DriverInstalled(driver); err != nil {
 				s.log.Println(err)
@@ -143,6 +147,9 @@ func (s *session) Controllers(src string) *session {
 		for i, c := range s.controllers {
 			c.idx = i
 			for _, d := range allDrivers {
+				if !d.Enabled() {
+					continue
+				}
 				if c.Driver == d.Name() {
 					c.driver = d
 					break
@@ -306,6 +313,7 @@ func (s *session) Configure(doAppend, force bool) {
 func main() {
 	var volspecs, config, clear, force, compile, compare, addthem, encrypt, generic bool
 	var controllerFile string
+	var tools string
 	var password, key string
 	flag.BoolVar(&generic, "generic", false, "Output volspecs in generic format")
 	flag.BoolVar(&volspecs, "volspecs", false, "Output volspecs for all currently configured RAID volumes")
@@ -319,7 +327,24 @@ func main() {
 	flag.StringVar(&key, "key", "", "Key for encryption")
 	flag.BoolVar(&addthem, "append", false, "Add new volumes to existing ones")
 	flag.StringVar(&controllerFile, "controller", "", "Controller json file for testing")
+	flag.StringVar(&tools, "tools", "", "Tools to limit")
 	flag.Parse()
+	if tools != "" {
+		pieces := strings.Split(tools, ",")
+		for _, d := range allDrivers {
+			d.Disable()
+		}
+		newDrivers := []Driver{}
+		for _, p := range pieces {
+			for _, d := range allDrivers {
+				if d.Name() == p {
+					d.Enable()
+					newDrivers = append(newDrivers, d)
+				}
+			}
+		}
+		allDrivers = newDrivers
+	}
 	s := newSession().Controllers(controllerFile)
 	s.ExitOnError()
 	if compare {

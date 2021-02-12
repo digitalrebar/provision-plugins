@@ -177,6 +177,9 @@ type Driver interface {
 	Refresh(*Controller)
 	Clear(c *Controller, foreignOnly bool) error
 	Order() int
+	Enabled() bool
+	Disable()
+	Enable()
 	Create(c *Controller, v *VolSpec, forceGood bool) error
 	Encrypt(c *Controller, key, password string) error
 }

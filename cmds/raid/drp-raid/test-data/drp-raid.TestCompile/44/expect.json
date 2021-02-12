@@ -3,12 +3,8 @@
       "RaidLevel": "raid5",
       "Size": "400.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 107374182400,
@@ -50,8 +46,6 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     }
   ]

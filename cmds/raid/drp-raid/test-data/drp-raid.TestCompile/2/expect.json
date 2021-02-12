@@ -3,12 +3,8 @@
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -18,20 +14,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -41,20 +31,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -64,20 +48,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -87,20 +65,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -110,20 +82,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -133,20 +99,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -156,20 +116,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -179,20 +133,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -202,20 +150,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -225,20 +167,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -248,20 +184,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -271,20 +201,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -294,20 +218,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -317,20 +235,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -340,20 +252,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "1.82 TB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "disk",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 1999307276288,
@@ -363,20 +269,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -386,20 +286,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -409,20 +303,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -432,20 +320,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -455,20 +337,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -478,20 +354,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -501,20 +371,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -524,20 +388,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sata",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -547,20 +405,14 @@
           "Protocol": "sata",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -570,20 +422,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -593,20 +439,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -616,20 +456,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -639,20 +473,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -662,20 +490,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -685,20 +507,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -708,20 +524,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "931.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 999653638144,
@@ -731,20 +541,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "476.38 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "nvme",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 511503761408,
@@ -754,20 +558,14 @@
           "Protocol": "nvme",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "465.25 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "nvme",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 499558383616,
@@ -777,20 +575,14 @@
           "Protocol": "nvme",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "465.25 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "nvme",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 499558383616,
@@ -800,20 +592,14 @@
           "Protocol": "nvme",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "465.25 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "nvme",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 499558383616,
@@ -823,8 +609,6 @@
           "Protocol": "nvme",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     }
   ]

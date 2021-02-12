@@ -3,12 +3,8 @@
       "RaidLevel": "raid0",
       "Size": "100.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 107374182400,
@@ -18,20 +14,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "100.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 107374182400,
@@ -41,20 +31,14 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     },
     {
       "RaidLevel": "raid0",
       "Size": "100.00 GB",
       "StripeSize": "64 KB",
-      "Name": "",
-      "VolumeID": "",
-      "Bootable": false,
       "Type": "ssd",
       "Protocol": "sas",
-      "Controller": 0,
       "Disks": [
         {
           "Size": 107374182400,
@@ -64,8 +48,6 @@
           "Protocol": "sas",
           "Volume": ""
         }
-      ],
-      "DiskCount": "",
-      "Fake": false
+      ]
     }
   ]

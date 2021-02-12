@@ -14,7 +14,7 @@ Documentation: |
   * storcli7 - https://docs.broadcom.com/docs/007.0205.0000.0000_Unified_StorCLI.zip - 007.0205.0000.0000_Unified_StorCLI.zip
   * storcli6- https://docs.broadcom.com/docs/1.23.02_StorCLI - 1.23.02_StorCLI.zip
   * megacli - https://docs.broadcom.com/docs/12351587 - 8.07.14_MegaCLI.zip
-  * perccli - https://downloads.dell.com/FOLDER04830419M/1/perccli_7.3-007.0318_linux.tar.gz - perccli_7.3-007.0318_linux.tar.gz
+  * perccli - https://dl.dell.com/FOLDER06507823M/1/PERCCLI_D6YWP_7.1327.00_A09_Linux.tar.gz - PERCCLI_D6YWP_7.1327.00_A09_Linux.tar.gz
   * ssacli - https://downloads.linux.hpe.com/sdr/repo/mcp/centos/7/x86_64/11.21/ssacli-3.30-14.0.x86_64.rpm - ssacli-3.30-14.0.x86_64.rpm
   * mvcli - https://dl.dell.com/FOLDER05540516M/1/mvcli_5.0.13.1103_A05.zip - mvcli_5.0.13.1103_A05.zip
 
@@ -27,8 +27,8 @@ Templates:
   - Name: "tools-install"
     Contents: |
       #!/usr/bin/env bash
-      . helper
-      __sane_exit
+
+      {{ template "setup.tmpl" . }}
 
       # Needed for some RAID configuration utilities
       [[ -d /sys/module/sg ]] || modprobe sg
@@ -56,7 +56,7 @@ Templates:
       ARCHIVES['storcli7']='007.0205.0000.0000_Unified_StorCLI.zip'
       ARCHIVES['storcli6']='1.23.02_StorCLI.zip'
       ARCHIVES['megacli']='8.07.14_MegaCLI.zip'
-      ARCHIVES['perccli']='perccli_7.3-007.0318_linux.tar.gz'
+      ARCHIVES['perccli']='PERCCLI_D6YWP_7.1327.00_A09_Linux.tar.gz'
       ARCHIVES['ssacli']='ssacli-3.30-14.0.x86_64.rpm'
       ARCHIVES['mvcli']='mvcli_5.0.13.1103_A05.zip'
       URLS['storcli7']="{{.ProvisionerURL}}/files/raid/${ARCHIVES['storcli7']}"
@@ -73,7 +73,7 @@ Templates:
       SOURCES['storcli7']='https://docs.broadcom.com/docs/007.0205.0000.0000_Unified_StorCLI.zip'
       SOURCES['storcli6']='https://docs.broadcom.com/docs/1.23.02_StorCLI'
       SOURCES['megacli']='https://docs.broadcom.com/docs/12351587'
-      SOURCES['perccli']='https://downloads.dell.com/FOLDER04830419M/1/perccli_7.3-007.0318_linux.tar.gz'
+      SOURCES['perccli']='https://dl.dell.com/FOLDER06507823M/1/PERCCLI_D6YWP_7.1327.00_A09_Linux.tar.gz'
       SOURCES['ssacli']='https://downloads.linux.hpe.com/sdr/repo/mcp/centos/7/x86_64/11.21/ssacli-3.30-14.0.x86_64.rpm'
       SOURCES['mvcli']='https://dl.dell.com/FOLDER05540516M/1/mvcli_5.0.13.1103_A05.zip'
       # TARGETS should remain relatively unchanged.
@@ -113,8 +113,8 @@ Templates:
                   unzip -j -o $archive 'Linux/MegaCli-8.07.14-1.noarch.rpm'
                   rpm2cpio MegaCli-8.07.14-1.noarch.rpm |(cd /; cpio -idmv);;
               perccli)
-                  tar -zxvf $archive 'perccli_7.3-007.0318_linux/Linux/perccli-007.0318.0000.0000-1.noarch.rpm'
-                  rpm2cpio perccli_7.3-007.0318_linux/Linux/perccli-007.0318.0000.0000-1.noarch.rpm |(cd /; cpio -idmv);;
+                  tar -zxvf $archive 'perccli-007.1327.0000.0000-1.noarch.rpm'
+                  rpm2cpio perccli-007.1327.0000.0000-1.noarch.rpm |(cd /; cpio -idmv);;
               ssacli)
                   rpm2cpio $archive |(cd /; cpio -idmv);;
               mvcli)
@@ -132,4 +132,4 @@ Templates:
       done
       p="$(printf '"%s",' "${PRESENT[@]}")"
       drpcli machines set {{.Machine.UUID}} param raid-available-utilities to "[${p%,}]"
-      drp-raid | drpcli machines set {{.Machine.UUID}} param raid-current-config to -
+      drp-raid -tools "{{.Param "raid-usable-utilities" | join ","}}" | drpcli machines set {{.Machine.UUID}} param raid-current-config to -

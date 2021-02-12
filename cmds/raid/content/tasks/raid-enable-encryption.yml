@@ -53,7 +53,7 @@ Templates:
           {{ end }}
       fi
 
-      drp-raid -encrypt -password "$password" -key "$mstrkey"
+      drp-raid -tools "{{.Param "raid-usable-utilities" | join ","}}" -encrypt -password "$password" -key "$mstrkey"
 
       drpcli machines set "$RS_UUID" param raid-skip-encryption to true
       exit 0
