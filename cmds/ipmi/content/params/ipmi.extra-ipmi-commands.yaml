@@ -1,0 +1,20 @@
+---
+Name: "ipmi/extra-ipmi-commands"
+Description: "Additional IPMI tool commands to run"
+Documentation: |
+  This parameter provides a list of commands to run after ipmi-configuration is done with the ipmi-run-commands
+  task.
+
+  This parameter defaults to an empty set of commands.
+
+  If a command needs to ignore errors, you need to add '|| :' to the end of the arguments.
+
+Schema:
+  type: "array"
+  items:
+    type: "string"
+  default: []
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
