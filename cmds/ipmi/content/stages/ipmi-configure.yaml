@@ -4,6 +4,7 @@ Description: "A stage to configure the IPMI out-of-band management system"
 RunnerWait: true
 Tasks:
   - "ipmi-configure"
+  - "ipmi-run-commands"
 Meta:
   icon: "server"
   color: "yellow"
