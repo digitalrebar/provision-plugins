@@ -1,0 +1,89 @@
+---
+Name: "ipmi-run-commands"
+Description: "A task to run a list of ipmi commands"
+Documentation: |
+  This task runs additional IPMI commands specified in the command list.
+
+  The command is assumed to be a full command.
+
+  If the command needs to ignore errors, you need to add '|| :' to the end of the arguments.
+
+Prerequisites:
+  - ipmi-install
+Meta:
+  icon: "server"
+  color: "blue"
+  title: "RackN Content"
+  feature-flags: "sane-exit-codes"
+Templates:
+  - Name: "Configure BMC"
+    Path: ""
+    Contents: |
+      #!/usr/bin/env bash
+      # Run additional commands against IPMI subsystem
+
+      {{ template "setup.tmpl" . }}
+
+      fail() {
+          echo "Failed"
+          exit 1
+      }
+
+      success() {
+          echo "Success"
+          exit 0
+      }
+
+      #
+      # This routine will mark the parameters to skip IPMI on
+      # systems that don't have IPMI subsystems or fail.
+      #
+      disable_ipmi() {
+          echo "IPMI Subsystem not available on this node."
+
+          # Mark address as empty to make sure that actions aren't available.
+          drpcli machines set $RS_UUID param ipmi/enabled to false
+          if ! drpcli machines remove $RS_UUID param ipmi/address; then
+              true
+          fi
+
+          if [[ $IPMI_CONFIGURE_FAIL == true ]] ; then
+              fail
+          else
+              {{ if .ParamExpand "ipmi/extra-ipmi-commands" }}
+              fail
+              {{ else }}
+              success
+              {{ end }}
+          fi
+      }
+
+      load_ipmi() {
+          [[ -e /dev/ipmi0 || -e /dev/ipmi/0 || -e /dev/ipmidev/0 ]] && return || :
+          echo "Loading IPMI modules"
+          [[ -d /sys/module/ipmi_devintf ]] || modprobe ipmi_devintf &>/dev/null || :
+          [[ -d /sys/module/ipmi_si ]] || modprobe ipmi_si &>/dev/null || :
+          [[ -d /sys/module/ipmi_ssif ]] || modprobe ipmi_ssif &>/dev/null || :
+          if ! [[ -d /sys/module/ipmi_si ||
+                  -d /sys/module/ipmi_devintf ||
+                  -d /sys/module/ipmi_ssif ]]; then
+              echo "Failed to load ipmi kernel modules"
+              disable_ipmi
+              return
+          fi
+          [[ -e /dev/ipmi0 || -e /dev/ipmi/0 || -e /dev/ipmidev/0 ]] && return || :
+          echo "No IPMI devices present"
+          disable_ipmi
+      }
+
+      # Load the ipmi layer
+      load_ipmi
+
+      {{ range $idx, $cmd := .ParamExpand "ipmi/extra-ipmi-commands" }}
+      echo "Running command: {{$idx | toString }}"
+      {{ $cmd }}
+      {{ end }}
+
+      echo "Commands run."
+      exit 0
+
