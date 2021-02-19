@@ -1,0 +1,12 @@
+# Identify MC and get quirks
+process_quirks
+
+echo "System has been identified as: $quirkid"
+echo "Using these quirks: ${quirklist[@]}"
+
+# Set the quirks as vars
+for q in "${quirklist[@]}"
+do
+  key=${q//-/_}
+  export ${key}=true
+done

@@ -1,0 +1,202 @@
+trim() {
+  local var="$*"
+  # remove leading whitespace characters
+  var="${var#"${var%%[![:space:]]*}"}"
+  # remove trailing whitespace characters
+  var="${var%"${var##*[![:space:]]}"}"
+  echo -n "$var"
+}
+
+process_quirks() {
+    OLD_IFS=$IFS
+    IFS=""
+    array=false
+    index=0
+    level=()
+    tq=()
+    score=0
+    maxscore=0
+    testvalue=""
+    while read line
+    do
+            [[ $line =~ ^# ]] && continue
+            front=${line%%:*}
+            back=$(trim ${line#*:})
+
+            oldarray=$array
+            if [[ $front == $line ]] ; then
+                front=${line%%-*}
+                back=$(trim ${line#*-})
+                array=true
+                tq=()
+            else
+                array=false
+            fi
+            if [[ $oldarray != $array && $array == true ]] ; then
+                index=0
+            fi
+
+            spaces="${front//[^ ]}"
+            count=$((${#spaces} / 2))
+
+            tf=$(trim $front)
+            if [[ $back == "" ]] ; then
+                    if [[ $count == 0 ]] ; then
+                         if [[ $testvalue != "" ]] ; then
+                                 if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                                 if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                         fi
+                         testvalue=""
+                         if (( $maxscore < $score )) ; then
+                             quirkid=${level[0]}
+                             maxscore=$score
+                             quirklist=$tq
+                         fi
+                         score=0
+                    fi
+                    if [[ $count == 3 ]] ; then
+                         if [[ $testvalue != "" ]] ; then
+                                 if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                                 if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
+                                     score=$(($score + $testscore))
+                                 fi
+                         fi
+                         testkey=$tf
+                         testscore=1
+                    fi
+                    level[$count]=$tf
+            else
+                    if [[ $array == true ]] ; then
+                        tq[$index]=$back
+                    else
+                        if [[ $count == 4 && $tf == "match" ]] ; then
+                            testvalue=$back
+                        fi
+                        if [[ $count == 4 && $tf == "score" ]] ; then
+                            testscore=$back
+                        fi
+                    fi
+            fi
+
+    done < "ipmi-quirks.yaml"
+    if [[ $testvalue != "" ]] ; then
+            if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
+                score=$(($score + $testscore))
+            fi
+            if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
+                score=$(($score + $testscore))
+            fi
+    fi
+    testvalue=""
+    if (( $maxscore < $score )) ; then
+        maxscore=$score
+        quirkid=${level[0]}
+        quirklist=$tq
+    fi
+    IFS=$OLD_IFS
+}
+
+mc_info() {
+    echo "Gathering MC info"
+    count=0
+    while (($count < 5)) ; do
+        while read line
+        do
+            tkey=$(trim ${line%%:*})
+            key=${mc_info_keys["$tkey"]}
+            value=$(trim ${line#*:})
+
+            [[ $key && $value ]] || continue
+            mc_info["$key"]="$value"
+        done < <(tool mc info)
+
+        [[ ${mc_info["version"]} ]] && break
+
+        echo "attempt $count failed -  trying again..."
+        count=$(($count + 1))
+        sleep 1
+    done
+
+    if (($count == 5)) ; then
+        echo "Failed to get base board controller info"
+        disable_ipmi
+    fi
+}
+
+lan6_info() {
+   if [[ "$ipmi_no_ipv6" == "true" ]] ; then
+     echo "No ipv6 within the BMC by quirk, skipping ipv6 inventory"
+     return 0
+   fi
+   if ! grep -q lan6 < <(ipmitool help 2>&1); then
+     echo "No ipv6 support in ipmitool, skipping ipv6 inventory"
+     return 0
+  fi
+  local section k v
+  OLD_IFS=$IFS
+  IFS=""
+  while read line; do
+      case $line in
+          'IPv6 Static Address'*) section='static address'; continue;;
+          'IPv6 Dynamic Address'*) section='dynamic address'; continue;;
+          'IPv6 Static Router'*) section='gw'; continue;;
+          'IPv6 Dynamic Router'*) section='gw'; continue;;
+          '    '*);;
+          *) section=''; continue;;
+      esac
+      k="$(trim "${line%%:*}")"
+      v="$(trim "${line#*:}")"
+      case $section in
+          '') continue;;
+          'static address')
+              [[ ${lan6_info['ipaddr']} ]] && continue
+              [[ $k = Address && $v != ::/* ]] || continue
+              lan6_info['ipaddr']="${v%/*}"
+              lan6_info['netmask']="${v#*/}"
+              lan6_info['ipsrc']='static'
+              ;;
+          'dynamic address')
+              [[ ${lan6_info['ipaddr']} ]] && continue
+              case $k in
+                  'Source/Type')
+                      [[ $v && $v != 'static' ]] || continue
+                      lan6_info['ipsrc']="$v";;
+                  'Address')
+                      [[ $v != ::/* ]] || continue
+                      lan6_info['ipaddr']="${v%/*}"
+                      lan6_info['netmask']="${v#*/}";;
+              esac;;
+          'gw')
+              [[ ${lan6_info['defgw ipaddr']} ]] && continue
+              [[ $k = 'Address' ]] || continue
+              [[ $v && $v != :: ]] || continue
+              lan6_info['defgw ipaddr']="$v";;
+      esac
+  done < <(tool lan6 print $lan_chan)
+  IFS=$OLD_IFS
+}
+
+lan_info() {
+    echo "Gathering Lan Info"
+    for ((i=$IPMI_LAN_CHECK_START;i<=$IPMI_LAN_CHECK_END;i++)); do
+        lan_chan=$i
+        while read line
+        do
+            tkey=$(trim ${line%%:*})
+            [[ $tkey ]] || continue
+            key=${lan_info_keys["$tkey"]}
+            value=$(trim ${line#*:})
+
+            [[ $key && $value ]] || continue
+            lan_info["$key"]="$value"
+        done < <(tool lan print $lan_chan)
+
+        [[ $IPMI_FORCE_LAN_CHAN = $lan_chan || ${lan_info["ipsrc"]} ]] && break
+    done
+}
