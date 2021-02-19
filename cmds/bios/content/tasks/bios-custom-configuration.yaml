@@ -1,6 +1,6 @@
 ---
 Name: "bios-custom-configuration"
-Description: "Configure custom additional bios pieces by vendor"
+Description: "Configure custom additional bios pieces by vendor after bios-configure"
 Meta:
   icon: "money"
   color: "grey"

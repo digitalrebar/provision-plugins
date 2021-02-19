@@ -1,0 +1,51 @@
+---
+Name: "bios-lenovo-pre-configuration"
+Description: "Configure the lenovo system through batch onecli before bios-configure"
+Meta:
+  icon: "money"
+  color: "grey"
+  title: "RackN Content"
+RequiredParams:
+  - bios-lenovo-pre-configuration
+Prerequisites:
+  - bios-tools-install
+Templates:
+  - Name: "bios-lenovo-pre-config.sh"
+    Contents: |
+      #!/usr/bin/env bash
+
+      {{ template "setup.tmpl" . }}
+
+      onecli=/opt/OneCli/OneCli
+      ensure_onecli() {
+        which $onecli &>/dev/null && return 0
+        echo "Lenovo system detected, but no $onecli binary present."
+        echo "Please rework your configure workload to make sure the"
+        echo "hardware-tools-install stage is before this stage."
+        echo
+        echo "This task cannot guarantee that remote access is enabled on this system without it."
+        return 1
+      }
+      ensure_onecli || exit 1
+
+      {{ range $index, $tmpl := .Param "bios-lenovo-pre-configuration" }}
+      cat > file.{{$index}} <<EOF
+      {{$tmpl}}
+      EOF
+
+      egrep '\-\-file[ =].[^ ]*' file.{{$index}} | sed -e 's/^.*--file[\t =]\([^ ]*\).*$/\1/g' | while read file
+      do
+          dir=`dirname $file`
+          mkdir -p $dir
+          if [[ ! -e $file ]] ; then
+              wget -O $file {{ $.ParamExpand "bios-file-base-url" }}/$file
+          fi
+      done
+
+      echo "Update item {{$index}}"
+      $onecli config batch --file file.{{$index}} || exit 1
+      rm -f file.{{$index}}
+      {{ end }}
+
+      echo "Update complete"
+      exit 0
