@@ -2,7 +2,7 @@ Description: Profile to bootstrap file beat.
 Documentation: Profile to bootstrap file beat.
 Meta:
   color: blue
-  icon: world
+  icon: heartbeat
   title: Digital Rebar Provision
 Name: bootstrap-filebeat
 Params:
