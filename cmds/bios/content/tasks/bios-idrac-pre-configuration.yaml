@@ -1,0 +1,17 @@
+---
+Name: "bios-idrac-pre-configuration"
+Description: "Configure the idrac through racadm before bios-configure"
+Meta:
+  icon: "money"
+  color: "grey"
+  title: "RackN Content"
+RequiredParams:
+  - bios-idrac-pre-configuration
+Prerequisites:
+  - bios-tools-install
+Templates:
+  - Name: "bios-idrac-pre-config.sh"
+    Contents: |
+      #!/usr/bin/env bash
+      echo "Currently - everything is handled through the default path."
+      exit 0

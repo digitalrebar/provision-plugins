@@ -1,9 +1,10 @@
 ---
 Name: bios-idrac-configuration
-Description: "The IDRAC configuration files to apply to the system"
+Description: "The IDRAC configuration files to apply to the system after bios-configure"
 Documentation: |
   This is currently unspecified.
 
+  These are run applied after bios-configure.
 Meta:
   color: grey
   icon: money

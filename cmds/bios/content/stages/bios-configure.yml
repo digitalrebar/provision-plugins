@@ -8,6 +8,7 @@ Documentation: |
 BootEnv: sledgehammer
 Tasks:
   - bios-current-config
+  - bios-pre-custom-configuration
   - bios-configure
   - bios-custom-configuration
 Meta:

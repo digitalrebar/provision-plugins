@@ -145,15 +145,6 @@ load_ipmi() {
     disable_ipmi
 }
 
-trim() {
-    local var="$*"
-    # remove leading whitespace characters
-    var="${var#"${var%%[![:space:]]*}"}"
-    # remove trailing whitespace characters
-    var="${var%"${var##*[![:space:]]}"}"
-    echo -n "$var"
-}
-
 tool() {
     if [[ $ipmi_nodelay == "" ]] ; then
         sleep 5
@@ -166,172 +157,8 @@ tool() {
     ipmitool "$@"
 }
 
-process_quirks() {
-    OLD_IFS=$IFS
-    IFS=""
-    array=false
-    index=0
-    level=()
-    tq=()
-    score=0
-    maxscore=0
-    testvalue=""
-    while read line
-    do
-            if [[ $line =~ ^# ]] ; then
-                    continue
-            fi
-
-            front=${line%%:*}
-            back=$(trim ${line#*:})
-
-            oldarray=$array
-            if [[ $front == $line ]] ; then
-                front=${line%%-*}
-                back=$(trim ${line#*-})
-                array=true
-                tq=()
-            else
-                array=false
-            fi
-            if [[ $oldarray != $array && $array == true ]] ; then
-                index=0
-            fi
-
-            spaces="${front//[^ ]}"
-            count=$((${#spaces} / 2))
-
-            tf=$(trim $front)
-            if [[ $back == "" ]] ; then
-                    if [[ $count == 0 ]] ; then
-                         if [[ $testvalue != "" ]] ; then
-                                 if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
-                                     score=$(($score + $testscore))
-                                 fi
-                                 if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
-                                     score=$(($score + $testscore))
-                                 fi
-                         fi
-                         testvalue=""
-                         if (( $maxscore < $score )) ; then
-                             quirkid=${level[0]}
-                             maxscore=$score
-                             quirklist=$tq
-                         fi
-                         score=0
-                    fi
-                    if [[ $count == 3 ]] ; then
-                         if [[ $testvalue != "" ]] ; then
-                                 if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
-                                     score=$(($score + $testscore))
-                                 fi
-                                 if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
-                                     score=$(($score + $testscore))
-                                 fi
-                         fi
-                         testkey=$tf
-                         testscore=1
-                    fi
-                    level[$count]=$tf
-            else
-                    if [[ $array == true ]] ; then
-                        tq[$index]=$back
-                    else
-                        if [[ $count == 4 && $tf == "match" ]] ; then
-                            testvalue=$back
-                        fi
-                        if [[ $count == 4 && $tf == "score" ]] ; then
-                            testscore=$back
-                        fi
-                    fi
-            fi
-
-    done < "ipmi-quirks.yaml"
-    if [[ $testvalue != "" ]] ; then
-            if [[ ${mc_info[$testkey]} == $testvalue ]] ; then
-                score=$(($score + $testscore))
-            fi
-            if [[ \"${mc_info[$testkey]}\" == $testvalue ]] ; then
-                score=$(($score + $testscore))
-            fi
-    fi
-    testvalue=""
-    if (( $maxscore < $score )) ; then
-        maxscore=$score
-        quirkid=${level[0]}
-        quirklist=$tq
-    fi
-    IFS=$OLD_IFS
-}
-
-mc_info() {
-    echo "Gathering MC info"
-    count=0
-    while (($count < 5)) ; do
-        while read line
-        do
-            tkey=$(trim ${line%%:*})
-            key=${mc_info_keys["$tkey"]}
-            value=$(trim ${line#*:})
-
-            if [[ $key == "" ]] ; then
-                continue
-            fi
-            if [[ $value == "" ]] ; then
-                continue
-            fi
-
-            mc_info["$key"]="$value"
-        done < <(tool mc info)
-
-        if [[ ${mc_info["version"]} != "" ]] ; then
-            break
-        fi
-
-        echo "attempt $count failed -  trying again..."
-        count=$(($count + 1))
-        sleep 1
-    done
-
-    if (($count == 5)) ; then
-        echo "Failed to get base board controller info"
-        disable_ipmi
-    fi
-}
-
-lan_info() {
-    echo "Gathering Lan Info"
-    for ((i=$IPMI_LAN_CHECK_START;i<=$IPMI_LAN_CHECK_END;i++)); do
-        lan_chan=$i
-        while read line
-        do
-            tkey=$(trim ${line%%:*})
-            if [[ $tkey == "" ]] ; then
-                continue
-            fi
-
-            key=${lan_info_keys["$tkey"]}
-            value=$(trim ${line#*:})
-
-            if [[ $key == "" ]] ; then
-                continue
-            fi
-            if [[ $value == "" ]] ; then
-                continue
-            fi
-
-            lan_info["$key"]="$value"
-        done < <(tool lan print $lan_chan)
-
-        if [[ $IPMI_FORCE_LAN_CHAN == $lan_chan ]] ; then
-            break
-        fi
-        if [[ ${lan_info["ipsrc"]} != "" ]] ; then
-            break
-        fi
-    done
-}
-
+# Trim is in here
+{{ template "ipmi-process-quirks.sh.tmpl" . }}
 
 # Load the ipmi layer
 load_ipmi
@@ -342,18 +169,7 @@ mc_info
 # Get Lan Info
 lan_info
 
-# Identify MC and get quirks
-process_quirks
-
-echo "System has been identified as: $quirkid"
-echo "Using these quirks: ${quirklist[@]}"
-
-# Set the quirks as vars
-for q in "${quirklist[@]}"
-do
-        key=${q//-/_}
-        export ${key}=true
-done
+{{ template "ipmi-load-quirk.sh.tmpl" . }}
 
 id_for_user() {
     tool user list $lan_chan |awk "\$2 == \"$1\" { print \$1 }"

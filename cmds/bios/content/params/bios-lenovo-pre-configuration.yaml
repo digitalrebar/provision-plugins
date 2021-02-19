@@ -1,13 +1,13 @@
 ---
-Name: bios-lenovo-configuration
-Description: "The Lenovo batch configuration files to apply to the system after bios-configure"
+Name: bios-lenovo-pre-configuration
+Description: "The Lenovo batch configuration files to apply to the system before bios-configure"
 Documentation: |
   This is a list of strings (to be files) to apply to the system through onecli in batch mode.
 
   If a line contains --file=<file> or --file <file>, the system will attempt to make sure that file is
   present and, if not present, retrieve it from the `bios-file-base-url` location.  Paths are maintained.
 
-  These are applied after bios-configure.
+  These are applied before bios-configure.
 Meta:
   color: grey
   icon: money
