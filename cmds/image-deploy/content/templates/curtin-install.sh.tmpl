@@ -39,7 +39,7 @@ if [[ $OSTYPE == linux ]] ; then
     fi
     chmod +x /tmp/drpcli/curtin/*
 
-    if [[ $OSSUBTYPE == "" ]] || [[ $OSSUBTYPE == centos ]] || [[ $OSSUBTYPE == redhat ]] || [[ $OSSUBTYPE == rhel ]] ; then
+    if [[ $OSSUBTYPE == "" ]] || [[ $OSSUBTYPE == centos ]] || [[ $OSSUBTYPE == redhat ]] || [[ $OSSUBTYPE == rhel ]] || [[ $OSSUBTYPE == other ]] ; then
         cp centos/* /tmp/drpcli/curtin
         cd /tmp/drpcli/curtin
         ln -s python_wrapper curtin-hooks
