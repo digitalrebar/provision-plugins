@@ -1,0 +1,35 @@
+---
+Name: esxi/set-network-protocol
+Description: Set the ESXi software install acceptance level.
+Documentation: |
+  This param controls what IP protocol suite is enabled on the ESXi node.
+  By default, both IPv4 and IPv6 are enabled on ESXi.
+
+  This Param can be set to:
+
+    * both (the default)
+    * ipv4
+    * ipv6
+
+  If the Param is set to ``ipv4``, the IPv6 protocol will be disabled.
+
+  .. note:: Setting the value to ``ipv6`` will not actually disable the
+            IPv4 protocol suite.  VMware has NOT implemented this mode.
+            Please contact VMware for any questions around this policy.
+
+  In the future, should the IPv4 protocol suite be allowed to be disabled,
+  this Task will be updated to reflect that capability.  In the meantime,
+  IPv4 will always be enabled.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: both
+  type: string
+  enum:
+    - both
+    - ipv4
+    - ipv6
+

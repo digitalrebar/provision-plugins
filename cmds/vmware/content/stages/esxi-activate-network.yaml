@@ -10,5 +10,6 @@ Meta:
 Tasks:
   - esxi-set-hostname
   - esxi-set-network
+  - esxi-set-network-protocol
   - esxi-set-dns
   - esxi-set-ntp
