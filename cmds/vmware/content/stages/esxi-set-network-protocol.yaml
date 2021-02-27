@@ -1,0 +1,25 @@
+---
+Name: "esxi-set-network-protocol"
+Description: "Set the ESXi network protocol (IPv4 / IPv6 / both) versions supported on the system."
+Documentation: |
+  Sets the supported IP protocol suites supported on the ESXi system.  Supported
+  values are:
+
+    * ``both`` - (default) Support both IPv4 and IPv6 protocols
+    * ``ipv4`` - support ONLY the IPv4 protocol, and disable IPv6 support completely
+    * ``ipv6`` - enable IPv6 protocol if not currently on (IPv4 can not be disabled in ESXi)
+
+  .. warning:: Changing IPv4 or IPv6 requires an ESXi reboot - and may disconnect
+               the ESXI node from the network.  This Task does not validate desired
+               protocol state connectivity after changes are made.  Ensure you have
+               appropriate IP addressing in place for continued network connectivity.
+
+  If the ``esxi/set-network-protocol-skip-reboot`` Param is set to ``true``, the
+  operator is responsible to reboot the ESXi node to implement any protocol changes.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN
+Tasks:
+  - esxi-set-network-protocol

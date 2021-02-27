@@ -1,0 +1,23 @@
+---
+Name: esxi/set-network-protocol-skip-reboot
+Description: Skips required reboot if IP protocol suite change requires it.
+Documentation: |
+  Setting this Param value to ``true`` will force the Task ``esxi-set-network-protocol``
+  to **NOT** reboot as required to implement the change.  Presumably the operator
+  intends to reboot the ESXi node at a later date/time.
+
+  .. warning:: IP protocol suite changes require a system reboot to implement; the
+               ``services.sh`` or down/up of interfaces does NOT implement the IP
+               protocol suite changes.
+
+  Skipping the reboot (value set to ``true``) will not implement the protocol state
+  change until the system is rebooted by some OTHER task or method.
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: false
+  type: boolean
+
