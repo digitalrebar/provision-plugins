@@ -1,0 +1,14 @@
+---
+Name: "image-deploy/other-initrd-path"
+Description: "The path to the initrd file that dracut should create"
+Documentation: |
+  The path to the dracut file that dracut should create.
+
+  The ${kv} string should be used to indicate the version of the kernel.
+Schema:
+  type: string
+  default: "/boot/initramfs-${kv}.img"
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

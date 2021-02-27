@@ -292,7 +292,7 @@ def write_interface_config(target, iface, data):
 def update_initramfs(target):
     # Only do dracut style initramfs'es, debian stype is handled by
     # the main curtin hook.
-    dracut = util.which("/sbin/dracut", target=target)
+    dracut = util.which("{{.Param "image-deploy/other-dracut-path"}}", target=target)
     if dracut is None:
         return
     with util.RunInChroot(target) as in_chroot:
@@ -304,7 +304,7 @@ def update_initramfs(target):
 for d in /lib/modules/*/kernel; do
     [[ -d $d ]] || continue
     kv="${d%/kernel}"; kv="${kv#/lib/modules/}"
-    /sbin/dracut -f "/boot/initramfs-${kv}.img" "${kv}"
+    {{.Param "image-deploy/other-dracut-path"}} -f "{{.Param "image-deploy/other-initrd-path"}}" "${kv}"
 done
 """
 ], capture=True)

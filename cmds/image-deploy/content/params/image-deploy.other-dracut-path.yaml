@@ -1,0 +1,12 @@
+---
+Name: "image-deploy/other-dracut-path"
+Description: "The path to the dracut executable for the linux/other os-type/os-sub-type"
+Documentation: |
+  The path to the dracut executable used by the linux/other os-type/os-sub-type pair.
+Schema:
+  type: string
+  default: /sbin/dracut
+Meta:
+  icon: "image"
+  color: "blue"
+  title: "RackN Content"

@@ -38,6 +38,12 @@ if [[ $OSTYPE == linux ]] ; then
     if [[ $OSSUBTYPE == "raw" ]] ; then
         cp raw/* /tmp/drpcli/curtin
     fi
+    if [[ $OSSUBTYPE == "other" ]] ; then
+        cp other/* /tmp/drpcli/curtin
+        cd /tmp/drpcli/curtin
+        ln -s python_wrapper curtin-hooks
+        cd -
+    fi
     chmod +x /tmp/drpcli/curtin/*
 
     # Cloud-init hackery
