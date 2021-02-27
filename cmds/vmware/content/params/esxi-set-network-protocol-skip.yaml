@@ -1,0 +1,16 @@
+---
+Name: esxi/set-network-protocol-skip
+Description: "Skips running the 'esxi-set-network-protocol' task."
+Documentation: |
+  Setting this Param value to ``true`` will cause the ``esxi-set-network-protocol`` task
+  to skip running.  By default the system will run the task (defaul ``false`` for this
+  Param).
+
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: false
+  type: boolean
+

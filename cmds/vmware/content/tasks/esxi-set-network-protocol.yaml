@@ -1,0 +1,154 @@
+---
+Name: "esxi-set-network-protocol"
+Description: "Set the ESXi network protocol (IPv4 / IPv6) versions supported on the system."
+Documentation: |
+  Sets the supported IP protocol suites supported on the ESXi system.  Supported
+  values are:
+
+    * ``both`` - (default) Support both IPv4 and IPv6 protocols
+    * ``ipv4`` - support ONLY the IPv4 protocol, and disable IPv6 support completely
+    * ``ipv6`` - enable IPv6 protocol if not currently on (IPv4 can not be disabled in ESXi)
+
+  .. warning:: Changing IPv4 or IPv6 requires a node restart - and may disconnect
+               the ESXI node from the network.  This Task does not validate desired
+               protocol state connectivity after changes are made.  Ensure you have
+               appropriate IP addressing in place for continued network connectivity.
+
+  If the ``esxi/set-network-protocol-skip-reboot`` Param is set to ``true``, the
+  operator is responsible to reboot the ESXi node to implement any protocol changes.
+
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+RequiredParams:
+  - "esxi/set-network-protocol"
+OptionalParams:
+  - "esxi/set-network-protocol-skip-reboot"
+  - "esxi/set-network-protocol-skip"
+Templates:
+  - Name: "esxi-set-network-protocol"
+    Contents: |
+      #!/usr/bin/env sh
+      # Set the supported IP protocol(s) on the system (IPv4 / IPv6)
+
+      ###
+      #  As of ESXi 7.0.0u1 - IPv4 can not be disabled on the system as far as we are aware.
+      #  If the operator sets "ipv6" option, then IPv6 will be enabled (if not already enabled),
+      #  but IPv4 can not be disabled.
+      #
+      #  Please submit a feature enhancement to VMware Support for this use case.
+      ###
+
+      {{ if ( .Param "esxi/set-network-protocol-skip" ) -}}
+      echo "Skip value set to 'true', skipping this task."
+      exit 0
+      {{ end -}}
+
+      set -e
+      xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+      PATH=$PATH:/usr/bin
+
+      DBG="{{ .Param "rs-debug-enable" }}"
+      set -e
+      [[ "$DBG" == "true" ]] && set -x
+
+      PROTO="{{ .Param "esxi/set-network-protocol" }}"
+      SKIP="{{ .Param "esxi/set-network-protocol-skip-reboot" }}"
+      REBOOT="no"
+      CODE="64"
+      IPV6_CUR=""
+      IPV6_NXT=""
+      CUR_STATE=""
+      NXT_STATE=""
+      RBT_MSG="System reboot required to implement protocol change. Rebooting now."
+      SKP_MSG="REBOOT SKIP has been set, protocol change will not complete until node is rebooted!!!!"
+
+      nextboot_ipv6_value() {
+        # returns '1' for ipv6 enabled; and '0' for ipv6 disabled
+        local _val=$(localcli system module parameters list -m tcpip4 | grep "^ipv6.*IPv6$" | awk ' { print $3 }')
+        [[ "$_val" == "1" ]] && echo true || echo false
+      }
+
+      current_ipv6_value() {
+        # outputs 'true' or 'false'
+        localcli network ip get | grep "IPv6 Enabled:" | awk ' { print $NF }'
+      }
+
+      set_ipv6_state() {
+        local _val="$1"
+        local _nxt_state=$(nextboot_ipv6_value)
+
+        if [[ "$_nxt_state" == "$_val" ]]
+        then
+          echo ">>> TARGET state ($_val) already set for next boot, no changes made"
+          return
+        else
+          localcli network ip set --ipv6-enabled=$_val
+        fi
+      }
+
+      get_states() {
+        IPV6_CUR=$(current_ipv6_value)
+        IPV6_NXT=$(nextboot_ipv6_value)
+        [[ "$IPV6_CUR" == "true" ]] && CUR_STATE="enabled" || CUR_STATE="disabled"
+        [[ "$IPV6_NXT" == "true" ]] && NXT_STATE="enabled" || NXT_STATE="disabled"
+      }
+
+      echo ""
+      echo "+=====================================================================+"
+      echo "|                                                                     |"
+      echo "| NOTICE:  Changing IPv4 or IPv6 values may disconnect the ESXI node  |"
+      echo "|          from the network.  This Task does not validate desired     |"
+      echo "|          protocol state connectivity.  Ensure you have appropriate  |"
+      echo "|          IP addressing in place for continued network connectivity. |"
+      echo "|                                                                     |"
+      echo "+=====================================================================+"
+      echo ""
+
+      get_states
+
+      echo ""
+      echo "+++ Pre change states:"
+      echo "+++ Current IPv6 state is set to ........ :: $CUR_STATE"
+      echo "+++ Next Boot IPv6 state is set to ...... :: $NXT_STATE"
+      echo "+++ Requesting IP Protocol(s) set to .... :: $PROTO"
+      echo ""
+
+      case $PROTO in
+        "both")
+          echo ">>> REQUEST Setting IPv6 to ENABLED (current state is '$CUR_STATE')"
+          set_ipv6_state true
+          [[ "$IPV6_CUR" == "false" ]] && REBOOT="yes"
+          ;;
+        "ipv4")
+          echo ">>> REQUEST Setting IPv6 to DISABLED (current state is '$CUR_STATE')"
+          set_ipv6_state false
+          [[ "$IPV6_CUR" == "true" ]] && REBOOT="yes"
+          ;;
+        "ipv6")
+          echo ">>> REQUEST Setting IPv6 to ENABLED (current state is '$CUR_STATE')"
+          echo ">>> NOTICE - IPv4 protocol can NOT be disabled - contact VMware for assistance"
+          set_ipv6_state true
+          [[ "$IPV6_CUR" == "false" ]] && REBOOT="yes"
+          ;;
+      esac
+
+      get_states
+
+      echo ""
+      echo "+++ Post change states:"
+      echo "+++ Current IPv6 state is set to ........ :: $CUR_STATE"
+      echo "+++ Next Boot IPv6 state is set to ...... :: $NXT_STATE"
+      echo "+++ Reboot required for state change .... :: $REBOOT"
+      echo ""
+
+      if [[ "$REBOOT" == "yes" && "$SKIP" != "true" ]]
+      then
+        echo ">>> $RBT_MSG"
+        exit $CODE
+      fi
+
+      [[ "$SKIP" == "true" && "$REBOOT" == "yes" ]] && echo ">>> WARNING !!! >>> $SKP_MSG" || true
+
