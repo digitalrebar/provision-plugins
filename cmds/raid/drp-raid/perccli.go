@@ -20,7 +20,7 @@ type PercCli struct {
 }
 
 var (
-	percEidLine    = regexp.MustCompile(`^([0-9]+):([0-9]+)[\t ]+([0-9]+)[\t ]+([^ ]+)[\t ]+([^ ]+)[\t ]+([0-9.]+ [TG]B)[\t ]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)`)
+	percEidLine    = regexp.MustCompile(`^([0-9 ]+):([0-9]+)[\t ]+([0-9]+)[\t ]+([^ ]+)[\t ]+([^ ]+)[\t ]+([0-9.]+ [TG]B)[\t ]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)[ \t]+([^ \t]+)`)
 	percArrayRE    = regexp.MustCompile(`^Enclosure Information :$`)
 	percPdRE       = regexp.MustCompile(`^Drive ([^ ]+) :$`)
 	percLdRE       = regexp.MustCompile(`^Logical Drive (.*) :$`)
