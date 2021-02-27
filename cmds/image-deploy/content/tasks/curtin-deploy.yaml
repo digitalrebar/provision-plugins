@@ -42,6 +42,16 @@ Templates:
   Name: "raw curtin hooks"
 
 #
+# linux sub-type other
+#
+- ID: "curtin-linux-python_wrapper.tmpl"
+  Path: "other/python_wrapper"
+  Name: "Linux python_wrapper"
+- ID: "curtin-linux-curtin-hooks.py.tmpl"
+  Path: "other/curtin-hooks.py"
+  Name: "other curtin-hooks.py"
+
+#
 # ESXi set - this uses the same as linux/raw - do nothing
 # Assumes that /curtin was added to the /dev/sda6 (/altbootbank/curtin)
 #
