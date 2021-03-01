@@ -22,6 +22,7 @@ type Volume struct {
 	controller       *Controller
 	driver           Driver
 	Fake             bool
+	idx              int
 }
 
 func (v *Volume) VolSpec() *VolSpec {
