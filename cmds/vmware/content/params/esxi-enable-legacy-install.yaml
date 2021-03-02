@@ -1,0 +1,16 @@
+---
+Name: esxi/enable-legacy-install
+Description: Use old style vib injection via firstboot
+Documentation: |
+  If set to ``true``, the RackN agent and firewall rule will be injected into
+  esxi during the firstboot portion of the install rather than being baked into
+  the iso.
+
+  By default, this option is false.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+Schema:
+  type: boolean
+  default: false
