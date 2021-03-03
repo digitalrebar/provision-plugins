@@ -69,6 +69,7 @@ func (s *PercJsonCli) convertToKV(raw interface{}, data map[string]string) map[s
 			// Nothing to do
 		case map[string]interface{}:
 			data = s.convertToKV(v, data)
+		case nil:
 		default:
 			s.log.Printf("I don't know about type for %s %T!\n", k, v)
 		}
