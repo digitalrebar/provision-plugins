@@ -87,7 +87,7 @@ load_ipmi
 # Get MC info
 mc_info
 
-{{ template "ipmi-load-quirk.sh.tmpl" . }}
+{{ template "ipmi-load-quirks.sh.tmpl" . }}
 
 declare -A p2li=(['ipaddr']='ipmi/address'
       ['netmask']='ipmi/netmask'
