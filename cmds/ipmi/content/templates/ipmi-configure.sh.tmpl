@@ -169,7 +169,7 @@ mc_info
 # Get Lan Info
 lan_info
 
-{{ template "ipmi-load-quirk.sh.tmpl" . }}
+{{ template "ipmi-load-quirks.sh.tmpl" . }}
 
 id_for_user() {
     tool user list $lan_chan |awk "\$2 == \"$1\" { print \$1 }"
