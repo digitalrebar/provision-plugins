@@ -51,7 +51,7 @@ Templates:
       )"
       lastAttempt="$(
       cat <<"EOF"
-      {{ if .Param "bios-target-configuration-compose" }}{{.ComposeParam "bios-target-configuration" | toJson}}{{else}}{{.ParamAsJSON "bios-target-configuration"}}{{end}}
+      {{.ParamAsJSON "bios-last-attempted-configuration"}}
       EOF
       )"
       toTry="$(drp-bioscfg -driver {{.Param "bios-driver"}} -operation test <<< "$target")"
