@@ -43,7 +43,7 @@ license_key: {{.Param "image-deploy/windows-license-key"}}
 partitioning_commands:
   builtin: curtin block-meta custom
 
-{{.ParamAsYAML "curtin/partitions"}}
+storage: {{ get (.ParamExpand "curtin/partitions") "storage" | toJson }}
 
 {{else}}
 partitioning_commands:
