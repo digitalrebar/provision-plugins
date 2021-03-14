@@ -164,6 +164,19 @@ elif [[ $OSTYPE == esxi ]] ; then
     echo "Deploying image for OS type:  ESXi"
     echo "DRPY rendered in image"
 
+{{ if .ParamExists "esxi/drpy-log-level" }}
+    cat > esxi/drpy.conf <<DRPEOF
+{{ template "curtin-drpy-agent.conf.tmpl" . }}
+DRPEOF
+    cat > esxi/network-startup.sh <<NSEOF
+{{ template "curtin-esxi-network-startup.sh.tmpl" . }}
+NSEOF
+    cp esxi/network-startup.sh esxi/network-startup.sh.bak
+{{ else }}
+    echo "ESXI-based image-deploys require the vmware plugin...  Please add and retry"
+    exit 1
+{{ end }}
+
     echo "Making empty onetime.tgz"
     rm -rf /tmp/image-deploy-esxi
     mkdir -p /tmp/image-deploy-esxi/var/lib/vmware/firstboot
