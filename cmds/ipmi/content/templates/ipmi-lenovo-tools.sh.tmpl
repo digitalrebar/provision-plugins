@@ -95,7 +95,7 @@ vendor_set_hostname_dns() {
 {{ end -}}
 
     if [[ "$IMMHOSTNAME" != "" && "$DNS_DOMAIN" != "" ]] ; then
-        $onecli set IMM.IMMInfo_Name "${IMMHOSTNAME}.${DNS_DOMAIN}"
+        $onecli config set IMM.IMMInfo_Name "${IMMHOSTNAME}.${DNS_DOMAIN}"
     fi
     test -z $IMMHOSTNAME || $onecli config set IMM.HostName1 $IMMHOSTNAME
     test -z $DNS_DOMAIN || $onecli config set IMM.Custom_Domain $DNS_DOMAIN
