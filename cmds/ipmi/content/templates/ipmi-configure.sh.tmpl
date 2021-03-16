@@ -242,7 +242,9 @@ configure_user() {
         echo "This may not work!!"
     fi
     [[ $existing_id ]] || tool user set name $configure_id "$1"
-    tool user set password $configure_id "$2"
+    if ! tool user set password $configure_id "$2" ; then
+        vendor_set_password "$1" "$2"
+    fi
     tool user priv $configure_id 4 $lan_chan
     [[ $ipmi_crossed_access_channels = true ]] || \
         tool channel setaccess $lan_chan $configure_id callin=on link=on ipmi=on privilege=4
