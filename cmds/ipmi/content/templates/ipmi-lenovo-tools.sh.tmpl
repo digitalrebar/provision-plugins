@@ -186,3 +186,11 @@ EOF
   $onecli config import IMM.SSL_HTTPS_SERVER_CERT --file sslcert.txt
   rm -f sslcert.txt
 }
+
+vendor_set_password() {
+  ensure_onecli || return 0
+
+  local _id=$($onecli config show | grep -i IMM.LoginId | grep "$1" | awk -F= '{ print $1 }' | awk -F. '{ print $3 }')
+  $onecli config set IMM.Password.$_id "$2"
+}
+
