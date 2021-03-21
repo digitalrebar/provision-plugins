@@ -9,6 +9,36 @@ if [[ -f /etc/os-release ]]; then
   . /etc/os-release
 fi
 
+fail() {
+  echo "Failed"
+  exit 1
+}
+
+success() {
+  echo "Success"
+  exit 0
+}
+
+#
+# This routine will mark the parameters to skip IPMI on
+# systems that don't have IPMI subsystems or fail.
+#
+disable_ipmi() {
+  echo "IPMI Subsystem not available on this node."
+
+  # Mark address as empty to make sure that actions aren't available.
+  drpcli machines set $RS_UUID param ipmi/enabled to false
+  if ! drpcli machines remove $RS_UUID param ipmi/address; then
+    true
+  fi
+
+  if [[ $IPMI_CONFIGURE_FAIL == true ]] ; then
+    fail
+  else
+    success
+  fi
+}
+
 if ! which ipmitool 2>/dev/null >/dev/null ; then
     if [[ -f /etc/redhat-release || -f /etc/centos-release ]]; then
         yum -y makecache
@@ -18,7 +48,7 @@ if ! which ipmitool 2>/dev/null >/dev/null ; then
         apt-get -y install --force-yes ipmitool
     else
         echo "The 'ipmi-install.sh.tmpl' tool does not know how to install 'ipmitool' for this platform."
-        exit 1
+        disable_ipmi
     fi
 else
     echo "ipmitool already installed."

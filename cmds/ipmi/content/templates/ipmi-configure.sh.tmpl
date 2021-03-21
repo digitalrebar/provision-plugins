@@ -128,6 +128,12 @@ disable_ipmi() {
 
 
 load_ipmi() {
+    {{ if .ParamExists "ipmi/enabled" }}
+    {{   if eq (.Param "ipmi/enabled") false }}
+    echo "Ipmi disabled.... skipping"
+    success
+    {{   end }}
+    {{ end }}
     echo "Loading IPMI modules"
     [[ -d /sys/module/ipmi_devintf ]] || modprobe ipmi_devintf &>/dev/null || :
     [[ -d /sys/module/ipmi_si ]] || modprobe ipmi_si &>/dev/null || :
