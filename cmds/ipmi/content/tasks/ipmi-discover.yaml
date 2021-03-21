@@ -27,7 +27,24 @@ Templates:
           exit 0
       }
 
+      fail() {
+          echo "Failed"
+          exit 1
+      }
+
+      success() {
+          echo "Success"
+          exit 0
+      }
+
       load_ipmi() {
+          {{ if .ParamExists "ipmi/enabled" }}
+          {{   if eq (.Param "ipmi/enabled") false }}
+          echo "Ipmi disabled.... skipping"
+          success
+          {{   end }}
+          {{ end }}
+
           [[ -e /dev/ipmi0 || -e /dev/ipmi/0 || -e /dev/ipmidev/0 ]] && return || :
           echo "Loading IPMI modules"
           [[ -d /sys/module/ipmi_devintf ]] || modprobe ipmi_devintf &>/dev/null || :
