@@ -92,8 +92,17 @@ func (s *PercJsonCli) run(args ...string) (string, error) {
 }
 
 func (s *PercJsonCli) Useable() bool {
-	_, err := s.run("/call", "show")
-	return err == nil
+	ans, err := s.run("/call", "show")
+	if err != nil {
+		return false
+	}
+	out := strings.Split(ans, "\n")
+	for _, o := range out {
+		if o == "Status = Failure" {
+			return false
+		}
+	}
+	return true
 }
 
 func (s *PercJsonCli) fillDisk(d *PhysicalDisk, phy *PercJsonPhysicalDiskCntr) {
