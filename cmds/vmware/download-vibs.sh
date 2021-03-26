@@ -3,7 +3,7 @@
 # VIB needs to be stage in S3 bucket for build process
 # specify the VIB version to use, or allow at compile time to override which to use
 FW_VIB_VERSION=${FW_VIB_VERSION:-"v1.0.0-3"}
-AGT_VIB_VERSION=${AGT_VIB_VERSION:-"v1.2-1"}
+AGT_VIB_VERSION=${AGT_VIB_VERSION:-"v1.3-0"}
 VIB_FORCE=${VIB_FORCE:-""}
 VIB_BASE=${VIB_BASE:-"https://s3-us-west-2.amazonaws.com/get.rebar.digital/artifacts/vibs"}
 AGT_VIB_NAME="DRP-Agent"

@@ -10,14 +10,17 @@
 # %post sections are run in a top down order so ours must be last.
 {{ template "esxi-ks-custom-sections.tmpl" .}}
 
+%post --interpreter=python
+{{ template "esxi-drpy-funcs.py.tmpl" .}}
+
+vfats = get_volumes(filter='vfat')
+for vfat in vfats:
+    write_config(vfat)
+
 %post --interpreter=busybox
 # remove later if not needed
 rackn_dir="/opt/rackn/drpy"
-DS_PATH=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if i['Type']=='VFFS' or 'vmfs' in i['Type'].lower()];print(y[0]['Mount Point'])")
-mkdir -p $DS_PATH/rackn
+DS_PATH=$(localcli --formatter json storage filesystem list|python -c "import sys,json;x=json.load(sys.stdin);y=[i for i in x if 'vfat' in i['Type'].lower()];print(y[0]['Mount Point'])")
 conf_file="$DS_PATH/rackn/drpy.conf"
-cat << EOF >> $conf_file
-{{ template "drpy-agent.conf.tmpl" .}}
-EOF
 chmod +t $conf_file
 cd $rackn_dir && python agent -f $conf_file

@@ -1,0 +1,47 @@
+import json
+import os
+import subprocess
+
+
+def get_volumes(filter=None):
+    """
+    Return a list of volumes as reported by localcli storage subsystem
+    Takes optional filter which can be
+    vmfs, or vfat. Other values will be ignored.
+
+    :return:
+    """
+    outobj = subprocess.run(
+        "localcli --formatter json storage filesystem list",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+        shell=True,
+    )
+    file_list = json.loads(outobj.stdout)
+    if filter is not None:
+        filter = filter.lower()
+        if filter == 'vmfs':
+            file_list = [i['Mount Point'] for i in file_list if i['Type'].lower()=='VFFS' or
+                         'vmfs' in i['Type'].lower()]
+        elif filter == 'vfat':
+            file_list = [i['Mount Point'] for i in file_list if 'vfat' in i['Type'].lower()]
+        else:
+            file_list = [i['Mount Point'] for i in file_list]
+    return file_list
+
+
+def write_config(path=None):
+    """
+    Using path, append "/rackn" to it, and write the drpy config file to it.
+
+    :param path:
+    :return:
+    """
+    conf = """{{ template "drpy-agent.conf.tmpl" . }}"""
+    path = path + "/rackn"
+    if not os.path.isdir(path):
+        os.makedirs(path)
+    path = path + "/drpy.conf"
+    with open(path, 'x') as config:
+        config.write(conf)

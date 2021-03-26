@@ -1,0 +1,14 @@
+---
+Name: esxi/drpy-token-duration
+Description: Default token renewal duration for DRPY Agent
+Documentation: |
+  Changes the time in mins for reneal of the api token for the DRPY Agent
+  Default if not set is 20160 (aka 2 weeks in minutes)
+Meta:
+  color: yellow
+  icon: cloud
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: "20160"
