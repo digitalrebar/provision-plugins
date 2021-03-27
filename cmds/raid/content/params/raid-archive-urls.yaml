@@ -16,6 +16,7 @@ Documentation: |-
       "megacli": "https://myserver/megacli.zip",
       "perccli": "https://myserver/perccli.zip",
       "mvcli": "https://myserver/mvcli.zip"
+      "mnvcli": "https://myserver/mnvcli.zip"
     }
 
 Meta:

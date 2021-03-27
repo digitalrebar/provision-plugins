@@ -22,4 +22,5 @@ Schema:
     - "megacli"
     - "perccli"
     - "mvcli"
+    - "mnvcli"
     - "perccli-json"
