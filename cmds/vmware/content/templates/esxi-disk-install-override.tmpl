@@ -61,11 +61,11 @@ find_first_thinksystem_vd() {
 # This allows the parameter to contain the matching piece
 # e.g. find_disk_name '*disk*' would match the first element with disk
 find_disk_name() {
-  DISK="$(ls -1 /tmp/$1 | head -1)"
+  DISK="$(ls -1 /vmfs/devices/disks/$1 | head -1)"
   SET_DISK="--disk=$DISK"
 
   # debug dump of the devices found in %pre stage
-  ls -1 /tmp/* > /tmp/disks
+  ls -1 /vmfs/devices/disks/* > /tmp/disks
 }
 
 # if any custom strategy functions are specified, inject them here
