@@ -1,0 +1,14 @@
+
+VD ID:               0
+Name:                VD_0
+Status:              Functional
+Importable:          No
+RAID Mode:           RAID1
+size:                894 GB
+PD Count:            2
+PDs:                 0 1 
+Stripe Block Size:   128K
+Sector Size:         512 bytes
+
+Total # of VD:       1
+

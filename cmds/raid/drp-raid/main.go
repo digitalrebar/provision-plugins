@@ -19,7 +19,7 @@ var allDrivers = []Driver{
 	&MegaCli{"megacli", "/opt/MegaRAID/MegaCli/MegaCli64", 40, nil, true},
 	&PercCli{"perccli", "/opt/MegaRAID/perccli/perccli64", 50, nil, true},
 	&MVCli{"mvcli", "/usr/local/bin/mvcli", 60, nil, true},
-	&MVCli{"mnvcli", "/usr/local/bin/mnv_cli", 65, nil, true},
+	&MNVCli{"mnvcli", "/usr/local/bin/mnv_cli", 65, nil, true},
 	&PercJsonCli{"perccli-json", "/opt/MegaRAID/perccli/perccli64", 70, nil, true},
 }
 
