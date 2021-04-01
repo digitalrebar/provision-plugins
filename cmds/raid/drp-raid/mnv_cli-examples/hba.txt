@@ -1,0 +1,34 @@
+NVMe Controller ID                   6
+Bus Device Fun:                      e5:00.00
+Device:                              /dev/nvme6
+SUBNQN:                              R2SH08B004S         M.2 NVMe 2-Bay RAID Kit                 16
+Firmware Version:                    1.0.20.1049
+VID:                                 0x1b4b
+SVID:                                0x1d49
+DID:                                 0x2241
+SDID:                                0x306
+RevisionID:                          B0B
+Port Count:                          2
+Max PD of Per VD:                    2
+Max VD:                              2
+Max PD:                              2
+Max NS of Per VD:                    1
+Max NS:                              4
+Host ID:                             0
+Supported RAID Mode:                 RAID0 RAID1 
+Cache:                               On 
+Supported BGA Features:              Initialization Rebuild MediaPatrol 
+Support Stripe Size:                 128KB 256KB 512KB 
+Supported Features:                  Import RAID Namespace Dump 
+Root Complex:                        0
+  Link width:                        1x
+  PCIe speed:                        8Gb/s
+Root Complex:                        1
+  Link width:                        1x
+  PCIe speed:                        8Gb/s
+End Point:                           0
+  Link width:                        2x
+  PCIe speed:                        8Gb/s
+
+Total # of HBA:      1
+

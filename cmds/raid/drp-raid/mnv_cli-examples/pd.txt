@@ -1,0 +1,29 @@
+
+PD ID:                           0
+Model:                           MZ1LB960HAJQ-000V7                      
+Serial:                          S50NNA0NA00240      
+Sector Size:                     512 bytes
+LBA:                             1875385008
+Size:                            894 GB
+SSD backend RC/Slot ID:          0
+SSD backend Namespace ID:        1
+Firmware version:                CR30
+Status:                          Idle
+Assigned:                        Yes
+SMART Critical Warning:          No
+
+PD ID:                           1
+Model:                           MZ1LB960HAJQ-000V7                      
+Serial:                          S50NNA0NA00193      
+Sector Size:                     512 bytes
+LBA:                             1875385008
+Size:                            894 GB
+SSD backend RC/Slot ID:          1
+SSD backend Namespace ID:        1
+Firmware version:                CR30
+Status:                          Idle
+Assigned:                        Yes
+SMART Critical Warning:          No
+
+Total # of PD:          2
+
