@@ -130,7 +130,8 @@ Templates:
               mnvcli)
                   tar -zxvf $archive 'lnvgy_utl_bootstor_nvme.mnvcli-1.0.20.1048-0_linux_x86-64/64/mnv_cli'
                   chmod +x lnvgy_utl_bootstor_nvme.mnvcli-1.0.20.1048-0_linux_x86-64/64/mnv_cli
-                  cp lnvgy_utl_bootstor_nvme.mnvcli-1.0.20.1048-0_linux_x86-64/64/mnv_cli /usr/local/bin;;
+                  cp lnvgy_utl_bootstor_nvme.mnvcli-1.0.20.1048-0_linux_x86-64/64/mnv_cli /usr/local/bin
+                  chmod +x /usr/local/bin/mnv_cli;;
               *)
                   echo "Unknown archive type $k"
                   false;;
