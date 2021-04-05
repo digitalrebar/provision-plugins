@@ -297,7 +297,6 @@ func (s *MNVCli) Create(c *Controller, v *VolSpec, forceGood bool) error {
 	}
 	cmdLine := []string{
 		"create",
-		"--waiveconfirmation",
 		"-b",
 		fmt.Sprintf("%d", sSize),
 	}
