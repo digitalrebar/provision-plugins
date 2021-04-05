@@ -291,13 +291,14 @@ func (s *MNVCli) Create(c *Controller, v *VolSpec, forceGood bool) error {
 	if !v.compiled {
 		return fmt.Errorf("Cannot create a VolSpec that has not been compiled")
 	}
+	sSize := v.stripeSize() >> 10
+	if sSize < 128 {
+		sSize = 128
+	}
 	cmdLine := []string{
 		"create",
-		"-o",
-		"vd",
-		"--waiveconfirmation",
 		"-b",
-		fmt.Sprintf("%d", v.stripeSize()>>10),
+		fmt.Sprintf("%d", sSize),
 	}
 	switch v.RaidLevel {
 	case "jbod":
