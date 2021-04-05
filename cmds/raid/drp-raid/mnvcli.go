@@ -267,7 +267,7 @@ func (s *MNVCli) Clear(c *Controller, onlyForeign bool) error {
 	if !s.canBeCleared(c) {
 		return nil
 	}
-	_, err := s.run("delete", "-o", "vd", "-i", "0", "-f", "--waiveconfirmation")
+	_, err := s.run("delete", "-o", "vd", "-i", "0", "--waiveconfirmation")
 	return err
 }
 
