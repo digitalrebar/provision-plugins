@@ -18,7 +18,7 @@ Templates:
     exit 0
     {{ else }}
       {{ if .ParamExists "callback/action" }}
-    & \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} --plugin "{{.Param "callback/plugin" }}" callback/action {{.Param "callback/action"}}
+    & \curtin\drpcli.exe -T {{.GenerateInfiniteToken}} -E {{.ApiURL}} machines runaction {{.Machine.UUID}} callbackDo --plugin "{{.Param "callback/plugin" }}" callback/action {{.Param "callback/action"}}
     exit $lastExitCode
       {{ else }}
     Write-Host "callback/action is not specified. Fail."
