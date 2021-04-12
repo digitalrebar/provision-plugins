@@ -267,8 +267,12 @@ func (s *MNVCli) Clear(c *Controller, onlyForeign bool) error {
 	if !s.canBeCleared(c) {
 		return nil
 	}
-	_, err := s.run("delete", "-o", "vd", "-i", "0", "--waiveconfirmation")
-	return err
+	for _, vol := range c.Volumes {
+		if _, err := s.run("delete", "-o", "vd", "-i", vol.ID, "--waiveconfirmation"); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (s MNVCli) Refresh(c *Controller) {
