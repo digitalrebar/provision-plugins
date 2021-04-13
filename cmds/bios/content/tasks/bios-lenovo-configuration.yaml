@@ -33,14 +33,18 @@ Templates:
       {{$tmpl}}
       EOF
 
+      set +e
       egrep '\-\-file[ =].[^ ]*' file.{{$index}} | sed -e 's/^.*--file[\t =]\([^ ]*\).*$/\1/g' | while read file
       do
           dir=`dirname $file`
           mkdir -p $dir
           if [[ ! -e $file ]] ; then
+              set -e
               wget -O $file {{ $.ParamExpand "bios-file-base-url" }}/$file
+              set +e
           fi
       done
+      set -e
 
       echo "Update item {{$index}}"
       $onecli config batch --file file.{{$index}} || exit 1
