@@ -98,45 +98,36 @@ declare TMP_DIR                  # specifies alternate tmp directory
 ###
 ISO_MAP=(
   # 6.5.0 versions
-  [RKN-ESXi-6.5.0-20190701001s-no-tools.iso]="650u3|x13932383|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190701001s-no-tools.iso"
-  [RKN-ESXi-6.5.0-20190701001s-standard.iso]="650u3|13932383|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190701001s-standard.iso"
-  [RKN-ESXi-6.5.0-20190702001-no-tools.iso]="650u3|x13932383|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190702001-no-tools.iso"
-  [RKN-ESXi-6.5.0-20190702001-standard.iso]="650u3|13932383|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190702001-standard.iso"
-  [RKN-HPE-ESXi-6.5.0-Update3-Gen9plus-650.U3.10.5.5.16.iso]="650u3|13932383|rkn_hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-Gen9plus-650.U3.10.5.5.16.iso"
-  [RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso]="650u3|13932383|rkn_hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso"
-  [RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso]="650u3|105610|rkn_hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso"
+  [RKN-ESXi-6.5.0-20190701001s-no-tools.iso]="650u3|x13932383|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190701001s-no-tools.iso"
+  [RKN-ESXi-6.5.0-20190701001s-standard.iso]="650u3|13932383|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190701001s-standard.iso"
+  [RKN-ESXi-6.5.0-20190702001-no-tools.iso]="650u3|x13932383|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190702001-no-tools.iso"
+  [RKN-ESXi-6.5.0-20190702001-standard.iso]="650u3|13932383|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-ESXi-6.5.0-20190702001-standard.iso"
+  [RKN-HPE-ESXi-6.5.0-Update3-Gen9plus-650.U3.10.5.5.16.iso]="650u3|13932383|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-Gen9plus-650.U3.10.5.5.16.iso"
+  [RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso]="650u3|13932383|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso"
+  [RKN-HPE-ESXi-6.5.0-Update3-Synergy-650.U3.10.5.6.10.iso]="650u3|105610|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.5/RKN-HPE-ESXi-6.5.0-Update3-preGen9-650.U3.9.6.8.8.iso"
   # 6.7.0 versions
-  [RKN-DellEMC-ESXi-6.7U2-13981272-A02.iso]="67u2|13981272|rkn_dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-DellEMC-ESXi-6.7U2-13981272-A02.iso"
-  [RKN-ESXi-6.7.0-20190401001s-no-tools.iso]="670|xs20190401001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190401001s-no-tools.iso"
-  [RKN-ESXi-6.7.0-20190401001s-standard.iso]="670|s20190401001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190401001s-standard.iso"
-  [RKN-ESXi-6.7.0-20190402001-no-tools.iso]="670|x20190402001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190402001-no-tools.iso"
-  [RKN-ESXi-6.7.0-20190402001-standard.iso]="670|20190402001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190402001-standard.iso"
-  [RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso]="670u2|13006603|rkn_hitachi|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso"
-  [RKN-ESXi-6.7.2-13644319-NEC-6.7-03.iso]="672u3|13644319|rkn_nec|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.2-13644319-NEC-6.7-03.iso"
-  [RKN-Fujitsu-VMvisor-Installer-6.7-13473784-v470-1.iso]="670u2|13473784|rkn_fujitsu|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-Fujitsu-VMvisor-Installer-6.7-13473784-v470-1.iso"
-  [RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso]="670u2|13006603|rkn_hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso"
-  [RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso]="670u2|13981272|rkn_lenovo|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso"
-  [RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso]="670|13006603|rkn_cisco|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso"
-  [RKN-ESXi-6.7.0-20190801001s-no-tools.iso]="670u3|xs20190801001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190801001s-no-tools.iso"
-  [RKN-ESXi-6.7.0-20190801001s-standard.iso]="670u3|s20190801001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190801001s-standard.iso"
-  [RKN-ESXi-6.7.0-20190802001-no-tools.iso]="670u3|x20190801001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-no-tools.iso"
-  [RKN-ESXi-6.7.0-20190802001-standard.iso]="670u3|20190801001|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-standard.iso"
-
+  [RKN-DellEMC-ESXi-6.7U2-13981272-A02.iso]="67u2|13981272|dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-DellEMC-ESXi-6.7U2-13981272-A02.iso"
+  [RKN-ESXi-6.7.0-20190401001s-no-tools.iso]="670|xs20190401001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190401001s-no-tools.iso"
+  [RKN-ESXi-6.7.0-20190401001s-standard.iso]="670|s20190401001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190401001s-standard.iso"
+  [RKN-ESXi-6.7.0-20190402001-no-tools.iso]="670|x20190402001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190402001-no-tools.iso"
+  [RKN-ESXi-6.7.0-20190402001-standard.iso]="670|20190402001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190402001-standard.iso"
+  [RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso]="670u2|13006603|hitachi|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso"
+  [RKN-ESXi-6.7.2-13644319-NEC-6.7-03.iso]="672u3|13644319|nec|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.2-13644319-NEC-6.7-03.iso"
+  [RKN-Fujitsu-VMvisor-Installer-6.7-13473784-v470-1.iso]="670u2|13473784|fujitsu|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-Fujitsu-VMvisor-Installer-6.7-13473784-v470-1.iso"
+  [RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso]="670u2|13006603|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso"
+  [RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso]="670u2|13981272|lenovo|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso"
+  [RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso]="670|13006603|cisco|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso"
+  [RKN-ESXi-6.7.0-20190801001s-no-tools.iso]="670u3|xs20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190801001s-no-tools.iso"
+  [RKN-ESXi-6.7.0-20190801001s-standard.iso]="670u3|s20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190801001s-standard.iso"
+  [RKN-ESXi-6.7.0-20190802001-no-tools.iso]="670u3|x20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-no-tools.iso"
+  [RKN-ESXi-6.7.0-20190802001-standard.iso]="670u3|20190801001|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/6.7/RKN-ESXi-6.7.0-20190802001-standard.iso"
+  
   # 7.0.0 versions
-  [RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso]="700|15843807|rkn_hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso"
-  [RKN-ESXi-7.0.0-15843807-no-tools.iso]="700|x15843807|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-no-tools.iso"
-  [RKN-ESXi-7.0.0-15843807-standard.iso]="700|15843807|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-standard.iso"
-  [RKN-DEL-ESXi-700_15843807-A00.iso]="700|15843807|rkn_dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-700_15843807-A00.iso"
-  [RKN-DEL-ESXi-700_16324942-A02.iso]="700|16324942|rkn_dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-700_16324942-A02.iso"
-  [RKN-Cisco-UCS-Custom-ESXi-7-16324942_4.1.2-a.iso]="700|16324942|rkn_cisco|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-Cisco-UCS-Custom-ESXi-7-16324942_4.1.2-a.iso"
-
-  # 7.0.0update1 versions
-  [RKN-ESXi-7.0.1-16850804-no-tools.iso]="700u1|x16850804|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.1-16850804-no-tools.iso"
-  [RKN-ESXi-7.0.1-16850804-standard.iso]="700u1|16850804|rkn_vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.1-16850804-standard.iso"
-  [RKN-DEL-ESXi-701_16850804-A00.iso]="700u1|16850804|rkn_dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-701_16850804-A00.iso"
-  [RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso]="700u1|16850804|rkn_hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso"
-  [RKN-LVO_7.0.1-LVO.701.10.1.iso]="700u1|16850804|rkn_lenovo|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-LVO_7.0.1-LVO.701.10.1.iso"
-  [RKN-Cisco-UCS-Custom-ESXi-70U1-16850804_4.1.2-b.iso]="700u1|16850804|rkn_cisco|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-Cisco-UCS-Custom-ESXi-70U1-16850804_4.1.2-b.iso"
+  [RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso]="700|15843807|hpe|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-HPE-Custom-AddOn_700.0.0.10.5.0-108.iso"
+  [RKN-ESXi-7.0.0-15843807-no-tools.iso]="700|x15843807|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-no-tools.iso"
+  [RKN-ESXi-7.0.0-15843807-standard.iso]="700|15843807|vmware|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-ESXi-7.0.0-15843807-standard.iso"
+  [RKN-DEL-ESXi-700_15843807-A00.iso]="700|15843807|dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-700_15843807-A00.iso"
+  [RKN-DEL-ESXi-700_16324942-A02.iso]="700|16324942|dell|none|https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-700_16324942-A02.iso"
 )
 
 ###
@@ -709,6 +700,10 @@ function get_bootcfg_info() {
   MODULES=$(echo "$MODULES" | sed 's|\( --- s.v00\)|\1{{ range $key := .Param "esxi/boot-cfg-extra-modules" }} --- {{$key}}{{ end }}|')
   # inject golang template to enable/disable installing tools modules
   MODULES="$(echo "$MODULES" | sed 's| --- tools.t00|{{ if eq (.Param \"esxi/skip-tools\") false }} --- tools.t00{{end}}|')"
+  # inject template for adding DRPY agent at install time
+  MODULES="$(echo "$MODULES" | sed 's|\(sb.v00 --- \)|\1{{ if (.Param \"esxi/add-drpy-agent\") }}{{ .Param "esxi/add-drpy-agent" }} --- {{end}}|')"
+  # inject the DRPY Firewall VIB
+  MODULES="$(echo "$MODULES" | sed 's|\(sb.v00 --- \)|\1{{ if (.Param \"esxi/add-drpy-firewall\") }}{{ .Param "esxi/add-drpy-firewall" }} --- {{end}}|')"
 
   # because BASH 5.x FORKS this up - we need to have else true
   [[ $MODE = bsdtar && -d $BOOTCFGDIR ]] && rm -rf "$BOOTCFGDIR" || true
@@ -835,9 +830,17 @@ do
     MISSING_ISOS["$ISO_NAME"]=true
     continue
   fi
-  if [[ ! ${ISO_MAP[$ISO_NAME]} ]]; then
-    MISSING_ISOS["$ISO_NAME"]=true
-    continue
+
+  if [[ "$GENERATE" == "true" ]]; then
+    echo "Skipping ISO_MAP checks in '-g' (generate) mode."
+  else
+    if [[ ! ${ISO_MAP[$ISO_NAME]} ]]; then
+      (( $dbg )) && echo "Missing ISO reference in ISO_MAP for '$ISO_NAME'"
+      MISSING_ISOS["$ISO_NAME"]=true
+      continue
+    else
+      (( $dbg )) && echo "ISO reference in ISO_MAP found for '$ISO_NAME'"
+    fi
   fi
 
   ISO="$DIR_NAME/$ISO_NAME"
