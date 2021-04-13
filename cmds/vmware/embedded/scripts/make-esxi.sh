@@ -835,9 +835,16 @@ do
     MISSING_ISOS["$ISO_NAME"]=true
     continue
   fi
-  if [[ ! ${ISO_MAP[$ISO_NAME]} ]]; then
-    MISSING_ISOS["$ISO_NAME"]=true
-    continue
+    if [[ "$GENERATE" == "true" ]]; then
+    echo "Skipping ISO_MAP checks in '-g' (generate) mode."
+  else
+    if [[ ! ${ISO_MAP[$ISO_NAME]} ]]; then
+      (( $dbg )) && echo "Missing ISO reference in ISO_MAP for '$ISO_NAME'"
+      MISSING_ISOS["$ISO_NAME"]=true
+      continue
+    else
+      (( $dbg )) && echo "ISO reference in ISO_MAP found for '$ISO_NAME'"
+    fi
   fi
 
   ISO="$DIR_NAME/$ISO_NAME"
