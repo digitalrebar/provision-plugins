@@ -25,7 +25,7 @@ Templates:
           exit 1
       fi
       chmod 755 /usr/local/bin/drp-bioscfg
-      mfgr="$(drpcli gohai || true |jq -r '.DMI | .System | .Manufacturer')"
+      mfgr="$((drpcli gohai || true) | jq -r '.DMI | .System | .Manufacturer')"
       case $mfgr in
           'Dell Inc.')
               drpcli machines set {{.Machine.UUID}} param bios-driver to dell
