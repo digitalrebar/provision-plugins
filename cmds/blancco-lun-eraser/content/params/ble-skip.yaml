@@ -1,0 +1,17 @@
+---
+Name: ble/skip
+Description: Skip running the Blancco LUN Eraser process.
+Documentation: |
+  If this param is set to ``true``, then the Blancco LUN Eraser
+  process will not be run.  The default value is ``true``.  The operator
+  must explicitly set this value to ``false`` to run the BLE disk
+  wiping process.
+
+Meta:
+  color: red
+  icon: asterisk
+  title: RackN Content
+Secure: false
+Schema:
+  default: true
+  type: boolean

@@ -1,0 +1,56 @@
+---
+Name: ble/wipe-level
+Description: Sets the standards compliance wipe level for the Blancco LUN Eraser process.
+Documentation: |
+  This param defines what Standards Compliance wipe level to be set
+  for the Blancco LUN Eraser (BLE) tool to conform to.
+
+  Supported Values are:
+    * ``0: HMG Infosec Standard 5, Lower Standard``
+    * ``1: HMG Infosec Standard 5, Higher Standard``
+    * ``2: Peter Gutmann's Algorithm``
+    * ``3: DoD 5220.22-M``
+    * ``4: Bruce Schneier's Algorithm``
+    * ``5: Navy Staff Office Publication (NAVSO P-5239-26)``
+    * ``6: National Computer Security Center (NCSC-TG-025)``
+    * ``7: Air Force System Security Instruction 5020``
+    * ``8: U.S. Army AR380-19``
+    * ``10: OPNAVINST 5239.1A``
+    * ``11: NSA 130-1``
+    * ``12: DoD 5220.22-M ECE``
+    * ``13: BSI-2011-VS (Similar)``
+    * ``14: BSI-GS (Similar)``
+    * ``15: BSI-GSE (Similar)``
+    * ``16: NIST 800-88 Clear``
+    * ``50: Aperiodic random overwrite``
+
+  Defaults to:
+
+    * ``16: NIST 800-88 Clear``
+
+Meta:
+  color: blue
+  icon: window close
+  title: RackN Content
+Secure: false
+Schema:
+  default: "16: NIST 800-88 Clear"
+  type: string
+  enum:
+    - "0: HMG Infosec Standard 5, Lower Standard"
+    - "1: HMG Infosec Standard 5, Higher Standard"
+    - "2: Peter Gutmann's Algorithm"
+    - "3: DoD 5220.22-M"
+    - "4: Bruce Schneier's Algorithm"
+    - "5: Navy Staff Office Publication (NAVSO P-5239-26)"
+    - "6: National Computer Security Center (NCSC-TG-025)"
+    - "7: Air Force System Security Instruction 5020"
+    - "8: U.S. Army AR380-19"
+    - "10: OPNAVINST 5239.1A"
+    - "11: NSA 130-1"
+    - "12: DoD 5220.22-M ECE"
+    - "13: BSI-2011-VS (Similar)"
+    - "14: BSI-GS (Similar)"
+    - "15: BSI-GSE (Similar)"
+    - "16: NIST 800-88 Clear"
+    - "50: Aperiodic random overwrite"

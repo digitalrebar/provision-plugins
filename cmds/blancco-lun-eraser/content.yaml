@@ -1,0 +1,621 @@
+meta:
+  Author: RackN
+  CodeSource: https://github.com/rackn/provision-plugins
+  Color: orange
+  Copyright: RackN
+  Description: Plugin for using the external Blancco LUN Eraser commercial disk wiping
+    tool.
+  DisplayName: Blancco LUN Eraser
+  DocUrl: https://provision.readthedocs.io/en/latest/doc/content-packages/blancco-lun-eraser.html
+  Documentation: |-
+    Blancco LUN Eraser
+    ------------------
+
+    This plugin implements the commercially licensed industrial grade Disk
+    and LUN wiping tool from Blancco.  The tool requires additional licensing
+    direct from Blancco.
+
+
+    Overview of Usage
+    =================
+
+    Overview information.
+
+
+    Basic Usage
+    +++++++++++
+
+    Basic Usage information
+  Icon: window close
+  License: RackN
+  Name: blancco-lun-eraser
+  Order: "1000"
+  Prerequisites: ""
+  RequiredFeatures: ""
+  Source: ""
+  Tags: experimental
+  Type: dynamic
+  Version: v4.6.0-beta01.42+ga769e038e23981214493c1ea796803807dc62f00
+sections:
+  params:
+    ble/config-override:
+      Available: false
+      Bundle: ""
+      Description: A template to override the BLE config.txt with.
+      Documentation: |
+        Set this parameter to the name of a Template in the system, to
+        override the Blancco Disk Eraser (BLE) config file.  The existing
+        templatize version will be completely erased by this template.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: blue
+        icon: file alternate
+        title: RackN Content
+      Name: ble/config-override
+      ReadOnly: false
+      Schema:
+        type: string
+      Secure: false
+      Validated: false
+    ble/disks:
+      Available: false
+      Bundle: ""
+      Description: List of disks to wipe on the target server.
+      Documentation: |
+        A list of target devices to wipe on the server.  If the device is not
+        found, then it will be skipped.
+
+        Disks may be listed either as ``sda`` or ``/dev/sda`` format.
+
+        .. note:: No default value is set.  The operator must explicitly provide
+                  a list of devices to wipe as a safety precaution.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: blue
+        icon: address card
+        title: RackN Content
+      Name: ble/disks
+      ReadOnly: false
+      Schema:
+        items:
+          type: string
+        type: array
+      Secure: false
+      Validated: false
+    ble/license-server:
+      Available: false
+      Bundle: ""
+      Description: License Server (Management Console) URL location.
+      Documentation: |
+        The URL location of the Blancco LUN Eraser Management Console which
+        manages the License entitlements.  By default the Blancco cloud service
+        console will be used:
+
+          * https://cloud.blancco.com:443
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: blue
+        icon: crosshairs
+        title: RackN Content
+      Name: ble/license-server
+      ReadOnly: false
+      Schema:
+        default: https://cloud.blancco.com:443
+        type: string
+      Secure: false
+      Validated: false
+    ble/noop-test-mode:
+      Available: false
+      Bundle: ""
+      Description: Sets the BLE tooling to not excute the wipe tools.  For debugging.
+      Documentation: |
+        This param prevents the Blancco LUN Eraser tooling from actually executing
+        the destructive wipe tooling (``BlanccoLUNEraser``).
+
+        This is primarily used as a debugging mode.  Setting this Param will prevent
+        the binary from executing.  It also prevents any of the Report scraping and
+        Param writing commands from running.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: blue
+        icon: bug
+        title: RackN Content
+      Name: ble/noop-test-mode
+      ReadOnly: false
+      Schema:
+        default: false
+        type: boolean
+      Secure: false
+      Validated: false
+    ble/password:
+      Available: false
+      Bundle: ""
+      Description: Password for Blancco LUN Eraser
+      Documentation: |
+        Password on the Blancco LUN Eraser account in the Blancco
+        portal or your on-premises management portal.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: blue
+        icon: lock
+        title: RackN Content
+      Name: ble/password
+      ReadOnly: false
+      Schema:
+        default: ""
+        type: string
+      Secure: true
+      Validated: false
+    ble/report-1-name:
+      Available: false
+      Bundle: ""
+      Description: Additional meta data for reporting in the Blancco management portal.
+      Documentation: |
+        A customized name to associate with this task run in the Blancco
+        management portal.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: green
+        icon: tasks
+        title: RackN Content
+      Name: ble/report-1-name
+      ReadOnly: false
+      Schema:
+        default: ""
+        type: string
+      Secure: false
+      Validated: false
+    ble/report-1-tag:
+      Available: false
+      Bundle: ""
+      Description: Additional meta data for reporting in the Blancco management portal.
+      Documentation: |
+        A customized value associated with the ``ble/report-1-name`` in the Blancco
+        management portal.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: green
+        icon: tags
+        title: RackN Content
+      Name: ble/report-1-tag
+      ReadOnly: false
+      Schema:
+        default: ""
+        type: string
+      Secure: false
+      Validated: false
+    ble/skip:
+      Available: false
+      Bundle: ""
+      Description: Skip running the Blancco LUN Eraser process.
+      Documentation: |
+        If this param is set to ``true``, then the Blancco LUN Eraser
+        process will not be run.  The default value is ``true``.  The operator
+        must explicitly set this value to ``false`` to run the BLE disk
+        wiping process.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: red
+        icon: asterisk
+        title: RackN Content
+      Name: ble/skip
+      ReadOnly: false
+      Schema:
+        default: true
+        type: boolean
+      Secure: false
+      Validated: false
+    ble/username:
+      Available: false
+      Bundle: ""
+      Description: Username for Blancco LUN Eraser
+      Documentation: |
+        Username on the Blancco LUN Eraser account in the Blancco
+        portal or your on-premises management portal.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: blue
+        icon: address card
+        title: RackN Content
+      Name: ble/username
+      ReadOnly: false
+      Schema:
+        default: ""
+        type: string
+      Secure: false
+      Validated: false
+    ble/wipe-level:
+      Available: false
+      Bundle: ""
+      Description: Sets the standards compliance wipe level for the Blancco LUN Eraser
+        process.
+      Documentation: |
+        This param defines what Standards Compliance wipe level to be set
+        for the Blancco LUN Eraser (BLE) tool to conform to.
+
+        Supported Values are:
+          * ``0: HMG Infosec Standard 5, Lower Standard``
+          * ``1: HMG Infosec Standard 5, Higher Standard``
+          * ``2: Peter Gutmann's Algorithm``
+          * ``3: DoD 5220.22-M``
+          * ``4: Bruce Schneier's Algorithm``
+          * ``5: Navy Staff Office Publication (NAVSO P-5239-26)``
+          * ``6: National Computer Security Center (NCSC-TG-025)``
+          * ``7: Air Force System Security Instruction 5020``
+          * ``8: U.S. Army AR380-19``
+          * ``10: OPNAVINST 5239.1A``
+          * ``11: NSA 130-1``
+          * ``12: DoD 5220.22-M ECE``
+          * ``13: BSI-2011-VS (Similar)``
+          * ``14: BSI-GS (Similar)``
+          * ``15: BSI-GSE (Similar)``
+          * ``16: NIST 800-88 Clear``
+          * ``50: Aperiodic random overwrite``
+
+        Defaults to:
+
+          * ``16: NIST 800-88 Clear``
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: blue
+        icon: window close
+        title: RackN Content
+      Name: ble/wipe-level
+      ReadOnly: false
+      Schema:
+        default: '16: NIST 800-88 Clear'
+        enum:
+        - '0: HMG Infosec Standard 5, Lower Standard'
+        - '1: HMG Infosec Standard 5, Higher Standard'
+        - '2: Peter Gutmann''s Algorithm'
+        - '3: DoD 5220.22-M'
+        - '4: Bruce Schneier''s Algorithm'
+        - '5: Navy Staff Office Publication (NAVSO P-5239-26)'
+        - '6: National Computer Security Center (NCSC-TG-025)'
+        - '7: Air Force System Security Instruction 5020'
+        - '8: U.S. Army AR380-19'
+        - '10: OPNAVINST 5239.1A'
+        - '11: NSA 130-1'
+        - '12: DoD 5220.22-M ECE'
+        - '13: BSI-2011-VS (Similar)'
+        - '14: BSI-GS (Similar)'
+        - '15: BSI-GSE (Similar)'
+        - '16: NIST 800-88 Clear'
+        - '50: Aperiodic random overwrite'
+        type: string
+      Secure: false
+      Validated: false
+    ble/wipe-report:
+      Available: false
+      Bundle: ""
+      Description: Automatically written with the BLE Wipe Report when completed.
+      Documentation: |
+        This Param will automatically be written on the Machine Object when
+        a successful completed wipe process of the Blancco LUN Eraser (BLE) tool
+        has completed.
+
+        On subsequent re-runs of the software, the Param value will be overwritten.
+        The reports are also uploaded and managed in the Blancco Management Console,
+        which is defined by the Param ``ble/license-server``.
+
+        Currently the report is written as raw XML format, as produced by the BLE
+        tooling.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: green
+        icon: save outline
+        title: RackN Content
+      Name: ble/wipe-report
+      ReadOnly: false
+      Schema:
+        default: ""
+        type: string
+      Secure: false
+      Validated: false
+  profiles:
+    blancco-lun-eraser-EXAMPLE:
+      Available: false
+      Bundle: ""
+      Description: An EXAMPLE profile for use of Blancco LUN Eraser wipe tool.
+      Documentation: |
+        This is an EXAMPLE profile that can be used as a starting point for use
+        of the Blancco LUN Eraser (BLE) integration.
+
+        To use it, clone it and change values accordingly.  Each Param contains
+        appropriate documentation for use.
+
+        .. warning:: The ``ble/skip`` Param is a safety check, it must be set
+                     to ``false`` to execute the disk wiping procedures.  By setting
+                     this value, the system will irrevocably NUKE all data on the
+                     disks.  That's what this tool does.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: red
+        icon: asterisk
+        title: RackN
+      Name: blancco-lun-eraser-EXAMPLE
+      Params:
+        ble/disks:
+        - sdb
+        - sdc
+        ble/license-server: https://cloud.blancco.com:443
+        ble/password: p@ssw0rd
+        ble/skip: false
+        ble/username: user@example.com
+        ble/wipe-level: '16: NIST 800-88 Clear'
+      Partial: false
+      Profiles: []
+      ReadOnly: false
+      Validated: false
+  stages:
+    blancco-lun-eraser:
+      Available: false
+      BootEnv: sledgehammer
+      Bundle: ""
+      Description: Use Blancco LUN Eraser to perform industrial grade standards compliant
+        disk wiping.
+      Documentation: |
+        This workflow implements the externally licensed Blancco disk and LUN
+        eraser tool.  It requires separate licensing from RackN.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: orange
+        feature-flags: sane-exit-codes
+        icon: eraser
+        title: RackN
+      Name: blancco-lun-eraser
+      OptionalParams: []
+      Params: {}
+      Partial: false
+      Profiles: []
+      ReadOnly: false
+      Reboot: false
+      RequiredParams: []
+      RunnerWait: true
+      Tasks:
+      - blancco-lun-eraser
+      Templates: []
+      Validated: false
+  tasks:
+    blancco-lun-eraser:
+      Available: false
+      Bundle: ""
+      Description: Run the Blancco LUN Eraser (BLE) indsutrial disk wiping tool.
+      Documentation: |
+        Runs the Blancco LUN Eraser (BLE) industrial disk wiping tool.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: red
+        icon: window close outline
+        title: RackN Content
+      Name: blancco-lun-eraser
+      OptionalParams: []
+      Prerequisites: []
+      ReadOnly: false
+      RequiredParams: []
+      Templates:
+      - Contents: |
+          #!/usr/bin/env bash
+          # Render the config.txt for Blancco LUN Eraser
+
+          set -e
+
+          CFG="config.txt"
+
+          echo "Building 'config.txt' file..."
+
+          {{ if .ParamExists "ble/config-override" -}}
+          # render override template - ble/config-override set
+
+          cat << 'EOT' > config.txt
+          {{ template "ble/config-override" . }}
+          EOT
+
+          {{ else -}}
+          # render paramaterized template
+          #
+          cat << 'EOT' > config.txt
+          {{ template "blancco-lun-eraser-config.txt.tmpl" . }}
+          EOT
+
+          {{ end -}}
+        ID: ""
+        Link: ""
+        Meta: null
+        Name: ble-config.txt
+        Path: ""
+      - Contents: |
+          #!/usr/bin/env bash
+          # Get the BLE tooling, and then Run the BlanccoLUNEraser tool
+
+          {{ template "setup.tmpl" . }}
+
+          {{ if .ParamExists "ble/disks" -}}
+          TARGETS="{{ .Param "ble/disks" | join " " }}"
+          {{ else -}}
+          echo ">>> WARNING:  No target devices specified in 'ble/disks' Param"
+          echo "              Exiting without performing any operations."
+          exit 0
+          {{ end -}}
+
+          {{ if .Param "ble/skip" -}}
+          echo ">>> NOTICE:  'ble/skip' set to true, exiting without performing any tasks"
+          exit 0
+          {{ end -}}
+
+          # future feature: alternate download Param/URLs for updating pieces or debugging
+          DAT="{{ .ProvisionerURL }}/files/plugin_providers/blancco-lun-eraser/license.dat"
+          EXE="{{ .ProvisionerURL }}/files/plugin_providers/blancco-lun-eraser/BlanccoLUNEraser"
+          WIPE_LEVEL="{{ .Param "ble/wipe-level" }}"
+          ALGO="$(echo "$WIPE_LEVEL" | cut -d":" -f1)"
+          LSBLK_DEVICES="$(lsblk -d -J -n -a -o NAME)"
+          FOUND_DEVS="$(echo "$LSBLK_DEVICES" | jq -r '.blockdevices[] | .name' | tr '\n' ' ')"
+          NOOP="{{ .Param "ble/noop-test-mode" }}"
+
+          echo ""
+          echo "+++ Start at $(date)"
+          echo ""
+          echo ">>> Downloading 'license.dat' from '$DAT'..."
+          wget --quiet $DAT
+
+          echo ">>> Downloading 'BlanccoLUNEraser' from '$EXE'..."
+          wget --quiet $EXE
+          chmod +x BlanccoLUNEraser
+
+          [[ ! -r "config.txt" ]] && xiterr 1 "Unable to read required 'config.txt'" || true
+          [[ ! -r "license.dat" ]] && xiterr 1 "Unable to read required 'license.dat'" || true
+          [[ ! -x "BlanccoLUNEraser" ]] && xiterr 1 "Unable to read/execute 'BlanccoLUNEraser'" || true
+
+          echo ""
+          echo ">>> Starting Blancco LUN Eraser drive wipe process..."
+          echo ""
+          echo "       username: {{ .Param "ble/username" }}"
+          echo '       password: {{ if .Param "rs-debug-enable" }}{{ .Param "ble/password" }}{{ else }}*** obfuscated ***{{ end }}'
+          echo " license server: {{ .Param "ble/license-server" }}"
+          echo "     wipe level: $WIPE_LEVEL"
+          echo "targets to wipe: $TARGETS"
+          echo "  found devices: $FOUND_DEVS"
+          echo ""
+
+          for TARGET in $TARGETS
+          do
+            D="$(echo "$TARGET" | awk -F '/' ' { print $NF } ')"
+            DEV="/dev/$D"
+            FOUND=$(echo $LSBLK_DEVICES | jq ".blockdevices[] | contains(select(.name == \"$D\"))")
+
+            if [[ $FOUND == "true" ]]
+            then
+              echo ">>> Target device '$DEV' found on device, adding to wipe targets."
+              TARGET_DEVS+="target=$DEV "
+            else
+              echo "--- NOTICE: Target device '$DEV' NOT found on host, ignoring as a non-fatal error"
+            fi
+          done
+
+          WIPE_CMD="./BlanccoLUNEraser -y -simpleui algo=$ALGO $TARGET_DEVS"
+
+          echo ""
+          echo ">>> Starting wipe with command:"
+          echo "$WIPE_CMD"
+          echo ""
+
+          if [[ "$NOOP" == "false" ]]
+          then
+            eval $WIPE_CMD
+
+            echo ""
+
+            REPORTS=$(ls -1 *.xml)
+
+            for REPORT in $REPORTS
+            do
+              # we have 'xmllint' in sledgehammer, but I couldn't make it dance the jig...
+              WIPE_SIGNATURE=$(grep "<integrity>" $REPORT | cut -d '>' -f2 | cut -d '<' -f1)
+              drpcli machines set $RS_UUID param ble/wipe-report to <<< cat $REPORT > /dev/null
+              echo "================================================================================"
+              echo ">>> Collected Report file '$REPORT'"
+              echo ">>> Report recorded to DRP Machine Param 'ble/wipe-report'"
+              echo ">>> Wipe Signature:"
+              echo "$WIPE_SIGNATURE"
+              echo "--------------------------------------------------------------------------------"
+              cat $REPORT
+              echo "================================================================================"
+              echo ""
+            done
+
+          else
+            echo ">>> no-op test mode - not running command"
+            echo "    no Report processing performed either"
+
+            echo ""
+            echo ">>> Config file contents:"
+            cat config.txt
+            echo ""
+          fi
+
+          echo "+++ Done at $(date)"
+          echo ""
+        ID: ""
+        Link: ""
+        Meta: null
+        Name: BlanccoLUNEraser.sh
+        Path: ""
+      Validated: false
+  templates:
+    blancco-lun-eraser-config.txt.tmpl:
+      Available: false
+      Bundle: ""
+      Contents: |
+        # Comment
+
+        # The path to the license file.
+        LicenseFile = "license.dat"
+
+        # The path to the report folder
+        #ReportPath = "/var/log"
+        BufferSize = "-1"
+        #MaxMBPerSecond = "5"
+        #OutputFilePath = "/log.txt"
+
+        # Address to the Blancco Management Console
+        MCServerAddress = "https://cloud.blancco.com:443"
+        # The user that should be used to import the reports
+        MCUserName = "{{ .Param "ble/username" }}"
+        # Password for the user
+        MCPassword = "{{ .Param "ble/password" }}"
+        #OutgoingPort = ""
+
+        [custom1]
+        name = "{{ .Param "ble/report-1-name" }}"
+        # mandatory = 1   # requires in put at STDIN if set to 1
+        mandatory = 0
+        default = "{{ .Param "ble/report-1-tag" }}"
+        disabled = 0
+        # disabled = 1  # disables the "custom1" field from use"
+
+        #[custom2]
+        #name = "Custom 2"
+        #mandatory = 0
+        #default = "Default Value"
+        #disabled = 0
+      Description: ""
+      Endpoint: ""
+      Errors: []
+      ID: blancco-lun-eraser-config.txt.tmpl
+      Meta: {}
+      ReadOnly: false
+      Validated: false
+  workflows:
+    blancco-lun-eraser:
+      Available: false
+      Bundle: ""
+      Description: Use Blancco LUN Eraser to perform industrial grade standards compliant
+        disk wiping.
+      Documentation: |
+        This workflow implements the externally licensed Blancco disk and LUN
+        eraser tool.  It requires separate licensing from RackN.
+      Endpoint: ""
+      Errors: []
+      Meta:
+        color: orange
+        icon: eraser
+      Name: blancco-lun-eraser
+      ReadOnly: false
+      Stages:
+      - enforce-sledgehammer
+      - blancco-lun-eraser
+      Validated: false

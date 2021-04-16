@@ -1,0 +1,29 @@
+---
+Name: blancco-lun-eraser-EXAMPLE
+Description: 'An EXAMPLE profile for use of Blancco LUN Eraser wipe tool.'
+Documentation: |
+  This is an EXAMPLE profile that can be used as a starting point for use
+  of the Blancco LUN Eraser (BLE) integration.
+
+  To use it, clone it and change values accordingly.  Each Param contains
+  appropriate documentation for use.
+
+  .. warning:: The ``ble/skip`` Param is a safety check, it must be set
+               to ``false`` to execute the disk wiping procedures.  By setting
+               this value, the system will irrevocably NUKE all data on the
+               disks.  That's what this tool does.
+
+Meta:
+  color: red
+  icon: asterisk
+  title: RackN
+Profiles: []
+Params:
+  ble/disks:
+    - sdb
+    - sdc
+  ble/license-server: 'https://cloud.blancco.com:443'
+  ble/password: "p@ssw0rd"
+  ble/skip: false
+  ble/username: user@example.com
+  ble/wipe-level: '16: NIST 800-88 Clear'

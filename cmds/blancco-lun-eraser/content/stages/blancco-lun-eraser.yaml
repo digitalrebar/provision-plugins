@@ -1,0 +1,21 @@
+---
+Name: blancco-lun-eraser
+BootEnv: sledgehammer
+Description: "Use Blancco LUN Eraser to perform industrial grade standards compliant disk wiping."
+Documentation: |
+  This workflow implements the externally licensed Blancco disk and LUN
+  eraser tool.  It requires separate licensing from RackN.
+
+Meta:
+  color: orange
+  icon: eraser
+  title: RackN
+  feature-flags: sane-exit-codes
+OptionalParams: []
+Params: {}
+Profiles: []
+RequiredParams: []
+RunnerWait: true
+Templates: []
+Tasks:
+  - blancco-lun-eraser

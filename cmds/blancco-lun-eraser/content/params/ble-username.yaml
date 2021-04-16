@@ -1,0 +1,15 @@
+---
+Name: ble/username
+Description: Username for Blancco LUN Eraser
+Documentation: |
+  Username on the Blancco LUN Eraser account in the Blancco
+  portal or your on-premises management portal.
+
+Meta:
+  color: blue
+  icon: address card
+  title: RackN Content
+Secure: false
+Schema:
+  default: ""
+  type: string

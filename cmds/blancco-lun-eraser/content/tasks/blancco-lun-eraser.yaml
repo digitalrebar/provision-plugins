@@ -1,0 +1,151 @@
+---
+Name: "blancco-lun-eraser"
+Description: "Run the Blancco LUN Eraser (BLE) indsutrial disk wiping tool."
+Documentation: |
+  Runs the Blancco LUN Eraser (BLE) industrial disk wiping tool.
+
+Meta:
+  icon: "window close outline"
+  color: "red"
+  title: "RackN Content"
+Templates:
+  - Name: "ble-config.txt"
+    Contents: |
+      #!/usr/bin/env bash
+      # Render the config.txt for Blancco LUN Eraser
+
+      set -e
+
+      CFG="config.txt"
+
+      echo "Building 'config.txt' file..."
+
+      {{ if .ParamExists "ble/config-override" -}}
+      # render override template - ble/config-override set
+
+      cat << 'EOT' > config.txt
+      {{ template "ble/config-override" . }}
+      EOT
+
+      {{ else -}}
+      # render paramaterized template
+      #
+      cat << 'EOT' > config.txt
+      {{ template "blancco-lun-eraser-config.txt.tmpl" . }}
+      EOT
+
+      {{ end -}}
+
+  - Name: "BlanccoLUNEraser.sh"
+    Contents: |
+      #!/usr/bin/env bash
+      # Get the BLE tooling, and then Run the BlanccoLUNEraser tool
+
+      {{ template "setup.tmpl" . }}
+
+      {{ if .ParamExists "ble/disks" -}}
+      TARGETS="{{ .Param "ble/disks" | join " " }}"
+      {{ else -}}
+      echo ">>> WARNING:  No target devices specified in 'ble/disks' Param"
+      echo "              Exiting without performing any operations."
+      exit 0
+      {{ end -}}
+
+      {{ if .Param "ble/skip" -}}
+      echo ">>> NOTICE:  'ble/skip' set to true, exiting without performing any tasks"
+      exit 0
+      {{ end -}}
+
+      # future feature: alternate download Param/URLs for updating pieces or debugging
+      DAT="{{ .ProvisionerURL }}/files/plugin_providers/blancco-lun-eraser/license.dat"
+      EXE="{{ .ProvisionerURL }}/files/plugin_providers/blancco-lun-eraser/BlanccoLUNEraser"
+      WIPE_LEVEL="{{ .Param "ble/wipe-level" }}"
+      ALGO="$(echo "$WIPE_LEVEL" | cut -d":" -f1)"
+      LSBLK_DEVICES="$(lsblk -d -J -n -a -o NAME)"
+      FOUND_DEVS="$(echo "$LSBLK_DEVICES" | jq -r '.blockdevices[] | .name' | tr '\n' ' ')"
+      NOOP="{{ .Param "ble/noop-test-mode" }}"
+
+      echo ""
+      echo "+++ Start at $(date)"
+      echo ""
+      echo ">>> Downloading 'license.dat' from '$DAT'..."
+      wget --quiet $DAT
+
+      echo ">>> Downloading 'BlanccoLUNEraser' from '$EXE'..."
+      wget --quiet $EXE
+      chmod +x BlanccoLUNEraser
+
+      [[ ! -r "config.txt" ]] && xiterr 1 "Unable to read required 'config.txt'" || true
+      [[ ! -r "license.dat" ]] && xiterr 1 "Unable to read required 'license.dat'" || true
+      [[ ! -x "BlanccoLUNEraser" ]] && xiterr 1 "Unable to read/execute 'BlanccoLUNEraser'" || true
+
+      echo ""
+      echo ">>> Starting Blancco LUN Eraser drive wipe process..."
+      echo ""
+      echo "       username: {{ .Param "ble/username" }}"
+      echo '       password: {{ if .Param "rs-debug-enable" }}{{ .Param "ble/password" }}{{ else }}*** obfuscated ***{{ end }}'
+      echo " license server: {{ .Param "ble/license-server" }}"
+      echo "     wipe level: $WIPE_LEVEL"
+      echo "targets to wipe: $TARGETS"
+      echo "  found devices: $FOUND_DEVS"
+      echo ""
+
+      for TARGET in $TARGETS
+      do
+        D="$(echo "$TARGET" | awk -F '/' ' { print $NF } ')"
+        DEV="/dev/$D"
+        FOUND=$(echo $LSBLK_DEVICES | jq ".blockdevices[] | contains(select(.name == \"$D\"))")
+
+        if [[ $FOUND == "true" ]]
+        then
+          echo ">>> Target device '$DEV' found on device, adding to wipe targets."
+          TARGET_DEVS+="target=$DEV "
+        else
+          echo "--- NOTICE: Target device '$DEV' NOT found on host, ignoring as a non-fatal error"
+        fi
+      done
+
+      WIPE_CMD="./BlanccoLUNEraser -y -simpleui algo=$ALGO $TARGET_DEVS"
+
+      echo ""
+      echo ">>> Starting wipe with command:"
+      echo "$WIPE_CMD"
+      echo ""
+
+      if [[ "$NOOP" == "false" ]]
+      then
+        eval $WIPE_CMD
+
+        echo ""
+
+        REPORTS=$(ls -1 *.xml)
+
+        for REPORT in $REPORTS
+        do
+          # we have 'xmllint' in sledgehammer, but I couldn't make it dance the jig...
+          WIPE_SIGNATURE=$(grep "<integrity>" $REPORT | cut -d '>' -f2 | cut -d '<' -f1)
+          drpcli machines set $RS_UUID param ble/wipe-report to <<< cat $REPORT > /dev/null
+          echo "================================================================================"
+          echo ">>> Collected Report file '$REPORT'"
+          echo ">>> Report recorded to DRP Machine Param 'ble/wipe-report'"
+          echo ">>> Wipe Signature:"
+          echo "$WIPE_SIGNATURE"
+          echo "--------------------------------------------------------------------------------"
+          cat $REPORT
+          echo "================================================================================"
+          echo ""
+        done
+
+      else
+        echo ">>> no-op test mode - not running command"
+        echo "    no Report processing performed either"
+
+        echo ""
+        echo ">>> Config file contents:"
+        cat config.txt
+        echo ""
+      fi
+
+      echo "+++ Done at $(date)"
+      echo ""
+

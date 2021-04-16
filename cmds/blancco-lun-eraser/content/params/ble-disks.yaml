@@ -1,0 +1,21 @@
+---
+Name: ble/disks
+Description: List of disks to wipe on the target server.
+Documentation: |
+  A list of target devices to wipe on the server.  If the device is not
+  found, then it will be skipped.
+
+  Disks may be listed either as ``sda`` or ``/dev/sda`` format.
+
+  .. note:: No default value is set.  The operator must explicitly provide
+            a list of devices to wipe as a safety precaution.
+
+Meta:
+  color: blue
+  icon: address card
+  title: RackN Content
+Secure: false
+Schema:
+  items:
+    type: string
+  type: array
