@@ -1,0 +1,34 @@
+---
+Name: ble/wipe-report-profile-tag
+Description: A partial tag used for the Profile name for multi-Machine Wipe Reports.
+Documentation: |
+  The Blancco LUN Eraser tool generates an individual wipe report for each
+  Machine that runs the tooling.  In addition, multiple Machines wiped at
+  once can record the Wipe Report to a single Profile.  This allows collection
+  of a large fleet of wipe reports via a single query.
+
+  Note that it is the Operator's responsibility to coordinate which Machines
+  simultaneously run a Wipe operation, and subsequently query the Profile after
+  all machines have completed.
+
+  Future features may include a Context coordinator that can handle this process.
+
+  This Params specifies only a portion (eg the ``tag``) for the Profile name
+  that will be used.  If this Param is set to ``purple``, then the Profile
+  name that will be generated and used to record the Wipe Reports will be:
+
+    * ``ble/wipe-report-purple``
+
+  If this Param has no value set, then no aggregate Profile wipe report
+  will be generated.
+
+  .. note:: The value of this Param must be the same on all Machines for
+            which you want to aggregate Wipe Reports to.
+
+Meta:
+  color: blue
+  icon: address card
+  title: RackN Content
+Secure: false
+Schema:
+  type: string

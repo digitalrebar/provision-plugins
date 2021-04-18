@@ -3,18 +3,124 @@ Blancco LUN Eraser
 
 This plugin implements the commercially licensed industrial grade Disk
 and LUN wiping tool from Blancco.  The tool requires additional licensing
-direct from Blancco.
+direct from Blancco.  The integrated product is Blancco LUN Eraser.
+
+.. note:: RackN licenses do not entitle use of the Blancco LUN Eraser product.
 
 
 Overview of Usage
 =================
 
-Overview information.
+This plugin requires external third party licenses to be purchased from Blancco
+to operate correctly.  Product information and purchasing details can be found
+on Blancco's website at:
+
+  * https://www.blancco.com/products/lun-eraser/
+
+By default this plugin utilizes the Blancco Cloud services to validate and consume
+licenses, and upload completed Reports to.  The operator must have a valid Blancco
+Cloud account username and password with license entitlements.  The Blancco Management
+Console can be found at:
+
+  * https://cloud.blancco.com/
+
+It is possible to install a local (eg for "air gap" requirements) Blancco License
+and Console management service internally.  Contact Blancco for further details.
 
 
 Basic Usage
 +++++++++++
 
-Basic Usage information
+By default this content will not wipe any disks without a number of Params being
+set correctly on a target Machine.  An example Profile can be found under Profiles,
+which provides a sample of Params that should be set.  The example profile is named:
+
+  * ``blancco-lun-eraser-EXAMPLE``
+
+.. note:: The default EXAMPLE does **not** include the Profile based wipe report
+          aggregating.  To enable it, set ``ble/wipe-report-profile-tag`` on the Machine(s).
+
+Specifically, the following required Params must be set with values:
+
+  * ``ble/username`` - The Blancco Cloud or local Console server user account
+  * ``ble/password`` - The Blancco Cloud or local Console server user password
+  * ``ble/disks`` - an array of disk targets to wipe, each disk consumes 1 (one) Blancco license entitlement
+  * ``ble/wipe-disks`` - set to ``true`` to enable disk wiping
+
+Optional configuration Params can be set; if no value is specified, the default value
+will be used:
+
+  * ``ble/license-server`` - defaults to ``https://cloud.blancco.com:443``
+  * ``ble/wipe-level`` - defaults to ``16: NIST 800-88 Clear``
+  * ``ble/wipe-report-profile-tag`` - no default - if set, enables aggregate Machine wipe reports written to a single Profile
+
+The Blancco LUN Eraser tooling supports several standards for different wipe
+level requirements.  See the ``ble/wipe-level`` Param documentation for specific
+standards supported wipe levels and setting values.
 
 
+Workflows
++++++++++
+
+The Blancco LUN Eraser (BLE) tasks must be run in Sledgehammer.  The following
+Workflow enforces that the machine is in Sledgehammer, then runs the Blancco
+LUN Eraser tooling:
+
+  * ``blancco-lun-eraser``
+
+
+Reporting for Disk Wipes
+++++++++++++++++++++++++
+
+When utilizing the Blancco Cloud Management Console, completed wipe reports
+may be uploaded to the Console for review and certification proof of disk wipe
+operations.  From time-to-time, the reports may fail to upload.  In the case of
+a report upload failure, Digital Rebar Platform (DRP) will not fail the Task.
+The Job Log for the task will record the failure as a "500" error in the log.
+
+Additionally, DRP records wipe results in the Blancco native Reporting format (XML)
+as Params on the Machine, and *optionally*, in a Profile with an aggregate report
+grouped together by an operator specified ``tag`` value.  This allows multiple
+Machines to execute wipe operations, and aggregate the wipe reports together
+in a single Profile.
+
+A completed Wipe Report will be recorded on the Machine object of each Machine
+that completes a successful wipe.  The wipe report will be recorded in the
+Param:
+
+  * ``ble/wipe-report``
+
+The Optional Profile based aggregate reports must be explicitly enabled, if desired.
+To enable the Profile based reports, you must set the following Param with a
+"*tag*" value to identify this group of wipe operations.  The tag is an arbitrary
+string, but should not contain any special characters.  An example value setting:
+
+  * ``ble/wipe-report-profile-tag``: "20210417-green"
+
+In the above example a Profile will be created and the "*tag*" appended, creating
+a report Profile named:
+
+  * ``ble-wipe-report-20210417-green``
+
+This Profile will be added to each machine.  Each machines specific wipe report
+will be written as a separate Param in the Profile, with the Machines *UUID* value
+as the Param name.
+
+.. note:: Reports are in Blannco's native reporting file format, which is XML.
+
+To remove the report, you must remove the Profile from the Machine(s), then remove
+the Profile.
+
+.. warning:: Subsequent re-runs of the ``blancco-lun-eraser`` Workflow, with the
+             **same** Profile *tag* will cause older wipe records for a given Machine
+             (if they exist), to be delete prior to the new Wipe Report being recorded.
+
+
+Virtual Machines
+++++++++++++++++
+
+If you are using Virtual Machines and wiping disk volumes, note that any of the erase
+levels implemented by Blancco LUN Eraser will cause the disk to inflate to it's
+fully specified size.  This is an important consideration if you are backing your
+disk volumes as Sparse type disks.  You must ensure that your backing storage for
+your Virtual Machine volumes is large enough for the disks to be fully inflated.

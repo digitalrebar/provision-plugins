@@ -8,10 +8,15 @@ Documentation: |
   To use it, clone it and change values accordingly.  Each Param contains
   appropriate documentation for use.
 
-  .. warning:: The ``ble/skip`` Param is a safety check, it must be set
-               to ``false`` to execute the disk wiping procedures.  By setting
+  .. warning:: The ``ble/wipe-disks`` Param is a safety check, it must be set
+               to ``true`` to execute the disk wiping procedures.  By setting
                this value, the system will irrevocably NUKE all data on the
                disks.  That's what this tool does.
+
+  The optional Param ``ble/wipe-report-profile-tag`` is *not* set in this
+  example profile.  If you are wiping multiple Machines and would like an
+  aggregated report collected in a single Profile, then review the documentation
+  for the Param.
 
 Meta:
   color: red
@@ -19,11 +24,12 @@ Meta:
   title: RackN
 Profiles: []
 Params:
+  ble/username: "user@example.com"
+  ble/password: "p@ssw0rd"
+  ble/license-server: "https://cloud.blancco.com:443"
+  ble/wipe-disks: true
   ble/disks:
+    - sda
     - sdb
     - sdc
-  ble/license-server: 'https://cloud.blancco.com:443'
-  ble/password: "p@ssw0rd"
-  ble/skip: false
-  ble/username: user@example.com
-  ble/wipe-level: '16: NIST 800-88 Clear'
+  ble/wipe-level: "16: NIST 800-88 Clear"

@@ -11,10 +11,17 @@ Meta:
   icon: eraser
   title: RackN
   feature-flags: sane-exit-codes
-OptionalParams: []
+RequiredParams:
+  - ble/username
+  - ble/password
+  - ble/disks
+  - ble/wipe-disks
+OptionalParams:
+  - ble/license-server
+  - ble/wipe-level
+  - ble/wipe-report-profile-tag
 Params: {}
 Profiles: []
-RequiredParams: []
 RunnerWait: true
 Templates: []
 Tasks:

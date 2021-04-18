@@ -8,6 +8,10 @@ Meta:
   icon: "window close outline"
   color: "red"
   title: "RackN Content"
+ExtraClaims:
+  - scope: "profiles"
+    action: "*"
+    specific: "*"
 Templates:
   - Name: "ble-config.txt"
     Contents: |
@@ -19,6 +23,8 @@ Templates:
       CFG="config.txt"
 
       echo "Building 'config.txt' file..."
+
+      rm -f config.txt
 
       {{ if .ParamExists "ble/config-override" -}}
       # render override template - ble/config-override set
@@ -43,18 +49,50 @@ Templates:
 
       {{ template "setup.tmpl" . }}
 
+      echo ""
+      echo "+++ Start at $(date)"
+      echo ""
+
       {{ if .ParamExists "ble/disks" -}}
-      TARGETS="{{ .Param "ble/disks" | join " " }}"
+      TARGETS='{{ .Param "ble/disks" | join " " }}'
       {{ else -}}
-      echo ">>> WARNING:  No target devices specified in 'ble/disks' Param"
+      echo "+++ WARNING:  No target devices specified in 'ble/disks' Param"
       echo "              Exiting without performing any operations."
       exit 0
       {{ end -}}
 
-      {{ if .Param "ble/skip" -}}
-      echo ">>> NOTICE:  'ble/skip' set to true, exiting without performing any tasks"
+      {{ if eq ( .Param "ble/wipe-disks" ) false -}}
+      echo "+++ NOTICE:  'ble/wipe-disks' set to false, exiting without performing any tasks"
       exit 0
       {{ end -}}
+
+      {{ if .ParamExists "ble/wipe-report-profile-tag" -}}
+      TAG='{{ .Param "ble/wipe-report-profile-tag" }}'
+      PROFILE="ble-wipe-report-$TAG"
+      echo "+++ Will write aggregate Wipe Report to Profile:  '$PROFILE'"
+      {{ else -}}
+      echo "+++ NOTICE:  No Profile aggregate Wipe Report will be generated."
+      {{ end -}}
+
+      profile_create() {
+        local _profile _date _meta
+        _date="$(date)"
+        _meta='"meta": { "name": "Blancco LUN Eraser Report for tag '$TAG'", "date": "'$_date'" }'
+        _profile='{ "Name": "'$PROFILE'", "Description": "Blancco LUN Eraser Wipe Report - '$TAG'", "Meta": { "color": "purple", "icon": "asterisk", "title": "BLE Wipe Report" }, "Params": { '$_meta' }, "Profiles": [] }'
+
+        echo "%%% Creating Profile '$PROFILE'..."
+        echo "$_profile" | drpcli profiles create -
+      }
+
+      profile_write() {
+        echo "%%% Writing report to Profile '$PROFILE'..."
+        drpcli profiles exists "$PROFILE" > /dev/null 2>&1 || profile_create
+        echo "%%% Adding '$PROFILE' to Machine with UUID '$RS_UUID'..."
+        drpcli machines addprofile $RS_UUID $PROFILE > /dev/null 2>&1
+        echo "%%% Writing report Param in Profile..."
+        drpcli profiles remove "$PROFILE" param "$RS_UUID" > /dev/null 2>&1
+        drpcli profiles set "$PROFILE" param "$RS_UUID" to <<< cat "$REPORT" > /dev/null
+      }
 
       # future feature: alternate download Param/URLs for updating pieces or debugging
       DAT="{{ .ProvisionerURL }}/files/plugin_providers/blancco-lun-eraser/license.dat"
@@ -65,9 +103,6 @@ Templates:
       FOUND_DEVS="$(echo "$LSBLK_DEVICES" | jq -r '.blockdevices[] | .name' | tr '\n' ' ')"
       NOOP="{{ .Param "ble/noop-test-mode" }}"
 
-      echo ""
-      echo "+++ Start at $(date)"
-      echo ""
       echo ">>> Downloading 'license.dat' from '$DAT'..."
       wget --quiet $DAT
 
@@ -114,6 +149,9 @@ Templates:
 
       if [[ "$NOOP" == "false" ]]
       then
+        # wipe any potential preexisting reports from previous runs
+        rm -f *.xml
+
         eval $WIPE_CMD
 
         echo ""
@@ -124,7 +162,11 @@ Templates:
         do
           # we have 'xmllint' in sledgehammer, but I couldn't make it dance the jig...
           WIPE_SIGNATURE=$(grep "<integrity>" $REPORT | cut -d '>' -f2 | cut -d '<' -f1)
+
+          echo "%%% Writing Machine specific report Param ('ble/wip-report')..."
           drpcli machines set $RS_UUID param ble/wipe-report to <<< cat $REPORT > /dev/null
+          [[ -n "$PROFILE" ]] && profile_write || true
+
           echo "================================================================================"
           echo ">>> Collected Report file '$REPORT'"
           echo ">>> Report recorded to DRP Machine Param 'ble/wipe-report'"
