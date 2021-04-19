@@ -90,8 +90,8 @@ Templates:
         echo "%%% Adding '$PROFILE' to Machine with UUID '$RS_UUID'..."
         drpcli machines addprofile $RS_UUID $PROFILE > /dev/null 2>&1
         echo "%%% Writing report Param in Profile..."
-        drpcli profiles remove "$PROFILE" param "$RS_UUID" > /dev/null 2>&1
-        drpcli profiles set "$PROFILE" param "$RS_UUID" to <<< cat "$REPORT" > /dev/null
+        drpcli profiles remove "$PROFILE" param "machine-$RS_UUID" > /dev/null 2>&1
+        drpcli profiles set "$PROFILE" param "machine-$RS_UUID" to <<< cat "$REPORT" > /dev/null
       }
 
       # future feature: alternate download Param/URLs for updating pieces or debugging

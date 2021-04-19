@@ -104,7 +104,7 @@ a report Profile named:
 
 This Profile will be added to each machine.  Each machines specific wipe report
 will be written as a separate Param in the Profile, with the Machines *UUID* value
-as the Param name.
+as the Param name, prefixed with ``machine-``.
 
 .. note:: Reports are in Blannco's native reporting file format, which is XML.
 
