@@ -1,0 +1,58 @@
+---
+Name: ble/custom-report-fields
+Description: Set optional Report meta data fields.
+Documentation: |
+  This Param allows the operator to set custom Report meta data fields
+  for the generated Reports.  The values that can be set are:
+
+    * ``name`` - the field name to display in the report
+    * ``value`` - the value of the named field for the report
+
+  These values are written in to the Blancco LUN Eraser ``config.txt`` file.
+  Fields can only be named ``customN``; where *N* **must** be a sequencially
+  increasing integer.
+
+  This Param uses an Object structure that follows the ``customN`` naming
+  convention in the field, where ``customN`` is the index in the Object to
+  obtain the field ``name`` and ``value`` data from.
+
+  Example in YAML:
+
+    ::
+
+      custom1:
+        name: "Ticket"
+        value: "OPS-1234"
+      custom2:
+        name: "AuthorizedBy"
+        value: "Mr. Bigwig"
+
+  .. warning:: There MUST NOT be any gaps in sequencial numbering of the
+               field values.  The operator MUST specify a properly ascending
+               order of 'custom' fields, no internal validations are performed.
+               Failure to do so will result in the Reports not being uploaded
+               correctly to the Blancco Management Console service.
+
+  Any number of custom fields may be created and used as long as the numbers
+  are sequentially incrementing.  This Param limits the number of custom
+  fields possible to 99 (eg ``custom1`` to ``custom99``).
+
+Meta:
+  color: blue
+  icon: address card
+  title: RackN Content
+Secure: false
+Schema:
+  type: "object"
+  propertyNames:
+    pattern: "^custom[0-9]{1,2}$"
+  additionalProperties:
+    type: "object"
+    required:
+      - "name"
+      - "value"
+    properties:
+      name:
+        type: "string"
+      value:
+        type: "string"

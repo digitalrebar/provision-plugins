@@ -24,12 +24,31 @@ Meta:
   title: RackN
 Profiles: []
 Params:
-  ble/username: "user@example.com"
-  ble/password: "p@ssw0rd"
-  ble/license-server: "https://cloud.blancco.com:443"
   ble/wipe-disks: true
+  ble/username: 'user@example.com'
+  ble/password: 'password'
   ble/disks:
-    - sda
-    - sdb
-    - sdc
-  ble/wipe-level: "16: NIST 800-88 Clear"
+    - 'sda'
+    - 'sdb'
+  ble/license-server: 'https://cloud.blancco.com:443'
+  ble/wipe-level: '16: NIST 800-88 Clear'
+  ble/wipe-report-profile-tag: 'ticket-OPS1234'
+  ble/custom-report-fields:
+    custom1:
+      name: 'ticket'
+      value: 'OPS-1234'
+    custom2:
+      name: 'authorized-by'
+      value: 'Duke Nukem'
+    custom3:
+      name: 'drp-machine-uuid'
+      value: '{{ .Machine.UUID }}'
+    custom4:
+      name: 'drp-provisioner-address'
+      value: '{{ .ProvisionerAddress }}'
+    custom5:
+      name: 'drp-machine-name'
+      value: '{{ .Machine.Name }}'
+    custom6:
+      name: 'drp-machine-ip-address'
+      value: '{{ .Machine.Address }}'

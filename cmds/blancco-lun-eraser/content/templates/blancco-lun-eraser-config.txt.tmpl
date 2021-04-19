@@ -17,16 +17,15 @@ MCUserName = "{{ .Param "ble/username" }}"
 MCPassword = "{{ .Param "ble/password" }}"
 #OutgoingPort = ""
 
-[custom1]
-name = "{{ .Param "ble/report-1-name" }}"
-# mandatory = 1   # requires in put at STDIN if set to 1
+{{ if .ParamExists "ble/custom-report-fields" -}}
+{{ range $key, $custom := ( .ParamComposeExpand "ble/custom-report-fields" ) -}}
+[{{ $key }}]
+name      = "{{ $custom.name }}"
+default   = "{{ $custom.value }}"
 mandatory = 0
-default = "{{ .Param "ble/report-1-tag" }}"
-disabled = 1
-# disabled = 1  # disables the "custom1" field from use"
+disabled  = 0
 
-#[custom2]
-#name = "Custom 2"
-#mandatory = 0
-#default = "Default Value"
-#disabled = 0
+{{ end -}}
+{{ else -}}
+# no custom reporting fields specified in 'ble/custom-report-fields' Param
+{{ end -}}
