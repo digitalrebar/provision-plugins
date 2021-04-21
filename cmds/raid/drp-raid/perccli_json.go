@@ -552,10 +552,10 @@ func (s *PercJsonCli) Create(c *Controller, v *VolSpec, forceGood bool) error {
 	default:
 		return fmt.Errorf("Raid level %s not supported", v.RaidLevel)
 	}
-	cmdLine = append(cmdLine, s.diskList(v.Disks))
 	if v.Name != "" {
 		cmdLine = append(cmdLine, fmt.Sprintf("name=\"%s\"", v.Name))
 	}
+	cmdLine = append(cmdLine, s.diskList(v.Disks))
 	cmdLine = append(cmdLine, fmt.Sprintf("strip=%d", v.stripeSize()>>10))
 	cmdLine = append(cmdLine, "force", "J")
 	s.log.Printf("Running %s %s", s.executable, strings.Join(cmdLine, " "))
