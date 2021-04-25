@@ -1,0 +1,31 @@
+# Comment
+
+# The path to the license file.
+LicenseFile = "license.dat"
+
+# The path to the report folder
+#ReportPath = "/var/log"
+BufferSize = "-1"
+#MaxMBPerSecond = "5"
+#OutputFilePath = "/log.txt"
+
+# Address to the Blancco Management Console
+MCServerAddress = "https://cloud.blancco.com:443"
+# The user that should be used to import the reports
+MCUserName = "{{ .Param "ble/username" }}"
+# Password for the user
+MCPassword = "{{ .Param "ble/password" }}"
+#OutgoingPort = ""
+
+{{ if .ParamExists "ble/custom-report-fields" -}}
+{{ range $key, $custom := ( .ParamComposeExpand "ble/custom-report-fields" ) -}}
+[{{ $key }}]
+name      = "{{ $custom.name }}"
+default   = "{{ $custom.value }}"
+mandatory = 0
+disabled  = 0
+
+{{ end -}}
+{{ else -}}
+# no custom reporting fields specified in 'ble/custom-report-fields' Param
+{{ end -}}

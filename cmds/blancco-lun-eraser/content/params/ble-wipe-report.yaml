@@ -1,0 +1,23 @@
+---
+Name: ble/wipe-report
+Description: Automatically written with the BLE Wipe Report when completed.
+Documentation: |
+  This Param will automatically be written on the Machine Object when
+  a successful completed wipe process of the Blancco LUN Eraser (BLE) tool
+  has completed.
+
+  On subsequent re-runs of the software, the Param value will be overwritten.
+  The reports are also uploaded and managed in the Blancco Management Console,
+  which is defined by the Param ``ble/license-server``.
+
+  Currently the report is written as raw XML format, as produced by the BLE
+  tooling.
+
+Meta:
+  color: green
+  icon: save outline
+  title: RackN Content
+Secure: false
+Schema:
+  default: ""
+  type: string

@@ -1,0 +1,17 @@
+---
+Name: ble/wipe-disks
+Description: Safety check to prevent wiping disks by default.
+Documentation: |
+  If this param is set to ``false``, then the Blancco LUN Eraser
+  process will not be run.  The default value is ``false``.  The operator
+  must explicitly set this value to ``true`` to run the BLE disk
+  wiping process.
+
+Meta:
+  color: red
+  icon: asterisk
+  title: RackN Content
+Secure: false
+Schema:
+  default: false
+  type: boolean

@@ -1,0 +1,19 @@
+---
+Name: ble/noop-test-mode
+Description: Sets the BLE tooling to not excute the wipe tools.  For debugging.
+Documentation: |
+  This param prevents the Blancco LUN Eraser tooling from actually executing
+  the destructive wipe tooling (``BlanccoLUNEraser``).
+
+  This is primarily used as a debugging mode.  Setting this Param will prevent
+  the binary from executing.  It also prevents any of the Report scraping and
+  Param writing commands from running.
+
+Meta:
+  color: blue
+  icon: bug
+  title: RackN Content
+Secure: false
+Schema:
+  default: false
+  type: boolean

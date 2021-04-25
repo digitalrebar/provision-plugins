@@ -1,0 +1,54 @@
+---
+Name: blancco-lun-eraser-EXAMPLE
+Description: 'An EXAMPLE profile for use of Blancco LUN Eraser wipe tool.'
+Documentation: |
+  This is an EXAMPLE profile that can be used as a starting point for use
+  of the Blancco LUN Eraser (BLE) integration.
+
+  To use it, clone it and change values accordingly.  Each Param contains
+  appropriate documentation for use.
+
+  .. warning:: The ``ble/wipe-disks`` Param is a safety check, it must be set
+               to ``true`` to execute the disk wiping procedures.  By setting
+               this value, the system will irrevocably NUKE all data on the
+               disks.  That's what this tool does.
+
+  The optional Param ``ble/wipe-report-profile-tag`` is *not* set in this
+  example profile.  If you are wiping multiple Machines and would like an
+  aggregated report collected in a single Profile, then review the documentation
+  for the Param.
+
+Meta:
+  color: red
+  icon: asterisk
+  title: RackN
+Profiles: []
+Params:
+  ble/wipe-disks: true
+  ble/username: 'user@example.com'
+  ble/password: 'password'
+  ble/disks:
+    - 'sda'
+    - 'sdb'
+  ble/license-server: 'https://cloud.blancco.com:443'
+  ble/wipe-level: '16: NIST 800-88 Clear'
+  ble/wipe-report-profile-tag: 'ticket-OPS1234'
+  ble/custom-report-fields:
+    custom1:
+      name: 'ticket'
+      value: 'OPS-1234'
+    custom2:
+      name: 'authorized-by'
+      value: 'Duke Nukem'
+    custom3:
+      name: 'drp-machine-uuid'
+      value: '{{ .Machine.UUID }}'
+    custom4:
+      name: 'drp-provisioner-address'
+      value: '{{ .ProvisionerAddress }}'
+    custom5:
+      name: 'drp-machine-name'
+      value: '{{ .Machine.Name }}'
+    custom6:
+      name: 'drp-machine-ip-address'
+      value: '{{ .Machine.Address }}'

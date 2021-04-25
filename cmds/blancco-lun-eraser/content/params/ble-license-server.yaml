@@ -1,0 +1,18 @@
+---
+Name: ble/license-server
+Description: License Server (Management Console) URL location.
+Documentation: |
+  The URL location of the Blancco LUN Eraser Management Console which
+  manages the License entitlements.  By default the Blancco cloud service
+  console will be used:
+
+    * https://cloud.blancco.com:443
+
+Meta:
+  color: blue
+  icon: crosshairs
+  title: RackN Content
+Secure: false
+Schema:
+  default: "https://cloud.blancco.com:443"
+  type: string
