@@ -32,16 +32,25 @@ Templates:
 
       [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
       STATE=$(localcli system maintenanceMode get)
-
       if [[ "$STATE" == "Enabled" ]] ; then
         echo "system maintenanceMode already set"
-      else
+      fi
+
+      COUNT=0
+      while [[ "$STATE" != "Enabled" ]] ; do
         localcli system maintenanceMode set --enable true > /dev/null || true
         STATE=$(localcli system maintenanceMode get)
-        if [[ "$STATE" != "Enabled" ]] ;  then
-          echo "FATAL:  Unable to set maintenance mode successfully."
-          exit 1
+        COUNT=$((COUNT+1))
+        if [[ "$COUNT" == "60" ]] ; then
+          break
+        else
+          sleep 5
         fi
+      done
+
+      if [[ "$STATE" != "Enabled" ]] ;  then
+        echo "FATAL:  Unable to set maintenance mode successfully."
+        exit 1
       fi
 
       MODE=$(python3 /tmp/esxi-params.py get 'esxi/maintenance-mode')
