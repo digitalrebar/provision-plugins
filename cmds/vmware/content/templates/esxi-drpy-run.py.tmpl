@@ -10,7 +10,7 @@
 #  Above should be met by the 'esxi-drpy-vib-render.py.tmpl' template
 ###
 
-import sys, os, datetime, re
+import sys, os, datetime, re, time
 
 agent = "/opt/rackn/drpy/agent"
 rackn_dir = "/opt/rackn/drpy"
@@ -44,7 +44,7 @@ start_agent = "python " + agent + " -f " + conf_file + " 2>&1"
 count = 0
 while not os.path.exists(agent):
   print("Agent is not installed there....")
-  sleep(5)
+  time.sleep(5)
   count=count+1
   if count > 30:
     sys.exit('DRPY agent not found on system"' + agent + '.')

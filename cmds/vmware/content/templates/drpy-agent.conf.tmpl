@@ -2,6 +2,8 @@
 endpoint = {{ .ApiURL }}
 token = {{ .GenerateInfiniteToken  }}
 machine_uuid = {{ .Machine.UUID }}
+never_update_token = True
+duration = {{ .Param "esxi/drpy-token-duration" }}
 
 [loggers]
 keys=root,drpy
