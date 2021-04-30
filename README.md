@@ -1,7 +1,7 @@
 
 # provision-plugins
 
-These repo contains the ipmi, slack, packet-ipmi, and virtualbox-ipmi plugins.  And lots more.
+These repo contains the ipmi, slack, packet-ipmi, and virtualbox-ipmi plugins.
 
 Also some docs on building plugins.
 
