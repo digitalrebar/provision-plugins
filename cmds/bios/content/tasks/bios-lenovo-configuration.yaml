@@ -44,10 +44,19 @@ Templates:
               set +e
           fi
       done
-      set -e
 
       echo "Update item {{$index}}"
-      $onecli config batch --file file.{{$index}} || exit 1
+      grep -q IMM.SNMPAlerts_SystemAlertCategory file.{{$index}}
+      HAS_SAC=$?
+      set -e
+      if ! $onecli config batch --file file.{{$index}} --override ; then
+        if [[ "$HAS_SAC" == "0" ]] ; then
+          echo "Failed to run the script - but has known Lenovo bug - assuming success..."
+        else
+          echo "Failed to run the script."
+          exit 1
+        fi
+      fi
       rm -f file.{{$index}}
       {{ end }}
 
