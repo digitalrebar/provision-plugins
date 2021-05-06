@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-DEL-ESXi-701_16850804-A00.iso
-  IsoSha256: 8dd6aad291bdc5634297fb2cb8aaf37033633cba929e2e4cbadb9c160ad15e50
+  IsoSha256: 50eb42360e21d0711e6e653fb09040457880b04b5d1112e522611069ed3b9996
   IsoUrl: ""
   Name: esxi_700u1-16850804_rkn_dell
   SupportedArchitectures: {}

@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-LVO_7.0.1-LVO.701.10.1.iso
-  IsoSha256: 7c65d45aa7b7cb8e40a34754bbbec7af3473fe34c818d70be49abef039fba06b
+  IsoSha256: 01484c7cde383f6d83d57319ac95dff0da0c1d3606ce02839cbb4f136ae0f19f
   IsoUrl: ""
   Name: esxi_700u1-16850804_rkn_lenovo
   SupportedArchitectures: {}

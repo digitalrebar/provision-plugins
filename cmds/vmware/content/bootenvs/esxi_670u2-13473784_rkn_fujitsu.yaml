@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-Fujitsu-VMvisor-Installer-6.7-13473784-v470-1.iso
-  IsoSha256: 5d5d341222ec7f19036410312a9a95e292be53db65a3e7d7933f7130fdec50b4
+  IsoSha256: 27d7ba1cd497754d5b0429eb08c31cb2633afc83a2e20c753efb71d909ce9277
   IsoUrl: ""
   Name: esxi_670u2-13473784_rkn_fujitsu
   SupportedArchitectures: {}

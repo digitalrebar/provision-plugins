@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-HPE-ESXi-6.7.0-Update2-Gen9plus-670.U2.10.4.1.8.iso
-  IsoSha256: 75472295859da39f95f03ea465182000a64a4a6e5a29dc9b10dcf442807de295
+  IsoSha256: c5b498da949ab96909d1048d43b23344a9f3dca8e4beef8dd69a372b7eb454a2
   IsoUrl: ""
   Name: esxi_670u2-13006603_rkn_hpe
   SupportedArchitectures: {}
