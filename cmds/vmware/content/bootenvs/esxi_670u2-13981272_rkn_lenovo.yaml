@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-Lenovo_ESXi6.7u2-13981272_20190630.iso
-  IsoSha256: f8b8307b42a4ea2a7c9baba73a82edbdf24ef49458cb702ab9d0d3b9f49348c2
+  IsoSha256: cfc3a55d05a9187459f6b1942ce9b7b9d8180b37b0eed89f22efa106ed89dd05
   IsoUrl: ""
   Name: esxi_670u2-13981272_rkn_lenovo
   SupportedArchitectures: {}

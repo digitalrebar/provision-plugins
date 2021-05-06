@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-ESXi-6.7.2-13644319-NEC-6.7-03.iso
-  IsoSha256: c2676acdd5d8f7a093c46ca7d6546b67eedabcc1048ef327b25143ea5dcc94d2
+  IsoSha256: fa36018627bfbc005bea3456a1cdf95aff6175008c5236dc87c5f515a1d8e4ba
   IsoUrl: ""
   Name: esxi_672u3-13644319_rkn_nec
   SupportedArchitectures: {}
