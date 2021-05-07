@@ -48,6 +48,10 @@ Templates:
       echo "Update item {{$index}}"
       grep -q IMM.SNMPAlerts_SystemAlertCategory file.{{$index}}
       HAS_SAC=$?
+      if [[ "$HAS_SAC" != "0" ]] ; then
+        grep -q IMM.SSL_CLIENT_TRUSTED_CERT1 file.{{$index}}
+        HAS_SAC=$?
+      fi
       set -e
       if ! $onecli config batch --file file.{{$index}} --override ; then
         if [[ "$HAS_SAC" == "0" ]] ; then
