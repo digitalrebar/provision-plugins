@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-ESXi-6.7.0-update2-13006603-custom-hitachi-1300.iso
-  IsoSha256: 8ce39e2471c2dd0fdbd37d9849a228b461a20c6201df2615e20a25a45d81fea5
+  IsoSha256: 7dc9f140501c812e50889eee04fef64abe3b3928988adf50414d1cd2971c9169
   IsoUrl: ""
   Name: esxi_670u2-13006603_rkn_hitachi
   SupportedArchitectures: {}
