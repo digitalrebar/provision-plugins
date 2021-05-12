@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-VMware-ESXi-6.7.0-13006603-Custom-Cisco-6.7.2.1.iso
-  IsoSha256: 24e242f9a80a751f4db1525740ead5773df21719053fbc15776efe5ee56d5bcd
+  IsoSha256: 7d798836d81ce07973a4ba4e1f77ae766c7988c8ba0727bfd68ee0edc5af2d0f
   IsoUrl: ""
   Name: esxi_670-13006603_rkn_cisco
   SupportedArchitectures: {}

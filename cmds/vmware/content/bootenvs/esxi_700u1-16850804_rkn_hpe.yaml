@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-HPE-Custom-AddOn_701.0.0.10.6.0-40.iso
-  IsoSha256: 67e5741e44412acd4ef080d054f134f5e78efcb31b616c1936b0decd84c53b3e
+  IsoSha256: 86d7532d8e1d66df9543cb08390ae09f0a6b86f2140eac2bc9f3509c404bccd6
   IsoUrl: ""
   Name: esxi_700u1-16850804_rkn_hpe
   SupportedArchitectures: {}

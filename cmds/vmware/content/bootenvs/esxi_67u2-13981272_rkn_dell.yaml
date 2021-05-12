@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-DellEMC-ESXi-6.7U2-13981272-A02.iso
-  IsoSha256: 0fdbaa95bc31538afb72fe21435588cdfc00a4b143bbf53634cb3ceed3e1f7f4
+  IsoSha256: 6d75bef6ce30eded1acb96102dfffde87a42e494cf86e9ba47ae00a0de62e449
   IsoUrl: ""
   Name: esxi_67u2-13981272_rkn_dell
   SupportedArchitectures: {}

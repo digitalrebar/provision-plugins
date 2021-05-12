@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-ESXi-7.0.0-15843807-no-tools.iso
-  IsoSha256: d460e071f5193107509c9e8b0719080271cb61fdfb18b644558a6d2b0a3bb661
+  IsoSha256: bde05f9c3770094a8defdc9ad1dfc4b2ac8499576e3bfb29e7afd52e0e0a7e01
   IsoUrl: ""
   Name: esxi_700-x15843807_rkn_vmware
   SupportedArchitectures: {}

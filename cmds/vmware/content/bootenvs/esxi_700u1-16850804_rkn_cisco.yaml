@@ -17,7 +17,7 @@ OS:
   Codename: esxi
   Family: vmware
   IsoFile: RKN-Cisco-UCS-Custom-ESXi-70U1-16850804_4.1.2-b.iso
-  IsoSha256: 87fd5026064d32136705c6ba415285f8f1c1fe7585703ceb28970d5888760109
+  IsoSha256: 398d258266ac818e82d8b134b2dfa7a8e2083fb2b42c0c067a75eb332084cfaf
   IsoUrl: ""
   Name: esxi_700u1-16850804_rkn_cisco
   SupportedArchitectures: {}
