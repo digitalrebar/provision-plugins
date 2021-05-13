@@ -33,7 +33,7 @@ done
 export PATH="$PWD/tools/build:$PATH"
 
 # set our arch:os build pairs to compile for
-builds="amd64:linux amd64:darwin arm64:linux arm:7:linux"
+builds="amd64:linux amd64:darwin arm64:linux arm:7:linux ppc64le:linux"
 
 # anything on command line will override our pairs listed above
 [[ $* ]] && builds="$*"
