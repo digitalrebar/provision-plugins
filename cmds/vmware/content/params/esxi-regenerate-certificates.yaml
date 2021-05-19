@@ -1,0 +1,20 @@
+---
+Name: "esxi/regenerate-certificates"
+Description: "Regenerate the self-signed certificates if requested"
+Documentation: |
+  This Param will force ESXi to regenerate the self-signed certificates.
+  It is used in the ``esxi-install-certificates`` task.
+
+  The ESXi hostname may change, or the certificate may have only been
+  generated initially with HOSTNAME.
+
+  The default action is to **NOT** regenerate the certificates.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+Secure: false
+Schema:
+  type: boolean
+  default: false

@@ -17,31 +17,50 @@ Templates:
       cd /etc/vmware/ssl
 
       # Save off files
+      echo ">>> Backing up existing certificates to 'rui.key.back' and 'rui.crt.back'"
       cp rui.key rui.key.back
       cp rui.crt rui.crt.back
 
+      RC=norestart
+
+      {{ if and ( .ParamExists "esxi/ssl-key" ) ( .ParamExists "esxi/ssl-certificate" ) -}}
+
       RC=restart
       # Put new files in place
-      {{ if .ParamExists "esxi/ssl-key" }}
+      echo ">>> Writing new 'rui.key' file"
       cat >rui.key <<EOF
-      {{ .Param "esxi/ssl-key" }}
+      {{ .Param "esxi/ssl-key" -}}
       EOF
-      {{ else }}
-      echo "Missing esxi/ssl-key skipping installation"
-      RC=norestart
-      {{ end }}
 
-      {{ if .ParamExists "esxi/ssl-certificate" }}
+      echo ">>> Writing new 'rui.crt' file"
       cat >rui.crt <<EOF
-      {{ .Param "esxi/ssl-certificate" }}
+      {{ .Param "esxi/ssl-certificate" -}}
       EOF
-      {{ else }}
-      echo "Missing esxi/ssl-certificate skipping installation"
-      RC=norestart
-      {{ end }}
+
+      {{ else -}}
+
+      {{ if not .ParamExists "esxi/ssl-key" -}}
+      echo "+++ No 'esxi/ssl-key' set"
+      {{ end -}}
+
+      {{ if not .ParamExists "esxi/ssl-certificate" -}}
+      echo "+++ No 'esxi/ssl-certificate' set"
+      {{ end -}}
+
+      {{ if .Param "esxi/regenerate-certificates" }}
+      RC=restart
+      echo ">>> Regenerating self-signed certificates"
+      /sbin/generate-certificates
+      echo ">>> Restarting hostd"
+      /etc/init.d/hostd restart
+
+      {{ end -}}
+
+      {{ end -}}
 
       # Restart services
       if [[ $RC == restart ]] ; then
+      echo ">>> Restarting all services"
       /sbin/services.sh restart
       fi
 
