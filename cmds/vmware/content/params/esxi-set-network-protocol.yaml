@@ -1,6 +1,6 @@
 ---
 Name: esxi/set-network-protocol
-Description: Set the ESXi software install acceptance level.
+Description: Set the ESXi network protocol.
 Documentation: |
   This param controls what IP protocol suite is enabled on the ESXi node.
   By default, both IPv4 and IPv6 are enabled on ESXi.
