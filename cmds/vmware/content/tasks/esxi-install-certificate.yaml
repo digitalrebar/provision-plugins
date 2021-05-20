@@ -14,6 +14,8 @@ Templates:
 
       {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
 
+      set -e
+
       cd /etc/vmware/ssl
 
       # Save off files
@@ -39,11 +41,11 @@ Templates:
 
       {{ else -}}
 
-      {{ if not .ParamExists "esxi/ssl-key" -}}
+      {{ if not ( .ParamExists "esxi/ssl-key" ) -}}
       echo "+++ No 'esxi/ssl-key' set"
       {{ end -}}
 
-      {{ if not .ParamExists "esxi/ssl-certificate" -}}
+      {{ if not ( .ParamExists "esxi/ssl-certificate" ) -}}
       echo "+++ No 'esxi/ssl-certificate' set"
       {{ end -}}
 
@@ -51,8 +53,6 @@ Templates:
       RC=restart
       echo ">>> Regenerating self-signed certificates"
       /sbin/generate-certificates
-      echo ">>> Restarting hostd"
-      /etc/init.d/hostd restart
 
       {{ end -}}
 
