@@ -65,7 +65,7 @@ func (d *hpConfig) FixWanted(wanted map[string]string) map[string]string {
 	return wanted
 }
 
-func (h *hpConfig) Apply(current map[string]Entry, trimmed map[string]string) (needReboot bool, err error) {
+func (h *hpConfig) Apply(current map[string]Entry, trimmed map[string]string, dryRun bool) (needReboot bool, err error) {
 	toAdd := &hpConfig{
 		Ents: make([]hpConfigEnt, 0, len(trimmed)),
 	}
@@ -80,6 +80,9 @@ func (h *hpConfig) Apply(current map[string]Entry, trimmed map[string]string) (n
 	defer fi.Close()
 	enc := xml.NewEncoder(fi)
 	if err = enc.Encode(toAdd); err != nil {
+		return
+	}
+	if dryRun {
 		return
 	}
 	cmd := exec.Command("conrep", "-l")

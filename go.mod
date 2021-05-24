@@ -9,7 +9,7 @@ require (
 	github.com/digitalocean/go-libvirt v0.0.0-20181105201604-08f982c676c6
 	github.com/digitalocean/go-netbox v0.0.0-20180319151450-29433ec527e7
 	github.com/digitalrebar/logger v1.0.2
-	github.com/digitalrebar/provision/v4 v4.6.0
+	github.com/digitalrebar/provision/v4 v4.6.2
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/limitgroup v0.0.0-20150612190941-6abd8d71ec01 // indirect
@@ -38,6 +38,7 @@ require (
 	github.com/stmcginnis/gofish v0.6.0
 	github.com/vishvananda/netlink v0.0.0-20181208180451-78a3099b7080
 	github.com/vishvananda/netns v0.0.0-20180720170159-13995c7128cc // indirect
+	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
 	gopkg.in/alexcesaro/statsd.v2 v2.0.0 // indirect
 	gopkg.in/imjoey/go-ovirt.v4 v4.0.6
 	gopkg.in/yaml.v2 v2.2.2

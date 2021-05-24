@@ -46,6 +46,8 @@ Templates:
               echo "Please install the lenovo-support content package"
               exit 1;;
               {{ end }}
+          Supermicro)
+              drpcli machines set {{.Machine.UUID}} param bios-driver to supermicro;;
           *)  drpcli machines set {{.Machine.UUID}} param bios-driver to none
               echo "Cannot manage BIOS settings for $mfgr"
               echo "BIOS configuration settings will be ignored.";;

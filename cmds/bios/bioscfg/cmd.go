@@ -8,10 +8,13 @@ import (
 )
 
 func main() {
-	var driver, op, src string
-	flag.StringVar(&driver, "driver", "", "Driver to use for BIOS configuration. One of dell hp lenovo none dell-legacy")
+	var driver, op, src, cfgSrc string
+	var dryRun bool
+	flag.StringVar(&driver, "driver", "", "Driver to use for BIOS configuration. One of dell hp lenovo none dell-legacy supermicro")
 	flag.StringVar(&op, "operation", "get", "Operation to perform, one of: get test apply export")
 	flag.StringVar(&src, "source", "", "Source config file to read from for testing.  Can be left blank to use the current system config.  Must be in the native tooling format for the driver (racadm get --clone XML for Dell, conrep xml for HP, list for OneCli)")
+	flag.StringVar(&cfgSrc, "config", "-", "Configuration to test or apply.  '-' means read from stdin.")
+	flag.BoolVar(&dryRun, "dryRun", false, "Skip actually making changes when apply is the op.")
 	flag.Parse()
 	var cfg Configurator
 	switch driver {
@@ -23,6 +26,8 @@ func main() {
 		cfg = &hpConfig{}
 	case "lenovo":
 		cfg = &lenovoConfig{}
+	case "supermicro":
+		cfg = &superMicroConfig{}
 	case "none":
 		cfg = &noneConfig{}
 	default:
@@ -42,10 +47,20 @@ func main() {
 	var err error
 	needReboot := false
 	vars := map[string]string{}
-	dec := json.NewDecoder(os.Stdin)
+	var dec *json.Decoder
+	if cfgSrc == "-" {
+		dec = json.NewDecoder(os.Stdin)
+	} else {
+		fi, err := os.Open(cfgSrc)
+		if err != nil {
+			log.Fatalf("Error opening %s: %v", cfgSrc, err)
+		}
+		dec = json.NewDecoder(fi)
+	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent(``, `  `)
 	var res interface{}
+	res = map[string]interface{}{}
 	switch op {
 	case "export":
 		ents, err = cfg.Current()
@@ -85,7 +100,7 @@ func main() {
 			for k, v := range trimmed {
 				log.Printf("Attempting to set %s to %s\n", k, v)
 			}
-			needReboot, err = cfg.Apply(ents, trimmed)
+			needReboot, err = cfg.Apply(ents, trimmed, dryRun)
 			if needReboot {
 				exitCode += 192
 			}

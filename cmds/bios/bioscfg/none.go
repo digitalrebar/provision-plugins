@@ -17,6 +17,6 @@ func (n *noneConfig) FixWanted(wanted map[string]string) map[string]string {
 	return wanted
 }
 
-func (n *noneConfig) Apply(current map[string]Entry, trimmed map[string]string) (needReboot bool, err error) {
+func (n *noneConfig) Apply(current map[string]Entry, trimmed map[string]string, b bool) (needReboot bool, err error) {
 	return
 }
