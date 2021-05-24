@@ -12,6 +12,7 @@ import (
 // Entry is what we expect a BIOS configuration setting to contain.
 type Entry struct {
 	Name         string
+	Type         string
 	ReadOnly     bool   `json:",omitempty"`
 	PendingValid bool   `json:",omitempty"`
 	Current      string `json:",omitempty"`

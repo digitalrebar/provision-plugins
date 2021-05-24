@@ -9,7 +9,7 @@ import (
 
 func main() {
 	var driver, op, src string
-	flag.StringVar(&driver, "driver", "", "Driver to use for BIOS configuration. One of dell hp lenovo none dell-legacy")
+	flag.StringVar(&driver, "driver", "", "Driver to use for BIOS configuration. One of dell hp lenovo none dell-legacy supermicro")
 	flag.StringVar(&op, "operation", "get", "Operation to perform, one of: get test apply export")
 	flag.StringVar(&src, "source", "", "Source config file to read from for testing.  Can be left blank to use the current system config.  Must be in the native tooling format for the driver (racadm get --clone XML for Dell, conrep xml for HP, list for OneCli)")
 	flag.Parse()
@@ -23,6 +23,8 @@ func main() {
 		cfg = &hpConfig{}
 	case "lenovo":
 		cfg = &lenovoConfig{}
+	case "supermicro":
+		cfg = &superMicroConfig{}
 	case "none":
 		cfg = &noneConfig{}
 	default:

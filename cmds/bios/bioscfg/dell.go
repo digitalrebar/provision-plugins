@@ -118,6 +118,7 @@ func (d *dellBiosOnlyConfig) Current() (res map[string]Entry, err error) {
 		case "HIIIntegerObj":
 			working = Entry{
 				Name:    ent.Name,
+				Type:    "Number",
 				Current: strconv.Itoa(ent.CurrentValue),
 			}
 			if ent.PendingValid {
@@ -133,6 +134,7 @@ func (d *dellBiosOnlyConfig) Current() (res map[string]Entry, err error) {
 		case "HIIStringObj":
 			working = Entry{
 				Name:    ent.Name,
+				Type:    "String",
 				Current: ent.CurrentStr.Val,
 				Pending: ent.PendingStr.Val,
 				Default: ent.DefaultStr.Val,
@@ -144,6 +146,7 @@ func (d *dellBiosOnlyConfig) Current() (res map[string]Entry, err error) {
 		case "HIIEnumObj":
 			working = Entry{
 				Name: ent.Name,
+				Type: "Option",
 			}
 			working.Checker.Enum.Valid = true
 			j := i + 1
@@ -168,6 +171,7 @@ func (d *dellBiosOnlyConfig) Current() (res map[string]Entry, err error) {
 			return
 		case "HIIOrderedListObj":
 			working = Entry{
+				Type: "Seq",
 				Name: ent.Name,
 			}
 			working.Checker.Seq.Valid = true
