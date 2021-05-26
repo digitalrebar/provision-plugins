@@ -17,7 +17,7 @@ import (
 	"strings"
 
 	"github.com/digitalrebar/logger"
-	"github.com/digitalrebar/provision-plugins/v4"
+	v4 "github.com/digitalrebar/provision-plugins/v4"
 	"github.com/digitalrebar/provision-plugins/v4/utils"
 	"github.com/digitalrebar/provision/v4/api"
 	"github.com/digitalrebar/provision/v4/models"
@@ -113,11 +113,34 @@ func (p *Plugin) postTrigger(l logger.Logger, ma *models.Action) (answer interfa
 		return
 	}
 
+	token := p.drpClient.Token()
+	ambientAuth := ""
+	ambientAuth, err = utils.ValidateStringValue("endpoint-exec/user", ma.Params["endpoint-exec/user"])
+	if err != nil {
+		return
+	}
+
 	machine := &models.Machine{}
 	machine.Fill()
 	if rerr := models.Remarshal(ma.Model, &machine); rerr != nil {
 		err = utils.ConvertError(400, rerr)
 		return
+	}
+	switch ambientAuth {
+	case "":
+	case "asMachine":
+		if rerr := p.drpClient.Req().UrlFor("machines", machine.UUID(), "token").Do(&token); rerr != nil {
+			err = utils.ConvertError(400, rerr)
+			return
+		}
+	default:
+		userToken := &models.UserToken{}
+		if rerr := p.drpClient.Req().UrlFor("users", ambientAuth, "token").Do(userToken); rerr != nil {
+			err = utils.ConvertError(400, rerr)
+			return
+		}
+		token = userToken.Token
+
 	}
 
 	act, ok := p.actions[action]
@@ -144,7 +167,7 @@ func (p *Plugin) postTrigger(l logger.Logger, ma *models.Action) (answer interfa
 	// Set RS_UUID and a TOKEN (this is a pretty powerful token) to machine the machine caller
 	env := os.Environ()
 	env = append(env, fmt.Sprintf("RS_UUID=%s", machine.UUID()))
-	env = append(env, fmt.Sprintf("RS_TOKEN=%s", p.drpClient.Token()))
+	env = append(env, fmt.Sprintf("RS_TOKEN=%s", token))
 	cmd.Env = env
 
 	var outb, errb bytes.Buffer

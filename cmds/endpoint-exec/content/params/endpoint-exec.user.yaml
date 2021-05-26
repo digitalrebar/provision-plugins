@@ -1,0 +1,18 @@
+Description: The user in dr-provision that the action will run as
+Documentation: |
+  The user in dr-provision that the action will run as
+  If this param is empty (the default), the action will have its RS_TOKEN
+  set to the one the plugin has, giving it nearly unlimited
+  authority.  If this param is set to 'asMachine', the task will run
+  with a machine token equivalent to one that the machine would have
+  while running a task.  Otherwise, this param must be set to a username
+  that exists, and the action will be run with a token that contains the
+  same authority that user has.
+Meta:
+  color: blue
+  icon: user
+  title: RackN
+Name: endpoint-exec/user
+Schema:
+  type: string
+  default: ""
