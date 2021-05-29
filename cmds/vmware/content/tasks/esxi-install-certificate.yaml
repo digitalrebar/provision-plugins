@@ -59,9 +59,10 @@ Templates:
       {{ end -}}
 
       # Restart services
-      if [[ $RC == restart ]] ; then
+      if [[ $RC == restart ]]; then
       echo ">>> Restarting all services"
       /sbin/services.sh restart
+      {{ template "esxi-service-verify.sh.tmpl" . }}
       fi
 
       exit 0
