@@ -2,10 +2,26 @@
 Name: "esxi-install-certificate"
 Description: "Install SSL Certificate"
 Documentation: |
-  Install SSL Certificate
+  Install SSL Certificate.  Uses the ``esxi/ssl-key`` and ``esxi/ssl-certificate`` Params
+  to specify a custom certificate.
+
+  If the ``esxi/regenerate-certificates`` is set, then the self-signed certificate will be
+  automatically regenerated.  By defaul the initial self-signed certificate will often be
+  created with "*localhost.localdomain*" (or similar).  If certificate regeneration is
+  performed by this task, then the self-signed certificate will be built based on the
+  FQDN of the ESXi host.
+
+  Specifying explicit key/certificeate to install is mutually exclussive to also setting
+  the regenerate method.  If both options are specified, the explicit key/certificate will
+  be installed and regeneration of a self-signed certificate will be skipped.
+
 Meta:
   color: "yellow"
   icon: "cloud"
   title: "RackN Content"
+OptionalParams:
+  - "esxi/ssl-key"
+  - "esxi/ssl-certificate"
+  - "esxi/regenerate-certificates"
 Tasks:
-  - esxi-install-certificate
+  - "esxi-install-certificate"

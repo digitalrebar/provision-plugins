@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+# Verify that an ESXi API service is up and running before continuing
+
+# Generally this template will be included inside other tasks/templates
+# after a "services.sh restart" call
+
+{{ if eq (.Param "rs-debug-enable") true -}}
+set -x
+__ESC_DBG="yes"
+{{ end -}}
+__ESC_VERIFY_CMD="esxcli system uuid get"
+__ESC_MAX=150
+__ESC_SLEEP=2
+__ESC_COUNT=1
+__ESC_PATTERN='^\{?[A-F0-9a-f]{8}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{4}-[A-F0-9a-f]{12}\}?$'
+
+echo ">>> ESXi service check started"
+echo ">>> Sleep $__ESC_SLEEP seconds between checks, $__ESC_MAX checks total"
+echo ">>> Health check command:  '$__ESC_VERIFY_CMD'"
+
+printf "+++ Check Counter: "
+
+while [[ $__ESC_COUNT -le $__ESC_MAX ]]
+do
+  __ESC_CODE=""
+  __ESC_INFO=""
+  printf "$__ESC_COUNT "
+  __ESC_INFO=$(eval $__ESC_VERIFY_CMD || true)
+
+  if echo "$__ESC_INFO" | egrep -q "$__ESC_PATTERN"
+  then
+    printf "\n>>> SUCCESS!  API service appears to be up...\n"
+    echo ">>> Returned info from health check:"
+    echo "$__ESC_INFO" | sed 's/^/  |  /g'
+    break
+  else
+    [[ -n "$__ESC_DBG" ]] && printf "\nDBG: cmd output = '$__ESC_INFO'\n" || true
+  fi
+
+  sleep $__ESC_SLEEP
+  __ESC_COUNT=$(expr $__ESC_COUNT + 1)
+done

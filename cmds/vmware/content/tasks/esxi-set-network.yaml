@@ -119,12 +119,14 @@ Templates:
       esxcfg-route ${GW}
       esxcli system syslog reload
       /bin/services.sh restart
+      {{ template "esxi-service-verify.sh.tmpl" . }}
 
       {{ else if eq (.Param "esxi/network-firstboot-type") "dhcp" -}}
 
       esxcli network ip interface ipv4 set --interface-name=${VMK} --type=dhcp
       esxcli system syslog reload
       /bin/services.sh restart
+      {{ template "esxi-service-verify.sh.tmpl" . }}
       {{ else -}}
       echo "WARNING: 'esxi/network-firstboot-type' unsupported ... ('{{ .Param "esxi/network-firstboot-type" }}')."
       {{ end -}}
