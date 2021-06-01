@@ -1,0 +1,46 @@
+---
+Description: "Gets the SHA-1 thumbprint of a single ESXi host and stores it as Param on Machine."
+Name: "esxi-host-thumbprint"
+Documentation: |
+  Gets the SHA-1 thumbprint from an ESXi host via the ``openssl`` command.
+  This task is designed to run on a single ESXi host, and will record the
+  Thumbprint to the Param ``esxi/thumbprint-sha1``.
+
+Meta:
+  icon: "terminal"
+  color: "purple"
+  title: "Digital Rebar Community Content"
+  feature-flags: "sane-exit-codes"
+OptionalParams: []
+Templates:
+  - Name: "esxi-params.py"
+    Path: "/tmp/esxi-params.py"
+    ID: "esxi-params.py.tmpl"
+  - Name: "govc-host-thumbprint.sh"
+    Contents: |
+      #!/usr/bin/env sh
+      # Get SHA-1 thumbprint of ESXi host, from within ESXi (requires esxi-params.py.tmpl)
+      # RackN Copyright 2021
+
+      set -e
+      xiterr() { [[ "$1" =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
+      PATH=$PATH:/usr/bin
+
+      [[ ! -r "/tmp/esxi-params.py" ]] && xiterr "Unable to locate required python file '/tmp/esxi-params.py'"
+
+      echo ""
+
+      PARAM="esxi/thumbprint-sha1"
+      THUMB=$(openssl x509 -in /etc/vmware/ssl/rui.crt -fingerprint -sha1 -noout | cut -d "=" -f2)
+      CURRENT='{{ .Param "esxi/thumbprint-sha1" }}'
+      if [[ "$CURRENT" == "$THUMB" ]] ; then
+        echo ">>> Thumbprint already set and is correct on host ('$THUMB')"
+      else
+        echo ">>> Removing existing thumbprint if it exists"
+        python3 /tmp/esxi-params.py delete "$PARAM" || true
+        echo ">>> Adding thumbprint ('$THUMB') to Param '$PARAM'"
+        python3 /tmp/esxi-params.py add "$PARAM" "$THUMB"
+      fi
+
+      echo ""
