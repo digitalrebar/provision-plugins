@@ -1,0 +1,53 @@
+---
+Name: "bios-difference"
+Description: "Store the difference between wanted and current bios configuration"
+Documentation: |
+  This task determines the difference between the current bios settings and
+  the ``bios-target-configuration`` parameter on the machine.  The ``bios-driver``
+  parameter must be set to one appropriate to the system.
+
+  The results are stored in tthe ``bios-configuration-difference`` parameter.
+
+  This task respects the ``bios-skip-config`` flag.  If true, nothing is done.
+
+RequiredParams:
+  - bios-target-configuration
+  - bios-driver
+Prerequisites:
+  - bios-tools-install
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Templates:
+  - Name: "difference"
+    Contents: |
+      #!/usr/bin/env bash
+      {{ template "setup.tmpl" . }}
+      if [[ {{.Param "bios-skip-config"}} == true ]] ; then
+        echo "bios-skip-config set to true.  Skipping configuration..."
+        exit 0
+      fi
+      if [[ {{.Param "bios-driver"}} = "lenovo" ]]; then
+          {{ if .ParamExists "lenovo-onecli-install-target" }}
+          export PATH="$PATH:{{.Param "lenovo-onecli-install-target"}}"
+          {{ else }}
+          echo "Please install the lenovo-support content package"
+          exit 1
+          {{ end }}
+      fi
+      target="$(
+      cat <<"EOF"
+      {{ if .Param "bios-target-configuration-compose" }}{{.ComposeParam "bios-target-configuration" | toJson}}{{else}}{{.ParamAsJSON "bios-target-configuration"}}{{end}}
+      EOF
+      )"
+      toTry="$(drp-bioscfg -driver {{.Param "bios-driver"}} -operation test <<< "$target")"
+      if grep -q true < <( jq '. == {}' <<< "${toTry}"); then
+          drpcli machines remove {{.Machine.UUID}} param bios-configuration-difference || :
+          echo "Configuration difference:"
+          drpcli machines add {{.Machine.UUID}} param bios-configuration-difference to "{}"
+          exit 0
+      fi
+      drpcli machines remove {{.Machine.UUID}} param bios-configuration-difference || :
+      echo "Configuration difference:"
+      drpcli machines set {{.Machine.UUID}} param bios-configuration-difference to "$toTry"

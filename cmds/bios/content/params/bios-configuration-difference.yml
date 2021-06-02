@@ -1,0 +1,13 @@
+---
+Name: bios-configuration-difference
+Description: The difference between the desired BIOS configuration and the current configuration
+Documentation: |
+  The output from ``the bios-difference`` task is stored here.
+Meta:
+  icon: "setting"
+  color: "blue"
+  title: "RackN Content"
+Schema:
+  default: {}
+  type: object
+  additionalProperties: true
