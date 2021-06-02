@@ -1,0 +1,25 @@
+---
+Name: esxi_700-15843807_rkn_dell-install
+Description: Install BootEnv for ESXi 700-15843807 for rkn_dell
+Documentation: |
+  Provides VMware BootEnv for ESXi 700-15843807 for rkn_dell
+  For more details, and to download ISO see:
+
+    - https://rackn-repo.s3-us-west-2.amazonaws.com/isos/vmware/esxi/7.0/RKN-DEL-ESXi-700_15843807-A00.iso
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+Params:
+  bootenv-customize:
+    esxi-install:
+      OS:
+        Codename: esxi
+        Family: vmware
+        IsoFile: RKN-DEL-ESXi-700_15843807-A00.iso
+        IsoSha256: 55d8cb7d232fc1cfeb91663394e1f9d88e31ccf008b3b788c7b24c3d4bcbd78d
+        Name: esxi_700-15843807_rkn_dell
+        Version: "700"
