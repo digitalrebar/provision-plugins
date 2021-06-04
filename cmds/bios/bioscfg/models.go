@@ -12,6 +12,7 @@ import (
 // Entry is what we expect a BIOS configuration setting to contain.
 type Entry struct {
 	Name         string
+	Type         string
 	ReadOnly     bool   `json:",omitempty"`
 	PendingValid bool   `json:",omitempty"`
 	Current      string `json:",omitempty"`
@@ -118,7 +119,7 @@ type Configurator interface {
 	Current() (map[string]Entry, error)
 	// Takes the current and things than need to change in maps to apply.
 	// The trimmed (second parameter) is the difference.
-	Apply(map[string]Entry, map[string]string) (bool, error)
+	Apply(map[string]Entry, map[string]string, bool) (bool, error)
 	// Fix wanted
 	FixWanted(map[string]string) map[string]string
 }

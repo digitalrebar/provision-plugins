@@ -128,7 +128,7 @@ func (d *dellRacadmConfig) FixWanted(wanted map[string]string) map[string]string
 	return fixedWanted
 }
 
-func (d *dellRacadmConfig) Apply(current map[string]Entry, trimmed map[string]string) (needReboot bool, err error) {
+func (d *dellRacadmConfig) Apply(_ map[string]Entry, trimmed map[string]string, dryRun bool) (needReboot bool, err error) {
 	d.XMLName.Local = "SystemComponent"
 	tk := make([]string, 0, len(trimmed))
 	for k := range trimmed {
@@ -168,6 +168,9 @@ func (d *dellRacadmConfig) Apply(current map[string]Entry, trimmed map[string]st
 		return
 	}
 	tgt.Sync()
+	if dryRun {
+		return
+	}
 	queueRE := regexp.MustCompile(`racadm jobqueue view -i (JID_[[:digit:]]+)`)
 	cmd := exec.Command("/opt/dell/srvadmin/sbin/racadm", "set", "-f", "update.xml", "-t", "xml", "--preview")
 	buf, err := cmd.CombinedOutput()

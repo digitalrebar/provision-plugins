@@ -8,6 +8,7 @@ Documentation: |
   * ``dell`` which will use ``racadm`` to get and set BIOS settings via ``racadm get``.
   * ``hp`` which will use ``conrep`` to get and set BIOS settings.
   * ``lenovo`` which will use ``onecli`` to get and set BIOS via ``onecli config``.
+  * ``supermicro`` whicl will use ``sum`` to get and set BIOS settings.
   * ``none`` which does nothing.
 
   Support for other BIOS configuration tooling is welcome.
@@ -17,4 +18,5 @@ Schema:
     - dell
     - hp
     - lenovo
+    - supermicro
     - none

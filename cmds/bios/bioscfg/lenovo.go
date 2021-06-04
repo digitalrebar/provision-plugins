@@ -68,7 +68,7 @@ func (l *lenovoConfig) FixWanted(wanted map[string]string) map[string]string {
 	return wanted
 }
 
-func (l *lenovoConfig) Apply(current map[string]Entry, trimmed map[string]string) (needReboot bool, err error) {
+func (l *lenovoConfig) Apply(current map[string]Entry, trimmed map[string]string, dryRun bool) (needReboot bool, err error) {
 	var fi *os.File
 	fi, err = os.Create("apply.dat")
 	if err != nil {
@@ -79,6 +79,9 @@ func (l *lenovoConfig) Apply(current map[string]Entry, trimmed map[string]string
 		if _, err = fmt.Fprintf(fi, "%s=%s\n", k, v); err != nil {
 			return
 		}
+	}
+	if dryRun {
+		return
 	}
 	if err = runOneCli("config", "restore", "--file", "apply.dat"); err == nil {
 		needReboot = true
