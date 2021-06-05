@@ -20,7 +20,7 @@ Templates:
       {{ template "setup.tmpl" . }}
       if ! curl -fgL \
           -o /usr/local/bin/drp-bioscfg \
-          "{{.ProvisionerURL}}/files/plugin_providers/bios/drp-bioscfg.amd64.linux"; then
+          "{{.ProvisionerURL}}/files/plugin_providers/bios/drp-bioscfg.$arch.linux"; then
           echo "Failed to download drp-bioscfg"
           exit 1
       fi
