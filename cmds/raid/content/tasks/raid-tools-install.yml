@@ -37,7 +37,7 @@ Templates:
       # We need to get drp-raid
       if ! curl -fgL \
           -o /usr/local/bin/drp-raid \
-          "{{.ProvisionerURL}}/files/plugin_providers/raid/drp-raid.amd64.linux"; then
+          "{{.ProvisionerURL}}/files/plugin_providers/raid/drp-raid.$arch.linux"; then
           echo "Failed to download drp-raid"
           exit 1
       fi
