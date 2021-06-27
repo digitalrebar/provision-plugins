@@ -80,6 +80,7 @@ type callback struct {
 	Aggregate      bool
 	Decode         bool
 	ExcludeParams  []string
+	RawBody        bool
 }
 
 type auth struct {
@@ -533,6 +534,7 @@ func (p *runningConfig) postTrigger(l logger.Logger,
 		return
 	}
 
+	notString := true
 	if overrideData == nil {
 		for _, dk := range cb.ExcludeParams {
 			delete(machine.Params, dk)
@@ -547,15 +549,21 @@ func (p *runningConfig) postTrigger(l logger.Logger,
 				err = utils.ConvertError(400, rerr)
 				return
 			}
+			notString = false
 		}
 	}
 
-	buf2, jerr := json.Marshal(overrideData)
-	if jerr != nil {
-		err = utils.ConvertError(400, jerr)
-		return
+	if !cb.RawBody || notString {
+		buf2, jerr := json.Marshal(overrideData)
+		if jerr != nil {
+			err = utils.ConvertError(400, jerr)
+			return
+		}
+		rreq.payload = buf2
+	} else {
+		s, _ := overrideData.(string)
+		rreq.payload = []byte(s)
 	}
-	rreq.payload = buf2
 
 	localUrl, uerr := Render(l, p.auths, p.drpClient, cb.Url, machine, info)
 	if uerr != nil {
