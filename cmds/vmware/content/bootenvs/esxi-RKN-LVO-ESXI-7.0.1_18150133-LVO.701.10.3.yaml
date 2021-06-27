@@ -1,0 +1,55 @@
+---
+Name: esxi-RKN-LVO-ESXI-7.0.1_18150133-LVO.701.10.3-install
+Description: Install BootEnv for esxi-RKN-LVO-ESXI-7.0.1_18150133-LVO.701.10.3
+Documentation: |
+  Provides VMware BootEnv for esxi-RKN-LVO-ESXI-7.0.1_18150133-LVO.701.10.3
+  For more details, and to download ISO see:
+
+    - unknown (no download location metadata was provided at build time)
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: RKN-LVO-ESXI-7.0.1_18150133-LVO.701.10.3.iso
+  IsoSha256: d9094441c262e30060308d437aa0cb223eb5bbac8eaf6d081539a95bd016eff4
+  IsoUrl: ""
+  Name: esxi-RKN-LVO-ESXI-7.0.1_18150133-LVO.701.10.3
+  SupportedArchitectures: {}
+  Version: 0
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi-RKN-LVO-ESXI-7.0.1_18150133-LVO.701.10.3.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi-RKN-LVO-ESXI-7.0.1_18150133-LVO.701.10.3.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'

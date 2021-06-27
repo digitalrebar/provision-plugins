@@ -29,6 +29,8 @@ Schema:
         type: boolean
       NoBody:
         type: boolean
+      RawBody:
+        type: boolean
       JsonResponse:
         type: boolean
       StringResponse:

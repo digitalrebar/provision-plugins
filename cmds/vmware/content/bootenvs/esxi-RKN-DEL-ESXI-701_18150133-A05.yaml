@@ -1,0 +1,55 @@
+---
+Name: esxi-RKN-DEL-ESXI-701_18150133-A05-install
+Description: Install BootEnv for esxi-RKN-DEL-ESXI-701_18150133-A05
+Documentation: |
+  Provides VMware BootEnv for esxi-RKN-DEL-ESXI-701_18150133-A05
+  For more details, and to download ISO see:
+
+    - unknown (no download location metadata was provided at build time)
+
+  NOTE: The ISO filename and sha256sum must match this BootEnv exactly.
+
+Meta:
+  color: blue
+  icon: zip
+  title: RackN Content
+OS:
+  Codename: esxi
+  Family: vmware
+  IsoFile: RKN-DEL-ESXI-701_18150133-A05.iso
+  IsoSha256: b123806ff3d1a14714f33f1cbb1262a1d7f000de87ebcae5ce05b588cac54eea
+  IsoUrl: ""
+  Name: esxi-RKN-DEL-ESXI-701_18150133-A05
+  SupportedArchitectures: {}
+  Version: 0
+OnlyUnknown: false
+OptionalParams:
+  - provisioner-default-password-hash
+RequiredParams: []
+Kernel: ../../chain.c32
+BootParams: -c {{.Machine.Path}}/boot.cfg
+Initrds: []
+Loaders:
+  amd64-uefi: efi/boot/bootx64.efi
+Templates:
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux
+    Path: pxelinux.cfg/{{.Machine.HexAddress}}
+  - ID: esxi-chain-pxelinux.tmpl
+    Name: pxelinux-mac
+    Path: pxelinux.cfg/{{.Machine.MacAddr "pxelinux"}}
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe
+    Path: '{{.Machine.Address}}.ipxe'
+  - ID: esxi-ipxe.cfg.tmpl
+    Name: ipxe-mac
+    Path: '{{.Machine.MacAddr "ipxe"}}.ipxe'
+  - ID: esxi-install-py3.ks.tmpl
+    Name: compute.ks
+    Path: '{{.Machine.Path}}/compute.ks'
+  - ID: esxi-RKN-DEL-ESXI-701_18150133-A05.boot.cfg.tmpl
+    Name: boot.cfg
+    Path: '{{.Machine.Path}}/boot.cfg'
+  - ID: esxi-RKN-DEL-ESXI-701_18150133-A05.boot.cfg.tmpl
+    Name: boot-uefi.cfg
+    Path: '{{.Env.PathForArch "tftp" "" "amd64"}}/efi/boot/{{.Machine.MacAddr "pxelinux"}}/boot.cfg'
