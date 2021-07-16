@@ -1,0 +1,29 @@
+---
+Name: esxi/network-firstboot-vmnic
+Description: ESXi network device name for the first boot (installed) OS environment.
+Documentation: |
+  Use this param to specify the device to plumb the network configuration up
+  with post install in the installed OS after the Kickstart runs.  This Param does
+  not have a default value; existing code will assume the product default behavior of
+  using *vmnic0* if this Param is not set.
+
+  If the Param ``esxi/vmnic-device`` is set, that Param takes precendence over this
+  one.  This retains backwards compatability in the field for existing content.
+
+  Setting a value on this Param other than the default of ``vmnic0`` has the following
+  effects in ESXi:
+
+    * Link the new ``vmnic`` device in to the default ``vSwitch0`` Virtual Switch
+    * Remove the ``vmnic0`` device (unlink) from ``vSwitch0``
+    * restart the network IP stack in ESXi
+
+  For more complex network topology changes, please see the ``vmware-lib`` Content Pack.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+Secure: false
