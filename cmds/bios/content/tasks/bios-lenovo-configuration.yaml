@@ -64,5 +64,8 @@ Templates:
       rm -f file.{{$index}}
       {{ end }}
 
+      # De-Assert presence
+      $onecli rpp deassert || true
+
       echo "Update complete"
       exit 0
