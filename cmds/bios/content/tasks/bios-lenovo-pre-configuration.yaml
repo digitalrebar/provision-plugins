@@ -28,6 +28,9 @@ Templates:
       }
       ensure_onecli || exit 1
 
+      # Assert presence
+      $onecli rpp assert || true
+
       {{ range $index, $tmpl := .Param "bios-lenovo-pre-configuration" }}
       cat > file.{{$index}} <<EOF
       {{$tmpl}}
