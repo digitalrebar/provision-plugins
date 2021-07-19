@@ -172,23 +172,13 @@ Schema:
           What type of drives (spindles or SSD) shoud be used to build the volume.
           "disk" means use spindles, "ssd" means use SSD volumes.  The tooling will not
           attempt to build a volume using multiple disk types
-        enum:
-          - disk
-          - ssd
-          - disk,ssd
-          - ssd,disk
       Protocol:
         type: string
         default: "sas,sata"
         description: |
-          What protocol is used to communicate with the disks.
-        enum:
-          - sas
-          - sata
-          - nvme
-          - sas,sata
-          - sata,sas
-          - nvme,sas,sata
+          What protocol is used to communicate with the disks.  Can be any combination of
+          "pcie","nvme","sas","sata","scsi".  THe tooling will not attempt to build a RAID volume
+          that mixes disk communications protocols
       Controller:
         type: integer
         default: 0
