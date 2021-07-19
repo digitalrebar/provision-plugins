@@ -92,8 +92,7 @@ func main() {
 		if err = dec.Decode(&vars); err != nil {
 			log.Fatalf("Unable to parse JSON config on stdin: %v", err)
 		}
-
-		trimmed := map[string]string{}
+		var trimmed map[string]string
 		vars = cfg.FixWanted(vars)
 		ents, trimmed, err = Test(cfg, vars)
 		if err == nil && len(trimmed) != 0 {

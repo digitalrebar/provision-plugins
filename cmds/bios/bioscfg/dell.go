@@ -5,9 +5,9 @@ import (
 	"encoding/xml"
 	"io"
 	"log"
+	"math/big"
 	"os"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -47,14 +47,14 @@ type dellBiosOnlyConfigEnt struct {
 	DefaultState   int  `xml:"defaultState"`
 	PossibleStates int  `xml:"numPossibleStates"`
 	// Valid for HIIIntegerObj
-	MinVal       int `xml:"minValue"`
-	MaxVal       int `xml:"maxVal"`
-	CurrentValue int `xml:"currentValue"`
-	PendingValue int `xml:"pendingValue"`
-	DefaultValue int `xml:"defaultValue"`
+	MinVal       *big.Int `xml:"minValue"`
+	MaxVal       *big.Int `xml:"maxVal"`
+	CurrentValue *big.Int `xml:"currentValue"`
+	PendingValue *big.Int `xml:"pendingValue"`
+	DefaultValue *big.Int `xml:"defaultValue"`
 	// Valid for HIIStringObj
-	MinLength  int      `xml:"minLength"`
-	MaxLength  int      `xml:"maxLength"`
+	MinLength  *big.Int `xml:"minLength"`
+	MaxLength  *big.Int `xml:"maxLength"`
 	CurrentStr StrValid `xml:"Current"`
 	PendingStr StrValid `xml:"Pending"`
 	DefaultStr StrValid `xml:"Default"`
@@ -119,14 +119,14 @@ func (d *dellBiosOnlyConfig) Current() (res map[string]Entry, err error) {
 			working = Entry{
 				Name:    ent.Name,
 				Type:    "Number",
-				Current: strconv.Itoa(ent.CurrentValue),
+				Current: ent.CurrentValue.String(),
 			}
 			if ent.PendingValid {
 				working.PendingValid = ent.PendingValid
-				working.Pending = strconv.Itoa(ent.PendingValue)
+				working.Pending = ent.PendingValue.String()
 			}
 			if ent.DefaultValid {
-				working.Default = strconv.Itoa(ent.DefaultValue)
+				working.Default = ent.DefaultValue.String()
 			}
 			working.Checker.Int.Valid = true
 			working.Checker.Int.Max = ent.MaxVal
@@ -220,7 +220,7 @@ func (c *dellBiosOnlyConfig) Apply(current map[string]Entry, trimmed map[string]
 				return
 			}
 			cmd := exec.Command("/opt/dell/srvadmin/bin/omconfig", args...)
-			out := []byte{}
+			var out []byte
 			out, err = cmd.CombinedOutput()
 			os.Stderr.Write(out)
 			if err == nil {

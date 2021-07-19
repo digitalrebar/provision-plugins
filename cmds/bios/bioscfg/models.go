@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/big"
 	"regexp"
 	"sort"
-	"strconv"
 )
 
 // Entry is what we expect a BIOS configuration setting to contain.
@@ -20,15 +20,15 @@ type Entry struct {
 	Default      string `json:",omitempty"`
 	Checker      struct {
 		Int struct {
-			Valid bool `json:",omitempty"`
-			Min   int  `json:",omitempty"`
-			Max   int  `json:",omitempty"`
+			Valid bool     `json:",omitempty"`
+			Min   *big.Int `json:",omitempty"`
+			Max   *big.Int `json:",omitempty"`
 		} `json:",omitempty"`
 		String struct {
-			Valid  bool   `json:",omitempty"`
-			MinLen int    `json:",omitempty"`
-			MaxLen int    `json:",omitempty"`
-			Regex  string `json:",omitempty"`
+			Valid  bool     `json:",omitempty"`
+			MinLen *big.Int `json:",omitempty"`
+			MaxLen *big.Int `json:",omitempty"`
+			Regex  string   `json:",omitempty"`
 		} `json:",omitempty"`
 		Enum struct {
 			Valid  bool     `json:",omitempty"`
@@ -52,7 +52,8 @@ func (e *Entry) Valid(val string) error {
 	if e.Checker.String.Valid {
 		min, max := e.Checker.String.MinLen, e.Checker.String.MaxLen
 		regex := e.Checker.String.Regex
-		if len(val) < min || len(val) > max {
+		vlen := big.NewInt(int64(len(val)))
+		if vlen.Cmp(min) == -1 || vlen.Cmp(max) == 1 {
 			return fmt.Errorf("%s: %s is not a valid string, it must be between %d and %d in length", e.Name, val, min, max)
 		}
 		if regex != `` {
@@ -67,11 +68,11 @@ func (e *Entry) Valid(val string) error {
 		return nil
 	}
 	if e.Checker.Int.Valid {
-		v, err := strconv.ParseInt(val, 0, 64)
-		if err != nil {
+		v, err := (&big.Int{}).SetString(val, 0)
+		if err {
 			return fmt.Errorf("%s: %s is not a number", e.Name, val)
 		}
-		if int(v) < e.Checker.Int.Min || int(v) > e.Checker.Int.Max {
+		if v.Cmp(e.Checker.Int.Min) == -1 || v.Cmp(e.Checker.Int.Max) == 1 {
 			return fmt.Errorf("%s: %d must be between %d and %d", e.Name, v, e.Checker.Int.Min, e.Checker.Int.Max)
 		}
 		return nil
