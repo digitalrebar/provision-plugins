@@ -386,6 +386,11 @@ func (v *VolSpec) stripeSize() uint64 {
 	return sz
 }
 
+var (
+	diskProtos = []string{"pcie", "nvme", "sas", "sata", "scsi"}
+	diskTypes  = []string{"disk", "ssd"}
+)
+
 func (v *VolSpec) Fill() error {
 	if v == nil {
 		return fmt.Errorf("Cannot fill a nil VolSpec")
@@ -453,19 +458,35 @@ func (v *VolSpec) Fill() error {
 		}
 		return nil
 	}
-	switch v.Type {
-	case "disk", "ssd", "disk,ssd", "ssd,disk":
-	case "":
-		v.Type = "disk,ssd"
-	default:
-		return fmt.Errorf("'%s' is not a valid disk type", v.Type)
+	if v.Type == "" {
+		v.Type = strings.Join(diskTypes, ",")
 	}
-	switch v.Protocol {
-	case "sas", "sata", "nvme", "sas,sata", "sata,sas", "nvme,sas,sata":
-	case "":
-		v.Protocol = "nvme,sas,sata"
-	default:
-		return fmt.Errorf("'%s' is not a valid disk protocol", v.Protocol)
+	for _, dType := range strings.Split(v.Type, ",") {
+		found := false
+		for i := range diskTypes {
+			if diskTypes[i] == dType {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return fmt.Errorf("'%s' is not a valid disk type", v.Type)
+		}
+	}
+	if v.Protocol == "" {
+		v.Protocol = strings.Join(diskProtos, ",")
+	}
+	for _, proto := range strings.Split(v.Protocol, ",") {
+		found := false
+		for i := range diskProtos {
+			if diskProtos[i] == proto {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return fmt.Errorf("'%s' is not a valid disk protocol", v.Protocol)
+		}
 	}
 	return nil
 }

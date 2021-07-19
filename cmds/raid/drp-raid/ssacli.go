@@ -78,19 +78,22 @@ func (s *SsaCli) fillDisk(d *PhysicalDisk, lines []string) {
 		case "Size":
 			d.Size, _ = sizeParser(v)
 		case "Interface Type":
-			if strings.Contains(v, "Solid State") || strings.Contains(v, "NVMe") {
+			v = strings.ToLower(v)
+			if strings.Contains(v, "solid state") || strings.Contains(v, "nvme") {
 				d.MediaType = "ssd"
 			} else {
 				d.MediaType = "disk"
 			}
-			if strings.Contains(v, "SATA") {
+			if strings.Contains(v, "sata") {
 				d.Protocol = "sata"
-			} else if strings.Contains(v, "SAS") {
+			} else if strings.Contains(v, "sas") {
 				d.Protocol = "sas"
-			} else if strings.Contains(v, "NVMe") {
+			} else if strings.Contains(v, "nvme") {
 				d.Protocol = "nvme"
-			} else if strings.Contains(v, "SCSI") {
+			} else if strings.Contains(v, "scsi") {
 				d.Protocol = "scsi"
+			} else if strings.Contains(v, "pcie") {
+				d.Protocol = "pcie"
 			} else {
 				d.Protocol = "unknown"
 			}
