@@ -127,7 +127,7 @@ then
     fi
   fi
 
-  MAC=$(esxcli network nic list | grep "^vmnic0" | awk ' { print $8 }')
+  MAC=$(esxcli network nic list | grep "^$PNIC_REQ" | awk ' { print $8 }')
 
   echo ">>> Delete portgroup with vmk interface to recreate with correct MAC"
 	esxcfg-vmknic -d -p "Management Network"
