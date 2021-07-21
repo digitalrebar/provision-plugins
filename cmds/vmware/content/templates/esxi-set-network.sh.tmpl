@@ -45,18 +45,6 @@ else
 fi
 {{ end -}}
 
-{{ if .ParamExists "esxi/network-firstboot-mtu" -}}
-UPLINK=$(esxcfg-vswitch --list | grep "Management Network" | head -1 | awk ' { print $NF } ')
-VSWITCH=$(esxcfg-vswitch --list | grep -v "^ " | grep "${UPLINK}" | head -1 | awk ' { print $1 } ')
-SET_MTU_VSW="esxcfg-vswitch --mtu={{ .Param "esxi/network-firstboot-mtu" }} $VSWITCH"
-SET_MTU_VMK="esxcli network ip interface set --mtu={{ .Param "esxi/network-firstboot-mtu" }} --interface-name=$VMK"
-{{ end -}}
-
-[[ -n "$SET_VLAN_MGMT" ]] && eval ${SET_VLAN_MGMT}
-[[ -n "$SET_VLAN_VM"   ]] && eval ${SET_VLAN_VM}
-[[ -n "$SET_MTU_VSW"   ]] && eval ${SET_MTU_VSW}
-[[ -n "$SET_MTU_VMK"   ]] && eval ${SET_MTU_VMK}
-
 {{ if .ParamExists "esxi/network-firstboot-vmnic" -}}
 if [[ $(esxcfg-vswitch --check vSwitch0) == "1" ]]
 then
@@ -138,9 +126,34 @@ then
       esxcfg-vswitch --unlink=${PNIC_CUR} vSwitch0
     fi
   fi
+
+  MAC=$(esxcli network nic list | grep "^vmnic0" | awk ' { print $8 }')
+
+  echo ">>> Delete portgroup with vmk interface to recreate with correct MAC"
+	esxcfg-vmknic -d -p "Management Network"
+
+  echo ">>> Add portgroup VMK, with MAC address '$MAC' from '$PNIC_REQ'"
+  # Create with zero IP address info - networking completed later in script
+	esxcfg-vmknic -a -p "Management Network" -i 0.0.0.0 -n 255.255.255.0 -M $MAC
+
+  echo ">>> New vmknic information:"
+	esxcfg-vmknic -l
 fi
 
 {{- end }}
+
+{{ if .ParamExists "esxi/network-firstboot-mtu" -}}
+# uplink is vmnic device
+UPLINK=$(esxcfg-vswitch --list | grep "Management Network" | head -1 | awk ' { print $NF } ')
+VSWITCH=$(esxcfg-vswitch --list | grep -v "^ " | grep "${UPLINK}" | head -1 | awk ' { print $1 } ')
+SET_MTU_VSW="esxcfg-vswitch --mtu={{ .Param "esxi/network-firstboot-mtu" }} $VSWITCH"
+SET_MTU_VMK="esxcli network ip interface set --mtu={{ .Param "esxi/network-firstboot-mtu" }} --interface-name=$VMK"
+{{ end -}}
+
+[[ -n "$SET_VLAN_MGMT" ]] && eval ${SET_VLAN_MGMT}
+[[ -n "$SET_VLAN_VM"   ]] && eval ${SET_VLAN_VM}
+[[ -n "$SET_MTU_VSW"   ]] && eval ${SET_MTU_VSW}
+[[ -n "$SET_MTU_VMK"   ]] && eval ${SET_MTU_VMK}
 
 {{ if eq (.Param "esxi/network-firstboot-type") "manual" -}}
 

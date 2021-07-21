@@ -15,9 +15,21 @@ Documentation: |
 
     * Link the new ``vmnic`` device in to the default ``vSwitch0`` Virtual Switch
     * Remove the ``vmnic0`` device (unlink) from ``vSwitch0``
+    * destroy the ``vmk0`` device
+    * recreate the ``vmk0`` device, using the MAC address of this Params defined interface (eg ``vmnic1``)
+    * configure the IP addressing according to the ``esxi/network-firstboot-type`` (and other associated Params)
     * restart the network IP stack in ESXi
 
   For more complex network topology changes, please see the ``vmware-lib`` Content Pack.
+
+  It is possible to run the ``esxi-activate-network`` stage as a standalone stage to move the
+  ``Management Network`` between *vmnic* devices.  However, the behavior is undefined in
+  cases of multiple NICs bound to the vSwitch0.
+
+  When switching from something other than ``vmnic0`` back to ``vmnic0``, you must set
+  **both** the ``esxi/network-kickstart-vmnic`` (to the current *vmnic* device in use),
+  and the ``esxi/nework-firstboot-vmnic`` to ``vmnic0``.  In this case the Kickstart
+  defined param specifies the current value you are moving from.
 
 Meta:
   color: blue

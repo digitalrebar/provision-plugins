@@ -9,6 +9,11 @@ Documentation: |
 
   If the Param ``esxi/vmnic-device`` is set, that Param takes precendence over this
   one.  This retains backwards compatability in the field for existing content.
+
+  If the final production NIC needs to migrate to a different physical NIC on the
+  ESXi system, you will likely want to check the ``esxi/network-firstboot-vmnic``
+  setting Param and it's associated help documentation.
+
 Meta:
   color: blue
   icon: hashtag
