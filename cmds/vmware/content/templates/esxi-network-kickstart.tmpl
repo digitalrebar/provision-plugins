@@ -18,7 +18,11 @@
 #### TODO:  * notify DRP endpoint to set DHCP lease to reservation
 ####          if we use "convert" mode
 VLAN={{ if .ParamExists "esxi/network-kickstart-vlan" }}--vlanid={{ .Param "esxi/network-kickstart-vlan" }}{{ end }}
-NIC={{ .Param "esxi/vmnic-device" }}
+{{ if .ParamExists "esxi/network-kickstart-vmnic" -}}
+NIC='{{ .Param "esxi/network-kickstart-vmnic" }}'
+{{ else -}}
+NIC='{{ .Param "esxi/vmnic-device" }}'
+{{ end -}}
 {{ $networkconfig := "echo \"network --bootproto=${BOOTPROTO} --addvmportgroup=true --device=${NIC} --ip=${IPADDR} --netmask=${NETMASK} --gateway=${GATEWAY} --nameserver=${DNS} --hostname=${HOSTNAME} ${VLAN}\" >> /tmp/kickstart-customizations.cfg" -}}
 
 {{ if eq (.Param "esxi/network-kickstart-type") "convert" -}}
