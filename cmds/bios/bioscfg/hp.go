@@ -28,7 +28,7 @@ func (h *hpConfig) Current() (res map[string]Entry, err error) {
 	res = map[string]Entry{}
 	if h.source == nil {
 		cmd := exec.Command("conrep", "-s")
-		out := []byte{}
+		var out []byte
 		out, err = cmd.CombinedOutput()
 		os.Stderr.Write(out)
 		if err != nil {
@@ -86,7 +86,7 @@ func (h *hpConfig) Apply(current map[string]Entry, trimmed map[string]string, dr
 		return
 	}
 	cmd := exec.Command("conrep", "-l")
-	out := []byte{}
+	var out []byte
 	out, err = cmd.CombinedOutput()
 	os.Stderr.Write(out)
 	if err != nil {

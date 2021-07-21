@@ -4,9 +4,7 @@ import "io"
 
 type noneConfig struct{}
 
-func (n *noneConfig) Source(r io.Reader) {
-	return
-}
+func (n *noneConfig) Source(r io.Reader) {}
 
 func (n *noneConfig) Current() (res map[string]Entry, err error) {
 	res = map[string]Entry{}

@@ -3,14 +3,13 @@ package main
 import (
 	"bytes"
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"io"
 	"log"
+	"math/big"
 	"os"
 	"os/exec"
 	"sort"
-	"strconv"
 	"strings"
 
 	"golang.org/x/net/html/charset"
@@ -22,17 +21,17 @@ type superMicroBiosInfo struct {
 	Options       []string `xml:"AvailableOptions>Option"`
 	DefaultOption string
 	// Only meaningful when Setting.type == "Numeric"
-	MaxValue     int
-	MinValue     int
-	StepSize     int
-	DefaultValue int
+	MaxValue     *big.Int
+	MinValue     *big.Int
+	StepSize     *big.Int
+	DefaultValue *big.Int
 	// Only meaningful when Setting.type == "CheckBox"
 	DefaultStatus string
 	// Only meaningful when Setting.type == "Password"
 	HasPassword string
 	// Meaningful when Setting.type == "Password" or "String"
-	MinSize int
-	MaxSize int
+	MinSize *big.Int
+	MaxSize *big.Int
 	// Only meaningful when Setting.type == "String"
 	DefaultString        string
 	AllowingMultipleLine string
@@ -79,7 +78,7 @@ func (s *superMicroBiosSetting) decode(res map[string]Entry, names []string) {
 			ent.Checker.Int.Valid = true
 			ent.Checker.Int.Min = s.Information.MinValue
 			ent.Checker.Int.Max = s.Information.MaxValue
-			ent.Default = strconv.Itoa(s.Information.DefaultValue)
+			ent.Default = s.Information.DefaultValue.String()
 		}
 	case "CheckBox":
 		ent.Current = s.Checked
@@ -170,7 +169,7 @@ func (s *smBmcValNode) toAttr() []xml.Attr {
 		})
 	}
 	sort.Slice(res, func(i, j int) bool {
-		return res[i].Name.Local < res[i].Name.Local
+		return res[i].Name.Local < res[j].Name.Local
 	})
 	return res
 }
@@ -470,13 +469,13 @@ func (s *superMicroConfig) applyBios(current map[string]Entry, trimmed map[strin
 	var tgt *os.File
 	tgt, err = os.Create("updateBios.xml")
 	if err != nil {
-		err = errors.New(fmt.Sprintf("failed to create updateBios.xml: %v", err))
+		err = fmt.Errorf("failed to create updateBios.xml: %v", err)
 		return
 	}
 	defer tgt.Close()
 	enc := xml.NewEncoder(tgt)
 	if err = enc.Encode(cfg); err != nil {
-		err = errors.New(fmt.Sprintf("failed to encode updateBios.xml: %v", err))
+		err = fmt.Errorf("failed to encode updateBios.xml: %v", err)
 		return
 	}
 	tgt.Sync()
@@ -499,7 +498,6 @@ func (s *superMicroConfig) applyBmc(current map[string]Entry, trimmed map[string
 	//Setting groups that will need special handling:
 	// BmcCfg::OemCfg::AlertList, for adding/removing Alert configs
 	// BmcCfg::OemCfg::AD:: for adding/changing/removing ADGroup configs
-	// BmcCfg::OemCfg::VirtualMedia, for possibly mounting/unmounting virtual media
 	// BmcCfg::OemCfg::IPAccessControl, for adding/removing ControlRule configs
 	for k, v := range trimmed {
 		currSetting, ok := current[k]
@@ -546,13 +544,13 @@ func (s *superMicroConfig) applyBmc(current map[string]Entry, trimmed map[string
 	var tgt *os.File
 	tgt, err = os.Create("updateBmc.xml")
 	if err != nil {
-		err = errors.New(fmt.Sprintf("failed to create updateBmc.xml: %v", err))
+		err = fmt.Errorf("failed to create updateBmc.xml: %v", err)
 		return
 	}
 	defer tgt.Close()
 	enc := xml.NewEncoder(tgt)
 	if err = enc.Encode(cfg); err != nil {
-		err = errors.New(fmt.Sprintf("failed to encode updateBmc.xml: %v", err))
+		err = fmt.Errorf("failed to encode updateBmc.xml: %v", err)
 		return
 	}
 	tgt.Sync()

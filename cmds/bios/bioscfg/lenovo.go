@@ -12,7 +12,6 @@ import (
 
 type lenovoConfig struct {
 	source io.Reader
-	items  map[string]string
 }
 
 func runOneCli(args ...string) error {

@@ -158,13 +158,13 @@ func (d *dellRacadmConfig) Apply(_ map[string]Entry, trimmed map[string]string, 
 	var tgt *os.File
 	tgt, err = os.Create("update.xml")
 	if err != nil {
-		err = errors.New(fmt.Sprintf("failed to create update.xml: %v", err))
+		err = fmt.Errorf("failed to create update.xml: %v", err)
 		return
 	}
 	defer tgt.Close()
 	enc := xml.NewEncoder(tgt)
 	if err = enc.Encode(d); err != nil {
-		err = errors.New(fmt.Sprintf("failed to encode update.xml: %v", err))
+		err = fmt.Errorf("failed to encode update.xml: %v", err)
 		return
 	}
 	tgt.Sync()
@@ -175,7 +175,7 @@ func (d *dellRacadmConfig) Apply(_ map[string]Entry, trimmed map[string]string, 
 	cmd := exec.Command("/opt/dell/srvadmin/sbin/racadm", "set", "-f", "update.xml", "-t", "xml", "--preview")
 	buf, err := cmd.CombinedOutput()
 	if err != nil {
-		err = errors.New(fmt.Sprintf("Racadm set preview failed: %s %v", string(buf), err))
+		err = fmt.Errorf("Racadm set preview failed: %s %v", string(buf), err)
 		return
 	}
 	matches := queueRE.FindSubmatch(buf)
@@ -189,7 +189,7 @@ func (d *dellRacadmConfig) Apply(_ map[string]Entry, trimmed map[string]string, 
 		cmd = exec.Command("/opt/dell/srvadmin/sbin/racadm", "jobqueue", "view", "-i", jid)
 		buf, err = cmd.CombinedOutput()
 		if err != nil {
-			err = errors.New(fmt.Sprintf("Racadm failed to view the jobqueue: %s %v", string(buf), err))
+			err = fmt.Errorf("Racadm failed to view the jobqueue: %s %v", string(buf), err)
 			return
 		}
 		if !bytes.Contains(buf, []byte(`Status=Completed`)) {
@@ -202,13 +202,13 @@ func (d *dellRacadmConfig) Apply(_ map[string]Entry, trimmed map[string]string, 
 		return
 	}
 	if !bytes.Contains(buf, []byte(`SYS081: Successfully previewed Server Configuration Profile import operation.`)) {
-		err = errors.New(fmt.Sprintf("Requested system settings update will not succeed\n%s", string(buf)))
+		err = fmt.Errorf("Requested system settings update will not succeed\n%s", string(buf))
 		return
 	}
 	cmd = exec.Command("/opt/dell/srvadmin/sbin/racadm", "set", "-f", "update.xml", "-t", "xml", "-b", "NoReboot")
 	buf, err = cmd.CombinedOutput()
 	if err != nil {
-		err = errors.New(fmt.Sprintf("Racadm failed to update: %s %v", string(buf), err))
+		err = fmt.Errorf("Racadm failed to update: %s %v", string(buf), err)
 		return
 	}
 	matches = queueRE.FindSubmatch(buf)
