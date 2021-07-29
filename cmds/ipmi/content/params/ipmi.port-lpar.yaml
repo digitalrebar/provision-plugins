@@ -1,0 +1,17 @@
+---
+Name: "ipmi/port-lpar"
+Description: "Network Port for the LPAR HMC protocol interface."
+Documentation: |
+  This parameter is used by the IPMI Plugin to access the BMC.
+  The default port value is ``12443``.
+
+Schema:
+  type: "integer"
+  minimum: 0
+  maximum: 65535
+  default: 12443
+
+Meta:
+  icon: "bullseye"
+  color: "blue"
+  title: "RackN Content"

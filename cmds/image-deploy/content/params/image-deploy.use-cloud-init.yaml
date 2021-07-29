@@ -8,7 +8,7 @@ Documentation: |
   secondary files.
 
   The type of cloud-init access is controlled by the parameter,
-  ``image-deploay/cloud-init-service``.
+  ``image-deploy/cloud-init-service``.
 Schema:
   type: boolean
   default: true

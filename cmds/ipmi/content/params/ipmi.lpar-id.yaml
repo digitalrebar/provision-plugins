@@ -1,0 +1,12 @@
+---
+Name: "ipmi/lpar-id"
+Description: "The logical partition uuid of the LPAR system"
+Documentation: |
+  This parameter tells the ipmi plugin which LPAR to work on.
+Schema:
+  type: "string"
+Meta:
+  icon: "address card outline"
+  color: "blue"
+  title: "RackN Content"
+  render: "link"
