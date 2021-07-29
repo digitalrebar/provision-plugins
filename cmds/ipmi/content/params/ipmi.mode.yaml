@@ -10,8 +10,11 @@ Documentation: |
   * ipmitool
   * racadm
   * redfish
+  * lpar
 
   * racadmn is a typo that is propagated currently
+
+  * lpar simulates ipmi control for IBM LPAR system.  It requires additional parameters.
 
   .. note:: For a given *mode* of operation, you must insure that protocol is enabled and
             supported on the platform you are attempting to execute *Actions* on.
@@ -23,6 +26,7 @@ Schema:
     - "redfish"
     - "racadm"
     - "racadmn"
+    - "lpar"
   default: "ipmitool"
 Meta:
   icon: "address card outline"
