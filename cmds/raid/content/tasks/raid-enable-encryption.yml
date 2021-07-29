@@ -43,7 +43,11 @@ Templates:
       mstrkey="{{.Param "raid-encryption-key"}}"
       password="{{.Param "raid-encryption-password"}}"
       if [[ "$mstrkey" == "unset" ]] ; then
-          mstrkey=$(dmidecode -s system-serial-number)
+          if which dmidecode >/dev/null 2>/dev/null ; then
+              mstrkey=$(dmidecode -s system-serial-number)
+          else
+              echo "Missing dmidecode using unset value"
+          fi
       fi
       if [[ "$password" == "unset" ]] ; then
           password=$( date +%s | sha256sum | base64 | head -c 12 | sed "s/$/-$(( $RANDOM % 10 ))aZ/g" )
