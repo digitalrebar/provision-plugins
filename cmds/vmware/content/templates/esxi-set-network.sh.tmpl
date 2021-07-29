@@ -152,7 +152,7 @@ then
   {{ end -}}
   echo ">>> Add portgroup VMK, with MAC address '$MAC' from '$PNIC_REQ'"
   # Create with zero IP address info - networking completed later in script
-	esxcfg-vmknic -a -p "Management Network" -i 0.0.0.0 -n 255.255.255.0 -M $MAC
+	# esxcfg-vmknic -a -p "Management Network" -i 0.0.0.0 -n 255.255.255.0 -M $MAC
 	esxcfg-vmknic -a -p "Management Network" -i $OPTS -M $MAC
 
   [[ -n "$GW" ]] && eval ${GW} || true
