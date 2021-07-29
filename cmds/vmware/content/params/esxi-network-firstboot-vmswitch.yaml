@@ -1,0 +1,17 @@
+---
+Name: esxi/network-firstboot-vswitch
+Description: ESXi network Virtual Switch name for the firstboot configuration.
+Documentation: |
+  Use this param to specify the Virtual Switch to plumb the network configuration up
+  with in post install.  By default we assume "vSwitch0", however, this may not
+  be correct.  This param allows the operator to override the Virtual Switch name
+  for the installed OS.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+ReadOnly: true
+Schema:
+  type: string
+  default: vSwitch0
+Secure: false
