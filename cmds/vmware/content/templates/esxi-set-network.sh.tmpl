@@ -1,15 +1,22 @@
 #!/usr/bin/env sh
 # set firstboot network configuration settings
 
+# because DRPY logging is missing a newline
+echo ""
+
+function xiterr() { [[ $1 =~ ^[0-9]+$ ]] && { XIT=$1; shift; } || XIT=1; printf "FATAL: $*\n"; exit $XIT; }
+
 {{ if eq (.Param "rs-debug-enable") true }}set -x{{ end }}
 
 VMK="{{ .Param "esxi/network-firstboot-vmk" }}"
+VSWITCH={{ if .Param "esxi/network-firstboot-vswitch" }}{{ .Param "esxi/network-firstboot-vswitch" }}{{ else }}$(esxcfg-vswitch --list | grep -v "^ " | grep "${UPLINK}" | head -1 | awk ' { print $1 } '){{ end }}
 
 ###
 #  Handle setting VLAN tagged portgroups if requested
 ###
 {{ if .ParamExists "esxi/network-firstboot-vlan" -}}
 VLAN_MGMT={{ .Param "esxi/network-firstboot-vlan" }}
+SET_VLAN="--vlan=$VLAN_MGMT"
 SET_VLAN_MGMT="esxcli network vswitch standard portgroup set --portgroup-name=\"Management Network\" --vlan-id=$VLAN_MGMT"
 {{ end -}}
 {{ if .ParamExists "esxi/network-firstboot-vlan-vm-network" -}}
@@ -26,7 +33,7 @@ then
     else
       echo "FATAL: Requested 'VM Network' portgroup be set to value of 'Management"
       echo "       Network' VLAN - but Management VLAN did not validate to 0-4096"
-      echo "       ** We should never have gotten here ... :( **"
+      echo "       ** We should never have gotten here ... **"
       exit 1
     fi
   fi
@@ -42,29 +49,145 @@ else
 fi
 {{ end -}}
 
+{{ if .ParamExists "esxi/network-firstboot-vmnic" -}}
+if [[ $(esxcfg-vswitch --check "$VSWITCH") == "1" ]]
+then
+  echo ">>> '$VSWITCH' exists, continuing"
+else
+  echo "FATAL: '$VSWITCH' does not appear to exist, how did this happen?"
+  exit 1
+fi
+
+{{ if .ParamExists "esxi/network-kickstart-vmnic" -}}
+PNIC_INST='{{ .Param "esxi/network-kickstart-vmnic" }}'
+{{ else -}}
+PNIC_INST='{{ .Param "esxi/vmnic-device" }}'
+{{ end -}}
+PNIC_REQ='{{ .Param "esxi/network-firstboot-vmnic" }}'
+PNIC_CUR="$(esxcfg-vswitch --list "$VSWITCH" | grep "Management Network" | awk ' { print $NF } ' )"
+PNICS=$(esxcfg-nics --list | grep -v "^Name" | awk ' { print $1 } ' | sed 's/$/,/g')
+
+if echo $PNICS | grep -q "${PNIC_REQ},"
+then
+  echo ">>> '$PNIC_REQ' exists on system, attempting link operations"
+else
+  xiterr 1 "Requested NIC '$PNIC_REQ' not available on system. Found: $PNICS"
+fi
+
+pnic_in_vswitch() {
+  _pnic="$1"
+
+  if esxcfg-vswitch --list "$VSWITCH" | grep "Management Network" | awk ' { print $NF } ' | sed 's/$/,/' | grep -q "${_pnic},"
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
+skip_pnic_op() {
+  echo "$*"
+  SKIP_PNIC_OP=yes
+}
+
+[[ "$PNIC_INST" == "$PNIC_REQ" ]] && skip_pnic_op "Requested ($PNIC_REQ) and installed physical NIC ($PNIC_INST) same." || true
+echo "$PNIC_CUR" | grep -q "$PNIC_REQ" && skip_pnic_op "Requested physical NIC ($PNIC_REQ) already linked in '$VSWITCH'." || true
+
+if [[ "$SKIP_PNIC_OP" != "yes" ]]
+then
+  echo ">>> Linking '$PNIC_REQ' into '$VSWITCH'"
+
+  if pnic_in_vswitch "${PNIC_REQ}"
+  then
+    echo "Requested physical NIC ('$PNIC_REQ') exists in Virtual Switch '$VSWITCH' already."
+  else
+    echo "+++ Linking in '$PNIC_REQ' to '$VSWITCH'"
+    esxcfg-vswitch --link=$PNIC_REQ $SET_VLAN "$VSWITCH"
+  fi
+
+  if pnic_in_vswitch "${PNIC_REQ}"
+  then
+    echo "+++ Physical NIC '$PNIC_REQ' linked in to '$VSWITCH' successfully"
+  else
+    xiterr 1 "Failed to link '$PNIC_REQ' in to '$VSWITCH'"
+  fi
+
+  echo ">>> Starting unlink operation of '$PNIC_INST'"
+
+  if pnic_in_vswitch "${PNIC_INST}"
+  then
+    echo ">>> Unlinking kickstart '${PNIC_INST}' from '$VSWITCH'"
+    esxcfg-vswitch --unlink=${PNIC_INST} "$VSWITCH"
+  else
+    echo "--- '${PNIC_INST}' not found in '$VSWITCH', no unlink operation performed"
+  fi
+
+  if [[ "$PNIC_CUR" != "$PNIC_INST" ]]
+  then
+    if pnic_in_vswitch "${PNIC_CUR}"
+    then
+      echo ">>> Unlinking current '${PNIC_CUR}' from '$VSWITCH'"
+      esxcfg-vswitch --unlink=${PNIC_CUR} "$VSWITCH"
+    fi
+  fi
+
+  echo ">>> Current vmknic/nic list information"
+	esxcfg-vmknic -l
+  esxcli network nic list
+
+  MAC=$(esxcli network nic list | grep "^$PNIC_REQ" | awk ' { print $8 }')
+
+  echo ">>> Delete portgroup with vmk interface to recreate with correct MAC"
+  esxcfg-vmknic -d -p "Management Network"
+
+  echo ">>> vmknic information after delete operation: "
+	esxcfg-vmknic -l
+
+  {{ if eq ( .Param "esxi/network-firstboot-type" ) "dhcp" -}}
+  OPTS="DHCP"
+  GW=""
+  {{ else -}}
+  OPTS="{{ .Param "esxi/network-firstboot-ipaddr" }} -n {{ .Param "esxi/network-firstboot-netmask" }}"
+  GW="esxcfg-route {{ .Param "esxi/network-firstboot-gateway" }}"
+  {{ end -}}
+  echo ">>> Add portgroup VMK, with MAC address '$MAC' from '$PNIC_REQ'"
+  # Create with zero IP address info - networking completed later in script
+	# esxcfg-vmknic -a -p "Management Network" -i 0.0.0.0 -n 255.255.255.0 -M $MAC
+	esxcfg-vmknic -a -p "Management Network" -i $OPTS -M $MAC
+
+  [[ -n "$GW" ]] && eval ${GW} || true
+
+  echo ">>> Final vmknic information:"
+	esxcfg-vmknic -l
+fi
+
+{{- end }}
+
 {{ if .ParamExists "esxi/network-firstboot-mtu" -}}
+# uplink is vmnic device
 UPLINK=$(esxcfg-vswitch --list | grep "Management Network" | head -1 | awk ' { print $NF } ')
-VSWITCH=$(esxcfg-vswitch --list | grep -v "^ " | grep "${UPLINK}" | head -1 | awk ' { print $1 } ')
 SET_MTU_VSW="esxcfg-vswitch --mtu={{ .Param "esxi/network-firstboot-mtu" }} $VSWITCH"
 SET_MTU_VMK="esxcli network ip interface set --mtu={{ .Param "esxi/network-firstboot-mtu" }} --interface-name=$VMK"
 {{ end -}}
 
-[[ -n "$SET_VLAN_MGMT" ]] && eval ${SET_VLAN_MGMT}
-[[ -n "$SET_VLAN_VM"   ]] && eval ${SET_VLAN_VM}
-[[ -n "$SET_MTU_VSW"   ]] && eval ${SET_MTU_VSW}
-[[ -n "$SET_MTU_VMK"   ]] && eval ${SET_MTU_VMK}
+[[ -n "$SET_VLAN_MGMT" ]] && eval ${SET_VLAN_MGMT} || true
+[[ -n "$SET_VLAN_VM"   ]] && eval ${SET_VLAN_VM} || true
+[[ -n "$SET_MTU_VSW"   ]] && eval ${SET_MTU_VSW} || true
+[[ -n "$SET_MTU_VMK"   ]] && eval ${SET_MTU_VMK} || true
 
-{{ if eq (.Param "esxi/network-firstboot-type") "manual" }}
+{{ if eq (.Param "esxi/network-firstboot-type") "manual" -}}
 
 IP="{{ .Param "esxi/network-firstboot-ipaddr" }}"
 NM="{{ .Param "esxi/network-firstboot-netmask" }}"
 GW="{{ .Param "esxi/network-firstboot-gateway" }}"
+
 for CHECK in "ipaddr:$IP" "netmask:$NM" "gateway:$GW" "vmkernel_interface:$VMK"
 do
   T=$(echo $CHECK | cut -d":" -f1)
-  V=$(echo $CHECK | cut -d":" -f1)
+  V=$(echo $CHECK | cut -d":" -f2)
   [[ -z "$V" ]] && (echo "FATAL: Required value ('$T') missing for 'manual' network config."; exit 1)
 done
+
 esxcli network ip interface ipv4 set --type=static --interface-name="${VMK}" --ipv4="${IP}" --netmask="${NM}" --gateway="${GW}"
 esxcfg-route ${GW}
 esxcli system syslog reload
