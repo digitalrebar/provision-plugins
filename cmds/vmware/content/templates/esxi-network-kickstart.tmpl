@@ -23,7 +23,23 @@ NIC='{{ .Param "esxi/network-kickstart-vmnic" }}'
 {{ else -}}
 NIC='{{ .Param "esxi/vmnic-device" }}'
 {{ end -}}
-{{ $networkconfig := "echo \"network --bootproto=${BOOTPROTO} --addvmportgroup=true --device=${NIC} --ip=${IPADDR} --netmask=${NETMASK} --gateway=${GATEWAY} --nameserver=${DNS} --hostname=${HOSTNAME} ${VLAN}\" >> /tmp/kickstart-customizations.cfg" -}}
+
+# If this esxi/add-vm-port-group is set to something use it to turn on adding port groups or not.
+# Otherwise do the default of yes for static/convert and nothing for DHCP
+{{ if .ParamExists "esxi/add-vm-port-group" -}}
+  {{ if .Param "esxi/add-vm-port-group" -}}
+DEFPORTGROUP="--addvmportgroup=true"
+DHCPPORTGROUP="--addvmportgroup=true"
+  {{ else -}}
+DEFPORTGROUP="--addvmportgroup=false"
+DHCPPORTGROUP="--addvmportgroup=false"
+  {{ end -}}
+{{ else -}}
+DEFPORTGROUP="--addvmportgroup=true"
+DHCPPORTGROUP=""
+{{ end -}}
+
+{{ $networkconfig := "echo \"network --bootproto=${BOOTPROTO} ${DEFPORTGROUP} --device=${NIC} --ip=${IPADDR} --netmask=${NETMASK} --gateway=${GATEWAY} --nameserver=${DNS} --hostname=${HOSTNAME} ${VLAN}\" >> /tmp/kickstart-customizations.cfg" -}}
 
 {{ if eq (.Param "esxi/network-kickstart-type") "convert" -}}
 # Setting network type values for type:  'convert'
@@ -53,7 +69,7 @@ BOOTPROTO="static"
 {{- else if eq (.Param "esxi/network-kickstart-type") "dhcp" -}}
 # Setting network type values for type:  'dhcp'
 BOOTPROTO="dhcp"
-echo "network --bootproto=${BOOTPROTO} --device=${NIC}" >> /tmp/kickstart-customizations.cfg
+echo "network --bootproto=${BOOTPROTO} --device=${NIC} ${DHCPPORTGROUP} ${VLAN}" >> /tmp/kickstart-customizations.cfg
 
 {{- else -}}
 

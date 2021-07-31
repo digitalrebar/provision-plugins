@@ -1,0 +1,20 @@
+---
+Name: esxi/add-vm-port-group
+Description: Should a port group be added at installation time
+Documentation: |
+  If set to ``true``, the --addvmportgroup=true will be added to the
+  kickstart network line.
+
+  If set to ``false``, the --addvmportgroup=false will be added to the
+  kickstart network line.
+
+  If unset, the previous methods will be used.  If DHCP Mode, then nothing will
+  be added.  If Manual or Static Mode, --addvmportgroup=true will be added.
+
+  By default, this option is unset.
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+Schema:
+  type: boolean
