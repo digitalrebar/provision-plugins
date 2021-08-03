@@ -126,7 +126,11 @@ check_media(){
   else
     echo ">>> Unable to find BootEnv install media at '$INST'."
     echo ">>> Did you upload the BootEnv ISO or set the mirror correctly?"
-    exit 1
+    if [[ "$BOOT_INSTALL" != "esxi-install" ]] ; then
+      exit 1
+    else
+      echo "WARNING: May not have been exploded yet."
+    fi
   fi
 }
 
@@ -137,7 +141,12 @@ then
   [[ $RS_DEBUG_ENABLE ]] && HIDE_OUTPUT=""
 
   # test that our ISO exists and has been exploded - or the mirror content is available
-  ISO=$(drpcli bootenvs show $BOOT_INSTALL | jq -r '.OS.IsoFile')
+  if [[ "$BOOT_INSTALL" != "esxi-install" ]] ; then
+    ISO=$(drpcli bootenvs show $BOOT_INSTALL | jq -r '.OS.IsoFile')
+  else
+    ISO=$(drpcli machines get e1b9d11e-62c6-4b5c-ba8d-e9c24fe9d138 param bootenv-customize --aggregate | jq '.["esxi-install"].OS.IsoFile' -r)
+    BOOTENV=$(drpcli machines get e1b9d11e-62c6-4b5c-ba8d-e9c24fe9d138 param bootenv-customize --aggregate | jq '.["esxi-install"].OS.Name' -r)
+  fi
   if [[ -n "$ISO" && $(drpcli isos exists $ISO 2> /dev/null ) ]]
   then
     echo "ISO media for BootEnv '$BOOTENV' exists." ${HIDE_OUTPUT}
@@ -145,6 +154,7 @@ then
     echo ">>> NOTICE:  No ISO media for BootEnv '$BOOTENV' found via DRP Endpoint."
   fi
 
+  # Ignore esxi-install bootenvs
   check_media
 
   eval drpcli machines set {{.Machine.UUID}} param "esxi/selected-vendor" to ${VENDOR}${HIDE_OUTPUT}
@@ -152,7 +162,7 @@ then
   eval drpcli machines tasks add {{.Machine.UUID}} at 0 bootenv:${BOOT_INSTALL}${HIDE_OUTPUT}
   echo "Successfully set machine Bootenv to '${BOOT_INSTALL}'"
 else
-  xiterr 1 "selected bootenv '$BOOTENV' does not exist"
+  xiterr 1 "selected bootenv '$BOOT_INSTALL' does not exist"
 fi
 
 exit 0
