@@ -144,8 +144,8 @@ then
   if [[ "$BOOT_INSTALL" != "esxi-install" ]] ; then
     ISO=$(drpcli bootenvs show $BOOT_INSTALL | jq -r '.OS.IsoFile')
   else
-    ISO=$(drpcli machines get e1b9d11e-62c6-4b5c-ba8d-e9c24fe9d138 param bootenv-customize --aggregate | jq '.["esxi-install"].OS.IsoFile' -r)
-    BOOTENV=$(drpcli machines get e1b9d11e-62c6-4b5c-ba8d-e9c24fe9d138 param bootenv-customize --aggregate | jq '.["esxi-install"].OS.Name' -r)
+    ISO=$(drpcli machines get {{.Machine.UUID}} param bootenv-customize --aggregate | jq '.["esxi-install"].OS.IsoFile' -r)
+    BOOTENV=$(drpcli machines get {{.Machine.UUID}} param bootenv-customize --aggregate | jq '.["esxi-install"].OS.Name' -r)
   fi
   if [[ -n "$ISO" && $(drpcli isos exists $ISO 2> /dev/null ) ]]
   then
