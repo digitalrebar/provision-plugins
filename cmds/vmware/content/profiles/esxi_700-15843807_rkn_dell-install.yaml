@@ -17,9 +17,9 @@ Params:
   bootenv-customize:
     esxi-install:
       OS:
-        Codename: esxi
-        Family: vmware
-        IsoFile: RKN-DEL-ESXi-700_15843807-A00.iso
-        IsoSha256: 55d8cb7d232fc1cfeb91663394e1f9d88e31ccf008b3b788c7b24c3d4bcbd78d
         Name: esxi_700-15843807_rkn_dell
         Version: "700"
+        SupportedArchitectures:
+          amd64:
+            IsoFile: RKN-DEL-ESXi-700_15843807-A00.iso
+            Sha256: 55d8cb7d232fc1cfeb91663394e1f9d88e31ccf008b3b788c7b24c3d4bcbd78d
