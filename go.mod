@@ -29,7 +29,7 @@ require (
 	github.com/go-openapi/validate v0.18.0 // indirect
 	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/google/certificate-transparency-go v0.0.0-20181206160638-61650fd8d5be // indirect
-	github.com/gorilla/websocket v1.4.0
+	github.com/gorilla/websocket v1.4.2
 	github.com/honeycombio/libhoney-go v0.0.0-20181205211707-18ceb643e3f3
 	github.com/kevinburke/go-bindata v3.13.0+incompatible
 	github.com/kr/pretty v0.2.1 // indirect
