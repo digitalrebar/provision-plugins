@@ -1,0 +1,14 @@
+---
+Name: "esxi-disable-slpd-76372"
+Description: "Disable SLPD per VMW KB 76372"
+Documentation: |
+  Runs the steps outlined in VMW KB 76372 to disable SLPD.
+Meta:
+  icon: "cloud"
+  color: "yellow"
+  title: "Digital Rebar"
+Templates:
+  - Name: "esxi-disable-slpd-76372"
+    ID: "esxi-disable-slpd-76372.sh.tmpl"
+    Contents: ""
+    Path: ""

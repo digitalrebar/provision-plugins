@@ -41,4 +41,5 @@ Stages:
   - esxi-install-welcome
   - esxi-install-certificate
   - esxi-preserve-logs
+  - esxi-disable-slpd-76372
   - complete
