@@ -1,0 +1,14 @@
+---
+Name: esxi/skip-disable-slpd-76372
+Description: "Skip disabling slpd"
+Documentation: |
+  This Param lets the operator skip disabling slpd per kb artcile 76372. This param is true
+  by default and should be set to false by the operator if they wish to run the task.
+
+Meta:
+  color: blue
+  icon: hashtag
+  title: RackN Content
+Schema:
+  type: boolean
+  default: true
