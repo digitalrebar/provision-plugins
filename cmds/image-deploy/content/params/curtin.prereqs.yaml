@@ -1,0 +1,24 @@
+---
+Name: "curtin/prereqs"
+Description: "Curtin prerequisite packages"
+Documentation: |
+  List of packages needed to install and run curtin.  Packages come from the image-deploy plugin and can be found at
+  http://endpoint:8091/files/plugin_providers/image-deploy/*.rpm
+
+  See Schema default for an example.
+
+Schema:
+  type: "string"
+  default: |
+    libyaml-0.1.4-11.el7_0.x86_64.rpm
+    PyYAML-3.10-11.el7.x86_64.rpm
+    libtommath-0.42.0-6.el7.x86_64.rpm
+    python-oauthlib-0.6.0-2.el7.noarch.rpm
+    libtomcrypt-1.17-26.el7.x86_64.rpm
+    python2-crypto-2.6.1-15.el7.x86_64.rpm
+    dpkg-1.17.27-1.el7.x86_64.rpm
+
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"

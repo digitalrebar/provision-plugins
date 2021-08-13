@@ -1,34 +1,29 @@
 #!/bin/bash
 
+# $0: Script to install prereq packages and curtin from endpoint.
 set -e
+
+packages=({{.Param "curtin/prereqs"}})
+curtin_ver={{.Param "curtin/version"}}
 
 # Contain the code
 mkdir tmp ; cd tmp
 
-echo "Get required files"
-files=(dpkg-1.17.27-1.el7.x86_64.rpm libyaml-0.1.4-11.el7_0.x86_64.rpm PyYAML-3.10-11.el7.x86_64.rpm libtommath-0.42.0-6.el7.x86_64.rpm curtin-20.2-mbcache-dev-curthooks.tgz python-oauthlib-0.6.0-2.el7.noarch.rpm libtomcrypt-1.17-26.el7.x86_64.rpm python2-crypto-2.6.1-15.el7.x86_64.rpm)
-for i in "${files[@]}"
-do
-    if ! curl -fgL \
-          -o $i \
-          "{{.ProvisionerURL}}/files/plugin_providers/image-deploy/$i"; then
-          echo "Failed to download $i"
-          exit 1
-      fi
+echo "Downloading curtin-${curtin_ver}.tar.gz"
+curl -sfgL -o curtin-${curtin_ver}.tar.gz "{{.ProvisionerURL}}/files/plugin_providers/image-deploy/curtin-${curtin_ver}.tar.gz" \
+	|| (echo "Failed to download curtin."; exit 1)
+
+echo Downloading packages.
+for package in "${packages[@]}"; do
+	curl -sfgL -o ${package} "{{.ProvisionerURL}}/files/plugin_providers/image-deploy/${package}" \
+		|| (echo "Failed to download ${package}"; exit 1)
+	
+	echo Installing ${package}.
+	rpm -q --noverify --quiet ${package} || ( rpm --rebuilddb || : && rpm -Uvh ${package} )
 done
 
-echo "Installing required packages"
-if rpm -qa | grep -iq PyYAML-3 ; then
-    echo "packages already installed."
-else
-    rpm --rebuilddb || :
-    rpm -Uvh *.rpm
-fi
-
-echo "Updating curtin to 20.2"
-tar -zxf curtin-20.2-mbcache-dev-curthooks.tgz
-cd curtin-20.2
-python setup.py install;
-
+echo "Installing curtin ${curtin_ver}"
+tar zxf curtin-${curtin_ver}.tar.gz
+curt_dir=$(tar tf curtin-${curtin_ver}.tar.gz | head -1 | sed 's|/||g')
+( cd ${curt_dir} && python setup.py install )
 exit 0
-

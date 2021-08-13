@@ -1,0 +1,19 @@
+---
+Name: "curtin/version"
+Description: "Curtin version"
+Documentation: |
+  The version of curtin to install and use.  It comes from the image-deploy plugin.  The version comes from
+  http://endpoint:8091/files/plugin_providers/image-deploy/curtin-<version>.tar.gz
+
+    * example: ``20.2-rackn``
+    * example: ``20.2-rackn3``
+    * example: ``master``
+
+Schema:
+  type: "string"
+  default: "20.2-rackn"
+
+Meta:
+  icon: "sitemap"
+  color: "blue"
+  title: "RackN Content"
