@@ -1,0 +1,89 @@
+#!/usr/bin/env sh
+
+{{ if .Param "esxi/skip-disable-slpd-76372" }}
+echo "Skip disable slpd"
+exit 0
+{{ end}}
+
+# stop the slpd service
+stop_slp() {
+    STOP_CMD=$(/etc/init.d/slpd stop 2>&1)
+    ret=""
+    if echo $STOP_CMD | grep -i "stopping"
+    then
+        STOP_STATUS=$(/etc/init.d/slpd status 2>&1)
+        if echo $STOP_STATUS| grep "not running" > /dev/null
+        then
+            echo "Stopped SLPD"
+            ret=0
+        else
+            echo "Unable to stop SLPD"
+            ret=1
+        fi
+    else
+        echo "Unable to stop SLPD"
+        ret=1
+    fi
+    return "$ret"
+}
+
+# verify slpd not running using localcli method from kb article
+check_slp() {
+    SLP_STATUS=$(localcli --formatter=json system slp stats get 2>&1)
+    ret=""
+    if echo $SLP_STATUS| grep -i "shut down" > /dev/null
+    then
+        echo "SLP service is stopped"
+        ret=0
+    else
+        echo "SLP still running"
+        ret=1
+    fi
+    return "$ret"
+}
+
+# make sure slpd service will not start on a reboot
+chkcfg_slpd_disable() {
+    chkconfig slpd off > /dev/null
+}
+
+#################################
+# main script
+#################################
+stop_slp
+if [ $? == "1" ]
+then
+    echo "failed to stop slp."
+    exit 1
+fi
+
+check_slp
+if [ $? == "1" ]
+then
+    echo "slpd says its still running after we attempted to stop it"
+    exit 1
+fi
+
+# remove the slpd firewall rule
+localcli network firewall ruleset set -r CIMSLP -e 0 > /dev/null
+
+if [ $? == "1" ]
+then
+    echo "Unable to remove the SLPD firewall rule"
+    exit 1
+fi
+
+chkcfg_slpd_disable
+
+CHK_CFG_SLPD=$(chkconfig --list slpd|awk {'print $2'})
+if echo $CHK_CFG_SLPD | grep "off" > /dev/null
+then
+    echo "SLPD removed from startup"
+else
+    echo "SLPD not removed from start up."
+    exit 1
+fi
+
+echo "KB 76372 mitigation completed successfully."
+echo "https://kb.vmware.com/s/article/76372"
+exit 0
