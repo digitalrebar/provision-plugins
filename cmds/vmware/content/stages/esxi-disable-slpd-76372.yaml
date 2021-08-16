@@ -1,0 +1,11 @@
+---
+Name: "esxi-disable-slpd-76372"
+Description: "Preform mitigation steps to disable slpd per kb 76372"
+Documentation: |
+  This stage runs the mitigation steps outlined in VMware KB 76372 to disable slpd
+Meta:
+  color: "yellow"
+  icon: "cloud"
+  title: "RackN Content"
+Tasks:
+  - esxi-disable-slpd-76372
