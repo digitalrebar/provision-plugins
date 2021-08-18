@@ -4,7 +4,7 @@ package main
 //go:generate sh -c "cd content ; drpcli contents bundle ../content.yaml"
 //go:generate sh -c "drpcli contents document content.yaml > image-deploy.rst"
 //go:generate rm content.yaml
-//go:generate ./get-curtin.sh
+//go:generate ./embed-files.sh
 //go:generate go-bindata -pkg main -o embed.go -prefix embedded embedded/...
 
 import (
