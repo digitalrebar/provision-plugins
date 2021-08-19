@@ -779,3 +779,18 @@ Once that is done a command prompt should be returned, but sometimes it doesnt s
 dont have a prompt hit enter and it should show up if its done if not just wait a bit more. The process takes
 under 1 min in most cases. This process will build an ISO & OLB for every profile listed in the ESXi OLB.
 
+
+Removing DRPY Agent
+===================
+
+The vmware plugin now includes a script that can be used to remove the DRP Agent. To use the script you will need to
+copy the script to the ESXi host, then run the script from the ESXi command line. Below will outline the steps an operator can take
+
+::
+
+    # From the ESXi host as root
+    wget http://RS_ENDPOINT:8091/files/plugin_providers/vmware/scripts/remove_drpy.py
+    chmod +x remove_drpy.py
+    ./remove_drpy.py
+
+Once complete drpy and the firewall rule vib required by drpy will be removed.
