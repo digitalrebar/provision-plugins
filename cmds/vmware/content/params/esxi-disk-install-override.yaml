@@ -27,7 +27,7 @@ Documentation: |
     find_first_dellboss_vd  Sets disk to first JBOSS Virtual Disk on Dell systems.
     find_disk_name          Sets disk to the first pattern matched by the first
                             argument to the function.  The input string is
-                            surrounded by ``*``.
+                            surrounded by ``\*``.
     ======================  ======================================================
 
   find_disk_name MUST be called with an additional argument that is a pattern.
