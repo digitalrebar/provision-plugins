@@ -1,7 +1,7 @@
 bootstate=0
 title=Loading ESXi installer for {{.Env.OS.Name}}
 timeout=2
-prefix=/{{ trimSuffix "/" (.Env.PathFor "tftp" "/") }}
+prefix={{if .Param "esxi/http-boot" }}{{.Env.PathFor "http" "/"}}{{else}}/{{ trimSuffix "/" (.Env.PathFor "tftp" "/") }}{{end}}
 {{.Env.LineFrom "boot.cfg" "kernel=" | trim | replace "/" "" }}
 kernelopt=ks={{.Machine.Url}}/compute.ks{{if .ParamExists "kernel-options"}} {{.Param "kernel-options"}}{{end}}{{if .ParamExists "esxi/serial-console"}} {{.Param "esxi/serial-console"}}{{end}}
 build=

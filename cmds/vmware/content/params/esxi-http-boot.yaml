@@ -1,0 +1,12 @@
+---
+Name: esxi/http-boot
+Description: Should system try to use HTTP transfers in boot.cfg
+Documentation: |
+  Should system try to use HTTP transfers in boot.cfg
+Meta:
+  color: yellow
+  icon: cloud
+  title: Digital Rebar
+Schema:
+  default: false
+  type: boolean
