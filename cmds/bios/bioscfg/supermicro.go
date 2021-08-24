@@ -194,11 +194,36 @@ func (s *smBmcValNode) setName(n string) {
 	}
 }
 
+//Setting groups that will need special handling:
+// BmcCfg::OemCfg::AlertList, for adding/removing Alert configs
+// BmcCfg::OemCfg::AD:: for adding/changing/removing ADGroup configs
+// BmcCfg::OemCfg::IPAccessControl, for adding/removing ControlRule configs
+
+var nonIdempotentGroups = map[string]struct{}{
+	`BmcCfg::OemCfg::AlertList::`: {},
+	`BmcCfg::OemCfg::AD::`: {},
+	`BmcCfg::OemCfg::IPAccessControl::`: {},
+}
+
+func isIgnored(s string) bool {
+	for k := range nonIdempotentGroups {
+		if strings.HasPrefix(s,k) {
+			return true
+		}
+	}
+	return false
+}
+
+
 func (s *smBmcValNode) decode(res map[string]Entry, names []string, readonly bool) {
 	if len(s.children) == 0 {
+		name := strings.Join(append(names, s.settingName()), "::")
+		if isIgnored(name) {
+			return
+		}
 		ent := Entry{
 			Type:     "String",
-			Name:     strings.Join(append(names, s.settingName()), "::"),
+			Name:     name,
 			ReadOnly: readonly,
 			Current:  s.v,
 		}
@@ -494,14 +519,14 @@ func (s *superMicroConfig) applyBmc(current map[string]Entry, trimmed map[string
 	cfg := newBmcNode()
 	cfg.name.Local = "BmcCfg"
 	var working *smBmcValNode
-
-	//Setting groups that will need special handling:
-	// BmcCfg::OemCfg::AlertList, for adding/removing Alert configs
-	// BmcCfg::OemCfg::AD:: for adding/changing/removing ADGroup configs
-	// BmcCfg::OemCfg::IPAccessControl, for adding/removing ControlRule configs
+	ignored := []string{}
 	for k, v := range trimmed {
 		currSetting, ok := current[k]
 		if ok && (currSetting.Current == v || currSetting.ReadOnly) {
+			continue
+		}
+		if isIgnored(k) {
+			ignored = append(ignored, k)
 			continue
 		}
 		parent := cfg
@@ -562,6 +587,15 @@ func (s *superMicroConfig) applyBmc(current map[string]Entry, trimmed map[string
 		return
 	}
 	needReboot = true
+	if len(ignored) > 0 {
+		sort.Strings(ignored)
+		fmt.Fprintf(os.Stderr, "Non-idempotent settings ignored:\n")
+		for _,line := range ignored {
+			fmt.Fprintf(os.Stderr, "    %s\n",line)
+		}
+		fmt.Fprintf(os.Stderr, "You will need to handle these settings using SuperMicro Update Manager in a custom" +
+			" task.\n")
+	}
 	return
 }
 
