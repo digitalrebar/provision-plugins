@@ -33,8 +33,8 @@ github.com/digitalocean/go-smbios v0.0.0-20180907143718-390a4f403a8e h1:vUmf0yez
 github.com/digitalocean/go-smbios v0.0.0-20180907143718-390a4f403a8e/go.mod h1:YTIHhz/QFSYnu/EhlF2SpU2Uk+32abacUYA5ZPljz1A=
 github.com/digitalrebar/logger v1.0.2 h1:0Q2fwvrasMNcm/8jWBjQWHS/sX4k//wt+K0c24V0ELE=
 github.com/digitalrebar/logger v1.0.2/go.mod h1:ZVptenY/Zi6Y7vGYcAOepmo2MSgIbodlUtanpFBK2Yw=
-github.com/digitalrebar/provision/v4 v4.7.0-beta00 h1:dHnxHM8dmF2T/HunE6voqNRyWPeDctOoObOS95RQoWQ=
-github.com/digitalrebar/provision/v4 v4.7.0-beta00/go.mod h1:/gkt8MgodcV9Bp7pI3bke5IiAKk1Fs6ZpjPkUbUcu6I=
+github.com/digitalrebar/provision/v4 v4.7.0 h1:PUOk4gviAw2cA/XeKyHDIojbRb4Y1aZagKB3Y4R1KOo=
+github.com/digitalrebar/provision/v4 v4.7.0/go.mod h1:/gkt8MgodcV9Bp7pI3bke5IiAKk1Fs6ZpjPkUbUcu6I=
 github.com/digitalrebar/service v1.1.1-0.20210318203824-ace7506f4810/go.mod h1:QIfTKUcTpVIbO5W5dntdyBM1o0jNiNUoMVbwNvIacwo=
 github.com/digitalrebar/tftp v2.1.0+incompatible/go.mod h1:k1tcsyQwHE72oTU5sfXPJdOCHFiZUt3M2BdYdHsfw6c=
 github.com/digitalrebar/tftp/v3 v3.0.0/go.mod h1:OEQX1RPK9eiehWKXeZMbYiRLJ3JJLaB68vj7IR7LvOM=
